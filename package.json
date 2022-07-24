@@ -1,0 +1,22 @@
+{
+  "name": "ephemeris",
+  "version": "0.0.1",
+  "description": "SE tool",
+  "main": ".src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shuart/Ephemeris-next.git"
+  },
+  "keywords": [
+    "SE"
+  ],
+  "author": "Stéphane Huart",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/shuart/Ephemeris-next/issues"
+  },
+  "homepage": "https://github.com/shuart/Ephemeris-next#readme"
+}
