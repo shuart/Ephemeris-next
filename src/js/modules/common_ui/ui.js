@@ -1,12 +1,14 @@
 import createAdler from "../../vendor/adler.js";
+import login_ui from "../login/login_ui.js";
 
 var common_ui =createAdler({
     content: p => /*html*/`
         <div class="cui_lateral_area"></div>
-        <div class="cui_main_area"></div>
+        <div class="cui_main_area">
+            <div a-slot="main_area_mount_point"></div>
+        </div>
         <div class="cui_toolbar_area"></div>
-        
-        
+
         `,
     params:{
         data:{
@@ -18,7 +20,7 @@ var common_ui =createAdler({
             [".action2","click", (event, data, instance)=> instance.setData({test:"barr"}) ],
         ]
     },
-    css:/*html*/`
+    css:/*css*/`
         .cui_toolbar_area {
             background: rgb(0,181,173);
                
@@ -35,8 +37,8 @@ var common_ui =createAdler({
             position: absolute;
             left: 50px;
             background-color: white;
-            border-top-left-radius:5px;
-            border-bottom-left-radius:5px;
+            border-top-left-radius:8px;
+            border-bottom-left-radius:8px;
             z-index: 1;
         }
 
@@ -45,5 +47,7 @@ var common_ui =createAdler({
           }
     `,
 })
+
+common_ui.append(login_ui.instance(), "main_area_mount_point")
 
 export default common_ui
