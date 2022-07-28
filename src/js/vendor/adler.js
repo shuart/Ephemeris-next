@@ -94,7 +94,7 @@ var createAdler = function({
         if(extra && extra.data){ newPramas.data = Object.assign({}, newPramas.data, extra.data) };
         if(extra && extra.on){ newPramas.on = Object.assign({},newPramas.on, extra.on) };
         if(extra && extra.nodeMap){ newPramas.nodeMap = Object.assign({},newPramas.nodeMap, extra.nodeMap) };
-        return createAdler({content: content, params:newPramas});
+        return createAdler({content: content, params:newPramas, components:components});
     }
 
     var mount = function(mountTarget){
@@ -122,6 +122,7 @@ var createAdler = function({
             const element = foundComponents[i];
             var templateComponent = components[element.getAttribute("adler")]
             if(!templateComponent){
+                console.log(components);
                 console.log("missing component");
             }else{
                 var newData = {data:{}, nodeMap:nodeMap}

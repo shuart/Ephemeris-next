@@ -6,6 +6,7 @@ var common_ui =createAdler({
         <div class="cui_lateral_area"></div>
         <div class="cui_main_area">
             <div a-slot="main_area_mount_point"></div>
+            <div adler="user_button" class="user_button_list"></div>
         </div>
         <div class="cui_toolbar_area"></div>
 
@@ -46,6 +47,9 @@ var common_ui =createAdler({
             .cui_main_area   { background:  #1b1b1b; color: white; }
           }
     `,
+    components:{
+        
+    }
 })
 
 common_ui.append(login_ui.instance(), "main_area_mount_point")
