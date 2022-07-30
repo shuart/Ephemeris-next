@@ -5,22 +5,52 @@ import user_button from "../common_ui_elements/user_button.js";
 
 //Functions
 
-var login_action_add_user = function(event, data, instance){
-    userManagement.addUser(prompt("user name?")); 
-    instance.setData({users:userManagement.getAllUsers()});
+var getAllUsers = ()=> userManagement.getAllUsers() //.map(o=> o.name).toString()
+var setButtonList = ()=>{
+    return getAllUsers().map((i)=> {return {value:i.name, onClick:()=> alert("user is" + i.name)} } )
 }
 
-var getAllUsers = ()=> userManagement.getAllUsers() //.map(o=> o.name).toString()
+var login_action_add_user = function(event, data, instance){
+    event.preventDefault()
+    //showRegisterForm(event, data, instance)
+    userManagement.addUser( {name:prompt("user name?")} ); 
+    instance.setData({users:setButtonList()});
+}
 
+var showRegisterForm = function(event, data, instance){
+    instance.query(".register").style.display="block"
+    // console.log( instance.query(".register"));
+    // userManagement.addUser(prompt("user name?")); 
+    // instance.setData({users:setButtonList()});
+}
 //UI
 
 var login_ui =createAdler({
     content: p => /*html*/`
         <div class="login_main_area">
             <div class="login_logo"></div>
+            
+            <form style="display:none;" class="register box">
+                <div class="field">
+                <label class="label">Email</label>
+                <div class="control">
+                    <input class="input" type="email" placeholder="e.g. alex@example.com">
+                </div>
+                </div>
+            
+                <div class="field">
+                <label class="label">Password</label>
+                <div class="control">
+                    <input class="input" type="password" placeholder="********">
+                </div>
+                </div>
+            
+                <button class="login_action_add_user button is-primary">Sign in</button>
+            </form>
+
             <div a-for="users" adler="user_button" class="user_button_list"></div>
             <div class="">
-                <button class="login_action_add_user">add User</button>
+                <button class="login_action_show_register">add User</button>
                 ${p.users}
             </div>
         </div>
@@ -34,6 +64,7 @@ var login_ui =createAdler({
         },
         on:[
             [".login_action_add_user","click", login_action_add_user ],
+            [".login_action_show_register","click", showRegisterForm ],
         ]
     },
     css:/*css*/`

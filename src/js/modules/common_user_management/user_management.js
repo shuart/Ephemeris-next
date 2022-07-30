@@ -10,7 +10,12 @@ var createUserManagement = function(){
     var getAllUsers = function () {
         return db.get("users").toArray()
     }
-    var addUser =function(name){
+    var addUser =function({
+        name=undefined,
+        email=undefined,
+        password=undefined,
+    }={}){
+        console.log(name);
         db.add("users", { name:name})
     }
 

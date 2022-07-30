@@ -42,14 +42,21 @@ var createAdler = function({
     var setUpEvents = function (localWrapper,params, paramIndex){
         var setEventListener = function(localWrapper, action){
             let target = localWrapper.DOMElement.querySelector(action[0])
+            console.log(action[0],localWrapper.DOMElement)
+            if (!target && localWrapper.DOMElement.classList.contains(action[0].slice(1))) {
+                target = localWrapper.DOMElement
+            }
             if (target) {
                 function callback(event) {
                     action[2](event, getParamsData(params,paramIndex), self);//inject params into event
                 }
                 target.addEventListener(action[1],callback);
+            }else{
+                console.log("missing event target")
             }
         }
         if (params && params.on) {
+            console.log(params)
             if ( Array.isArray(params.on[0]) ) {
                 for (let index = 0; index < params.on.length; index++) {
                     const action = params.on[index];
@@ -229,6 +236,13 @@ var createAdler = function({
         remove()
     }
 
+    var getDOMElement = function(){
+        return wrapper.DOMElement
+    }
+    var query = function(query){
+        return wrapper.DOMElement.querySelector(query)
+    }
+
     var init= function(){
         //init template elements (like css etc)
         if (css) {addCSS(css)};
@@ -236,7 +250,8 @@ var createAdler = function({
 
     init()
 
-
+    self.query = query
+    self.getDOMElement = getDOMElement
     self.unmount = unmount;
     self.clearSlot = clearSlot;
     self.update = update;

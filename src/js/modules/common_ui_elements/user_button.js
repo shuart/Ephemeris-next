@@ -2,14 +2,15 @@ import createAdler from "../../vendor/adler.js";
 
 var user_button =createAdler({
     content: p => /*html*/`
-        <button class="user_button">${p.test}</button>
+        <button class="user_button">${p.value}</button>
         `,
     params:{
         data:{
-            test:"Hello",
+            value:"Hello",
+            onClick:()=>console.log("click")
         },
         on:[
-            //[".login_action_add_user","click", login_action_add_user ],
+            [".user_button","click", (event, data)=> data.onClick() ],
         ]
     },
     css:/*css*/`
