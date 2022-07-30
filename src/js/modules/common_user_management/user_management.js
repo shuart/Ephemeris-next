@@ -2,10 +2,11 @@ import createdb from "../../vendor/superCluster.js";
 
 var createUserManagement = function(){
     var self={}
+    var currentUser = undefined;
 
     var db = createdb({
         users:["id","test"]
-    })
+    },{persistence:"users"})
 
     var getAllUsers = function () {
         return db.get("users").toArray()
@@ -19,7 +20,13 @@ var createUserManagement = function(){
         db.add("users", { name:name})
     }
 
+    var setCurrentUser = function(id){
+        console.log("set "+ id +" as current user");
+        currentUser=id
+    }
 
+
+    self.setCurrentUser = setCurrentUser;
     self.addUser = addUser;
     self.getAllUsers = getAllUsers
     return self

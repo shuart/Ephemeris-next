@@ -2,12 +2,17 @@ import createAdler from "../../vendor/adler.js";
 import userManagement from "../common_user_management/user_management.js";
 import user_button from "../common_ui_elements/user_button.js";
 
-
 //Functions
 
 var getAllUsers = ()=> userManagement.getAllUsers() //.map(o=> o.name).toString()
 var setButtonList = ()=>{
-    return getAllUsers().map((i)=> {return {value:i.name, onClick:()=> alert("user is" + i.name)} } )
+    console.log(getAllUsers());
+    return getAllUsers().map((i)=> {return {value:i.name, onClick:(event, data, instance)=> setUser(i.id, instance)} } )
+}
+
+var setUser = function(id,instance){
+    userManagement.setCurrentUser(id);
+    //login_ui.unmount()
 }
 
 var login_action_add_user = function(event, data, instance){
@@ -60,7 +65,7 @@ var login_ui =createAdler({
     params:{
         data:{
             test:"Hello",
-            users:getAllUsers(),
+            users:setButtonList(),
         },
         on:[
             [".login_action_add_user","click", login_action_add_user ],

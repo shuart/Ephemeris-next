@@ -10,7 +10,7 @@ var user_button =createAdler({
             onClick:()=>console.log("click")
         },
         on:[
-            [".user_button","click", (event, data)=> data.onClick() ],
+            [".user_button","click", (event, data, instance)=> data.onClick(event, data, instance) ],
         ]
     },
     css:/*css*/`

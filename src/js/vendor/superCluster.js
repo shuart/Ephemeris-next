@@ -1,4 +1,4 @@
-var createCluster = function(initialSchema){
+var createCluster = function(initialSchema, options){
     var self = {};
     var currentSchema={}//store full schema
     var currentUUIDS = {} //store current main IDS
@@ -39,6 +39,7 @@ var createCluster = function(initialSchema){
             }
         }
         storage[storeName].push(object)
+        persist()
     }
 
     var addIdIfMissing= function(storeName, object){
@@ -68,10 +69,29 @@ var createCluster = function(initialSchema){
             }
         }
     }
+
+    var packForLocalStorage = function(){
+        return JSON.stringify({currentSchema:currentSchema , currentUUIDS:currentUUIDS, storageIndexes:storageIndexes, storageUUID:storageUUID, storage:storage,})
+    }
+    var persist = function(){
+        if (options.persistence) {
+                var currentPersistence = localStorage.setItem('supercluster-'+options.persistence,packForLocalStorage() );
+            }
+    }
     
     var init = function(){
         if (initialSchema) {
             setSchema(initialSchema)
+        }
+        if(options){
+            if (options.persistence) {
+                var currentPersistence = localStorage.getItem('supercluster-'+options.persistence);
+                if (currentPersistence){
+                    console.log(currentPersistence);
+                    var currentPersistence = JSON.parse(currentPersistence)
+                    currentSchema = currentPersistence.currentSchema; currentUUIDS = currentPersistence.currentUUIDS; storageIndexes = currentPersistence.storageIndexes; storageUUID = currentPersistence.storageUUID;storage = currentPersistence.storage;
+                }
+            }
         }
     }
 
