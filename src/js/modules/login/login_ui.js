@@ -24,6 +24,9 @@ var login_action_add_user = function(event, data, instance){
 
 var showRegisterForm = function(event, data, instance){
     instance.query(".register").style.display="block"
+    instance.query(".user_button_list").style.display="none"
+    instance.query(".login_action_show_register").style.display="none"
+    
     // console.log( instance.query(".register"));
     // userManagement.addUser(prompt("user name?")); 
     // instance.setData({users:setButtonList()});
@@ -56,7 +59,6 @@ var login_ui =createAdler({
             <div a-for="users" adler="user_button" class="user_button_list"></div>
             <div class="">
                 <button class="login_action_show_register">add User</button>
-                ${p.users}
             </div>
         </div>
         
