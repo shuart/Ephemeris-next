@@ -1,100 +1,44 @@
 import createAdler from "../../vendor/adler.js";
 import userManagement from "../common_user_management/user_management.js";
+import projectManagement from "../common_project_management/project_management.js";
+import project_card from "../common_ui_elements/project_card.js";
 
-var getCurrentUser = function () {
-    return userManagement.getCurrentUser()
+// var getCurrentUser = function () {
+//     return userManagement.getCurrentUser()
+// }
+
+var addProject = function (event, data, instance) {
+    projectManagement.add({name:prompt("project")})
+    instance.setData({projects:setButtonList()});
+}
+
+var setButtonList = ()=>{
+    return projectManagement.getAll().map((i)=> {return {value:i.name, onClick:(event, data, instance)=> console.log("projet")} } )
 }
 
 var project_selection =createAdler({
     content: p => /*html*/`
             <button class="action1 adlerButton">${p.currentUserName} world</button><p class="action2">${p.test2} here</p>
-                <div class="masonry">
-                <div class="brick">
-                    <div class="card">
-                        <header class="card-header">
-                        <p class="card-header-title">
-                            Card header fqzflm zqkfdl mqdkml qfjqml lmf lqfmlq,mfzq
-                        </p>
-                        <button class="card-header-icon" aria-label="more options">
-                            <span class="icon">
-                            <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                        </button>
-                        </header>
-                    </div>
-                </div>
-                <div class="brick">
-                    <div class="card">
-                        <header class="card-header">
-                        <p class="card-header-title">
-                            Card header
-                        </p>
-                        <button class="card-header-icon" aria-label="more options">
-                            <span class="icon">
-                            <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                        </button>
-                        </header>
-                    </div>
-                </div>
-                <div class="brick">
-                    <div class="card">
-                        <header class="card-header">
-                        <p class="card-header-title">
-                            Card head er dz ql, mlzk f mqlfjozq jfkl qzjflqz ml fqlzj flmzqj flkjql kfjqlz f
-                        </p>
-                        <button class="card-header-icon" aria-label="more options">
-                            <span class="icon">
-                            <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                        </button>
-                        </header>
-                    </div>
-                </div>
-                <div class="brick">
-                    <div class="card">
-                        <header class="card-header">
-                        <p class="card-header-title">
-                            Card header
-                        </p>
-                        <button class="card-header-icon" aria-label="more options">
-                            <span class="icon">
-                            <i class="fas fa-angle-down" aria-hidden="true"></i>
-                            </span>
-                        </button>
-                        </header>
-                    </div>
-                </div>
-                <div class="brick">
-                <img src="files/images/pears.jpg" alt="Pears" title="Pears">
-                </div>
-                <div class="brick">
-                <img src="files/images/easter-eggs.jpg" alt="Easter-eggs" title="Easter-eggs">
-                </div>
-                <div class="brick">
-                <img src="files/images/lemons.jpg" alt="Lemons" title="Lemons">
-                </div>
-                <div class="brick">
-                <img src="files/images/cherries.jpg" alt="Cherries" title="Cherries">
-                </div>
-                <div class="brick">
-                <img src="files/images/grapes.jpg" alt="Grapes" title="Grapes">
-                </div>
+            <button class="action_project_selection_add_project button">Button</button>
+            <div a-for="projects" adler="project_card" class="masonry">
+
             </div><!-- .masonry -->
         `,
     params:{
         data:{
             test:"project seelction",
             test2:"seelction",
-            currentUserName:"Undefined",
+            projects:setButtonList(),
         },
         on:[
             [".action1","click", (event, data)=> alert("test "+ data.test)],
             [".action2","click", (event, data, instance)=> instance.setData({test:"barr"}) ],
+            [".action_project_selection_add_project","click", (event, data, instance)=> addProject(event, data, instance) ],
+            
         ],
         events:{
             // onBeforeMount:(event, data, instance)=> alert("MOUNTING"),
-            onBeforeMount:(event, data, instance) => instance.setData({currentUserName:getCurrentUser().name}, false),
+            // onBeforeMount:(event, data, instance) => instance.setData({currentUserName:getCurrentUser().name}, false),
         },
     },
     css:`
@@ -107,6 +51,9 @@ var project_selection =createAdler({
         }
         
     `,
+    components:{
+        project_card: project_card
+    }
 })
 
 export default project_selection
