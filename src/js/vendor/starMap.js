@@ -15,7 +15,7 @@ var createRouter = function(){
     var setPageFromUrl = async function(){
       // var hash = new URL(document.URL).hash;
       let url = window.location.hash.slice(1) || '/';
-      console.log(url);
+      // console.log(url);
       if (url) {
         resolveUrl(url)
       }
@@ -28,7 +28,7 @@ var createRouter = function(){
         }
         let resolvedRoute = findRoute(urlToResolve)
         if(resolvedRoute){
-          console.log(resolvedRoute)
+          // console.log(resolvedRoute)
           applyMiddelwares(resolvedRoute)
           // resolvedRoute.callback({params:resolvedRoute.params, route:resolvedRoute.route,})
         }
@@ -41,7 +41,7 @@ var createRouter = function(){
         var next= function(){
           applyMiddelwares(resolvedRoute,middlewareIndex+1 )
         };
-        rootMiddlewares[middlewareIndex](resolvedRoute.params,resolvedRoute.callback, next )
+        rootMiddlewares[middlewareIndex](resolvedRoute.params,resolvedRoute, next )
       }else{//resolve directly
         resolvedRoute.callback({params:resolvedRoute.params, route:resolvedRoute.route,})
       }
@@ -49,7 +49,7 @@ var createRouter = function(){
   
     var findRoute = function (url) {
       var splitUrl = url.split("/")
-      var result = {match:false,route:undefined, callback: undefined, params:{}}
+      var result = {match:false,route:undefined, callback: undefined, params:{}, url:"/"+url}
 
       if ((typeof splitUrl[0] === 'string' && splitUrl[0].length === 0)) {//if root
         for (let i = 0; i < routes.length; i++) {
@@ -57,7 +57,7 @@ var createRouter = function(){
               result.match = true
               result.callback = routes[i].callback;
               result.route  = splitUrl;
-              console.log(result);
+              // console.log(result);
               return result
           }
         }
@@ -67,7 +67,7 @@ var createRouter = function(){
         const currentRoute = routes[i];
         //check if root
         
-        console.log(routes, splitUrl,currentRoute.route, !result.match && splitUrl.length == currentRoute.route.length)
+        // console.log(routes, splitUrl,currentRoute.route, !result.match && splitUrl.length == currentRoute.route.length)
         if(!result.match && splitUrl.length == currentRoute.route.length){ //if no match found and length match
           
           result.params = {};//reset params
@@ -77,7 +77,7 @@ var createRouter = function(){
           for (let k = 0; k < splitUrl.length; k++) {
             const urlPart = splitUrl[k];
             const routePart = currentRoute.route[k];
-            console.log(routePart, urlPart);
+            // console.log(routePart, urlPart);
             if (routePart && routePart[0] == ":") {//if is a param
               result.params[routePart.slice(1)] = urlPart;
               result.match = true
@@ -92,10 +92,10 @@ var createRouter = function(){
             }
             
           }
-          console.log("check match");
-          console.log(result);
+          // console.log("check match");
+          // console.log(result);
           if(result.match){
-            console.log(result);
+            // console.log(result);
             return result
           }
   
@@ -119,6 +119,16 @@ var createRouter = function(){
         middlewaresStore.push(arguments[i]);
       }
     }
+
+    function goTo(url) {
+      var hrefUrl = url
+      // hrefUrl = hrefUrl.slice(1); // remove the leading slash
+      hrefUrl = "#"+hrefUrl
+      // console.log(hrefUrl);
+      window.history.pushState({}, window.title, hrefUrl) // Update URL as well as browser history.
+      setPageFromUrl()
+    }
+    
     
   
     var route = function (route, callback) {
@@ -128,7 +138,7 @@ var createRouter = function(){
         callback:callback,
       }
       routes.push(routeObject)
-      console.log(splitRoute);
+      // console.log(splitRoute);
     }
   
     var init= function () {
@@ -136,6 +146,7 @@ var createRouter = function(){
       setListener()
     }
   
+    self.goTo = goTo
     self.use = use
     self.listen = init
     self.route = route

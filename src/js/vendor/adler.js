@@ -42,7 +42,7 @@ var createAdler = function({
     var setUpEvents = function (localWrapper,params, paramIndex){
         var setEventListener = function(localWrapper, action){
             let target = localWrapper.DOMElement.querySelector(action[0])
-            console.log(action[0],localWrapper.DOMElement)
+            // console.log(action[0],localWrapper.DOMElement)
             if (!target && localWrapper.DOMElement.classList.contains(action[0].slice(1))) {
                 target = localWrapper.DOMElement
             }
@@ -56,7 +56,7 @@ var createAdler = function({
             }
         }
         if (params && params.on) {
-            console.log(params)
+            // console.log(params)
             if ( Array.isArray(params.on[0]) ) {
                 for (let index = 0; index < params.on.length; index++) {
                     const action = params.on[index];
@@ -86,7 +86,7 @@ var createAdler = function({
         mountSlots(wrapper,params);
         if (mountTargetElement && mountTargetElement=="replace") {
             
-            console.log(params, mountTargetElement);
+            // console.log(params, mountTargetElement);
             if(instanceDomElement){//if is mounting on body
                 instanceDomElement.parentNode.replaceChild(wrapper.DOMElement, instanceDomElement);
                 instanceDomElement =  wrapper.DOMElement;
@@ -105,7 +105,7 @@ var createAdler = function({
     }
 
     var doLifeCycleEvents= function(eventName){
-        console.log(params.events, eventName);
+        // console.log(params.events, eventName);
         if (params.events && params.events["onBeforeMount"]) {
             params.events["onBeforeMount"]({lifecycleEvent:eventName}, params.data, self)
         }
@@ -145,8 +145,8 @@ var createAdler = function({
             const element = foundComponents[i];
             var templateComponent = components[element.getAttribute("adler")]
             if(!templateComponent){
-                console.log(components);
-                console.log("missing component");
+                // console.log(components);
+                // console.log("missing component");
             }else{
                 var newData = {data:{}, nodeMap:nodeMap}
                 if (element.getAttribute("a-sync")) {//Check if some values must be synced
@@ -187,7 +187,7 @@ var createAdler = function({
             const element = foundSlots[i];
             var component = slotMap[element.getAttribute("a-slot")]
             if(!component){
-                console.log("missing component");
+                // console.log("missing component");
             }else{
                 component.mount(element);
             }
@@ -226,11 +226,11 @@ var createAdler = function({
         return Object.assign({}, nodeMap, slotMap)
     }
 
-    var setData = function(newData, update){
-        if(update == undefined) update=true;
-        console.log("update data");
+    var setData = function(newData, updateNeeded){
+        if(updateNeeded == undefined) updateNeeded=true;
+        // console.log("update data");
         params.data = Object.assign(params.data,newData )
-        if (update) {
+        if (updateNeeded) {
             update()
         }
     }
