@@ -78,14 +78,22 @@ var createAdler = function({
     }
 
     var appendToDom = function(mountTargetElement){
+        doLifeCycleEvents("onBeforeMount")//Lifecyle event
         wrapper = renderContent(params);
         setUpEvents(wrapper,params);
         applyLogic(wrapper,params);
         mountComponents(wrapper,params);
         mountSlots(wrapper,params);
         if (mountTargetElement && mountTargetElement=="replace") {
-            instanceDomElement.parentNode.replaceChild(wrapper.DOMElement, instanceDomElement);
-            instanceDomElement =  wrapper.DOMElement;
+            
+            console.log(params, mountTargetElement);
+            if(instanceDomElement){//if is mounting on body
+                instanceDomElement.parentNode.replaceChild(wrapper.DOMElement, instanceDomElement);
+                instanceDomElement =  wrapper.DOMElement;
+            }else{
+                container.appendChild(wrapper.DOMElement);
+            }
+            
         }else if(mountTargetElement){
             mountTargetElement.appendChild(wrapper.DOMElement);
             instanceDomElement =  wrapper.DOMElement
@@ -96,11 +104,19 @@ var createAdler = function({
         return wrapper.DOMElement
     }
 
+    var doLifeCycleEvents= function(eventName){
+        console.log(params.events, eventName);
+        if (params.events && params.events["onBeforeMount"]) {
+            params.events["onBeforeMount"]({lifecycleEvent:eventName}, params.data, self)
+        }
+    }
+
     var instance = function(extra){
         var newPramas = Object.assign({}, params);
         if(extra && extra.data){ newPramas.data = Object.assign({}, newPramas.data, extra.data) };
         if(extra && extra.on){ newPramas.on = Object.assign({},newPramas.on, extra.on) };
         if(extra && extra.nodeMap){ newPramas.nodeMap = Object.assign({},newPramas.nodeMap, extra.nodeMap) };
+        if(extra && extra.events){ newPramas.events = Object.assign({},newPramas.events, extra.events) };
         return createAdler({content: content, params:newPramas, components:components});
     }
 
@@ -210,10 +226,13 @@ var createAdler = function({
         return Object.assign({}, nodeMap, slotMap)
     }
 
-    var setData = function(newData){
+    var setData = function(newData, update){
+        if(update == undefined) update=true;
         console.log("update data");
         params.data = Object.assign(params.data,newData )
-        update()
+        if (update) {
+            update()
+        }
     }
     var append = function (component,slot) {
         slotMap[slot] = component;

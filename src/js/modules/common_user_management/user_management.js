@@ -24,8 +24,12 @@ var createUserManagement = function(){
         console.log("set "+ id +" as current user");
         currentUser=id
     }
+    var getCurrentUser = function(id){
+        return db.get("users").where("id").equals(currentUser)
+    }
 
 
+    self.getCurrentUser = getCurrentUser;
     self.setCurrentUser = setCurrentUser;
     self.addUser = addUser;
     self.getAllUsers = getAllUsers

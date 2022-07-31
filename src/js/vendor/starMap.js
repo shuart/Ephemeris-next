@@ -1,6 +1,8 @@
 var createRouter = function(){
     var self = {}
     var routes = []
+    var middlewares = []
+    var rootMiddlewares = []
   
     var setListener = function(){
       window.addEventListener('hashchange', function() {
@@ -26,16 +28,46 @@ var createRouter = function(){
         }
         let resolvedRoute = findRoute(urlToResolve)
         if(resolvedRoute){
-          resolvedRoute.callback({params:resolvedRoute.params, route:resolvedRoute.route,})
+          console.log(resolvedRoute)
+          applyMiddelwares(resolvedRoute)
+          // resolvedRoute.callback({params:resolvedRoute.params, route:resolvedRoute.route,})
         }
+    }
+
+    var applyMiddelwares = function (resolvedRoute, middlewareIndex) {
+      //rootMiddlewares
+      var middlewareIndex =middlewareIndex || 0
+      if (rootMiddlewares[middlewareIndex]) {
+        var next= function(){
+          applyMiddelwares(resolvedRoute,middlewareIndex+1 )
+        };
+        rootMiddlewares[middlewareIndex](resolvedRoute.params,resolvedRoute.callback, next )
+      }else{//resolve directly
+        resolvedRoute.callback({params:resolvedRoute.params, route:resolvedRoute.route,})
+      }
     }
   
     var findRoute = function (url) {
       var splitUrl = url.split("/")
       var result = {match:false,route:undefined, callback: undefined, params:{}}
+
+      if ((typeof splitUrl[0] === 'string' && splitUrl[0].length === 0)) {//if root
+        for (let i = 0; i < routes.length; i++) {
+          if(  (typeof routes[i].route[0] === 'string' && routes[i].route[0].length === 0)){
+              result.match = true
+              result.callback = routes[i].callback;
+              result.route  = splitUrl;
+              console.log(result);
+              return result
+          }
+        }
+      }
   
       for (let i = 0; i < routes.length; i++) {
         const currentRoute = routes[i];
+        //check if root
+        
+        console.log(routes, splitUrl,currentRoute.route, !result.match && splitUrl.length == currentRoute.route.length)
         if(!result.match && splitUrl.length == currentRoute.route.length){ //if no match found and length match
           
           result.params = {};//reset params
@@ -45,6 +77,7 @@ var createRouter = function(){
           for (let k = 0; k < splitUrl.length; k++) {
             const urlPart = splitUrl[k];
             const routePart = currentRoute.route[k];
+            console.log(routePart, urlPart);
             if (routePart && routePart[0] == ":") {//if is a param
               result.params[routePart.slice(1)] = urlPart;
               result.match = true
@@ -59,16 +92,34 @@ var createRouter = function(){
             }
             
           }
-  
-        }else if(result.match){
+          console.log("check match");
           console.log(result);
-          return result
-        }else{
-          return undefined
+          if(result.match){
+            console.log(result);
+            return result
+          }
+  
         }
+        // else if(result.match){
+        //   console.log(result);
+        //   return result
+        // }
   
       }
+      return undefined
     }
+
+    function use(route /*, num1, …, numN */) {
+      var base = route;
+      var middlewaresStore = middlewares;
+      if (base == "/") {
+        middlewaresStore = rootMiddlewares;
+      }
+      for (let i = 1; i < arguments.length; i++) {
+        middlewaresStore.push(arguments[i]);
+      }
+    }
+    
   
     var route = function (route, callback) {
       var splitRoute = route.slice(1).split("/")
@@ -85,6 +136,7 @@ var createRouter = function(){
       setListener()
     }
   
+    self.use = use
     self.listen = init
     self.route = route
     return self
