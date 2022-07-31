@@ -9,13 +9,13 @@ const common_router = createRouter()
 var lastUrlBeforeRedirect = undefined
 
 var logger = function(req,res,next){
-    console.log(req)
+    // console.log(req)
     next()
 }
 
 var redirectIfNoUser = function(req,res,next){
     var currentUser = userManagement.getCurrentUser()
-    console.log(res);
+    // console.log(res);
     // next()
     if (currentUser || res.route[0] =="login") {
         next()
@@ -36,13 +36,13 @@ var createStateManager = function({
         common_router.route("/projetff/modee/teet/:id", (event)=> console.log(event))
         common_router.route("/", (event)=>
         {
-            console.log(event);
+            // console.log(event);
             mainUiElement.append(project_selection.instance(), "main_area_mount_point");
             mainUiElement.update();
         })
         common_router.route("/login", (event)=>
         {
-            console.log(event);
+            // console.log(event);
             mainUiElement.append(login_ui.instance(), "main_area_mount_point");
             mainUiElement.update();
         })

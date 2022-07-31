@@ -6,7 +6,82 @@ var getCurrentUser = function () {
 }
 
 var project_selection =createAdler({
-    content: p => `<button class="action1 adlerButton">${p.currentUserName} world</button><p class="action2">${p.test2} here</p>`,
+    content: p => /*html*/`
+            <button class="action1 adlerButton">${p.currentUserName} world</button><p class="action2">${p.test2} here</p>
+                <div class="masonry">
+                <div class="brick">
+                    <div class="card">
+                        <header class="card-header">
+                        <p class="card-header-title">
+                            Card header fqzflm zqkfdl mqdkml qfjqml lmf lqfmlq,mfzq
+                        </p>
+                        <button class="card-header-icon" aria-label="more options">
+                            <span class="icon">
+                            <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                        </header>
+                    </div>
+                </div>
+                <div class="brick">
+                    <div class="card">
+                        <header class="card-header">
+                        <p class="card-header-title">
+                            Card header
+                        </p>
+                        <button class="card-header-icon" aria-label="more options">
+                            <span class="icon">
+                            <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                        </header>
+                    </div>
+                </div>
+                <div class="brick">
+                    <div class="card">
+                        <header class="card-header">
+                        <p class="card-header-title">
+                            Card head er dz ql, mlzk f mqlfjozq jfkl qzjflqz ml fqlzj flmzqj flkjql kfjqlz f
+                        </p>
+                        <button class="card-header-icon" aria-label="more options">
+                            <span class="icon">
+                            <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                        </header>
+                    </div>
+                </div>
+                <div class="brick">
+                    <div class="card">
+                        <header class="card-header">
+                        <p class="card-header-title">
+                            Card header
+                        </p>
+                        <button class="card-header-icon" aria-label="more options">
+                            <span class="icon">
+                            <i class="fas fa-angle-down" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                        </header>
+                    </div>
+                </div>
+                <div class="brick">
+                <img src="files/images/pears.jpg" alt="Pears" title="Pears">
+                </div>
+                <div class="brick">
+                <img src="files/images/easter-eggs.jpg" alt="Easter-eggs" title="Easter-eggs">
+                </div>
+                <div class="brick">
+                <img src="files/images/lemons.jpg" alt="Lemons" title="Lemons">
+                </div>
+                <div class="brick">
+                <img src="files/images/cherries.jpg" alt="Cherries" title="Cherries">
+                </div>
+                <div class="brick">
+                <img src="files/images/grapes.jpg" alt="Grapes" title="Grapes">
+                </div>
+            </div><!-- .masonry -->
+        `,
     params:{
         data:{
             test:"project seelction",
@@ -30,6 +105,7 @@ var project_selection =createAdler({
             color: white;
             margin: 3px;
         }
+        
     `,
 })
 
