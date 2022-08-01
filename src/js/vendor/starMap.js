@@ -28,7 +28,7 @@ var createRouter = function(){
         }
         let resolvedRoute = findRoute(urlToResolve)
         if(resolvedRoute){
-          // console.log(resolvedRoute)
+          console.log(resolvedRoute)
           applyMiddelwares(resolvedRoute)
           // resolvedRoute.callback({params:resolvedRoute.params, route:resolvedRoute.route,})
         }

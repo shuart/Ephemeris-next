@@ -78,6 +78,10 @@ var createCluster = function(initialSchema, options){
                 var currentPersistence = localStorage.setItem('supercluster-'+options.persistence,packForLocalStorage() );
             }
     }
+
+    var addStores = function(initialSchema){
+        setSchema(initialSchema)
+    }
     
     var init = function(){
         if (initialSchema) {
@@ -97,6 +101,7 @@ var createCluster = function(initialSchema, options){
 
     init()
 
+    self.addStores=addStores;
     self.add=add;
     self.get=get
     return self

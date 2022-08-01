@@ -5,7 +5,7 @@ var user_button =createAdler({
     <div class="brick">
     <div class="card">
             <header class="card-header">
-            <p class="card-header-title">
+            <p class="card-header-title card_go_button">
                 ${p.value}
             </p>
             <button class="card-header-icon" aria-label="more options">
@@ -23,7 +23,7 @@ var user_button =createAdler({
             onClick:()=>console.log("click")
         },
         on:[
-            [".user_button","click", (event, data, instance)=> data.onClick(event, data, instance) ],
+            [".card_go_button","click", (event, data, instance)=> data.onClick(event, data, instance) ],
         ]
     },
     // css:/*css*/` `,

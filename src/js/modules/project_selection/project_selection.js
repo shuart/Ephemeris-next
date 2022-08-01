@@ -2,18 +2,25 @@ import createAdler from "../../vendor/adler.js";
 import userManagement from "../common_user_management/user_management.js";
 import projectManagement from "../common_project_management/project_management.js";
 import project_card from "../common_ui_elements/project_card.js";
+import state from "../common_state/state_manager.js";
 
-// var getCurrentUser = function () {
-//     return userManagement.getCurrentUser()
-// }
+var getCurrentUser = function () {
+    return userManagement.getCurrentUser()
+}
 
 var addProject = function (event, data, instance) {
     projectManagement.add({name:prompt("project")})
     instance.setData({projects:setButtonList()});
 }
 
+var setProjectAndGoTo = function (id) {
+    projectManagement.setCurrent(id)
+    console.log(id);
+    state.goTo("/project/dashboard")
+}
+
 var setButtonList = ()=>{
-    return projectManagement.getAll().map((i)=> {return {value:i.name, onClick:(event, data, instance)=> console.log("projet")} } )
+    return projectManagement.getAll().map((i)=> {return {value:i.name, onClick:(event, data, instance)=> setProjectAndGoTo(i.id)} } )
 }
 
 var project_selection =createAdler({
@@ -38,7 +45,7 @@ var project_selection =createAdler({
         ],
         events:{
             // onBeforeMount:(event, data, instance)=> alert("MOUNTING"),
-            // onBeforeMount:(event, data, instance) => instance.setData({currentUserName:getCurrentUser().name}, false),
+            onBeforeMount:(event, data, instance) => instance.setData({currentUserName:getCurrentUser().name}, false),
         },
     },
     css:`

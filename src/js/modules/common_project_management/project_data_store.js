@@ -1,17 +1,17 @@
 import createdb from "../../vendor/superCluster.js";
 
-var createProjectManagement = function(){
+var createProjectStore = function(){
     var self={}
     var current = undefined;
 
     var db = createdb({
-        projects:["id","test"]
-    },{persistence:"projects"})
+        default:["id","test"]
+    },{persistence:"projectsStore"})
 
     var getAll = function () {
         return db.get("projects").toArray()
     }
-    var add =function({
+    var addProjectStore =function({
         name=undefined,
         email=undefined,
         password=undefined,
@@ -31,12 +31,12 @@ var createProjectManagement = function(){
 
     self.getCurrent = getCurrent;
     self.setCurrent= setCurrent;
-    self.add = add;
+    self.addProjectStore = addProjectStore;
     self.getAll= getAll
     return self
 
 }
 
-var projectManagement = createProjectManagement()
+var projectStore = createProjectStore()
 
-export default projectManagement
+export default projectStore
