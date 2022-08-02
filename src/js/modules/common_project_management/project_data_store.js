@@ -6,18 +6,21 @@ var createProjectStore = function(){
 
     var db = createdb({
         default:["id","test"]
-    },{persistence:"projectsStore"})
+    },{persistence:"projectsStore", crdt:true})
+    // },{persistence:"projectsStore"})
 
     var getAll = function () {
         return db.get("projects").toArray()
     }
-    var addProjectStore =function({
-        name=undefined,
-        email=undefined,
-        password=undefined,
-    }={}){
-        console.log(name);
-        db.add("projects", { name:name})
+    // var addProjectStore =function({
+    //     name=undefined,
+    // }={}){
+    //     console.log(name);
+    //     db.add("projects", { name:name})
+    // }
+
+    var add = function(){
+        
     }
 
     var setCurrent= function(id){
@@ -28,15 +31,21 @@ var createProjectStore = function(){
         return db.get("projects").where("id").equals(current)
     }
 
+    var init = function () {
+        db.add("default", { name:"test",foo:"baar"})
+    }
+
+    init()
+
 
     self.getCurrent = getCurrent;
     self.setCurrent= setCurrent;
-    self.addProjectStore = addProjectStore;
+    // self.addProjectStore = addProjectStore;
     self.getAll= getAll
     return self
 
 }
 
-var projectStore = createProjectStore()
+var projectStores = createProjectStore()
 
-export default projectStore
+export default projectStores
