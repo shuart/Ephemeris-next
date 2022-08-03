@@ -29,7 +29,26 @@ var createProjectManagement = function(){
         return db.get("projects").where("id").equals(current)
     }
 
+    var getProjectStore= function(id, type){
+        return createProjectStoreGenericFront(id, type)
+    }
 
+    var createProjectStoreGenericFront = function (projectId, type) {
+        var front = {}
+        var projectStore = projectStores.getProjectDB(projectId)
+
+        front.getAll = function () {
+            return projectStore.get(type).toArray()
+        }
+        front.add = function (data) {
+            return projectStore.add(type, data)
+        }
+
+        return front;
+    }
+
+
+    self.getProjectStore = getProjectStore;
     self.getCurrent = getCurrent;
     self.setCurrent= setCurrent;
     self.add = add;

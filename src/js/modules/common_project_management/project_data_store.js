@@ -2,11 +2,12 @@ import createdb from "../../vendor/superCluster.js";
 
 var createProjectStore = function(){
     var self={}
-    var current = undefined;
+    // var current = undefined;
+    var mountedDBs = {}
 
-    var db = createdb({
-        default:["id","test"]
-    },{persistence:"projectsStore", crdt:true})
+    // var db = createdb({
+    //     default:["id","test"]
+    // },{persistence:"projectsStore", crdt:true})
     // },{persistence:"projectsStore"})
 
     var getAll = function () {
@@ -19,29 +20,48 @@ var createProjectStore = function(){
     //     db.add("projects", { name:name})
     // }
 
-    var add = function(){
-        
+    var mountProjectStore = function(projectId){
+        if(typeof projectId != 'string'){
+            throw console.error('Project ID is not a string and DB cannot be mounted');
+        }
+        var projectDB = createdb({
+            default:["id","test"]
+        },{persistence:projectId, crdt:true})
+        console.trace(projectId)
+        console.log(projectId);
+        mountedDBs[projectId] = projectDB
+        return projectDB
     }
 
-    var setCurrent= function(id){
-        console.log("set "+ id +" as current project");
-        current=id
-    }
-    var getCurrent= function(id){
-        return db.get("projects").where("id").equals(current)
-    }
-
-    var init = function () {
-        db.add("default", { name:"test",foo:"baar"})
+    var getProjectDB = function(projectId){
+        if (mountedDBs[projectId]) {
+            return mountedDBs[projectId]
+        }else{
+            return mountProjectStore(projectId)
+        }
     }
 
-    init()
+    // var setCurrent= function(id){
+    //     console.log("set "+ id +" as current project");
+    //     current=id
+    // }
+    // var getCurrent= function(id){
+    //     return db.get("projects").where("id").equals(current)
+    // }
+
+    // var init = function () {
+    //     db.add("default", { name:"test",foo:"baar"})
+    // }
+
+    // init()
 
 
-    self.getCurrent = getCurrent;
-    self.setCurrent= setCurrent;
+    // self.getCurrent = getCurrent;
+    // self.setCurrent= setCurrent;
     // self.addProjectStore = addProjectStore;
-    self.getAll= getAll
+    self.getProjectDB= getProjectDB
+    self.mountProjectStore= mountProjectStore
+    // self.getAll= getAll
     return self
 
 }
