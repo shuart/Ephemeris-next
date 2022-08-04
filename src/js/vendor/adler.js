@@ -43,7 +43,7 @@ var createAdler = function({
         var setEventListener = function(localWrapper, action){
             let target = localWrapper.DOMElement.querySelector(action[0])
             // console.log(action[0],localWrapper.DOMElement)
-            if (!target && localWrapper.DOMElement.classList.contains(action[0].slice(1))) {
+            if (!target && action[0] && localWrapper.DOMElement.classList.contains(action[0].slice(1))) {
                 target = localWrapper.DOMElement
             }
             if (target) {
@@ -101,13 +101,19 @@ var createAdler = function({
             container.appendChild(wrapper.DOMElement);
             instanceDomElement =  wrapper.DOMElement
         }
+        console.log(wrapper);
+        doLifeCycleEvents("onMount")//Lifecyle event
         return wrapper.DOMElement
     }
 
     var doLifeCycleEvents= function(eventName){
         // console.log(params.events, eventName);
-        if (params.events && params.events["onBeforeMount"]) {
+        if (eventName =="onBeforeMount" &&  params.events && params.events["onBeforeMount"]) {
             params.events["onBeforeMount"]({lifecycleEvent:eventName}, params.data, self)
+        }
+        if (eventName =="onMount" &&  params.events && params.events["onMount"]) {
+            console.log(wrapper);
+            params.events["onMount"]({lifecycleEvent:eventName}, params.data, self)
         }
     }
 
@@ -259,6 +265,7 @@ var createAdler = function({
         return wrapper.DOMElement
     }
     var query = function(query){
+        console.log(wrapper);
         return wrapper.DOMElement.querySelector(query)
     }
 

@@ -1,0 +1,28 @@
+
+@media (prefers-color-scheme: dark) {
+
+    .tabulator .tabulator-header, .tabulator .tabulator-header .tabulator-col {
+        border-right: none;
+        background-color: #2d2d2d;
+    }
+    .tabulator .tabulator-header {
+        border-bottom: 1px solid rgba(34,36,38,.1);
+        box-shadow: none;
+        color: rgba(242, 241, 241, 0.87);
+    }
+    .tabulator {
+        background-color: #353535;
+    }
+    .tabulator-row {
+        background-color: #353535;
+    }
+    .tabulator .tabulator-tableholder .tabulator-table {
+        white-space: nowrap;
+        color: #fff;
+    }
+    .tabulator-row {
+    
+        border-bottom: 1px solid rgba(162, 163, 164, 0.1);
+    
+    }
+}
