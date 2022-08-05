@@ -26,7 +26,7 @@ var createProjectStore = function(){
         }
         var projectDB = createdb({
             default:["id","test"]
-        },{persistence:projectId, crdt:true})
+        },{persistence:projectId, crdt:true, syncTo:"http://127.0.0.1:3000/crdtGeneral"})
         console.trace(projectId)
         console.log(projectId);
         mountedDBs[projectId] = projectDB

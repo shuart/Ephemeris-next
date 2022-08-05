@@ -7,6 +7,7 @@ var createCluster = function(initialSchema, options){
     var storageUUID={}
     var storageCrdt =[]
     var storage = {}
+    var _syncEnabled =false
     let nanoid=(t=21)=>crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?"-":"_"),"");
 
     //in-memory JSON
@@ -104,6 +105,7 @@ var createCluster = function(initialSchema, options){
         }
         if(options){
             if (options.crdt) { useCrdt = true; }
+            if (options.syncTo) { _syncEnabled = options.syncTo; }
             if (options.persistence) {
                 var currentPersistence = localStorage.getItem('supercluster-'+options.persistence);
                 if (currentPersistence){
@@ -162,7 +164,7 @@ var createCluster = function(initialSchema, options){
     }
     function sendMessages(messages) {
         applyMessages(messages);
-        // sync(messages);
+        sync(messages);
     }
     function applyMessages(messages) {
         let existingMessages = compareMessages(messages);
@@ -234,6 +236,77 @@ var createCluster = function(initialSchema, options){
         });
       
         return existingMessages;
+    }
+
+    //SYNC
+    async function sync(initialMessages = [], since = null) {
+        if (!_syncEnabled) {
+            return;
+        }
+        
+        let messages = initialMessages;
+        
+        // if (since) {
+        //     let timestamp = new Timestamp(since, 0, '0').toString();
+        //     messages = _messages.filter(msg => msg.timestamp >= timestamp);
+        // }
+        
+        let result;
+        try {
+            result = await post({
+            group_id: 'my-group',
+            // client_id: getClock().timestamp.node(),
+            messages,
+            // merkle: getClock().merkle
+            });
+        } catch (e) {
+            console.log(e);
+            throw new Error('network-failure');
+        }
+        
+        if (result.messages.length > 0) {
+            receiveMessages(result.messages);
+        }
+        
+        // let diffTime = merkle.diff(result.merkle, getClock().merkle);
+        
+        // if (diffTime) {
+        //     if (since && since === diffTime) {
+        //     throw new Error(
+        //         'A bug happened while syncing and the client ' +
+        //         'was unable to get in sync with the server. ' +
+        //         "This is an internal error that shouldn't happen"
+        //     );
+        //     }
+        
+        //     return sync([], diffTime);
+        // }
+    }
+    async function post(data) {
+        console.log("sync in progress");
+        let res = await fetch(_syncEnabled, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+            'Content-Type': 'application/json'
+            }
+        });
+        // console.log(await res.json());
+        console.log( res.status);
+
+        var resdata = await res.json();
+        console.log( resdata);
+        if (res.status !== 200) {
+            throw new Error('API error: ' + res.reason);
+        }
+        return resdata;
+    }
+    function receiveMessages(messages) {
+        // messages.forEach(msg =>
+        //     Timestamp.recv(getClock(), Timestamp.parse(msg.timestamp))
+        // );
+        
+        applyMessages(messages);
     }
 
 

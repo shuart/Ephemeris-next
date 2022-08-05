@@ -14,9 +14,9 @@ var addProject = function (event, data, instance) {
 }
 
 var setProjectAndGoTo = function (id) {
-    projectManagement.setCurrent(id)
+    // projectManagement.setCurrent(id)
     console.log(id);
-    state.goTo("/project/dashboard")
+    state.goTo("/"+id+"/dashboard")
 }
 
 var setButtonList = ()=>{

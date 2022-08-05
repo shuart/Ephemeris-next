@@ -2,6 +2,7 @@ import createRouter from "../../vendor/starMap.js";
 import common_ui from "../common_ui/ui.js";
 //DOMAIN
 import userManagement from "../common_user_management/user_management.js";
+import projectManagement from "../common_project_management/project_management.js";
 //UI
 import project_selection from "../project_selection/project_selection.js";
 import project_dashboard from "../project_dashboard/project_dashboard.js";
@@ -11,6 +12,9 @@ import login_ui from "../login/login_ui.js";
 const common_router = createRouter()
 
 var lastUrlBeforeRedirect = undefined
+var setCurrentProject = function (id) {
+    projectManagement.setCurrent(id)
+}
 
 var logger = function(req,res,next){
     // console.log(req)
@@ -52,7 +56,14 @@ var createStateManager = function({
         })
         common_router.route("/project/dashboard", (event)=>
         {
-            // console.log(event);
+            console.log(event);
+            // mainUiElement.append(project_dashboard.instance(), "main_area_mount_point");
+            // mainUiElement.update();
+        })
+        common_router.route("/:project/dashboard", (event)=>
+        {
+            console.log(event);
+            setCurrentProject(event.params.project)
             mainUiElement.append(project_dashboard.instance(), "main_area_mount_point");
             mainUiElement.update();
         })

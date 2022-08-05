@@ -77,8 +77,10 @@ var createRouter = function(){
           for (let k = 0; k < splitUrl.length; k++) {
             const urlPart = splitUrl[k];
             const routePart = currentRoute.route[k];
-            // console.log(routePart, urlPart);
+            console.log(currentRoute.route);
+            console.log(routePart, urlPart);
             if (routePart && routePart[0] == ":") {//if is a param
+              console.log("isparam")
               result.params[routePart.slice(1)] = urlPart;
               result.match = true
               result.callback = currentRoute.callback;
@@ -89,11 +91,12 @@ var createRouter = function(){
               result.route  = splitUrl;
             } else{
               result.match = false
+              break
             }
             
           }
-          // console.log("check match");
-          // console.log(result);
+          console.log("check match");
+          console.log(result);
           if(result.match){
             // console.log(result);
             return result
