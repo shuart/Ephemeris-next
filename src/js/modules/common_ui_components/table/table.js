@@ -31,26 +31,32 @@ var setUpTable = function(event, data, instance){
 	 	// {title:"Date Of Birth", field:"dob", sorter:"date", hozAlign:"center"},
         ],
    });
+   instance.setData({table:table},false)
    console.log(table.rowManager)
-   table.on("rowMouseOut", function(e, row){
-    console.log('efssssssss');
-});
-table.on("headerMouseOver", function(e, column){
-    console.log('efssssssss');
-});
-   table.rowManager.scrollTop=150
+//    table.on("rowMouseOut", function(e, row){
+//     console.log('efssssssss');
+//     });
+//     table.on("headerMouseOver", function(e, column){
+//         console.log('efssssssss');
+//     });
    //trigger an alert message when the row is clicked
    table.on("cellClick", function(e, cell){ 
        alert("cell " + cell.getData()+ " Clicked!!!!");
    });
-   table.on("scrollVertical", function(top){
-    //top - the current vertical scroll position
-    console.log(top)
-    });
-    table.on("click", function(e, cell){ 
-        alert("cell  Clicked!!!!");
-    });
+//    table.on("scrollVertical", function(top){
+//     //top - the current vertical scroll position
+//     console.log(top)
+//     });
+    // table.on("click", function(e, cell){ 
+    //     alert("cell  Clicked!!!!");
+    // });
 
+}
+
+var softUpdate= function (event, data, instance) {
+    console.log("data.table--------------------");
+    console.log(data.table);
+    data.table.replaceData(data.list) //load data array
 }
 
 var table_component =createAdler({
@@ -63,6 +69,7 @@ var table_component =createAdler({
         data:{
             value:"Hello",
             list:[],
+            table:undefined,
             // onClick:()=>console.log("click")
         },
         on:[
@@ -70,6 +77,9 @@ var table_component =createAdler({
         ],
         events:{
             onMount:(event, data, instance) => setUpTable(event, data, instance),
+        },
+        methods:{
+            softUpdate:(event, data, instance)=>softUpdate(event, data, instance),
         },
     },
     // css:/*css*/` `,

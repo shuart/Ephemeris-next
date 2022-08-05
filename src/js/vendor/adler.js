@@ -15,6 +15,7 @@ var createAdler = function({
     var checkDataAttributes = true;
     var instanceDomElement = undefined;
     
+    console.log(params);
     
     var createWrapper = function(){
         wrapper = {}
@@ -40,6 +41,7 @@ var createAdler = function({
     }
 
     var setUpEvents = function (localWrapper,params, paramIndex){
+        console.log(self);
         var setEventListener = function(localWrapper, action){
             let target = localWrapper.DOMElement.querySelector(action[0])
             // console.log(action[0],localWrapper.DOMElement)
@@ -101,7 +103,10 @@ var createAdler = function({
             container.appendChild(wrapper.DOMElement);
             instanceDomElement =  wrapper.DOMElement
         }
-        console.log(wrapper);
+        console.log(params);
+        attachMethods(wrapper,params);
+        console.log(self);
+        // setUpEvents(wrapper,params);
         doLifeCycleEvents("onMount")//Lifecyle event
         return wrapper.DOMElement
     }
@@ -117,12 +122,27 @@ var createAdler = function({
         }
     }
 
+    var attachMethods = function (wrapper,params) {
+        console.log(params);
+        if (params.methods) {
+            self.do={}
+            for (const key in params.methods){
+                var newFunc = function (args) {
+                    params.methods[key]({method:key, args:args, data:params.data, instance:self}, params.data, self,params)
+                }
+                self.do[key]=newFunc
+            }
+        }
+        console.log(self);
+    }
+
     var instance = function(extra){
         var newPramas = Object.assign({}, params);
         if(extra && extra.data){ newPramas.data = Object.assign({}, newPramas.data, extra.data) };
         if(extra && extra.on){ newPramas.on = Object.assign({},newPramas.on, extra.on) };
         if(extra && extra.nodeMap){ newPramas.nodeMap = Object.assign({},newPramas.nodeMap, extra.nodeMap) };
         if(extra && extra.events){ newPramas.events = Object.assign({},newPramas.events, extra.events) };
+        if(extra && extra.methods){ newPramas.methods = Object.assign({},newPramas.methods, extra.methods) };
         return createAdler({content: content, params:newPramas, components:components});
     }
 

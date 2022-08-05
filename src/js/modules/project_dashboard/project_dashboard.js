@@ -17,7 +17,8 @@ var addToProject = function(event, data, instance){
     var projectId = projectManagement.getCurrent().id
     console.log(projectId)
     projectManagement.getProjectStore(projectId,"default").add({theTime:Date.now()})
-    instance.update()
+    instance.getNodes().table.do.softUpdate()
+    // instance.update()
 }
 var getItemsList = function (){
     var projectId = projectManagement.getCurrent().id
@@ -28,7 +29,7 @@ var getItemsList = function (){
 }
 
 var setUpData = function (event, data, instance) {
-    console.log(getCurrentProject);
+    console.trace(getCurrentProject);
     instance.setData({
         currentUserName:getCurrentUser().name,
         currentProject:getCurrentProject().name,
