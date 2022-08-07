@@ -6,6 +6,7 @@ import projectManagement from "../common_project_management/project_management.j
 //UI
 import project_selection from "../project_selection/project_selection.js";
 import project_dashboard from "../project_dashboard/project_dashboard.js";
+import settings_ui from "../common_settings/settings_ui.js";
 import login_ui from "../login/login_ui.js";
 
 
@@ -65,6 +66,13 @@ var createStateManager = function({
             console.log(event);
             setCurrentProject(event.params.project)
             mainUiElement.append(project_dashboard.instance(), "main_area_mount_point");
+            mainUiElement.update();
+        })
+        common_router.route("/:project/settings", (event)=>
+        {
+            console.log(event);
+            setCurrentProject(event.params.project)
+            mainUiElement.append(settings_ui.instance(), "main_area_mount_point");
             mainUiElement.update();
         })
 

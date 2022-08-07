@@ -25,7 +25,8 @@ var createProjectStore = function(){
             throw console.error('Project ID is not a string and DB cannot be mounted');
         }
         var projectDB = createdb({
-            default:["id","test"]
+            default:["id","test"],
+            entities:["id","test"]
         },{persistence:projectId, crdt:true, syncTo:false})
         // },{persistence:projectId, crdt:true, syncTo:"http://127.0.0.1:3000/crdtGeneral"})
         console.trace(projectId)
