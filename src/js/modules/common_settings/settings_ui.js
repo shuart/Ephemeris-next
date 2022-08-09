@@ -101,11 +101,19 @@ var common_settings =createAdler({
             </nav>
         
 
-            <div class="example-table" a-id="table" adler="table_component" >table area</div>
+            <div class="example-table" a-id="table" a-props="test:test" adler="table_component" >table area</div>
         </div>
         `
         ,
     params:{
+        props:{
+            test:200,
+        },
+        listen:{
+            test:function(){
+                // alert("depli")
+            },
+        },
         data:{
             currentUserName:"Hello",
             currentProject:"push",

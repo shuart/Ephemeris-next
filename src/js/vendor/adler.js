@@ -80,6 +80,7 @@ var createAdler = function({
     }
 
     var appendToDom = function(mountTargetElement){
+        setUpProps(params)
         doLifeCycleEvents("onBeforeMount")//Lifecyle event
         wrapper = renderContent(params);
         setUpEvents(wrapper,params);
@@ -136,6 +137,57 @@ var createAdler = function({
         console.log(self);
     }
 
+    var createProp = function (value) {
+        var prop = {};
+        var value = value; var listeners = [];
+        var get = ()=> value;
+        var set = function (newValue) {
+            value=newValue;
+            for (let i = 0; i < listeners.length; i++) {
+                listeners[i].callback({},listeners[i].data, listeners[i].instance)
+                
+            }
+        }
+        var addListener = (listener,data, callback)=>listeners.push({listener:listener,data:data, callback:callback})
+        prop.get = get; prop.set = set;prop.addListener = addListener; prop.type = "adler-props";
+        return prop
+    }
+
+    var setUpProps = function (params) {
+        self.props={}
+        console.log(params);
+        if (params.props) {
+            for (const key in params.props){
+                console.log(params.props[key]);
+                console.log(params.props[key].type != "adler-props");
+                if (params.props[key].type != "adler-props") {
+                    self.props[key] = createProp(params.props[key])
+                    console.log(self);
+                }else if (params.props[key].type == "adler-props"){
+                    self.props[key] = params.props[key]
+                }
+                if (self.props[key] && params.listen && params.listen[key]) {
+                    self.props[key].addListener(params.data, self, params.listen[key]) 
+                }
+            }
+        }
+    }
+    var passProps= function (params,attributeValue) {
+        
+        var pairs= attributeValue.split(",")
+        console.log(pairs);
+        var newValues = {}
+        for (let i = 0; i < pairs.length; i++) {
+            const pair = pairs[i].split(":");
+            console.log(self.props);
+            console.log(self.props[ pair[1] ]);
+            if (self.props[ pair[1] ]) {
+                newValues[ pair[0] ]=self.props[ pair[1] ]
+            }
+        }
+        return newValues
+    }
+
     var instance = function(extra){
         var newPramas = Object.assign({}, params);
         if(extra && extra.data){ newPramas.data = Object.assign({}, newPramas.data, extra.data) };
@@ -143,6 +195,8 @@ var createAdler = function({
         if(extra && extra.nodeMap){ newPramas.nodeMap = Object.assign({},newPramas.nodeMap, extra.nodeMap) };
         if(extra && extra.events){ newPramas.events = Object.assign({},newPramas.events, extra.events) };
         if(extra && extra.methods){ newPramas.methods = Object.assign({},newPramas.methods, extra.methods) };
+        if(extra && extra.props){ newPramas.props = Object.assign({},newPramas.props, extra.props) };
+        if(extra && extra.listen){ newPramas.listen = Object.assign({},newPramas.listen, extra.listen) };
         return createAdler({content: content, params:newPramas, components:components});
     }
 
@@ -178,6 +232,11 @@ var createAdler = function({
                 if (element.getAttribute("a-sync")) {//Check if some values must be synced
                     //newData=newData || {data:{}}
                     newData.data = getSyncedData(element.getAttribute("a-sync"))
+                }
+                if (element.getAttribute("a-props")) {//Check if some values must be synced
+                    //newData=newData || {data:{}}
+                    newData.props = passProps(params, element.getAttribute("a-props"))
+                    console.log(newData);
                 }
                 if (element.getAttribute("a-id")) {//Check if component is unique
                     //newData=newData || {data:{}}

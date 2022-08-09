@@ -5,6 +5,9 @@ var setUpTable = function(event, data, instance){
     var itemsList = data.list
     // var itemsList = []
     console.log(itemsList);
+    console.log(instance);
+    console.log(instance.props.test.get());
+    instance.props.test.set("4564fesfsefesfef")
 
     if (!itemsList[0]) {
         itemsList = [
@@ -66,6 +69,14 @@ var table_component =createAdler({
     <div class="qdsqs"></div>
         `,
     params:{
+        props:{
+            test:15,
+        },
+        listen:{
+            test:function (event, data, instance) {
+                alert("test")
+            }
+        },
         data:{
             value:"Hello",
             list:[],
