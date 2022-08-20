@@ -74,7 +74,7 @@ var table_component =createAdler({
         },
         listen:{
             test:function (event, data, instance) {
-                alert("test")
+                //alert("test")
             }
         },
         data:{

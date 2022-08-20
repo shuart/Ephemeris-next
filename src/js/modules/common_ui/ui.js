@@ -8,7 +8,9 @@ var common_ui =createAdler({
             <div a-slot="main_area_mount_point"></div>
             <div adler="user_button" class="user_button_list"></div>
         </div>
-        <div class="cui_toolbar_area"></div>
+        <div class="cui_toolbar_area">
+            <div a-slot="toolbar_area_mount_point"></div>
+        </div>
 
         `,
     params:{
