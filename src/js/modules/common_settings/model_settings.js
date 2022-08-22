@@ -16,21 +16,22 @@ var getCurrentProject = function(){
 var addEntityToProject = function(event, data, instance){
     var projectId = projectManagement.getCurrent().id
     console.log(projectId)
-    projectManagement.getProjectStore(projectId,"entities").add({theTime:Date.now()})
+    projectManagement.getProjectStore(projectId,data.modelElementType).add({theTime:Date.now()})
     instance.getNodes().table.do.softUpdate()
     // instance.update()
 }
-var getItemsList = function (){
+var getItemsList = function (data){
     var projectId = projectManagement.getCurrent().id
     console.log(projectId)
     // return projectManagement.getProjectStore(projectId,"default").getAll().map((i)=> {return {value:i.name, onClick:(event, data, instance)=> console.log(i.id, instance)} } )
-    return projectManagement.getProjectStore(projectId,"entities").getAll()
+    return projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
     // return projectManagement.getProjectStore(projectId,"default").getAll().toString()
 }
 
 var setUpData = function (event, data, instance) {
     console.trace(getCurrentProject);
     instance.setData({
+        modelElementType:instance.props.modelElementType.get(),
         currentUserName:getCurrentUser().name,
         currentProject:getCurrentProject().name,
         // currentItems:getItemsList(),
@@ -40,7 +41,7 @@ var setUpData = function (event, data, instance) {
 
 var setUpTable = function (event, data, instance) {
      console.log(instance.getNodes());
-     instance.getNodes().table.setData({list:getItemsList()})
+     instance.getNodes().table.setData({list:getItemsList(data)})
 }
 
 
@@ -99,13 +100,13 @@ var model_settings_component =createAdler({
             </nav>
         
 
-            <div class="example-table" a-id="table" a-props="test:test" adler="table_component" >table area</div>
+            <div class="example-table" a-id="table" a-props="test:test" adler="table_component" >${p.modelElementType}</div>
         </div>
         `
         ,
     params:{
         props:{
-            test:200,
+            modelElementType:"entities",
         },
         listen:{
             test:function(){
@@ -115,6 +116,7 @@ var model_settings_component =createAdler({
         data:{
             currentUserName:"Hello",
             currentProject:"push",
+            modelElementType:undefined,
             currentItems:undefined,
             seen:true,
             list:[{test:"un"}, {test:"deux"}, {test:"trois"} ]

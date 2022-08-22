@@ -124,12 +124,38 @@ var createRouter = function(){
     }
 
     function goTo(url) {
-      var hrefUrl = url
-      // hrefUrl = hrefUrl.slice(1); // remove the leading slash
-      hrefUrl = "#"+hrefUrl
-      // console.log(hrefUrl);
-      window.history.pushState({}, window.title, hrefUrl) // Update URL as well as browser history.
+      if (url.mode && url.mode =="replace") {
+        updateCurrentUrl (url.url)
+      } else {
+        var hrefUrl = url
+        // hrefUrl = hrefUrl.slice(1); // remove the leading slash
+        hrefUrl = "#"+hrefUrl
+        // console.log(hrefUrl);
+        window.history.pushState({}, window.title, hrefUrl) // Update URL as well as browser history.
+      }
       setPageFromUrl()
+    }
+
+    function updateCurrentUrl (replacement) {
+      var replacement = replacement.split("/")
+      let url = window.location.hash.slice(1) || '/';
+      url = url.split("/")
+      console.log(url)
+      var toReplace= url.length-1
+      for (let i = replacement.length-1; i > -1; i--) {
+        const element = replacement[i];
+        url[toReplace] = replacement[i]
+        toReplace--
+      }
+      console.log(url);
+      var hrefUrl ="#"
+      for (let j = 0; j < url.length; j++) {
+        const element = url[j];
+        if(url[j] != ""){
+          hrefUrl +="/"+url[j]
+        }
+      }
+      window.history.pushState({}, window.title, hrefUrl) // Update URL as well as browser history.
     }
     
     

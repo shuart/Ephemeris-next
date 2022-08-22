@@ -22,8 +22,12 @@ var setUpData= function(event, data, instance) {
         for (let j = 0; j < element.items.length; j++) {
             const listElement = element.items[j];
             var htmlItem = document.createElement("li");
-            htmlItem.classList="";
-            htmlItem.innerHTML=`<a>${listElement.value}</a>`;
+            if (instance.props.activeItem.get() && instance.props.activeItem.get() == listElement.id) {
+                htmlItem.innerHTML=`<a class="is-active" >${listElement.value}</a>`;
+            }else{
+                htmlItem.innerHTML=`<a>${listElement.value}</a>`;
+            }
+            
             htmlItem.addEventListener("click", listElement.onClick)
             htmlList.appendChild(htmlItem)
         }
@@ -74,17 +78,18 @@ var component =createAdler({
                 {
                     value:"chapter",
                     items:[
-                        {value:"test",onClick:()=> alert("test")},
-                        {value:"test",onClick:()=> alert("test")},
+                        {id:1, value:"test",onClick:()=> alert("test")},
+                        {id:2, value:"test",onClick:()=> alert("test")},
                     ]
                 },
                 {
                     value:"chapter2",
                     items:[
-                        {value:"test2",onClick:()=> alert("test")},
+                        {id:3, value:"test2",onClick:()=> alert("test")},
                     ]
                 },
             ],
+            activeItem:3
         },
         listen:{
             test:function (event, data, instance) {

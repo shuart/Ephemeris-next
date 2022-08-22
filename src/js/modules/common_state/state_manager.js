@@ -70,11 +70,19 @@ var createStateManager = function({
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
-        common_router.route("/:project/settings", (event)=>
+        // common_router.route("/:project/settings", (event)=>
+        // {
+        //     console.log(event);
+        //     setCurrentProject(event.params.project)
+        //     mainUiElement.append(settings_ui.instance(), "main_area_mount_point");
+        //     mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
+        //     mainUiElement.update();
+        // })
+        common_router.route("/:project/settings/:section/:entity", (event)=>
         {
             console.log(event);
             setCurrentProject(event.params.project)
-            mainUiElement.append(settings_ui.instance(), "main_area_mount_point");
+            mainUiElement.append(settings_ui.instance({props:{modelElementType:event.params.entity, activeSideMenuLink:event.params.entity}}), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })

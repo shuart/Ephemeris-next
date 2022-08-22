@@ -1,6 +1,7 @@
 import projectManagement from "../common_project_management/project_management.js";
 import userManagement from "../common_user_management/user_management.js";
 import createAdler from "../../vendor/adler.js";
+import state_manager from "../common_state/state_manager.js"
 
 import settings_component from "./model_settings.js";
 import side_menu_component from "../common_ui_components/menu/side_menu.js";
@@ -51,19 +52,35 @@ var common_settings =createAdler({
     <div class="common-settings">
         <div class="common-settings-side">
 
-            <div class="" a-id="settingsAreaSideMenu"  adler="side_menu_component" ></div>
+            <div class="" a-id="settingsAreaSideMenu" a-props="sections:sideMenuLinks,activeItem:activeSideMenuLink" adler="side_menu_component" ></div>
         
         </div>
         <div class="">
-            <div class="main-settings" a-id="settingsArea"  adler="settings_component" ></div>
+            <div class="main-settings" a-props="modelElementType:modelElementType" a-id="settingsArea"  adler="settings_component" ></div>
         </div>
     </div>
     `
     ,
     params:{
-        // props:{
-        //     test:200,
-        // },
+        props:{
+            modelElementType:"entities",
+            sideMenuLinks:[
+                {
+                    value:"Model",
+                    items:[
+                        {id:"entities", value:"Entities",onClick:()=> state_manager.goTo({mode:"replace", url:"model/entities"})},
+                        {id:"relations", value:"Relations",onClick:()=> state_manager.goTo({mode:"replace", url:"model/relations"})},
+                    ]
+                },
+                {
+                    value:"Interface",
+                    items:[
+                        {id:"pages", value:"Pages",onClick:()=> state_manager.goTo({mode:"replace", url:"interface/pages"})},
+                    ]
+                },
+            ],
+            activeSideMenuLink:"entities"
+        },
         // listen:{
         //     test:function(){
         //         // alert("depli")

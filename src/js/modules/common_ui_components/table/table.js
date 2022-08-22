@@ -26,8 +26,9 @@ var setUpTable = function(event, data, instance){
         data:itemsList, //assign data to table
         layout:"fitColumns", //fit columns to width of table (optional)
         columns:[ //Define Table Columns
-            {title:"Name", field:"id", },
-            {title:"Name", field:"theTime", },
+            {title:"id", field:"uuid", },
+            {title:"value", field:"name", },
+            {title:"added", field:"theTime", },
         //     {title:"Name", field:"name", width:150},
 	 	// {title:"Age", field:"age", hozAlign:"left", formatter:"progress"},
 	 	// {title:"Favourite Color", field:"col"},
