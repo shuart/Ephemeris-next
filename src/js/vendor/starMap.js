@@ -125,8 +125,10 @@ var createRouter = function(){
 
     function goTo(url) {
       if (url.mode && url.mode =="replace") {
-        updateCurrentUrl (url.url)
-      } else {
+        replaceCurrentUrl (url.url)
+      } else if(url[1] == ":"){
+        updateCurrentUrl(url)
+      }else{
         var hrefUrl = url
         // hrefUrl = hrefUrl.slice(1); // remove the leading slash
         hrefUrl = "#"+hrefUrl
@@ -136,7 +138,30 @@ var createRouter = function(){
       setPageFromUrl()
     }
 
-    function updateCurrentUrl (replacement) {
+    function updateCurrentUrl(updated) {
+      var updated = updated.split("/")
+      let url = window.location.hash.slice(1) || '/';
+      url = url.split("/")
+      console.log(url)
+      console.log(updated)
+
+      for (let i = 0; i < updated.length; i++) {
+        const element = updated[i];
+        if (element == ":") {
+          updated[i] = url[i]
+        }
+      }
+      var hrefUrl ="#"
+      for (let j = 0; j < updated.length; j++) {
+
+        if(updated[j] != ""){
+          hrefUrl +="/"+updated[j]
+        }
+      }
+      window.history.pushState({}, window.title, hrefUrl) // Update URL as well as browser history.
+    }
+
+    function replaceCurrentUrl (replacement) {
       var replacement = replacement.split("/")
       let url = window.location.hash.slice(1) || '/';
       url = url.split("/")
