@@ -7,7 +7,7 @@ var setUpTable = function(event, data, instance){
     console.log(itemsList);
     console.log(instance);
     console.log(instance.props.test.get());
-    instance.props.test.set("4564fesfsefesfef")
+    // instance.props.test.set("4564fesfsefesfef")
 
     if (!itemsList[0]) {
         itemsList = [
@@ -72,6 +72,7 @@ var table_component =createAdler({
     params:{
         props:{
             test:15,
+            dataList:[],
         },
         listen:{
             test:function (event, data, instance) {

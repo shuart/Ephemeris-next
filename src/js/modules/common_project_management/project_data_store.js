@@ -28,7 +28,10 @@ var createProjectStore = function(){
             default:["uuid","test"],
             entities:["uuid","test"],
             relations:["uuid","test"],
-            pages:["uuid","name"],
+            views:["uuid","name"],
+            instances:["uuid","type"],
+            links:["uuid","type","from","to"],
+
         },{persistence:projectId, crdt:true, syncTo:false})
         // },{persistence:projectId, crdt:true, syncTo:"http://127.0.0.1:3000/crdtGeneral"})
         console.trace(projectId)

@@ -1,14 +1,25 @@
 import createAdler from "../../vendor/adler.js";
-
+import table_viewport from "../viewports/table_viewport/table_ui.js"
 
 var softUpdate= function (event, data, instance) {
 
 }
 
+function setUp(event, data, instance){
+    instance.append(table_viewport.instance(), "view_mount_point1");
+}
+
+function addEntity(event, data, instance){
+    instance.append(table_viewport.instance(), "view_mount_point1");
+}
+
+
+
 var component =createAdler({
     content: p => /*html*/`
     <div class="Component">
         ${p.viewId}
+        <div a-slot="view_mount_point1"></div>
     </div>
         `,
     params:{
@@ -31,7 +42,7 @@ var component =createAdler({
         ],
         events:{
             // onBeforeMount:(event, data, instance) => setUpData(event, data, instance),
-            // onMount:(event, data, instance) => setUpTable(event, data, instance),
+            onMount:(event, data, instance) => setUp(event, data, instance),
             
         },
         methods:{

@@ -5,7 +5,7 @@ import state from "../common_state/state_manager.js";
 var getItemsList = function (){
     var projectId = projectManagement.getCurrent().id
     console.log(projectId)
-    return projectManagement.getProjectStore(projectId,"pages").getAll()
+    return projectManagement.getProjectStore(projectId,"views").getAll()
 }
 
 var renderElement = function(p){

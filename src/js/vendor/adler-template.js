@@ -37,6 +37,9 @@ var component =createAdler({
             softUpdate:(event, data, instance)=>softUpdate(event, data, instance),
         },
     },
+    components:{
+        // table_component: table_component
+    }
     // css:/*css*/` `,
 })
 

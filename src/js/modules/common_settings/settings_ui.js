@@ -75,7 +75,7 @@ var common_settings =createAdler({
                 {
                     value:"Interface",
                     items:[
-                        {id:"pages", value:"Pages",onClick:()=> state_manager.goTo({mode:"replace", url:"interface/pages"})},
+                        {id:"views", value:"views",onClick:()=> state_manager.goTo({mode:"replace", url:"interface/views"})},
                     ]
                 },
             ],

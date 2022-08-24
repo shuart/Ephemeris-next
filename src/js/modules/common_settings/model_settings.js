@@ -16,8 +16,11 @@ var getCurrentProject = function(){
 var addEntityToProject = function(event, data, instance){
     var projectId = projectManagement.getCurrent().id
     console.log(projectId)
-    projectManagement.getProjectStore(projectId,data.modelElementType).add({theTime:Date.now()})
-    instance.getNodes().table.do.softUpdate()
+    var name= prompt("Name")
+    if (name) {
+        projectManagement.getProjectStore(projectId,data.modelElementType).add({name:name ,theTime:Date.now()})
+        instance.getNodes().table.do.softUpdate()
+    }
     // instance.update()
 }
 var getItemsList = function (data){
