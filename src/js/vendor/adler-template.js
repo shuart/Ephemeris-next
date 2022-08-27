@@ -5,6 +5,10 @@ var softUpdate= function (event, data, instance) {
 
 }
 
+var setUp = function (event, data, instance) {
+    
+}
+
 var component =createAdler({
     content: p => /*html*/`
     <div class="Component">
@@ -29,8 +33,8 @@ var component =createAdler({
             // [".tableCddomponent","click", (event, data, instance)=> data.onClick(event, data, instance) ],
         ],
         events:{
-            onBeforeMount:(event, data, instance) => setUpData(event, data, instance),
-            onMount:(event, data, instance) => setUpTable(event, data, instance),
+            // onBeforeMount:(event, data, instance) => setUp(event, data, instance),
+            // onMount:(event, data, instance) => setUp(event, data, instance),
             
         },
         methods:{

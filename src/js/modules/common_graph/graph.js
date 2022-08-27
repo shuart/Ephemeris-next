@@ -1,28 +1,20 @@
 import createAdler from "../../vendor/adler.js";
-import table_viewport from "../viewports/table_viewport/table_ui.js"
-import graph from "../common_graph/graph.js"
+import createStellae from "../../vendor/stellae/stellae.js";
+
 
 var softUpdate= function (event, data, instance) {
 
 }
 
-function setUp(event, data, instance){
-    instance.append(graph.instance(), "view_mount_point0");
-    instance.append(table_viewport.instance(), "view_mount_point1");
+var setUp = function (event, data, instance) {
+    var element= instance.query('.graph')
+    createStellae({container:element})
 }
-
-function addEntity(event, data, instance){
-    instance.append(table_viewport.instance(), "view_mount_point1");
-}
-
-
 
 var component =createAdler({
     content: p => /*html*/`
     <div class="Component">
-        ${p.viewId}
-        <div a-slot="view_mount_point0"></div>
-        <div a-slot="view_mount_point1"></div>
+        <div style="width:50%; height:800px;" class="graph" >GRAPH</div>
     </div>
         `,
     params:{
@@ -35,7 +27,7 @@ var component =createAdler({
             }
         },
         data:{
-            viewId:"Hello",
+            value:"Hello",
             list:[],
             table:undefined,
             // onClick:()=>console.log("click")
@@ -44,7 +36,7 @@ var component =createAdler({
             // [".tableCddomponent","click", (event, data, instance)=> data.onClick(event, data, instance) ],
         ],
         events:{
-            // onBeforeMount:(event, data, instance) => setUpData(event, data, instance),
+            // onBeforeMount:(event, data, instance) => setUp(event, data, instance),
             onMount:(event, data, instance) => setUp(event, data, instance),
             
         },
@@ -52,6 +44,9 @@ var component =createAdler({
             softUpdate:(event, data, instance)=>softUpdate(event, data, instance),
         },
     },
+    components:{
+        // table_component: table_component
+    }
     // css:/*css*/` `,
 })
 
