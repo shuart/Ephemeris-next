@@ -42,9 +42,9 @@ var createNode  = function({
     headerColor = 0xffff00,
     name = "Node",
     props =[
-        {id:nanoid(), label:"demo", type:"text", editable:true, socket:"right", value:"Default"},
-        {id:nanoid(), label:"demo", type:"text", editable:true, socket:"right", value:"Default"},
-        {id:nanoid(), label:"demo", type:"text", editable:true, socket:"left", value:"Default"},
+        {id:nanoid(), label:"demo", type:"text", editable:true, socket:"output", value:"Default"},
+        {id:nanoid(), label:"demo", type:"text", editable:true, socket:"input", value:"Default"},
+        {id:nanoid(), label:"demo", type:"text", editable:true, socket:"input", value:"Default"},
     ],
     } = {}){
 
@@ -145,7 +145,7 @@ var createNode  = function({
         var socket = new THREE.Mesh( roundSocketGeometry, materialSocketFlow );
         
         group.add(socket)
-        if (prop.socket == "right") {
+        if (prop.socket == "output") {
             socket.position.set(1.47,0,0)
         }else{
             socket.position.set(-1.47,0,0)
@@ -161,13 +161,16 @@ var createNode  = function({
         var spritetext = createCharacterLabel(prop.label)
         propGroup.add(spritetext)
         spritetext.position.set(0,0,0)
-
-        var socket = createSocket(propGroup, prop)
-        socket.layoutItemRoot =node
-        socket.edata = { root:node, positionOffset:{x:socket.position.x,y:0.5+position,z:0} }
+        if(prop.socket && prop.socket != "none"){
+            var socket = createSocket(propGroup, prop)
+            socket.layoutItemRoot =node
+            socket.edata = { root:node, positionOffset:{x:socket.position.x,y:0.5+position,z:0} }
+            layoutItems.sockets[socket.uuid] = {mesh:socket, positionOffset:{x:socket.position.x,y:0.5+position,z:0}}
+        }
+        
         node.add(propGroup)
         propGroup.position.set(0,0.5+position,0)
-        layoutItems.sockets[prop.id] = {mesh:socket, positionOffset:{x:socket.position.x,y:0.5+position,z:0}}
+        
         return propGroup
 
     }
