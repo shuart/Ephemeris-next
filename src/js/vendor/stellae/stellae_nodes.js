@@ -115,11 +115,17 @@ var createNodeManager = function ({
     var addLinks = function(links){
         for (let i = 0; i < links.length; i++) {
             const element = links[i];
+            if (!element.uuid) {
+                element.uuid = nanoid()
+            }
             linksInUse[links[i].from] = element
-            // ui.addLinks(links)
+            ui.addLinks(links)
         }
     }
     var addNode = function(templateName, params){
+        if (params && !params.uuid) {
+            params.uuid = nanoid()
+        }
         var template = nodeTemplates[templateName]
         var newParams= Object.assign({},template,params,{ui:ui, links:linksInUse})
         var node = createNode(newParams)

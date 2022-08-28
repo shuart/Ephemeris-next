@@ -41,6 +41,7 @@ var propsHeightMap={
 var createNode  = function({
     headerColor = 0xffff00,
     name = "Node",
+    uuid = nanoid(),
     props =[
         {id:nanoid(), label:"demo", type:"text", editable:true, socket:"output", value:"Default"},
         {id:nanoid(), label:"demo", type:"text", editable:true, socket:"input", value:"Default"},
@@ -50,7 +51,8 @@ var createNode  = function({
 
     var layoutItems={
         header:undefined,
-        sockets:{}
+        sockets:{},
+        props:{},
     }
     
     function createShadow (){
@@ -93,6 +95,7 @@ var createNode  = function({
         ctx.miterLimit = 3;
         ctx.strokeText( text, 8, 26 );
         ctx.fillStyle = 'white';
+        // ctx.textAlign = 'left';
         ctx.fillText( text, 8, 26 );
 
         const spriteMap = new THREE.Texture( ctx.getImageData( 0, 0, textCanvas.width, textCanvas.height ) );
@@ -160,11 +163,18 @@ var createNode  = function({
         var propGroup = new THREE.Group()
         var spritetext = createCharacterLabel(prop.label)
         propGroup.add(spritetext)
-        spritetext.position.set(0,0,0)
+        spritetext.position.set(-0.5,0,0)
+
+        var spritetextValue = createCharacterLabel(prop.value)
+        propGroup.add(spritetextValue)
+        spritetextValue.position.set(0.5,0,0)
+        layoutItems.props[spritetextValue.uuid] = {mesh:spritetextValue}
+        spritetextValue.edata = { root:node, uuid:prop.id, value:prop.value, prop:prop }
+
         if(prop.socket && prop.socket != "none"){
             var socket = createSocket(propGroup, prop)
             socket.layoutItemRoot =node
-            socket.edata = { root:node, positionOffset:{x:socket.position.x,y:0.5+position,z:0} }
+            socket.edata = { root:node, uuid:prop.id, positionOffset:{x:socket.position.x,y:0.5+position,z:0} }
             layoutItems.sockets[socket.uuid] = {mesh:socket, positionOffset:{x:socket.position.x,y:0.5+position,z:0}}
         }
         

@@ -14,10 +14,10 @@ function createStellae({
     var templateData= {
         name : "Node",
         props :[
-            {id:"plif", label:"demo", type:"text", editable:true, socket:"input", value:"Default"},
-            {id:"plaf", label:"demo2", type:"text", editable:true, socket:"input", value:"Default2"},
-            {id:"plouf", label:"demo2", type:"text", editable:true, socket:"output", value:"Default3"},
-            {id:"roio", label:"demo4", type:"text", editable:true, socket:"none", value:"Default3"},
+            {id:"plif", label:"plif", type:"text", editable:true, socket:"input", value:"Default"},
+            {id:"plaf", label:"plaf", type:"text", editable:true, socket:"input", value:"Default2"},
+            {id:"plouf", label:"plouf", type:"text", editable:true, socket:"output", value:"Default3"},
+            {id:"roio", label:"roio", type:"text", editable:true, socket:"none", value:"Default3"},
         ],
         links:{
             plif:undefined,
@@ -33,7 +33,7 @@ function createStellae({
             onEvaluate:(props) =>{
                 props.demoId3.set(props.plif.get() +props.plaf.get())
             },
-            onInit:(props) => alert(props.plif.get()),
+            // onInit:(props) => alert(props.plif.get()),
         },
     }
 
@@ -41,11 +41,12 @@ function createStellae({
         ui = createStellaeUi({container:container,canvasWidth:canvasWidth,canvasHeight:canvasHeight,darkMode:darkMode})
         nodeManager = createNodeManager({ui:ui})
         nodeManager.addNodeTemplate("test", templateData)
-        nodeManager.addNode("test", {name:"partouf", uuid:"100"})
-        nodeManager.addNode("test", {name:"part", uuid:"110"})
-        nodeManager.addNode("test")
+        nodeManager.addNode("test", {name:"100", uuid:"100"})
+        nodeManager.addNode("test", {name:"110", uuid:"110"})
+        nodeManager.addNode("test", {name:"111", uuid:"111"})
         nodeManager.addLinks([
-            {from:"partouf", from_socket:"plouf", to:"part", to_socket:"plif"}
+            {from:"100", from_socket:"plouf", to:"110", to_socket:"plif"},
+            {from:"110", from_socket:"plouf", to:"111", to_socket:"plif"},
         ])
     }
     init()

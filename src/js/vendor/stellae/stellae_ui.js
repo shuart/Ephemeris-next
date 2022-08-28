@@ -4,22 +4,20 @@ import createNodeLayout from "./stellae_layouts.js";
 
 export default function createStellaeUi({
     container = document.body,
-    canvasWidth =800,
-    canvasHeight = 500,
+    canvasWidth =800, canvasHeight = 500,
     darkMode = "auto",
     } = {}) {
     var self = {};
     var state ={
         scene:undefined,camera:undefined,renderer:undefined,mouse: new THREE.Vector2(),raycaster:new THREE.Raycaster(),raycasterPlan:undefined,
         canvas:undefined,containerDim:undefined,controls:undefined,play:true,helperLine:undefined,
-        nodes:[],
-        triggers:{headers:[], sockets:{}},
+        nodes:[],links:[], mapping:undefined,
+        triggers:{headers:[], sockets:{}, props:{}},
         selectedToMove:[], selectedSocket:undefined,
         draggingNodes:false,draggingSocket:false,
     }
-    var nodeMeshStorage ={}
-    var nodeMeshManager ={}
-    var lineMeshManager ={}
+    var nodeMeshStorage ={};var nodeMeshManager ={};var lineMeshManager ={};
+
     nodeMeshManager.getHeadersMesh =function () {
         return state.triggers.headers
     }
@@ -31,6 +29,13 @@ export default function createStellaeUi({
         var result = []
         for (var key in state.triggers.sockets){
             result.push(state.triggers.sockets[key].mesh)
+        }
+        return result
+    }
+    nodeMeshManager.getPropsMesh =function(){
+        var result = []
+        for (var key in state.triggers.props){
+            result.push(state.triggers.props[key].mesh)
         }
         return result
     }
@@ -57,26 +62,7 @@ export default function createStellaeUi({
         state.canvas = state.renderer.domElement 
         container.appendChild( state.canvas);
         state.containerDim = state.canvas.getBoundingClientRect()
-        console.log(state.containerDim);
-        console.log(state.canvas );
         state.camera.position.y = 5;
-
-        // var node =createNodeLayout(state.scene,{name:"node1"})
-        // state.scene.add(node)
-        // state.nodes.push(node)
-        // state.triggers.headers.push(node.layout.header)
-        // state.triggers.sockets= Object.assign({},state.triggers.sockets, node.layout.sockets)
-        // nodeMeshStorage[node.uuid] = node
-        
-
-        // var node2 =createNodeLayout(state.scene,{name:"node2"})
-        // state.scene.add(node2)
-        // state.nodes.push(node2)
-        // state.triggers.headers.push(node2.layout.header)
-        // state.triggers.sockets= Object.assign({},state.triggers.sockets, node2.layout.sockets)
-        // nodeMeshStorage[node.uuid] = node
-
-
         state.controls = new MapControls( state.camera, state.renderer.domElement );
         //set intersection plan
         state.raycasterPlan = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
@@ -92,37 +78,75 @@ export default function createStellaeUi({
         const lineGeometry = new THREE.BufferGeometry().setFromPoints( linePoints );
         state.helperLine = new THREE.Line( lineGeometry, lineMaterial );
         state.scene.add(state.helperLine)
-
-
         const size = 1000;
         const divisions = 1000;
-
         const gridHelper = new THREE.GridHelper( size, divisions );
-        // state.scene.add( gridHelper );
-        
-    }
-
-    var createDemo = function () {
-        // const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-        // const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-        // const cube = new THREE.Mesh( geometry, material );
-        // const material2 = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
-        // const cube2 = new THREE.Mesh( geometry, material2 );
-        // cube2.position.set(1,0,3)
-        // state.nodes.push(cube)
-        // state.nodes.push(cube2)
-        // console.log(state.nodes);
-        // state.scene.add( cube );
-        // state.scene.add( cube2 );
     }
 
     var addNode = function(params){
         var node =createNodeLayout(state.scene,params)
+        node.edata = params
         state.scene.add(node)
         state.nodes.push(node)
         state.triggers.headers.push(node.layout.header)
         state.triggers.sockets= Object.assign({},state.triggers.sockets, node.layout.sockets)
+        state.triggers.props= Object.assign({},state.triggers.props, node.layout.props)
         nodeMeshStorage[node.uuid] = node
+    }
+
+    var addLinks = function(links){
+        for (let i = 0; i < links.length; i++) {
+            const element = links[i];
+            var meshLine = createMeshLine()
+            state.scene.add(meshLine)
+            meshLine.edata = element
+            state.links.push(meshLine)
+        }
+        updateMapping()
+    }
+
+    var createMeshLine = function(data){
+        const lineMaterial = new THREE.LineBasicMaterial( {
+            color: 0xa5abb6,
+            linewidth: 16,
+        } );
+        const linePoints = [];
+        linePoints.push( new THREE.Vector3( - 1, -1, -0.15 ) );
+        linePoints.push( new THREE.Vector3( -1.01, -1.01, -0.15 ) );
+        const lineGeometry = new THREE.BufferGeometry().setFromPoints( linePoints );
+        var line = new THREE.Line( lineGeometry, lineMaterial );
+        line.edata= data
+        return line
+    }
+
+    var updateLinks = function(){
+        for (let i = 0; i < state.links.length; i++) {
+            const link = state.links[i];
+
+            var startPositon = state.mapping[link.edata.from].position; var endPositon = state.mapping[link.edata.to].position;
+            var startPositonOffset = state.mapping[link.edata.from].sockets[link.edata.from_socket].positionOffset; var endPositonOffset = state.mapping[link.edata.to].sockets[link.edata.to_socket].positionOffset;
+            var attributes = link.geometry.attributes
+            
+            attributes.position.array[3] =endPositon.x+endPositonOffset.x; attributes.position.array[4] =endPositon.y; attributes.position.array[5] =endPositon.z+endPositonOffset.y
+            attributes.position.array[0] =startPositon.x+startPositonOffset.x; attributes.position.array[1] =startPositon.y; attributes.position.array[2] =startPositon.z+startPositonOffset.y
+            attributes.position.needsUpdate = true;
+        }
+    }
+    var updateMapping = function(){
+        state.mapping = {}
+        for (let i = 0; i < state.nodes.length; i++) {
+            const node = state.nodes[i];
+            console.log(node.edata);
+            state.mapping[node.edata.uuid] = {position:node.position, sockets:{}}
+            console.log(node.layout);
+
+            for (const key in node.layout.sockets) {
+                if (Object.hasOwnProperty.call(node.layout.sockets, key)) {
+                    const socket = node.layout.sockets[key];
+                    state.mapping[node.edata.uuid].sockets[socket.mesh.edata.uuid] = {positionOffset:socket.mesh.edata.positionOffset}
+                }
+            }
+        }
     }
 
     var interactions = function(){
@@ -135,7 +159,6 @@ export default function createStellaeUi({
             state.mouse.x = ( (event.clientX-state.containerDim.x) / state.containerDim.width ) * 2 - 1;
 			state.mouse.y = - ( (event.clientY-state.containerDim.y) / state.containerDim.height ) * 2 + 1;
             state.raycaster.setFromCamera( state.mouse, state.camera );
-            // console.log(state.raycaster.ray.direction);
 
             const intersections = state.raycaster.intersectObjects( nodeMeshManager.getHeadersMesh(), true );
             console.log(intersections);
@@ -151,17 +174,20 @@ export default function createStellaeUi({
                 // 	object.material.emissive.set( 0xaaaaaa );
                 // 	group.attach( object );
                 // }
-                // controls.transformGroup = true;
-                // draggableObjects.push( group );
             }
             const intersectionsSockets = state.raycaster.intersectObjects( nodeMeshManager.getSocketsMesh(), true );
             if ( intersectionsSockets.length > 0 ) { //Case hit header
-                console.log(intersectionsSockets);
                 const object = intersectionsSockets[ 0 ].object;
                 state.selectedSocket= intersectionsSockets[ 0 ].object;
                 state.draggingSocket = true;
             }
-            console.log(state.mouse);
+            const intersectionsProps = state.raycaster.intersectObjects( nodeMeshManager.getPropsMesh(), true );
+            if ( intersectionsProps.length > 0 ) { //Case hit header
+                const object = intersectionsProps[ 0 ].object;
+                // state.selectedSocket= intersectionsProps[ 0 ].object;
+                // state.draggingSocket = true;
+                var newValue = prompt(intersectionsProps[ 0 ].object.edata.value)
+            }
         }
         function onMove(event){
             state.mouse.x = ( (event.clientX-state.containerDim.x) / state.containerDim.width ) * 2 - 1;
@@ -173,8 +199,6 @@ export default function createStellaeUi({
                 state.raycaster.ray.intersectPlane(state.raycasterPlan, intersects);
 
                 state.selectedToMove[0].position.set(intersects.x, 0.1, intersects.z);
-
-                console.log(intersects);
             }
             if (state.draggingSocket) {
                 state.controls.enabled = false;
@@ -182,14 +206,10 @@ export default function createStellaeUi({
                 state.raycaster.setFromCamera(state.mouse, state.camera);
                 state.raycaster.ray.intersectPlane(state.raycasterPlan, intersects);
                 // state.selectedToMove[0].position.set(intersects.x, 0.1, intersects.z);
-                console.log(state.selectedSocket);
                 var startPosition = nodeMeshManager.getSocketPosition(state.selectedSocket.edata.root, state.selectedSocket)
                 lineMeshManager.setHelperLineStart(startPosition.x,startPosition.y,startPosition.z)
                 lineMeshManager.setHelperLineEnd(intersects.x,0,intersects.z)
-
-                // console.log(intersects);
             }
-            
         }
         function onMouseUp (){
             state.draggingNodes=false;
@@ -205,6 +225,7 @@ export default function createStellaeUi({
     var startRenderer = function () {
         function animate() {
             if (state.play) {
+                updateLinks()
                 requestAnimationFrame( animate );
                 state.renderer.render( state.scene, state.camera );
             }
@@ -214,11 +235,11 @@ export default function createStellaeUi({
 
     var init = function () {
         createScene()
-        createDemo()
         interactions()
         startRenderer()
     }
     init()
+    self.addLinks = addLinks;
     self.addNode = addNode;
     return self
 }
