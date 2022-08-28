@@ -41,13 +41,18 @@ function createStellae({
         ui = createStellaeUi({container:container,canvasWidth:canvasWidth,canvasHeight:canvasHeight,darkMode:darkMode})
         nodeManager = createNodeManager({ui:ui})
         nodeManager.addNodeTemplate("test", templateData)
-        nodeManager.addNode("test", {name:"100", uuid:"100"})
+        nodeManager.addNode("test", {name:"100", uuid:"100", position:{x:2,y:4}})
         nodeManager.addNode("test", {name:"110", uuid:"110"})
         nodeManager.addNode("test", {name:"111", uuid:"111"})
         nodeManager.addLinks([
             {from:"100", from_socket:"plouf", to:"110", to_socket:"plif"},
             {from:"110", from_socket:"plouf", to:"111", to_socket:"plif"},
         ])
+
+        // setTimeout(function(){
+        //     nodeManager.getNode(111).setProp("plif","newvalue")
+        //     alert()
+        // },5000)
     }
     init()
     return self

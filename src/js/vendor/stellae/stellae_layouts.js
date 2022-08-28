@@ -41,7 +41,9 @@ var propsHeightMap={
 var createNode  = function({
     headerColor = 0xffff00,
     name = "Node",
+    position={x:0,y:0},
     uuid = nanoid(),
+    nodeData = {},
     props =[
         {id:nanoid(), label:"demo", type:"text", editable:true, socket:"output", value:"Default"},
         {id:nanoid(), label:"demo", type:"text", editable:true, socket:"input", value:"Default"},
@@ -169,12 +171,12 @@ var createNode  = function({
         propGroup.add(spritetextValue)
         spritetextValue.position.set(0.5,0,0)
         layoutItems.props[spritetextValue.uuid] = {mesh:spritetextValue}
-        spritetextValue.edata = { root:node, uuid:prop.id, value:prop.value, prop:prop }
+        spritetextValue.edata = { root:node, uuid:prop.id, value:prop.value, prop:prop, nodeData: nodeData, }
 
         if(prop.socket && prop.socket != "none"){
             var socket = createSocket(propGroup, prop)
             socket.layoutItemRoot =node
-            socket.edata = { root:node, uuid:prop.id, positionOffset:{x:socket.position.x,y:0.5+position,z:0} }
+            socket.edata = { root:node, nodeData: nodeData, uuid:prop.id, positionOffset:{x:socket.position.x,y:0.5+position,z:0} }
             layoutItems.sockets[socket.uuid] = {mesh:socket, positionOffset:{x:socket.position.x,y:0.5+position,z:0}}
         }
         
@@ -207,7 +209,7 @@ var createNode  = function({
     
 
     node.rotation.x =3.1416/2
-    node.position.set(0,0.1,0)
+    node.position.set(position.x,0.1,position.y)
     node.layout =layoutItems
     return node
 }

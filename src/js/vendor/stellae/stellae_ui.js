@@ -88,10 +88,13 @@ export default function createStellaeUi({
         node.edata = params
         state.scene.add(node)
         state.nodes.push(node)
-        state.triggers.headers.push(node.layout.header)
-        state.triggers.sockets= Object.assign({},state.triggers.sockets, node.layout.sockets)
-        state.triggers.props= Object.assign({},state.triggers.props, node.layout.props)
-        nodeMeshStorage[node.uuid] = node
+        updateTriggers()
+        updateMapping()
+        // state.triggers.headers.push(node.layout.header)
+        // state.triggers.sockets= Object.assign({},state.triggers.sockets, node.layout.sockets)
+        // state.triggers.props= Object.assign({},state.triggers.props, node.layout.props)
+        // nodeMeshStorage[node.uuid] = node
+        return node;
     }
 
     var addLinks = function(links){
@@ -103,6 +106,23 @@ export default function createStellaeUi({
             state.links.push(meshLine)
         }
         updateMapping()
+    }
+
+    var updateTriggers = function(){//update all triggers list for raycaster
+        var newNodeList = []
+        state.triggers.headers = []; state.triggers.sockets={};state.triggers.props={};
+        for (let i = 0; i < state.nodes.length; i++) {
+            const node = state.nodes[i];
+            if (node.parent === state.scene) {
+                newNodeList.push(node)
+                state.triggers.headers.push(node.layout.header)
+                state.triggers.sockets= Object.assign({},state.triggers.sockets, node.layout.sockets)
+                state.triggers.props= Object.assign({},state.triggers.props, node.layout.props)
+            }else{
+                console.log("removed")
+            }
+        }
+        state.nodes=newNodeList
     }
 
     var createMeshLine = function(data){
@@ -163,7 +183,7 @@ export default function createStellaeUi({
             const intersections = state.raycaster.intersectObjects( nodeMeshManager.getHeadersMesh(), true );
             console.log(intersections);
             if ( intersections.length > 0 ) { //Case hit header
-                console.log(intersections);
+    
                 const object = intersections[ 0 ].object;
                 state.selectedToMove.push(object.layoutItemRoot)
                 state.draggingNodes=true;
@@ -186,7 +206,13 @@ export default function createStellaeUi({
                 const object = intersectionsProps[ 0 ].object;
                 // state.selectedSocket= intersectionsProps[ 0 ].object;
                 // state.draggingSocket = true;
+                console.log(intersectionsProps[ 0 ].object.edata);
                 var newValue = prompt(intersectionsProps[ 0 ].object.edata.value)
+                if (newValue && newValue != "") {
+                    var propId = intersectionsProps[ 0 ].object.edata.prop.id
+                    intersectionsProps[ 0 ].object.edata.nodeData.setProp(propId, newValue)
+                }
+
             }
         }
         function onMove(event){
@@ -199,6 +225,7 @@ export default function createStellaeUi({
                 state.raycaster.ray.intersectPlane(state.raycasterPlan, intersects);
 
                 state.selectedToMove[0].position.set(intersects.x, 0.1, intersects.z);
+                state.selectedToMove[0].edata.nodeData.setPosition(intersects.x, intersects.z)
             }
             if (state.draggingSocket) {
                 state.controls.enabled = false;
@@ -233,12 +260,17 @@ export default function createStellaeUi({
         animate();
     }
 
+    var removeNode=function (object) {
+        state.scene.remove(object)
+    }
+
     var init = function () {
         createScene()
         interactions()
         startRenderer()
     }
     init()
+    self.removeNode = removeNode;
     self.addLinks = addLinks;
     self.addNode = addNode;
     return self

@@ -35,21 +35,26 @@ var createNode= function({
     },
     } = {}){
     var self={}
-    var currentUi = undefined
-    var interactiveProps = undefined
+    var currentScene = undefined;
+    var refInScene = undefined;
+    var interactiveProps = undefined;
+    var internalProps = undefined
 
 
 
     var setUpProps = function(){
+        //Deep Copy to avoid issues
+        internalProps = JSON.parse(JSON.stringify(props));
         var interactivePropsObject = {}
-        for (let i = 0; i < props.length; i++) {
-            const element = props[i];
+        for (let i = 0; i < internalProps.length; i++) {
+            const element = internalProps[i];
             interactivePropsObject[element.id] = {
                 get:function () {
                     return element.value
                 },
                 set:function (newValue) {
                     element.value = newValue
+                    updateNode()
                 }
             }
         }
@@ -64,6 +69,19 @@ var createNode= function({
         if (event[eventName]) {
             event[eventName](interactiveProps)
         }
+    }
+
+    var setProp = function (prop, value) {
+        interactiveProps[prop].set(value)
+    }
+
+    var setPosition = function (x,y) {
+        position.x=x; position.y=y;
+    }
+
+    var updateNode= function(){
+
+        updateInScene()
     }
 
     
@@ -81,8 +99,8 @@ var createNode= function({
     var init = function () {
         interactiveProps = setUpProps()
         if(ui){
-            currentUi = ui
-            addToScene(ui)
+            currentScene = ui
+            addToScene(currentScene)
         }
         doEvent("onInit")
         
@@ -93,10 +111,16 @@ var createNode= function({
     //UI
     
     var addToScene = function (currentScene) {
-        currentScene.addNode({headerColor, uuid, position, name, props, links})
+        refInScene =  currentScene.addNode({headerColor, uuid, position, name, props:internalProps, links, nodeData:self})
+    }
+    var updateInScene = function (){
+        currentScene.removeNode(refInScene)
+        refInScene =  currentScene.addNode({headerColor, uuid, position, name, props:internalProps, links, nodeData:self})
     }
     //init
     init()
+    self.setPosition=setPosition;
+    self.setProp=setProp;
     self.getUuid=getUuid;
     self.init=init;
     self.evaluate = evaluate;
@@ -132,6 +156,14 @@ var createNodeManager = function ({
         nodeInUse[node.getUuid()] = node 
     }
 
+    var getNode = function(uuid){
+        return nodeInUse[uuid]
+    }
+
+    var updateNode = function(uuid, prop){
+
+    }
+
     var addNodeTemplate = function(name, params){
         // var newParams= Object.assign({},params,{ui:ui})
         // var node = createNode(newParams)
@@ -139,6 +171,7 @@ var createNodeManager = function ({
         
     }
 
+    self.getNode = getNode
     self.addLinks = addLinks
     self.addNodeTemplate = addNodeTemplate
     self.addNode = addNode
