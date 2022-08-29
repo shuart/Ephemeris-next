@@ -43,6 +43,7 @@ var createNode= function({
     var interactiveProps = undefined;
     var internalProps = undefined;
     var inEvaluation = false;
+    var inInit = false;
 
 
 
@@ -145,7 +146,10 @@ var createNode= function({
             currentScene = ui
             addToScene(currentScene)
         }
+        inInit = true;
         doEvent("onInit")
+        evaluate()//TODO improve to avoid redraw. Should be before add to scene
+        inInit = false;
         
     }
     var getUuid = function() {

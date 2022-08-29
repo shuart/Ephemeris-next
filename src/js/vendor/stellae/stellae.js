@@ -40,6 +40,8 @@ function createStellae({
         nodeManager.addNodeTemplate("test", templateData)
         nodeManager.addNode("math_add", {uuid:"100",name:"100 add",  position:{x:2,y:4}})
         nodeManager.addNode("input_number", { uuid:"114", name:"114 input"})
+        nodeManager.addNode("viewer_result")
+        
         nodeManager.addLinks([
             // {from:"100", from_socket:"plouf", to:"110", to_socket:"plif"},
             // {from:"110", from_socket:"plouf", to:"111", to_socket:"plif"},

@@ -34,6 +34,7 @@ var headerGeometry = new THREE.ShapeGeometry( squareShape );
 var roundSocketGeometry = new THREE.ShapeGeometry( circleShape );
 
 var propsHeightMap={
+    hidden:0.5,
     text:0.3,
 }
 
@@ -165,14 +166,17 @@ var createNode  = function({
         var propGroup = new THREE.Group()
         var spritetext = createCharacterLabel(prop.label)
         propGroup.add(spritetext)
-        spritetext.position.set(-0.5,0,0)
-
-        var spritetextValue = createCharacterLabel(prop.value)
-        propGroup.add(spritetextValue)
-        spritetextValue.position.set(0.5,0,0)
-        layoutItems.props[spritetextValue.uuid] = {mesh:spritetextValue}
-        spritetextValue.edata = { root:node, uuid:prop.id, value:prop.value, prop:prop, nodeData: nodeData, }
-
+        if (prop.type == "hidden") {
+            spritetext.position.set(+0.5,0,0)
+        }else if (prop.type == "text") {
+            spritetext.position.set(-0.5,0,0)
+            var spritetextValue = createCharacterLabel(prop.value)
+            propGroup.add(spritetextValue)
+            spritetextValue.position.set(0.5,0,0)
+            layoutItems.props[spritetextValue.uuid] = {mesh:spritetextValue}
+            spritetextValue.edata = { root:node, uuid:prop.id, value:prop.value, prop:prop, nodeData: nodeData, }
+        }
+        
         if(prop.socket && prop.socket != "none"){
             var socket = createSocket(propGroup, prop)
             socket.layoutItemRoot =node
