@@ -13,9 +13,10 @@ export default function createStellaeUi({
         canvas:undefined,containerDim:undefined,controls:undefined,play:true,helperLine:undefined,
         nodes:[],links:[], mapping:undefined,
         triggers:{headers:[], sockets:{}, props:{}},
-        selectedToMove:[], selectedSocket:undefined,
+        selectedToMove:[], selectedSocket:undefined, linkToAdd: undefined,
         draggingNodes:false,draggingSocket:false,
     }
+    var dataManager = undefined
     var nodeMeshStorage ={};var nodeMeshManager ={};var lineMeshManager ={};
 
     nodeMeshManager.getHeadersMesh =function () {
@@ -211,6 +212,7 @@ export default function createStellaeUi({
                 if (newValue && newValue != "") {
                     var propId = intersectionsProps[ 0 ].object.edata.prop.id
                     intersectionsProps[ 0 ].object.edata.nodeData.setProp(propId, newValue)
+                    dataManager.evaluateTree();
                 }
 
             }
@@ -229,6 +231,7 @@ export default function createStellaeUi({
             }
             if (state.draggingSocket) {
                 state.controls.enabled = false;
+                state.linkToAdd = undefined
                 var intersects = new THREE.Vector3();
                 state.raycaster.setFromCamera(state.mouse, state.camera);
                 state.raycaster.ray.intersectPlane(state.raycasterPlan, intersects);
@@ -236,13 +239,27 @@ export default function createStellaeUi({
                 var startPosition = nodeMeshManager.getSocketPosition(state.selectedSocket.edata.root, state.selectedSocket)
                 lineMeshManager.setHelperLineStart(startPosition.x,startPosition.y,startPosition.z)
                 lineMeshManager.setHelperLineEnd(intersects.x,0,intersects.z)
+                const intersectsOtherSockets = state.raycaster.intersectObjects( nodeMeshManager.getSocketsMesh(), true );
+                if ( intersectsOtherSockets.length > 0 ) { //Case hit header
+                    const object = intersectsOtherSockets[ 0 ].object;
+                    state.linkToAdd =  {from:state.selectedSocket.edata.root.edata.uuid, from_socket:state.selectedSocket.edata.uuid, to:object.edata.root.edata.uuid, to_socket:object.edata.uuid}
+    
+                }
             }
         }
         function onMouseUp (){
             state.draggingNodes=false;
             state.draggingSocket=false;
             state.controls.enabled = true;
+            
             lineMeshManager.hideHelperLine()
+            if (state.linkToAdd ) {
+                console.log(state.linkToAdd);
+                dataManager.addLinks([state.linkToAdd])
+                dataManager.evaluateTree();
+                // alert()
+                state.linkToAdd = undefined;
+            }
         }
         container.addEventListener( 'mousedown', onClick );
         container.addEventListener( 'mousemove', onMove );
@@ -264,12 +281,17 @@ export default function createStellaeUi({
         state.scene.remove(object)
     }
 
+    var attachDataManager = function (dataManagerToAttach) {
+        dataManager = dataManagerToAttach
+    }
+
     var init = function () {
         createScene()
         interactions()
         startRenderer()
     }
     init()
+    self.attachDataManager = attachDataManager;
     self.removeNode = removeNode;
     self.addLinks = addLinks;
     self.addNode = addNode;

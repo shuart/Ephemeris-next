@@ -1,3 +1,4 @@
+import baseTemplates from "./stellae_nodes_templates.js"
 let nanoid=(t=21)=>crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?"-":"_"),"");
 var demoId1 = nanoid()
 var demoId2 = nanoid()
@@ -17,6 +18,8 @@ var createNode= function({
         // {id:demoId3, label:"demo2", type:"text", editable:true, socket:"output", value:"Default3"},
         // {id:demoId4, label:"demo4", type:"text", editable:true, socket:"none", value:"Default3"},
     ],
+    contextNodes=undefined,
+    contextLinks = undefined,
     links={
         // demoId1:undefined,
         // demoId2:undefined,
@@ -38,7 +41,8 @@ var createNode= function({
     var currentScene = undefined;
     var refInScene = undefined;
     var interactiveProps = undefined;
-    var internalProps = undefined
+    var internalProps = undefined;
+    var inEvaluation = false;
 
 
 
@@ -54,7 +58,10 @@ var createNode= function({
                 },
                 set:function (newValue) {
                     element.value = newValue
-                    updateNode()
+                    // evaluate()
+                    if (!inEvaluation) {
+                        evaluate() //reevaluate if outside event
+                    }
                 }
             }
         }
@@ -62,7 +69,40 @@ var createNode= function({
     }
 
     var evaluate = function(){
+        inEvaluation = true;
+        updateFromInputs()
         doEvent("onEvaluate")
+        inEvaluation = false;
+        updateNode()
+        console.log(links)
+    }
+
+    var updateFromInputs = function () {
+        // var relatedLinks = []
+        console.log(contextLinks, uuid);
+        for (let i = 0; i < contextLinks.list.length; i++) {
+            const link = contextLinks.list[i];
+            
+            if (link.to == uuid) {
+                for (let k = 0; k < props.length; k++) {
+                    const prop = props[k];
+                    if (link.to_socket == prop.id) {
+                        var otherSocketValue = getValueFromOtherNode(link.from, link.from_socket)
+                        interactiveProps[prop.id].set(otherSocketValue)  //update socket value
+                    }
+                }   
+            }
+            
+        }
+        
+    }
+
+    var getValueFromOtherNode = function (targetUuid, prop) {
+        if (contextNodes) {
+            console.log(contextNodes, targetUuid);
+            console.log(contextNodes[targetUuid].getProp(prop));
+            return contextNodes[targetUuid].getProp(prop)
+        }
     }
 
     var doEvent = function(eventName){
@@ -73,6 +113,9 @@ var createNode= function({
 
     var setProp = function (prop, value) {
         interactiveProps[prop].set(value)
+    }
+    var getProp = function (prop) {
+        return interactiveProps[prop].get()
     }
 
     var setPosition = function (x,y) {
@@ -120,6 +163,7 @@ var createNode= function({
     //init
     init()
     self.setPosition=setPosition;
+    self.getProp=getProp;
     self.setProp=setProp;
     self.getUuid=getUuid;
     self.init=init;
@@ -134,7 +178,7 @@ var createNodeManager = function ({
     var self = {}
     var nodeTemplates ={};
     var nodeInUse = {};
-    var linksInUse={}
+    var linksInUse={list:[]}
     
     var addLinks = function(links){
         for (let i = 0; i < links.length; i++) {
@@ -142,8 +186,17 @@ var createNodeManager = function ({
             if (!element.uuid) {
                 element.uuid = nanoid()
             }
-            linksInUse[links[i].from] = element
+            // linksInUse[links[i].to] = element
+            linksInUse.list.push(element)
             ui.addLinks(links)
+        }
+    }
+    var evaluateTree =function(){
+        for (const node in nodeInUse) {
+            if (Object.hasOwnProperty.call(nodeInUse, node)) {
+                const element = nodeInUse[node];
+                element.evaluate()
+            }
         }
     }
     var addNode = function(templateName, params){
@@ -151,7 +204,7 @@ var createNodeManager = function ({
             params.uuid = nanoid()
         }
         var template = nodeTemplates[templateName]
-        var newParams= Object.assign({},template,params,{ui:ui, links:linksInUse})
+        var newParams= Object.assign({},template,params,{ui:ui, contextNodes:nodeInUse,contextLinks:linksInUse})
         var node = createNode(newParams)
         nodeInUse[node.getUuid()] = node 
     }
@@ -164,6 +217,15 @@ var createNodeManager = function ({
 
     }
 
+    var useBaseTemplates = function(){
+        for (const key in baseTemplates) {
+            if (Object.hasOwnProperty.call(baseTemplates, key)) {
+                const template = baseTemplates[key];
+                addNodeTemplate(template.templateName, template)
+            }
+        }
+    }
+
     var addNodeTemplate = function(name, params){
         // var newParams= Object.assign({},params,{ui:ui})
         // var node = createNode(newParams)
@@ -171,6 +233,15 @@ var createNodeManager = function ({
         
     }
 
+    var init= function () {
+        if (ui) {
+            ui.attachDataManager(self)
+        }
+    }
+    init()
+
+    self.evaluateTree = evaluateTree
+    self.useBaseTemplates = useBaseTemplates
     self.getNode = getNode
     self.addLinks = addLinks
     self.addNodeTemplate = addNodeTemplate
