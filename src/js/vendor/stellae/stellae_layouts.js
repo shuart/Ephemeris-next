@@ -1,4 +1,5 @@
 import * as THREE from "../three.module.js"
+import inputElements from "./stellae_inputs.js"
 
 let nanoid=(t=21)=>crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?"-":"_"),"");
 
@@ -161,6 +162,23 @@ var createNode  = function({
         return socket
     }
 
+    function createPropAction(prop){
+        var action = undefined
+        if (prop.type == "text") {
+            action = function (param) {
+                var newValue = prompt(prop.value)
+                if (newValue && newValue != "") {
+                    var propId = prop.id
+                    nodeData.setProp(propId, newValue)
+                    // dataManager.evaluateTree();
+                    if (param && param.callback) {param.callback()}
+                    inputElements.createListInput()
+                }
+            }
+        }
+        return action
+    }
+
     function createProp (node,position, prop){
         //text
         var propGroup = new THREE.Group()
@@ -174,7 +192,7 @@ var createNode  = function({
             propGroup.add(spritetextValue)
             spritetextValue.position.set(0.5,0,0)
             layoutItems.props[spritetextValue.uuid] = {mesh:spritetextValue}
-            spritetextValue.edata = { root:node, uuid:prop.id, value:prop.value, prop:prop, nodeData: nodeData, }
+            spritetextValue.edata = { root:node, uuid:prop.id, value:prop.value, prop:prop, nodeData: nodeData, action:createPropAction(prop), }
         }
         
         if(prop.socket && prop.socket != "none"){

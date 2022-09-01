@@ -207,13 +207,19 @@ export default function createStellaeUi({
                 const object = intersectionsProps[ 0 ].object;
                 // state.selectedSocket= intersectionsProps[ 0 ].object;
                 // state.draggingSocket = true;
+                // if (prop.type =="text") {
+                //     inputElements.createListInput()
+                // }
+
                 console.log(intersectionsProps[ 0 ].object.edata);
-                var newValue = prompt(intersectionsProps[ 0 ].object.edata.value)
-                if (newValue && newValue != "") {
-                    var propId = intersectionsProps[ 0 ].object.edata.prop.id
-                    intersectionsProps[ 0 ].object.edata.nodeData.setProp(propId, newValue)
-                    dataManager.evaluateTree();
-                }
+                // dataManager.evaluateTree();
+                intersectionsProps[ 0 ].object.edata.action({callback:dataManager.evaluateTree})
+                // var newValue = prompt(intersectionsProps[ 0 ].object.edata.value)
+                // if (newValue && newValue != "") {
+                //     var propId = intersectionsProps[ 0 ].object.edata.prop.id
+                //     intersectionsProps[ 0 ].object.edata.nodeData.setProp(propId, newValue)
+                //     dataManager.evaluateTree();
+                // }
 
             }
         }
