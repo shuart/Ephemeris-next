@@ -3,7 +3,7 @@ import createNodeManager from "./stellae_nodes.js";
 
 function createStellae({
     container = document.body,
-    canvasWidth =800,
+    canvasWidth =1500,
     canvasHeight = 500,
     darkMode = "auto",
     } = {}) {
@@ -40,6 +40,7 @@ function createStellae({
         nodeManager.addNodeTemplate("test", templateData)
         nodeManager.addNode("math_add", {uuid:"100",name:"100 add",  position:{x:2,y:4}})
         nodeManager.addNode("input_number", { uuid:"114", name:"114 input"})
+        nodeManager.addNode("math_compare", { uuid:"115", name:"114 compare"})
         nodeManager.addNode("viewer_result")
         
         nodeManager.addLinks([

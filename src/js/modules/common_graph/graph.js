@@ -14,7 +14,7 @@ var setUp = function (event, data, instance) {
 var component =createAdler({
     content: p => /*html*/`
     <div class="Component">
-        <div style="width:50%; height:800px;" class="graph" >GRAPH</div>
+        <div style="width:100%; height:800px;" class="graph" >GRAPH</div>
     </div>
         `,
     params:{

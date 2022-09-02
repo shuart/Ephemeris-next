@@ -41,6 +41,43 @@ baseTemplates.math_add = {
     },
 }
 
+baseTemplates.math_compare = {
+    templateName : "math_compare",
+    name : "Compare",
+    props :[
+        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"method", label:"", type:"select", options:[
+            {id:"Greater_Than", value:"Greater Than"},
+            {id:"Greater_Than_Or_Equal", value:"Greater Than or Equal"},
+            {id:"Less_Than", value:"Less Than"},
+            {id:"Less_Than_Or_Equal", value:"Less Than or Equal"},
+            {id:"Equal", value:"Equal"},
+        ],editable:true, socket:"none", value:"Greater Than"},
+        {id:"a", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"b", label:"B", type:"text", editable:true, socket:"input", value:"0"},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+           
+            if (props.method.get() == "Greater Than") {
+                if (parseInt(props.a.get())  > parseInt(props.b.get())) {props.output.set(1)} else {props.output.set(0)}
+            }else if (props.method.get() == "Less Than"){
+                if (parseInt(props.a.get())  < parseInt(props.b.get())) {props.output.set(1)} else {props.output.set(0)}
+            }else if (props.method.get() == "Equal"){
+                if (parseInt(props.a.get()) == parseInt(props.b.get())) {props.output.set(1)} else {props.output.set(0)}
+            }else if (props.method.get() == "Greater Than or Equal"){
+                if (parseInt(props.a.get()) >= parseInt(props.b.get())) {props.output.set(1)} else {props.output.set(0)}
+            }else if (props.method.get() == "Less Than or Equal"){
+                if (parseInt(props.a.get()) <= parseInt(props.b.get())) {props.output.set(1)} else {props.output.set(0)}
+            }
+            
+        },
+    },
+}
+
 baseTemplates.viewer_result = {
     templateName : "viewer_result",
     name : "viewer",

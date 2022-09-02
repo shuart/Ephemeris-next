@@ -37,6 +37,7 @@ var roundSocketGeometry = new THREE.ShapeGeometry( circleShape );
 var propsHeightMap={
     hidden:0.5,
     text:0.3,
+    select:0.3,
 }
 
 
@@ -172,8 +173,12 @@ var createNode  = function({
                     nodeData.setProp(propId, newValue)
                     // dataManager.evaluateTree();
                     if (param && param.callback) {param.callback()}
-                    inputElements.createListInput()
                 }
+            }
+        }
+        if (prop.type == "select") {
+            action = function (param) {
+                inputElements.createListInput({options:prop.options, callback:(event)=> {nodeData.setProp(prop.id, event.value);param.callback(); }})
             }
         }
         return action
@@ -186,7 +191,7 @@ var createNode  = function({
         propGroup.add(spritetext)
         if (prop.type == "hidden") {
             spritetext.position.set(+0.5,0,0)
-        }else if (prop.type == "text") {
+        }else if (prop.type == "text" || prop.type == "select") {
             spritetext.position.set(-0.5,0,0)
             var spritetextValue = createCharacterLabel(prop.value)
             propGroup.add(spritetextValue)

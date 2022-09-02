@@ -56,7 +56,7 @@ export default function createStellaeUi({
 
     var createScene= function(){
         state.scene = new THREE.Scene();
-        state.camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+        state.camera = new THREE.PerspectiveCamera( 75, canvasWidth / canvasHeight, 0.1, 1000 );
 
         state.renderer = new THREE.WebGLRenderer({alpha:true});
         state.renderer.setSize( canvasWidth, canvasHeight );
