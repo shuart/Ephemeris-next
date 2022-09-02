@@ -13,7 +13,7 @@ export default function createStellaeUi({
         canvas:undefined,containerDim:undefined,controls:undefined,play:true,helperLine:undefined,
         nodes:[],links:[], mapping:undefined,
         triggers:{headers:[], sockets:{}, props:{}},
-        selectedToMove:[], selectedSocket:undefined, linkToAdd: undefined,
+        selectedToMove:[], selectedSocket:undefined, selectedLine:undefined, linkToAdd: undefined,
         draggingNodes:false,draggingSocket:false,
     }
     var dataManager = undefined
@@ -21,6 +21,9 @@ export default function createStellaeUi({
 
     nodeMeshManager.getHeadersMesh =function () {
         return state.triggers.headers
+    }
+    nodeMeshManager.getLinksMesh=function () {
+        return state.links
     }
     nodeMeshManager.getSocketPosition =function (node, socket) {
         // return {x:node.position.x + socket.edata.positionOffset.x,y:node.position.y+ socket.edata.positionOffset.y,z:node.position.z+ socket.edata.positionOffset.z}
@@ -109,6 +112,14 @@ export default function createStellaeUi({
         updateMapping()
     }
 
+    var removeLinks = function(uuid){
+        var linkToRemoveIndex = state.links.findIndex((l)=>l.edata.uuid==uuid)
+        state.scene.remove(state.links[linkToRemoveIndex])
+        state.links[linkToRemoveIndex] = state.links[state.links.length -1];
+        state.links.pop();  
+        updateMapping()
+    }
+
     var updateTriggers = function(){//update all triggers list for raycaster
         var newNodeList = []
         state.triggers.headers = []; state.triggers.sockets={};state.triggers.props={};
@@ -129,7 +140,7 @@ export default function createStellaeUi({
     var createMeshLine = function(data){
         const lineMaterial = new THREE.LineBasicMaterial( {
             color: 0xa5abb6,
-            linewidth: 16,
+            linewidth: 0.01,
         } );
         const linePoints = [];
         linePoints.push( new THREE.Vector3( - 1, -1, -0.15 ) );
@@ -175,6 +186,7 @@ export default function createStellaeUi({
             event.preventDefault();
             state.selectedToMove =[] //clear move list
             state.selectedSocket = undefined;
+            state.selectedLine =undefined;
             state.draggingNodes=false,
             state.containerDim = state.canvas.getBoundingClientRect() //check if needed
             state.mouse.x = ( (event.clientX-state.containerDim.x) / state.containerDim.width ) * 2 - 1;
@@ -196,6 +208,7 @@ export default function createStellaeUi({
                 // 	group.attach( object );
                 // }
             }
+            
             const intersectionsSockets = state.raycaster.intersectObjects( nodeMeshManager.getSocketsMesh(), true );
             if ( intersectionsSockets.length > 0 ) { //Case hit header
                 const object = intersectionsSockets[ 0 ].object;
@@ -222,10 +235,24 @@ export default function createStellaeUi({
                 // }
 
             }
+            if(!intersections[0] && !intersectionsSockets[0]){
+                state.raycaster.params.Line.threshold = 0.1;
+                const intersectionsLines = state.raycaster.intersectObjects( nodeMeshManager.getLinksMesh(), true );
+                if ( intersectionsLines.length > 0 ) { //Case hit header
+                    const object = intersectionsLines[ 0 ].object;
+                    console.log(object)
+                    state.selectedLine = object
+    
+                }
+            }
         }
         function onMove(event){
             state.mouse.x = ( (event.clientX-state.containerDim.x) / state.containerDim.width ) * 2 - 1;
             state.mouse.y = - ( (event.clientY-state.containerDim.y) / state.containerDim.height ) * 2 + 1;
+            if (state.selectedLine) {
+                console.log(state.selectedLine);
+                dataManager.removeLinks(state.selectedLine.edata.uuid)
+            }
             if (state.draggingNodes) {
                 state.controls.enabled = false;
                 var intersects = new THREE.Vector3();
@@ -256,6 +283,7 @@ export default function createStellaeUi({
         function onMouseUp (){
             state.draggingNodes=false;
             state.draggingSocket=false;
+            state.selectedLine =undefined;
             state.controls.enabled = true;
             
             lineMeshManager.hideHelperLine()
@@ -300,6 +328,7 @@ export default function createStellaeUi({
     self.attachDataManager = attachDataManager;
     self.removeNode = removeNode;
     self.addLinks = addLinks;
+    self.removeLinks = removeLinks;
     self.addNode = addNode;
     return self
 }

@@ -195,6 +195,12 @@ var createNodeManager = function ({
             ui.addLinks(links)
         }
     }
+    var removeLinks = function(uuid){
+        var indexToRemove = linksInUse.list.findIndex(l=>l.uuid==uuid)
+        linksInUse.list[indexToRemove] = linksInUse.list[linksInUse.list.length -1];
+        linksInUse.list.pop();  
+        ui.removeLinks(uuid)
+    }
     var evaluateTree =function(){
         for (const node in nodeInUse) {
             if (Object.hasOwnProperty.call(nodeInUse, node)) {
@@ -248,6 +254,7 @@ var createNodeManager = function ({
     self.useBaseTemplates = useBaseTemplates
     self.getNode = getNode
     self.addLinks = addLinks
+    self.removeLinks = removeLinks;
     self.addNodeTemplate = addNodeTemplate
     self.addNode = addNode
     return self
