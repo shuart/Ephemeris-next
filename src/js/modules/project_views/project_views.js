@@ -8,7 +8,7 @@ var softUpdate= function (event, data, instance) {
 }
 
 function setUp(event, data, instance){
-    instance.append(viewGridSettings.instance(), "view_mount_point_grid");
+    instance.append(viewGridSettings.instance({props:{currentPageId:data.viewId}}), "view_mount_point_grid");
     instance.append(graph.instance(), "view_mount_point0");
     instance.append(table_viewport.instance(), "view_mount_point1");
 }

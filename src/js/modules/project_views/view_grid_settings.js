@@ -1,6 +1,8 @@
 import createAdler from "../../vendor/adler.js";
 import nanoid from "../../vendor/nanoid.js";
 import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
+import projectManagement from "../common_project_management/project_management.js";
+import thumbs from "./view_grid_settings_select_comp.js"
 
 var softUpdate= function (event, data, instance) {
 
@@ -12,7 +14,7 @@ var renderTable= function ({
     height= "100%",
     uuid = nanoid()
 }={}) {
-    var area = ''
+    var area = '<div class="adler_grid_row_save">save</div>'
     for (let i = 0; i < schema.length; i++) {
         const rowItem = schema[i];
         area +='<div class="adler_grid_row" >' + renderRow({rowId:i, cols:rowItem.cols}) +'</div>'
@@ -49,9 +51,9 @@ var renderCol = function ({
     var area = ''
     for (let i = 0; i < components.length; i++) {
         const compItem = components[i];
-        area +=`<div a-slot="view_mount_point_${rowId}_${rowId}" class="adler_grid_comp_area" >` + renderComp(compItem) +'</div>'
+        area +=`<div a-slot="view_mount_point_${rowId}_${colId}" class="adler_grid_comp_area" >` + renderComp(compItem) +'</div>'
     }
-    area += `<div data-row-id="${rowId}" data-col-id="${rowId}" class="adler_grid_col_remove">x</div>`
+    area += `<div data-row-id="${rowId}" data-col-id="${colId}" class="adler_grid_col_remove">x</div>`
     area += `<div data-row-id="${rowId}" data-col-id="${colId}" class="adler_grid_comp_add">+</div>`
     return area
 }
@@ -66,8 +68,21 @@ var renderComp = function ({
     
 }
 
+var saveLayout = function(event, data, instance){
+    var projectId = projectManagement.getCurrent().id
+    // console.log(projectId)
+    // var name= prompt("Name")
+    if (instance.props.currentPageId.get()) {
+        alert(instance.props.currentPageId.get())
+        projectManagement.getProjectStore(projectId,"views").add({uuid:instance.props.currentPageId.get(), layout:JSON.stringify(instance.props.test.get()) ,theTime:Date.now()})
+        console.log(projectManagement.getProjectStore(projectId,"views").getAll())
+        alert()
+        // instance.getNodes().table.do.softUpdate()
+    }
+}
+
 var addRow = function(event, data, instance){
-    mainPopup.mount()
+    
     var currentSchema = instance.props.test.get(); currentSchema.push({ setting:{}, cols:[]});
     instance.props.test.set(currentSchema); instance.update();
 }
@@ -88,6 +103,9 @@ var removeCol = function(event, data, instance){
 }
 
 var addComp = function(event, data, instance){
+    mainPopup.mount()
+    mainPopup.append(thumbs, "main-slot")
+    mainPopup.update();
     var currentSchema = instance.props.test.get(); currentSchema[event.target.dataset.rowId].cols[event.target.dataset.colId].components.push({ setting:{}, componentType:"undefined"});
     instance.props.test.set(currentSchema); instance.update();
 }
@@ -102,14 +120,14 @@ var setUp = function (event, data, instance) {
     //     ]}
     // ]
     var schema = instance.props.test.get()
-    var html = '<div class="Component container">' + renderTable({schema:schema}) +'</div>'
+    var html = '<div class="Component container view_grid_row">' + renderTable({schema:schema}) +'</div>'
     // alert(html)
     instance.setContent((p)=> html)
 }
 
 var component =createAdler({
     content: p => /*html*/`
-    <div class="Component container">
+    <div class="Component container view_grid_row">
     GRID
         <div class="adler_grid_row" >
             <div class="adler_grid_col" >
@@ -126,6 +144,7 @@ var component =createAdler({
         `,
     params:{
         props:{
+            currentPageId:false,
             test:[
                 { setting:{}, cols:[
                     { setting:{}, components:[]},{ setting:{}, components:[ { setting:{}, componentType:"test"} ]}
@@ -152,6 +171,8 @@ var component =createAdler({
             [".adler_grid_col_add","click", addCol ],
             [".adler_grid_col_remove","click", removeCol ],
             [".adler_grid_comp_add","click", addComp ],
+            [".adler_grid_row_save","click", saveLayout ],
+            
         ],
         events:{
             onBeforeMount:(event, data, instance) => setUp(event, data, instance),
@@ -187,7 +208,6 @@ var component =createAdler({
         .adler_grid_row_add{
             width: 20px;
             margin: auto;
-            color: black;
             font-size: 2em;
             cursor:pointer;
         }
@@ -212,14 +232,12 @@ var component =createAdler({
         .adler_grid_col_add{
             width: 20px;
             margin: auto;
-            color: black;
             font-size: 2em;
             cursor:pointer;
         }
         .adler_grid_comp_add{
             width: 20px;
             margin: auto;
-            color: black;
             font-size: 2em;
             cursor:pointer;
             position: relative;
@@ -240,7 +258,6 @@ var component =createAdler({
         .adler_grid_comp_area {
             width: 20px;
             margin: auto;
-            color: black;
             font-size: 2em;
             cursor: pointer;
             position: relative;
@@ -259,6 +276,19 @@ var component =createAdler({
             border-top-color: #01b3ab;
         
             margin-top: 12px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .view_grid_row{
+                color:white;
+            }
+            .adler_grid_col{
+                border-color:#393939;
+            }
+
+            .adler_grid_comp_area, .adler_grid_comp_add{
+                background-color:#303030;
+            }
         }
 
     

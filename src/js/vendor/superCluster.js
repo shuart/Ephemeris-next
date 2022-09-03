@@ -204,7 +204,9 @@ var createCluster = function(initialSchema, options){
         }
         console.log("messages")
         console.log(storageCrdt)
+        console.log(storageUUID)
         console.log(storage)
+        alert()
         // let row = table.find(row => row.id === msg.row);
         // if (!row) {
         //   table.push({ id: msg.row, [msg.column]: msg.value });

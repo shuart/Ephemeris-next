@@ -4,7 +4,7 @@ var popup =createAdler({
     content: p => /*html*/`
         <div class="main_popup_area">
             <div class="main_popup_shield_area"></div>
-            <div class="main_popup_menu_area container"></div>
+            <div a-slot="main-slot" class="main_popup_menu_area container"></div>
         </div>
         `,
     params:{
@@ -42,6 +42,10 @@ var popup =createAdler({
       
 
         @media (prefers-color-scheme: dark) {
+            .main_popup_menu_area {
+                background-color: #303030;
+                color:white;
+            }
           }
     `,
     components:{

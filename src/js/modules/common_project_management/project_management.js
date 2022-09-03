@@ -43,6 +43,9 @@ var createProjectManagement = function(){
         front.add = function (data) {
             return projectStore.add(type, data)
         }
+        front.update = function (data) {
+            return projectStore.add(type, data)
+        }
 
         return front;
     }
