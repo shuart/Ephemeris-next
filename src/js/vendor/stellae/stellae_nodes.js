@@ -242,6 +242,9 @@ var createNodeManager = function ({
         nodeTemplates[name]=params
         
     }
+    var getUsedTemplates = function () {
+        return nodeTemplates
+    }
 
     var init= function () {
         if (ui) {
@@ -250,6 +253,7 @@ var createNodeManager = function ({
     }
     init()
 
+    self.getUsedTemplates = getUsedTemplates
     self.evaluateTree = evaluateTree
     self.useBaseTemplates = useBaseTemplates
     self.getNode = getNode

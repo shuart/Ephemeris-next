@@ -1,6 +1,8 @@
 import * as THREE from "../three.module.js"
 import { MapControls } from '../three.orbitcontrols.js';
 import createNodeLayout from "./stellae_layouts.js";
+import inputElements from "./stellae_inputs.js"
+
 
 export default function createStellaeUi({
     container = document.body,
@@ -295,9 +297,34 @@ export default function createStellaeUi({
                 state.linkToAdd = undefined;
             }
         }
+        function onDblClick (){
+            state.mouse.x = ( (event.clientX-state.containerDim.x) / state.containerDim.width ) * 2 - 1;
+            state.mouse.y = - ( (event.clientY-state.containerDim.y) / state.containerDim.height ) * 2 + 1;
+            var intersects = new THREE.Vector3();
+            state.raycaster.setFromCamera(state.mouse, state.camera);
+            state.raycaster.ray.intersectPlane(state.raycasterPlan, intersects);
+            var usedTemplates = dataManager.getUsedTemplates()
+            var usedTemplatesList = []
+            for (const key in usedTemplates) {
+                if (Object.hasOwnProperty.call(usedTemplates, key)) {
+                    const template = usedTemplates[key];
+                    usedTemplatesList.push({id:template.templateName, value:template.name})
+                }
+            }
+            inputElements.createListInput({
+                options :usedTemplatesList,
+                callback:function (event) {
+                    console.log(usedTemplates[event.id], {name:event.value,  position:{x:intersects.x,y:intersects.z}});
+                    dataManager.addNode(event.id, {name:event.value,  position:{x:intersects.x,y:intersects.z}})
+                },
+            })
+                // state.selectedToMove[0].position.set(intersects.x, 0.1, intersects.z);
+            // alert(intersects.x)
+        }
         container.addEventListener( 'mousedown', onClick );
         container.addEventListener( 'mousemove', onMove );
         container.addEventListener( 'mouseup', onMouseUp );
+        document.addEventListener('dblclick', onDblClick, false);
     }
 
     var startRenderer = function () {
