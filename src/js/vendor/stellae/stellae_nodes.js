@@ -242,7 +242,7 @@ var createNodeManager = function ({
         nodeTemplates[name]=params
         
     }
-    var getUsedTemplates = function () {
+    var getUsedTemplates     = function () {
         return nodeTemplates
     }
 

@@ -40,22 +40,43 @@ var createAdler = function({
         return localWrapper
     }
 
+    var setContent = function(newContent) {
+        content = newContent
+    }
+
     var setUpEvents = function (localWrapper,params, paramIndex){
         console.log(self);
         var setEventListener = function(localWrapper, action){
-            let target = localWrapper.DOMElement.querySelector(action[0])
-            // console.log(action[0],localWrapper.DOMElement)
-            if (!target && action[0] && localWrapper.DOMElement.classList.contains(action[0].slice(1))) {
-                target = localWrapper.DOMElement
-            }
-            if (target) {
+            // let target = localWrapper.DOMElement.querySelector(action[0])
+            const targets = localWrapper.DOMElement.querySelectorAll(action[0]);
+
+            targets.forEach((target) => {
                 function callback(event) {
                     action[2](event, getParamsData(params,paramIndex), self);//inject params into event
                 }
                 target.addEventListener(action[1],callback);
-            }else{
-                console.log("missing event target")
+            });
+
+            if (action[0] && localWrapper.DOMElement.classList.contains(action[0].slice(1))) {
+                function callback(event) {
+                    action[2](event, getParamsData(params,paramIndex), self);//inject params into event
+                }
+                localWrapper.DOMElement.addEventListener(action[1],callback);
             }
+
+
+            // // console.log(action[0],localWrapper.DOMElement)
+            // if (!target && action[0] && localWrapper.DOMElement.classList.contains(action[0].slice(1))) {
+            //     target = localWrapper.DOMElement
+            // }
+            // if (target) {
+            //     function callback(event) {
+            //         action[2](event, getParamsData(params,paramIndex), self);//inject params into event
+            //     }
+            //     target.addEventListener(action[1],callback);
+            // }else{
+            //     console.log("missing event target")
+            // }
         }
         if (params && params.on) {
             // console.log(params)
@@ -354,7 +375,8 @@ var createAdler = function({
 
     init()
 
-    self.query = query
+    self.setContent = setContent;
+    self.query = query;
     self.getDOMElement = getDOMElement
     self.unmount = unmount;
     self.clearSlot = clearSlot;
