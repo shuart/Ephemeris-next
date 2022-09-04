@@ -111,10 +111,28 @@ var createCluster = function(initialSchema, options){
                 if (currentPersistence){
                     console.log(currentPersistence);
                     var currentPersistence = JSON.parse(currentPersistence)
-                    currentSchema = currentPersistence.currentSchema; currentUUIDS = currentPersistence.currentUUIDS; storageIndexes = currentPersistence.storageIndexes; storageUUID = currentPersistence.storageUUID;storage = currentPersistence.storage;storageCrdt=currentPersistence.storageCrdt
+                    var newIndexedStorage = rebuildIndexes(currentPersistence.currentUUIDS, currentPersistence.storage)
+                    currentSchema = currentPersistence.currentSchema; currentUUIDS = currentPersistence.currentUUIDS; storageIndexes = currentPersistence.storageIndexes; storageUUID = newIndexedStorage ;storage = currentPersistence.storage;storageCrdt=currentPersistence.storageCrdt
                 }
             }
         }
+    }
+
+    var rebuildIndexes = function (currentUUIDSFromPersistence, storageFromPersistence) {
+        // currentUUIDS[storeName]
+        var storeWithIndexes = {}
+        for (const store in storageFromPersistence) {
+            if (Object.hasOwnProperty.call(storageFromPersistence, store)) {
+                const currentStore = storageFromPersistence[store];
+                storeWithIndexes[store] = {}
+                var currentMainIndex = currentUUIDS[store]
+                for (let i = 0; i < currentStore.length; i++) {
+                    const element = currentStore[i];
+                    storeWithIndexes[store][ element[currentMainIndex] ] = element
+                }
+            }
+        }
+        return storeWithIndexes
     }
 
     //CRDT
@@ -206,7 +224,7 @@ var createCluster = function(initialSchema, options){
         console.log(storageCrdt)
         console.log(storageUUID)
         console.log(storage)
-        alert()
+        // alert()
         // let row = table.find(row => row.id === msg.row);
         // if (!row) {
         //   table.push({ id: msg.row, [msg.column]: msg.value });

@@ -73,10 +73,10 @@ var saveLayout = function(event, data, instance){
     // console.log(projectId)
     // var name= prompt("Name")
     if (instance.props.currentPageId.get()) {
-        alert(instance.props.currentPageId.get())
+        // alert(instance.props.currentPageId.get())
         projectManagement.getProjectStore(projectId,"views").add({uuid:instance.props.currentPageId.get(), layout:JSON.stringify(instance.props.test.get()) ,theTime:Date.now()})
         console.log(projectManagement.getProjectStore(projectId,"views").getAll())
-        alert()
+        // alert()
         // instance.getNodes().table.do.softUpdate()
     }
 }
