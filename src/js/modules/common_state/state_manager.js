@@ -9,6 +9,7 @@ import project_dashboard from "../project_dashboard/project_dashboard.js";
 import settings_ui from "../common_settings/settings_ui.js";
 import common_side_bar from "../common_side_bar/common_side_bar.js";
 import project_views from "../project_views/project_views.js";
+import project_views_settings from "../project_views/project_views_settings.js";
 import login_ui from "../login/login_ui.js";
 
 
@@ -76,6 +77,14 @@ var createStateManager = function({
             console.log(event);
             setCurrentProject(event.params.project)
             mainUiElement.append(project_views.instance({data:{viewId:event.params.viewId}}), "main_area_mount_point");
+            mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
+            mainUiElement.update();
+        })
+        common_router.route("/:project/settings/views/:viewId", (event)=>
+        {
+            console.log(event);
+            setCurrentProject(event.params.project)
+            mainUiElement.append(project_views_settings.instance({data:{viewId:event.params.viewId}}), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })

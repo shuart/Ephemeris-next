@@ -40,6 +40,9 @@ var createProjectManagement = function(){
         front.getAll = function () {
             return projectStore.get(type).toArray()
         }
+        front.getById = function (uuid) {
+            return projectStore.get(type).where("uuid").equals(uuid)
+        }
         front.add = function (data) {
             return projectStore.add(type, data)
         }

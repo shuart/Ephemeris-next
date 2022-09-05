@@ -11,16 +11,21 @@ var softUpdate= function (event, data, instance) {
 var renderTable= function ({
     schema=[],
     width = undefined,
+    showSettings = false,
     height= "100%",
     uuid = nanoid()
 }={}) {
-    var area = '<div class="adler_grid_row_save">save</div>'
+    var settingClass = ""
+    if (showSettings) { 
+        settingClass="adler_grid_row_settings";
+        var area = '<div class="adler_grid_row_save">save</div>'
+    }
     for (let i = 0; i < schema.length; i++) {
         const rowItem = schema[i];
-        area +='<div class="adler_grid_row" >' + renderRow({rowId:i, cols:rowItem.cols}) +'</div>'
+        area +=`<div class="adler_grid_row ${settingClass}"  >` + renderRow({rowId:i, cols:rowItem.cols, showSettings:showSettings}) +'</div>'
     }
-    area += '<div class="adler_grid_row_add">+</div>'
-
+    if (showSettings) { area += '<div class="adler_grid_row_add">+</div>'}
+    
     return area
 }
 
@@ -28,21 +33,27 @@ var renderRow = function ({
     cols=[],
     rowId = undefined,
     width = undefined,
+    showSettings = false,
     height= "100%",
     uuid = nanoid()
 }={}) {
     var area = ''
+    var settingClass = ""
+    if (showSettings) { settingClass="adler_grid_col_settings"}
     for (let i = 0; i < cols.length; i++) {
         const colItem = cols[i];
-        area +='<div class="adler_grid_col" style="width:25%">' + renderCol({components:colItem.components, rowId:rowId, colId:i}) +'</div>'
+        area +=`<div class="adler_grid_col ${settingClass}" style="width:25%">` + renderCol({components:colItem.components, rowId:rowId, colId:i, showSettings:showSettings}) +'</div>'
     }
-    area += `<div data-row-id="${rowId}" class="adler_grid_row_remove">x</div>`
-    area += `<div data-row-id="${rowId}" class="adler_grid_col_add">+</div>`
+    if (showSettings) {
+        area += `<div data-row-id="${rowId}" class="adler_grid_row_remove">x</div>`
+        area += `<div data-row-id="${rowId}" class="adler_grid_col_add">+</div>`
+    }
     return area
 }
 var renderCol = function ({
     components=[],
     rowId = undefined,
+    showSettings = false,
     colId= undefined,
     width = undefined,
     height= "100%",
@@ -53,8 +64,11 @@ var renderCol = function ({
         const compItem = components[i];
         area +=`<div a-slot="view_mount_point_${rowId}_${colId}" class="adler_grid_comp_area" >` + renderComp(compItem) +'</div>'
     }
-    area += `<div data-row-id="${rowId}" data-col-id="${colId}" class="adler_grid_col_remove">x</div>`
-    area += `<div data-row-id="${rowId}" data-col-id="${colId}" class="adler_grid_comp_add">+</div>`
+    if (showSettings) { 
+        area += `<div data-row-id="${rowId}" data-col-id="${colId}" class="adler_grid_col_remove">x</div>`
+        area += `<div data-row-id="${rowId}" data-col-id="${colId}" class="adler_grid_comp_add">+</div>`
+    }
+    
     return area
 }
 var renderComp = function ({
@@ -74,7 +88,7 @@ var saveLayout = function(event, data, instance){
     // var name= prompt("Name")
     if (instance.props.currentPageId.get()) {
         // alert(instance.props.currentPageId.get())
-        projectManagement.getProjectStore(projectId,"views").add({uuid:instance.props.currentPageId.get(), layout:JSON.stringify(instance.props.test.get()) ,theTime:Date.now()})
+        projectManagement.getProjectStore(projectId,"views").add({uuid:instance.props.currentPageId.get(), layout:JSON.stringify(instance.props.schema.get()) ,theTime:Date.now()})
         console.log(projectManagement.getProjectStore(projectId,"views").getAll())
         // alert()
         // instance.getNodes().table.do.softUpdate()
@@ -83,31 +97,31 @@ var saveLayout = function(event, data, instance){
 
 var addRow = function(event, data, instance){
     
-    var currentSchema = instance.props.test.get(); currentSchema.push({ setting:{}, cols:[]});
-    instance.props.test.set(currentSchema); instance.update();
+    var currentSchema = instance.props.schema.get(); currentSchema.push({ setting:{}, cols:[]});
+    instance.props.schema.set(currentSchema); instance.update();
 }
 var removeRow = function(event, data, instance){
-    var currentSchema = instance.props.test.get();
+    var currentSchema = instance.props.schema.get();
     if (event.target.dataset.rowId > -1) { currentSchema.splice(event.target.dataset.rowId, 1) }
-    instance.props.test.set(currentSchema); instance.update();
+    instance.props.schema.set(currentSchema); instance.update();
 }
 
 var addCol = function(event, data, instance){
-    var currentSchema = instance.props.test.get(); currentSchema[event.target.dataset.rowId].cols.push({ setting:{}, components:[]});
-    instance.props.test.set(currentSchema); instance.update();
+    var currentSchema = instance.props.schema.get(); currentSchema[event.target.dataset.rowId].cols.push({ setting:{}, components:[]});
+    instance.props.schema.set(currentSchema); instance.update();
 }
 var removeCol = function(event, data, instance){
-    var currentSchema = instance.props.test.get();
+    var currentSchema = instance.props.schema.get();
     if (event.target.dataset.rowId > -1) { currentSchema[event.target.dataset.rowId].cols.splice(event.target.dataset.colId, 1) }
-    instance.props.test.set(currentSchema); instance.update();
+    instance.props.schema.set(currentSchema); instance.update();
 }
 
 var addComp = function(event, data, instance){
     mainPopup.mount()
     mainPopup.append(thumbs, "main-slot")
     mainPopup.update();
-    var currentSchema = instance.props.test.get(); currentSchema[event.target.dataset.rowId].cols[event.target.dataset.colId].components.push({ setting:{}, componentType:"undefined"});
-    instance.props.test.set(currentSchema); instance.update();
+    var currentSchema = instance.props.schema.get(); currentSchema[event.target.dataset.rowId].cols[event.target.dataset.colId].components.push({ setting:{}, componentType:"undefined"});
+    instance.props.schema.set(currentSchema); instance.update();
 }
 
 var setUp = function (event, data, instance) {
@@ -119,8 +133,9 @@ var setUp = function (event, data, instance) {
     //         { setting:{}, components:[]},
     //     ]}
     // ]
-    var schema = instance.props.test.get()
-    var html = '<div class="Component container view_grid_row">' + renderTable({schema:schema}) +'</div>'
+    var schema = instance.props.schema.get()
+    var showSettings = instance.props.showSettings.get()
+    var html = '<div class="Component container view_grid_row">' + renderTable({schema:schema, showSettings:showSettings}) +'</div>'
     // alert(html)
     instance.setContent((p)=> html)
 }
@@ -145,7 +160,8 @@ var component =createAdler({
     params:{
         props:{
             currentPageId:false,
-            test:[
+            showSettings:false,
+            schema:[
                 { setting:{}, cols:[
                     { setting:{}, components:[]},{ setting:{}, components:[ { setting:{}, componentType:"test"} ]}
                 ]},
@@ -155,8 +171,8 @@ var component =createAdler({
             ],
         },
         listen:{
-            test:function (event, data, instance) {
-                //alert("test")
+            schema:function (event, data, instance) {
+                //alert("schema")
             }
         },
         data:{
@@ -191,19 +207,23 @@ var component =createAdler({
             min-height:100px;
             min-width:50px;
             margin:5px;
+            position:relative;
+        }
+        .adler_grid_col_settings{
             border-style: dashed;
             border-color: #bbb;
             border-radius: 11px;
-            position:relative;
         }
         .adler_grid_row{
             min-height:100px;
             min-width:50px;
             display: flex; /* or inline-flex */
+            margin-bottom: -3px;
+        }
+        .adler_grid_row_settings{
             border-style: dashed;
             border-color: #646464;
             border-radius: 11px;
-            margin-bottom: -3px;
         }
         .adler_grid_row_add{
             width: 20px;
@@ -282,7 +302,7 @@ var component =createAdler({
             .view_grid_row{
                 color:white;
             }
-            .adler_grid_col{
+            .adler_grid_col_settings{
                 border-color:#393939;
             }
 
