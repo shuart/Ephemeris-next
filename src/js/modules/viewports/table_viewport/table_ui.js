@@ -11,7 +11,7 @@ var addItem = function (event, data, instance) {
     console.log(projectId)
     var name= prompt("Name")
     if (name) {
-        projectManagement.getProjectStore(projectId,"instances").add({name:name ,theTime:Date.now()})
+        projectManagement.getProjectStore(projectId,"instances").add({name:name,theTime:Date.now()})
         instance.getNodes().tablevp.do.softUpdate()
     }
 }
@@ -20,12 +20,14 @@ var getItemsList = function (data){
     var projectId = projectManagement.getCurrent().id
     console.log(projectId)
     // return projectManagement.getProjectStore(projectId,"default").getAll().map((i)=> {return {value:i.name, onClick:(event, data, instance)=> console.log(i.id, instance)} } )
-    return projectManagement.getProjectStore(projectId,"instances").getAll()
+    var allInstance=  projectManagement.getProjectStore(projectId,"instances").getAll()
+    return allInstance
     // return projectManagement.getProjectStore(projectId,"default").getAll().toString()
 }
 
 var setUpTable = function (event, data, instance) {
      console.log(instance.getNodes());
+    //  alert(instance.props.settings.get().entityType)
      instance.getNodes().tablevp.setData({list:getItemsList(data)})
 }
 
@@ -40,6 +42,9 @@ var component =createAdler({
     params:{
         props:{
             test:15,
+            settings:{
+                entityType:false,
+            },
         },
         listen:{
             test:function (event, data, instance) {

@@ -3,9 +3,30 @@ import nanoid from "../../vendor/nanoid.js";
 import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
 import projectManagement from "../common_project_management/project_management.js";
 import thumbs from "./view_grid_settings_select_comp.js"
+import table_viewport from "../viewports/table_viewport/table_ui.js"
 
 var softUpdate= function (event, data, instance) {
 
+}
+
+var mountModules = function (event, data, instance) {
+    var schema = instance.props.schema.get()
+    console.log(schema);
+    for (let i = 0; i < schema.length; i++) {
+        const row = schema[i];
+        for (let j = 0; j < row.cols.length; j++) {
+            const col = row.cols[j];
+            for (let k = 0; k < col.components.length; k++) {
+                const comp = col.components[k];
+                console.log(comp);
+                instance.append(table_viewport.instance({
+                    props:{
+                        settings:{entityType:comp.settings.entityType},
+                    }
+                },), `view_mount_point_${i}_${j}_${k}`);
+            }
+        }
+    }
 }
 
 var renderTable= function ({
@@ -42,7 +63,7 @@ var renderRow = function ({
     if (showSettings) { settingClass="adler_grid_col_settings"}
     for (let i = 0; i < cols.length; i++) {
         const colItem = cols[i];
-        area +=`<div class="adler_grid_col ${settingClass}" style="width:25%">` + renderCol({components:colItem.components, rowId:rowId, colId:i, showSettings:showSettings}) +'</div>'
+        area +=`<div class="adler_grid_col ${settingClass}" style="width:${100/cols.length}%">` + renderCol({components:colItem.components, rowId:rowId, colId:i, showSettings:showSettings}) +'</div>'
     }
     if (showSettings) {
         area += `<div data-row-id="${rowId}" class="adler_grid_row_remove">x</div>`
@@ -60,10 +81,18 @@ var renderCol = function ({
     uuid = nanoid()
 }={}) {
     var area = ''
-    for (let i = 0; i < components.length; i++) {
-        const compItem = components[i];
-        area +=`<div a-slot="view_mount_point_${rowId}_${colId}" class="adler_grid_comp_area" >` + renderComp(compItem) +'</div>'
+    if (showSettings) {
+        for (let i = 0; i < components.length; i++) {
+            const compItem = components[i];
+            area +=`<div a-slot="view_mount_point_${rowId}_${colId}_${i}" data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${i}"  class="adler_grid_comp_area" >` + renderComp(compItem) +'</div>'
+        }
+    }else{
+        for (let i = 0; i < components.length; i++) {
+            const compItem = components[i];
+            area +=`<div a-slot="view_mount_point_${rowId}_${colId}_${i}" class="" ></div>`
+        }
     }
+    
     if (showSettings) { 
         area += `<div data-row-id="${rowId}" data-col-id="${colId}" class="adler_grid_col_remove">x</div>`
         area += `<div data-row-id="${rowId}" data-col-id="${colId}" class="adler_grid_comp_add">+</div>`
@@ -80,6 +109,16 @@ var renderComp = function ({
     
     return area
     
+}
+
+var setUpSettingsEvent = function (event, data, instance){
+    var compPos = [event.target.dataset.rowId,event.target.dataset.colId,event.target.dataset.compId,]
+    
+    var entityName = prompt()
+    var currentSchema = instance.props.schema.get(); 
+    currentSchema[ compPos[0] ].cols[ compPos[1] ].components[ compPos[2] ].settings={entityType:entityName};
+    // alert(JSON.stringify(currentSchema))
+    // instance.props.schema.set(currentSchema); instance.update();
 }
 
 var saveLayout = function(event, data, instance){
@@ -138,6 +177,10 @@ var setUp = function (event, data, instance) {
     var html = '<div class="Component container view_grid_row">' + renderTable({schema:schema, showSettings:showSettings}) +'</div>'
     // alert(html)
     instance.setContent((p)=> html)
+    if (!showSettings) {
+        mountModules(event, data, instance)
+    }
+    
 }
 
 var component =createAdler({
@@ -162,11 +205,11 @@ var component =createAdler({
             currentPageId:false,
             showSettings:false,
             schema:[
-                { setting:{}, cols:[
-                    { setting:{}, components:[]},{ setting:{}, components:[ { setting:{}, componentType:"test"} ]}
+                { settings:{}, cols:[
+                    { settings:{}, components:[]},{ settings:{}, components:[ { settings:{}, componentType:"test"} ]}
                 ]},
-                { setting:{}, cols:[
-                    { setting:{}, components:[]},
+                { settings:{}, cols:[
+                    { settings:{}, components:[]},
                 ]}
             ],
         },
@@ -179,6 +222,7 @@ var component =createAdler({
             value:"Hello",
             list:[],
             table:undefined,
+            moduleMountPoints:[],
             // onClick:()=>console.log("click")
         },
         on:[
@@ -188,11 +232,12 @@ var component =createAdler({
             [".adler_grid_col_remove","click", removeCol ],
             [".adler_grid_comp_add","click", addComp ],
             [".adler_grid_row_save","click", saveLayout ],
+            [".adler_grid_comp_area","click", setUpSettingsEvent ],
             
         ],
         events:{
             onBeforeMount:(event, data, instance) => setUp(event, data, instance),
-            // onMount:(event, data, instance) => setUp(event, data, instance),
+            // onMount:(event, data, instance) => mountModules(event, data, instance),
             
         },
         methods:{
