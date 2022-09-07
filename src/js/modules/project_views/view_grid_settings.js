@@ -1,6 +1,7 @@
 import createAdler from "../../vendor/adler.js";
 import nanoid from "../../vendor/nanoid.js";
 import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
+import select from "../common_ui_components/select/select.js"
 import projectManagement from "../common_project_management/project_management.js";
 import thumbs from "./view_grid_settings_select_comp.js"
 import table_viewport from "../viewports/table_viewport/table_ui.js"
@@ -113,10 +114,24 @@ var renderComp = function ({
 
 var setUpSettingsEvent = function (event, data, instance){
     var compPos = [event.target.dataset.rowId,event.target.dataset.colId,event.target.dataset.compId,]
+    var projectId = projectManagement.getCurrent().id
+    var entities = projectManagement.getProjectStore(projectId,"entities").getAll()
+
+    mainPopup.mount()
+    mainPopup.append(select.instance({
+        data:{
+            list:entities,
+            callback:function(event){
+                var currentSchema = instance.props.schema.get(); 
+                currentSchema[ compPos[0] ].cols[ compPos[1] ].components[ compPos[2] ].settings={entityType:event.value.uuid};
+            }
+        }
+    }), "main-slot")
+    mainPopup.update();
     
-    var entityName = prompt()
-    var currentSchema = instance.props.schema.get(); 
-    currentSchema[ compPos[0] ].cols[ compPos[1] ].components[ compPos[2] ].settings={entityType:entityName};
+
+
+
     // alert(JSON.stringify(currentSchema))
     // instance.props.schema.set(currentSchema); instance.update();
 }
