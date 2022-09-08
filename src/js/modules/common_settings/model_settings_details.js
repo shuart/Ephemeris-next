@@ -3,6 +3,7 @@ import userManagement from "../common_user_management/user_management.js";
 import createAdler from "../../vendor/adler.js";
 
 import table_component from "../common_ui_components/table/table.js";
+import createEntityManagement from "../common_project_management/entity_management.js";
 
 // import {Tabulator} from "../../vendor/tabulator_esm.min.js";
 
@@ -23,28 +24,60 @@ var addEntityToProject = function(event, data, instance){
     }
     // instance.update()
 }
-var getItemsList = function (data){
-    var projectId = projectManagement.getCurrent().id
-    console.log(projectId)
-    // return projectManagement.getProjectStore(projectId,"default").getAll().map((i)=> {return {value:i.name, onClick:(event, data, instance)=> console.log(i.id, instance)} } )
-    return projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
-    // return projectManagement.getProjectStore(projectId,"default").getAll().toString()
+var getItemsList = function (data, instance){
+    var entityRepo = createEntityManagement()
+    // console.log(entityRepo.getAll());
+    var element = entityRepo.getById(instance.props.get("modelElementDetails"))
+    // console.log(element.properties);
+    // element.addProperty("testprop",54)
+    // console.log("propAdded");
+    // var element = entityRepo.getAll()[0]
+    // console.log(element.properties);
+    // alert("settings details")
+    var list = []
+    for (const key in element.properties) {
+        if (Object.hasOwnProperty.call(element.properties, key)) {
+            const prop = element.properties[key];
+            list.push(prop)
+        }
+    }
+    return list
 }
 
 var setUpData = function (event, data, instance) {
-    console.trace(getCurrentProject);
-    instance.setData({
-        modelElementType:instance.props.modelElementType.get(),
-        currentUserName:getCurrentUser().name,
-        currentProject:getCurrentProject().name,
-        // currentItems:getItemsList(),
 
-     }, false)
+    //test repo
+
+    // var entityRepo = createEntityManagement()
+    // console.log(entityRepo.getAll());
+    // var element = entityRepo.getAll()[0]
+    // console.log(element.properties);
+    // element.addProperty("testprop",54)
+    // console.log("propAdded");
+    // var element = entityRepo.getAll()[0]
+    // console.log(element.properties);
+    // alert("settings details")
+
+
+    // console.trace(getCurrentProject);
+    // instance.setData({
+    //     modelElementType:instance.props.modelElementType.get(),
+    //     currentUserName:getCurrentUser().name,
+    //     currentProject:getCurrentProject().name,
+    //     // currentItems:getItemsList(),
+
+    //  }, false)
+    var entityRepo = createEntityManagement()
+    var element = entityRepo.getById(instance.props.get("modelElementDetails"))
+    instance.props.set('onAdd', ()=>{
+        var propName = prompt()
+        element.addProperty(propName,propName)
+    } )
 }
 
 var setUpTable = function (event, data, instance) {
      console.log(instance.getNodes());
-     instance.getNodes().table.setData({list:getItemsList(data)})
+     instance.getNodes().table.setData({list:getItemsList(data,instance)})
 }
 
 
@@ -52,13 +85,15 @@ var setUpTable = function (event, data, instance) {
 var model_settings_component =createAdler({
     content: p => /*html*/`
         <div class="container">
-            <div class="example-table" a-id="table" a-props="test:test" adler="table_component" >${p.modelElementType}</div>
+            <div class="example-table" a-id="table" a-props="test:test,onAdd" adler="table_component" >${p.modelElementType}</div>
         </div>
         `
         ,
     params:{
         props:{
             modelElementType:"entities",
+            modelElementDetails:false,
+            onAdd:alert,//TODO: Does not work if undefined. Why?
         },
         listen:{
             test:function(){

@@ -67,14 +67,15 @@ var softUpdate= function (event, data, instance) {
 var table_component =createAdler({
     content: p => /*html*/`
     <div class="tableComponent"></div>
-    <div class="sdqsd"></div>
+    <div a-if="onAdd" class="action-table-add">add</div>
     <div class="qdsqs"></div>
         `,
     params:{
         props:{
             test:15,
             dataList:[],
-            callback:(event)=>alert(event.name)
+            // onAdd: alert,
+            callback:(event)=>alert(event.name),
         },
         listen:{
             test:function (event, data, instance) {
@@ -88,7 +89,7 @@ var table_component =createAdler({
             // onClick:()=>console.log("click")
         },
         on:[
-            // [".tableCddomponent","click", (event, data, instance)=> data.onClick(event, data, instance) ],
+            [".action-table-add","click", (event, data, instance)=> instance.props.get("onAdd")() ],
         ],
         events:{
             onMount:(event, data, instance) => setUpTable(event, data, instance),

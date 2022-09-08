@@ -40,6 +40,9 @@ var component =createAdler({
         methods:{
             softUpdate:(event, data, instance)=>softUpdate(event, data, instance),
         },
+        replaceComponents:{
+            //set here components to replace
+        },
     },
     components:{
         // table_component: table_component

@@ -1,0 +1,38 @@
+import createRepoManagement from "./repo_management.js";
+import projectManagement from "./project_management.js";
+import projectStores from "./project_data_store.js";
+import nanoid from "../../vendor/nanoid.js";
+
+var entityAggregate = function(aggregate, projectStore){
+
+    //parameters
+    var ownProperties = {}
+    for (const key in aggregate.attributes) {
+        if (Object.hasOwnProperty.call(aggregate.attributes, key) && key.search("prop_")>=0) {
+            const element = aggregate.attributes[key];
+            //TODO check if ref is still used
+            // ownProperties.push({uuid:key, value:aggregate.attributes[key]})
+            var property = projectStore.get("properties").where("uuid").equals(key.substring(5))
+            var propertyName = property.name
+            // ownProperties[propertyName] = aggregate.attributes[key]
+            ownProperties[propertyName] = property
+        }
+    }
+    aggregate.properties = ownProperties
+
+    //methods
+    aggregate.addProperty = function (param, type) {
+        var futureId = nanoid()
+        var refId = 'prop_'+futureId
+        projectStore.add("properties",{uuid:futureId,name:param, type:type})
+        projectStore.add("entities",{uuid:aggregate.uuid,[refId]:true})
+    }
+
+    return aggregate
+}
+
+var createEntityManagement = function () {
+    return createRepoManagement(projectManagement.getCurrent().id, 'entities', entityAggregate)
+}
+
+export default createEntityManagement

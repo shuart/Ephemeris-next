@@ -185,7 +185,13 @@ var createAdler = function({
     var setUpProps = function (params) {
         self.props={}
         self.props.set = (propName, newValue)=> self.props[propName].set(newValue)
-        self.props.get = (propName)=> self.props[propName].get()
+        self.props.get = (propName)=> {
+            if (self.props[propName]) {
+                return self.props[propName].get()
+            }else{
+                return undefined
+            }
+        }
         console.log(params);
         if (params.props) {
             for (const key in params.props){
@@ -252,9 +258,9 @@ var createAdler = function({
         var foundComponents = wrapper.DOMElement.querySelectorAll("[a-if]")
         for (let i = 0; i < foundComponents.length; i++) {
             const element = foundComponents[i];
-            // console.log(self);
-            // alert()
-            if( params.data[element.getAttribute("a-if")] != true  || self.props.get(element.getAttribute("a-if"))!= true){
+            
+            var checkIfCond = params.data[element.getAttribute("a-if")] || self.props.get(element.getAttribute("a-if"))
+            if( !checkIfCond){
                 element.remove();
             } 
         }
