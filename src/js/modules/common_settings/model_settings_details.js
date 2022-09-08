@@ -1,7 +1,6 @@
 import projectManagement from "../common_project_management/project_management.js";
 import userManagement from "../common_user_management/user_management.js";
 import createAdler from "../../vendor/adler.js";
-import state_manager from "../common_state/state_manager.js"
 
 import table_component from "../common_ui_components/table/table.js";
 
@@ -41,8 +40,6 @@ var setUpData = function (event, data, instance) {
         // currentItems:getItemsList(),
 
      }, false)
-    //  alert()
-     instance.props.callback.set((e)=>state_manager.goTo("/:/settings/details/"+instance.props.modelElementType.get()+"/"+e.uuid)) //"/:project/settings/details/:entity/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
 }
 
 var setUpTable = function (event, data, instance) {
@@ -55,65 +52,13 @@ var setUpTable = function (event, data, instance) {
 var model_settings_component =createAdler({
     content: p => /*html*/`
         <div class="container">
-            <nav class="navbar" role="navigation" aria-label="main navigation">
-
-                <div id="navbarBasicExample" class="navbar-menu">
-                    <div class="navbar-start">
-                    <a class="navbar-item action_settings_add_entity">
-                        Add
-                    </a>
-
-                    <a class="navbar-item">
-                        Documentation
-                    </a>
-
-                    <div class="navbar-item has-dropdown is-hoverable">
-                        <a class="navbar-link">
-                        More
-                        </a>
-
-                        <div class="navbar-dropdown">
-                        <a class="navbar-item">
-                            About
-                        </a>
-                        <a class="navbar-item">
-                            Jobs
-                        </a>
-                        <a class="navbar-item">
-                            Contact
-                        </a>
-                        <hr class="navbar-divider">
-                        <a class="navbar-item">
-                            Report an issue
-                        </a>
-                        </div>
-                    </div>
-                    </div>
-
-                    <div class="navbar-end">
-                    <div class="navbar-item">
-                        <div class="buttons">
-                        <a class="button is-primary">
-                            <strong>Sign up</strong>
-                        </a>
-                        <a class="button is-light">
-                            Log in
-                        </a>
-                        </div>
-                    </div>
-                    </div>
-                </div>
-            </nav>
-        
-
-            <div class="example-table" a-id="table" a-props="test:test,callback:callback" adler="table_component" >${p.modelElementType}</div>
+            <div class="example-table" a-id="table" a-props="test:test" adler="table_component" >${p.modelElementType}</div>
         </div>
         `
         ,
     params:{
         props:{
             modelElementType:"entities",
-            callback: ()=> true,
         },
         listen:{
             test:function(){

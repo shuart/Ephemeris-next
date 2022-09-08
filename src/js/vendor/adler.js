@@ -11,7 +11,8 @@ var createAdler = function({
     } = {}){
     var self={}
     var wrapper = undefined;
-    var renderList = []
+    var renderList = [];
+    var currentComponents = undefined;
     var checkDataAttributes = true;
     var instanceDomElement = undefined;
     
@@ -101,6 +102,7 @@ var createAdler = function({
     }
 
     var appendToDom = function(mountTargetElement){
+        setUpReplacementComponents(params)
         setUpProps(params)
         doLifeCycleEvents("onBeforeMount")//Lifecyle event
         wrapper = renderContent(params);
@@ -174,17 +176,25 @@ var createAdler = function({
         return prop
     }
 
+    var setUpReplacementComponents = function(params){
+        if (!params.replaceComponents) { //avoid undefined cases
+            params.replaceComponents = {}
+        }
+    }
+
     var setUpProps = function (params) {
         self.props={}
+        self.props.set = (propName, newValue)=> self.props[propName].set(newValue)
+        self.props.get = (propName)=> self.props[propName].get()
         console.log(params);
         if (params.props) {
             for (const key in params.props){
                 console.log(params.props[key]);
-                console.log(params.props[key].type != "adler-props");
-                if (params.props[key].type != "adler-props") {
+                // console.log(params.props[key].type != "adler-props");
+                if (params.props[key] && params.props[key].type != "adler-props") {
                     self.props[key] = createProp(params.props[key])
                     console.log(self);
-                }else if (params.props[key].type == "adler-props"){
+                }else if (params.props[key] && params.props[key].type == "adler-props"){
                     self.props[key] = params.props[key]
                 }
                 if (self.props[key] && params.listen && params.listen[key]) {
@@ -198,12 +208,20 @@ var createAdler = function({
         console.log(pairs);
         var newValues = {}
         for (let i = 0; i < pairs.length; i++) {
-            const pair = pairs[i].split(":");
-            console.log(self.props);
-            console.log(self.props[ pair[1] ]);
-            if (self.props[ pair[1] ]) {
-                newValues[ pair[0] ]=self.props[ pair[1] ]
+            // console.log(pairs[i]);
+            if (pairs[i].search(":")>=0) {
+                const pair = pairs[i].split(":");
+                // console.log(self.props);
+                // console.log(self.props[ pair[1] ]);
+                if (self.props[ pair[1] ]) {
+                    newValues[ pair[0] ]=self.props[ pair[1] ]
+                }
+            }else{
+                if (self.props[ pairs[i] ]) { //pass props automaticaly when source and target names are same
+                    newValues[ pairs[i] ]=self.props[ pairs[i] ]
+                }
             }
+            
         }
         return newValues
     }
@@ -217,6 +235,7 @@ var createAdler = function({
         if(extra && extra.methods){ newPramas.methods = Object.assign({},newPramas.methods, extra.methods) };
         if(extra && extra.props){ newPramas.props = Object.assign({},newPramas.props, extra.props) };
         if(extra && extra.listen){ newPramas.listen = Object.assign({},newPramas.listen, extra.listen) };
+        if(extra && extra.replaceComponents){ newPramas.replaceComponents = Object.assign({},newPramas.replaceComponents, extra.replaceComponents) };
         return createAdler({content: content, params:newPramas, components:components});
     }
 
@@ -233,17 +252,22 @@ var createAdler = function({
         var foundComponents = wrapper.DOMElement.querySelectorAll("[a-if]")
         for (let i = 0; i < foundComponents.length; i++) {
             const element = foundComponents[i];
-            if( params.data[element.getAttribute("a-if")] != true ) element.remove();
+            // console.log(self);
+            // alert()
+            if( params.data[element.getAttribute("a-if")] != true  || self.props.get(element.getAttribute("a-if"))!= true){
+                element.remove();
+            } 
         }
     }
     var registerInNodeMap = function(id, instance){
         nodeMap[id]=instance;
     }
     var mountComponents = function(wrapper,params){
+        
         var foundComponents = wrapper.DOMElement.querySelectorAll("[adler]")
         for (let i = 0; i < foundComponents.length; i++) {
             const element = foundComponents[i];
-            var templateComponent = components[element.getAttribute("adler")]
+            var templateComponent = params.replaceComponents[element.getAttribute("adler")] || components[element.getAttribute("adler")] //check overideComponent
             if(!templateComponent){
                 // console.log(components);
                 // console.log("missing component");
@@ -339,6 +363,9 @@ var createAdler = function({
             update()
         }
     }
+    var replaceComponents = function (newComps) {
+        params.replaceComponents = Object.assign(params.replaceComponents,newComps )
+    }
     var append = function (component,slot) {
         slotMap[slot] = component;
     }
@@ -376,6 +403,7 @@ var createAdler = function({
     init()
 
     self.setContent = setContent;
+    self.replaceComponents = replaceComponents;
     self.query = query;
     self.getDOMElement = getDOMElement
     self.unmount = unmount;

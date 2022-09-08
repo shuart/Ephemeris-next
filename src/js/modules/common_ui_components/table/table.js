@@ -45,7 +45,8 @@ var setUpTable = function(event, data, instance){
 //     });
    //trigger an alert message when the row is clicked
    table.on("cellClick", function(e, cell){ 
-       alert("cell " + cell.getData()+ " Clicked!!!!");
+        instance.props.callback.get()(cell.getData())
+    //    alert("cell " + cell.getData()+ " Clicked!!!!");
    });
 //    table.on("scrollVertical", function(top){
 //     //top - the current vertical scroll position
@@ -73,6 +74,7 @@ var table_component =createAdler({
         props:{
             test:15,
             dataList:[],
+            callback:(event)=>alert(event.name)
         },
         listen:{
             test:function (event, data, instance) {

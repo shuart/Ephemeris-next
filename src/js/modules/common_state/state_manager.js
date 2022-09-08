@@ -104,6 +104,14 @@ var createStateManager = function({
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
+        common_router.route("/:project/settings/details/:entity/:entityId", (event)=>
+        {
+            console.log(event);
+            setCurrentProject(event.params.project)
+            mainUiElement.append(settings_ui.instance({props:{modelElementType:event.params.entity,modelElementDetails:event.params.entityId, activeSideMenuLink:event.params.entity}}), "main_area_mount_point");
+            mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
+            mainUiElement.update();
+        })
 
         common_router.use("/",logger,redirectIfNoUser )
         common_router.listen()

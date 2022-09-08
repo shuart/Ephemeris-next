@@ -4,6 +4,7 @@ import createAdler from "../../vendor/adler.js";
 import state_manager from "../common_state/state_manager.js"
 
 import settings_component from "./model_settings.js";
+import settings_component_details from "./model_settings_details.js";
 import side_menu_component from "../common_ui_components/menu/side_menu.js";
 
 // import {Tabulator} from "../../vendor/tabulator_esm.min.js";
@@ -45,6 +46,12 @@ import side_menu_component from "../common_ui_components/menu/side_menu.js";
 //      instance.getNodes().table.setData({list:getItemsList()})
 // }
 
+var switchComponent = function (event, data, instance) { //check wich view to show
+    if (instance.props.modelElementDetails && instance.props.modelElementDetails.get()) {
+        // alert("go to switch")
+        instance.replaceComponents({settings_component: settings_component_details})
+    }
+}
 
 
 var common_settings =createAdler({
@@ -56,7 +63,7 @@ var common_settings =createAdler({
         
         </div>
         <div class="">
-            <div class="main-settings" a-props="modelElementType:modelElementType" a-id="settingsArea"  adler="settings_component" ></div>
+            <div class="main-settings" a-props="modelElementType:modelElementType,modelElementDetails:modelElementDetails" a-id="settingsArea"  adler="settings_component" ></div>
         </div>
     </div>
     `
@@ -64,12 +71,15 @@ var common_settings =createAdler({
     params:{
         props:{
             modelElementType:"entities",
+            modelElementDetails:false,
             sideMenuLinks:[
                 {
                     value:"Model",
                     items:[
-                        {id:"entities", value:"Entities",onClick:()=> state_manager.goTo({mode:"replace", url:"model/entities"})},
-                        {id:"relations", value:"Relations",onClick:()=> state_manager.goTo({mode:"replace", url:"model/relations"})},
+                        // {id:"entities", value:"Entities",onClick:()=> state_manager.goTo({mode:"replace", url:"model/entities"})},
+                        {id:"entities", value:"Entities",onClick:()=> state_manager.goTo("/:/:/model/entities")},
+                        // {id:"relations", value:"Relations",onClick:()=> state_manager.goTo({mode:"replace", url:"model/relations"})},
+                        {id:"relations", value:"Relations",onClick:()=> state_manager.goTo("/:/:/model/relations")},
                     ]
                 },
                 {
@@ -97,11 +107,11 @@ var common_settings =createAdler({
         //     // [".action1","click", (event, data)=> alert("test "+ data.test)],
         //     [".action_settings_add_entity","click", (event, data, instance)=> addEntityToProject(event, data, instance) ],
         // ],
-        // events:{
-        //     // onBeforeMount:(event, data, instance)=> alert("MOUNTING"),
-        //     onBeforeMount:(event, data, instance) => setUpData(event, data, instance),
-        //     onMount:(event, data, instance) => setUpTable(event, data, instance),
-        // },
+        events:{
+            // onBeforeMount:(event, data, instance)=> alert("MOUNTING"),
+            onBeforeMount:switchComponent,
+            // onMount:(event, data, instance) => setUpTable(event, data, instance),
+        },
         
     },
     css:/*css*/`
