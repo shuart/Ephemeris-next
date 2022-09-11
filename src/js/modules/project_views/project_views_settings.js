@@ -11,7 +11,14 @@ var softUpdate= function (event, data, instance) {
 var loadLayout = function(currentPageId){
     var projectId = projectManagement.getCurrent().id
     var jsonLayout = projectManagement.getProjectStore(projectId,"views").getById(currentPageId).layout
-    return JSON.parse(jsonLayout)
+    return JSON.parse(jsonLayout || JSON.stringify([
+        { settings:{}, cols:[
+            { settings:{}, components:[]},{ settings:{}, components:[ { settings:{}, componentType:"test"} ]}
+        ]},
+        { settings:{}, cols:[
+            { settings:{}, components:[]},
+        ]}
+    ]))
 }
 
 function setUp(event, data, instance){

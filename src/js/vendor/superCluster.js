@@ -75,6 +75,18 @@ var createCluster = function(initialSchema, options){
                             return storageUUID[storeName][value]
                         }
                     }
+                }else{ //if another key
+                    return {
+                        equals:function(value){
+                            var exportList=[]
+                            for (let i = 0; i < storage[storeName].length; i++) {
+                                const element = storage[storeName][i];
+                                if (element[currentKey] == value) {exportList.push(element) }
+                            }
+                            console.log(exportList);
+                            return exportList;
+                        }
+                    } 
                 }
 
             },

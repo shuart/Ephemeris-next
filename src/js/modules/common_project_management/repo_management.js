@@ -1,8 +1,10 @@
 import projectStores from "./project_data_store.js";
 
-var createRepoManagement = function (projectId, rootType, aggregateMethods) {
+var createRepoManagement = function (projectId, rootType, aggregateMethods, customRepoMethods) {
     var self={}
+    
     var projectStore = projectStores.getProjectDB(projectId)
+    
 
     var createAggregate = function (root) {
         if (!root) {
@@ -13,6 +15,8 @@ var createRepoManagement = function (projectId, rootType, aggregateMethods) {
         aggregate = aggregateMethods(aggregate, projectStore)
         return aggregate
     }
+
+    self = Object.assign(self,customRepoMethods(projectStore,createAggregate) ) //inject custom repo methods
 
     var getAll = function () {
         var allAggregates =[]

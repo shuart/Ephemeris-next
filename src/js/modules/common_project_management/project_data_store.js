@@ -31,6 +31,7 @@ var createProjectStore = function(){
             relations:["uuid","test"],
             views:["uuid","name"],
             instances:["uuid","type"],
+            evaluators:["uuid","type"],
             links:["uuid","type","from","to"],
 
         },{persistence:projectId, crdt:true, syncTo:false})

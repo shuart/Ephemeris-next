@@ -15,6 +15,7 @@ var mountModules = function (event, data, instance) {
     console.log(schema);
     for (let i = 0; i < schema.length; i++) {
         const row = schema[i];
+        console.log(row);
         for (let j = 0; j < row.cols.length; j++) {
             const col = row.cols[j];
             for (let k = 0; k < col.components.length; k++) {
@@ -188,7 +189,8 @@ var setUp = function (event, data, instance) {
     //     ]}
     // ]
     var schema = instance.props.schema.get()
-    var showSettings = instance.props.showSettings.get()
+
+    var showSettings = instance.props.get('showSettings')
     var html = '<div class="Component container view_grid_row">' + renderTable({schema:schema, showSettings:showSettings}) +'</div>'
     // alert(html)
     instance.setContent((p)=> html)
