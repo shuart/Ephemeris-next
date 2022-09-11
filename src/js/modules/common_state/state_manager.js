@@ -12,6 +12,8 @@ import project_views from "../project_views/project_views.js";
 import project_views_settings from "../project_views/project_views_settings.js";
 import login_ui from "../login/login_ui.js";
 
+import evaluator_node_ui from "../common_evaluators/evaluator_node_ui.js";
+
 
 const common_router = createRouter()
 
@@ -69,6 +71,14 @@ var createStateManager = function({
             console.log(event);
             setCurrentProject(event.params.project)
             mainUiElement.append(project_dashboard.instance(), "main_area_mount_point");
+            mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
+            mainUiElement.update();
+        })
+        common_router.route("/:project/evaluators/:evaluatorId", (event)=>
+        {
+            console.log(event);
+            setCurrentProject(event.params.project)
+            mainUiElement.append(evaluator_node_ui.instance({data:{evaluatorId:event.params.evaluatorId}}), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })

@@ -16,7 +16,10 @@ var createRepoManagement = function (projectId, rootType, aggregateMethods, cust
         return aggregate
     }
 
-    self = Object.assign(self,customRepoMethods(projectStore,createAggregate) ) //inject custom repo methods
+    if (customRepoMethods) {
+        self = Object.assign(self,customRepoMethods(projectStore,createAggregate) ) //inject custom repo methods
+    }
+    
 
     var getAll = function () {
         var allAggregates =[]
