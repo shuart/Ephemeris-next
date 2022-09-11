@@ -5,7 +5,7 @@ import nanoid from "../../vendor/nanoid.js";
 
 var entityAggregate = function(aggregate, projectStore){
 
-    //parameters
+    //parameters "Properties"
     var ownProperties = {}
     for (const key in aggregate.attributes) {
         if (Object.hasOwnProperty.call(aggregate.attributes, key) && key.search("prop_")>=0) {
@@ -20,12 +20,27 @@ var entityAggregate = function(aggregate, projectStore){
     }
     aggregate.properties = ownProperties
 
+    //parameters "Relations"
+    var ownRelations = []
+    var currentRelations = projectStore.get("relations").toArray()
+    for (let i = 0; i < currentRelations.length; i++) {
+        const element = currentRelations[i];
+        ownRelations.push(element);
+    }
+    aggregate.relations = ownRelations
+
     //methods
     aggregate.addProperty = function (param, type) {
         var futureId = nanoid()
         var refId = 'prop_'+futureId
         projectStore.add("properties",{uuid:futureId,name:param, type:type})
         projectStore.add("entities",{uuid:aggregate.uuid,[refId]:true})
+    }
+
+    //methods
+    aggregate.addRelation = function (type, targetId) {
+        var currentRelationTarget = projectStore.get("entities").where("uuid").equals(targetId)
+        projectStore.add("relations",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, type:type})
     }
 
     return aggregate
