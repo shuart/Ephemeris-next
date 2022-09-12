@@ -1,13 +1,35 @@
 import createAdler from "../../vendor/adler.js";
 import createStellae from "../../vendor/stellae/stellae.js";
+import createEvaluatorsManagement from "../common_project_management/evaluators_management.js";
 
 var softUpdate= function (event, data, instance) {
 
 }
 
 var setUp = function (event, data, instance) {
-    var element= instance.query('.graph')
-    createStellae({container:element})
+    setTimeout(() => {
+        var element= instance.query('.graph')
+        element.innerHTML = ''//TODO GRAPH IS LOADED 2 TIMES. PREVENT THAT
+        data.graph = createStellae({container:element, fullSize:true,})
+    
+        var repo = createEvaluatorsManagement()
+        var currentGraph = repo.getById(instance.props.get("evaluatorId"))
+        
+        if (currentGraph.attributes.nodeLayout) {
+            
+            data.graph.getNodeManager().importGraph(JSON.parse(currentGraph.attributes.nodeLayout))
+        }
+    }, 500);
+
+}
+
+var saveNetwork = function (event, data, instance) {
+    var exportGraph = data.graph.getNodeManager().exportNodes()
+    console.log(exportGraph);
+    var repo = createEvaluatorsManagement()
+    repo.update({uuid:instance.props.get("evaluatorId"), nodeLayout:JSON.stringify(exportGraph)})
+    console.log(repo.getAll())
+    // alert(instance.props.get("evaluatorId"))
 }
 
 var evaluator_node_ui =createAdler({
@@ -21,8 +43,8 @@ var evaluator_node_ui =createAdler({
                     Add
                 </a>
 
-                <a class="navbar-item">
-                    Documentation
+                <a class="navbar-item action_settings_save_network">
+                    Save
                 </a>
 
                 <div class="navbar-item has-dropdown is-hoverable">
@@ -62,7 +84,7 @@ var evaluator_node_ui =createAdler({
                 </div>
             </div>
         </nav>
-        <div style="width:100%; height:800px;" class="graph" >GRAPH</div>
+        <div style="width:100%; height:800px; position:relative" class="graph" >GRAPH</div>
     </div>
         `,
     params:{
@@ -78,10 +100,12 @@ var evaluator_node_ui =createAdler({
             value:"Hello",
             list:[],
             table:undefined,
+            evaluatorId:false,
+            graph: undefined,
             // onClick:()=>console.log("click")
         },
         on:[
-            // [".tableCddomponent","click", (event, data, instance)=> data.onClick(event, data, instance) ],
+            [".action_settings_save_network","click", saveNetwork ],
         ],
         events:{
             // onBeforeMount:(event, data, instance) => setUp(event, data, instance),

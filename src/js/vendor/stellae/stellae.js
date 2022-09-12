@@ -3,6 +3,7 @@ import createNodeManager from "./stellae_nodes.js";
 
 function createStellae({
     container = document.body,
+    fullSize = false,
     canvasWidth =1500,
     canvasHeight = 500,
     darkMode = "auto",
@@ -34,14 +35,27 @@ function createStellae({
     // }
 
     var init = function () {
+
+        if (fullSize) {
+            // var size = container.getBoundingClientRect()
+            canvasWidth = container.clientWidth;
+            canvasHeight = container.clientHeight;
+            
+        }else{
+            ui = createStellaeUi({container:container,canvasWidth:canvasWidth,canvasHeight:canvasHeight,darkMode:darkMode})
+            nodeManager = createNodeManager({ui:ui})
+            nodeManager.useBaseTemplates()
+        }
         ui = createStellaeUi({container:container,canvasWidth:canvasWidth,canvasHeight:canvasHeight,darkMode:darkMode})
         nodeManager = createNodeManager({ui:ui})
         nodeManager.useBaseTemplates()
         // nodeManager.addNodeTemplate("test", templateData)
-        nodeManager.addNode("math_add", {uuid:"100",name:"100 add",  position:{x:2,y:4}})
-        nodeManager.addNode("input_number", { uuid:"114", name:"114 input"})
-        nodeManager.addNode("math_compare", { uuid:"115", name:"114 compare"})
-        nodeManager.addNode("viewer_result")
+
+
+        // nodeManager.addNode("math_add", {uuid:"100",name:"100 add",  position:{x:2,y:4}})
+        // nodeManager.addNode("input_number", { uuid:"114", name:"114 input"})
+        // nodeManager.addNode("math_compare", { uuid:"115", name:"114 compare"})
+        // nodeManager.addNode("viewer_result")
         
         nodeManager.addLinks([
             // {from:"100", from_socket:"plouf", to:"110", to_socket:"plif"},
@@ -53,7 +67,12 @@ function createStellae({
         //     alert()
         // },5000)
     }
+    
     init()
+    var getNodeManager = function () {
+        return nodeManager
+    }
+    self.getNodeManager = getNodeManager
     return self
 }
 export default createStellae

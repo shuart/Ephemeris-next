@@ -11,6 +11,8 @@ var createNode= function({
     ui=undefined,
     headerColor = 0xffff00,
     position={x:0,y:0},
+    templateName = undefined,
+    propsValue = undefined,
     name = "Node",
     props =[
         // {id:demoId1, label:"demo", type:"text", editable:true, socket:"input", value:"Default"},
@@ -45,11 +47,34 @@ var createNode= function({
     var inEvaluation = false;
     var inInit = false;
 
+    var exportParams = function(){
+        var propsValue = {}
+        for (const key in interactiveProps) {
+            if (Object.hasOwnProperty.call(interactiveProps, key)) {
+                const element = interactiveProps[key];
+                propsValue[key] = interactiveProps[key].get()
+            }
+        }
+        return {templateName,params:{uuid,name, position, propsValue}}
+    }
+
 
 
     var setUpProps = function(){
         //Deep Copy to avoid issues
         internalProps = JSON.parse(JSON.stringify(props));
+        console.log(propsValue);
+        if (propsValue) { //populate props with the node values
+            for (const key in propsValue) {
+                if (Object.hasOwnProperty.call(propsValue, key)) {
+                    const currentValue = propsValue[key];
+                    console.log(internalProps, key);
+                    if (internalProps.find(n=>n.id == key)) {
+                        internalProps.find(n=>n.id == key).value = currentValue
+                    }
+                }
+            }
+        }
         var interactivePropsObject = {}
         for (let i = 0; i < internalProps.length; i++) {
             const element = internalProps[i];
@@ -166,6 +191,7 @@ var createNode= function({
     }
     //init
     init()
+    self.exportParams=exportParams
     self.setPosition=setPosition;
     self.getProp=getProp;
     self.setProp=setProp;
@@ -227,6 +253,27 @@ var createNodeManager = function ({
 
     }
 
+    var importGraph = function (graph) {
+        for (let i = 0; i < graph.nodes.length; i++) {
+            const element = graph.nodes[i];
+            self.addNode(element.templateName, element.params)
+        }
+        self.addLinks(graph.links)
+        
+    }
+
+    var exportNodes = function () {
+        var nodesToExport= []
+        var linkToExport = linksInUse.list
+        for (const key in nodeInUse) {
+            if (Object.hasOwnProperty.call(nodeInUse, key)) {
+                const element = nodeInUse[key];
+                nodesToExport.push(element.exportParams())
+            }
+        }
+        return {nodes:nodesToExport, links:linkToExport}
+    }
+
     var useBaseTemplates = function(){
         for (const key in baseTemplates) {
             if (Object.hasOwnProperty.call(baseTemplates, key)) {
@@ -253,6 +300,8 @@ var createNodeManager = function ({
     }
     init()
 
+    self.importGraph = importGraph
+    self.exportNodes = exportNodes
     self.getUsedTemplates = getUsedTemplates
     self.evaluateTree = evaluateTree
     self.useBaseTemplates = useBaseTemplates
