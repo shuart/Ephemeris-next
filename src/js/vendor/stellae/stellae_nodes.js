@@ -90,6 +90,12 @@ var createNode= function({
                     }
                 }
             }
+            if (element.options) {
+                interactivePropsObject[element.id].setOptions= function (options) {
+                    element.options = options
+                    element.value = options[0].value
+                }    
+            }
         }
         return interactivePropsObject
     }
@@ -283,6 +289,15 @@ var createNodeManager = function ({
         }
     }
 
+    var useTemplate = function(templateToUse){
+        for (const key in templateToUse) {
+            if (Object.hasOwnProperty.call(templateToUse, key)) {
+                const template = templateToUse[key];
+                addNodeTemplate(template.templateName, template)
+            }
+        }
+    }
+
     var addNodeTemplate = function(name, params){
         // var newParams= Object.assign({},params,{ui:ui})
         // var node = createNode(newParams)
@@ -300,6 +315,7 @@ var createNodeManager = function ({
     }
     init()
 
+    self.useTemplate = useTemplate
     self.importGraph = importGraph
     self.exportNodes = exportNodes
     self.getUsedTemplates = getUsedTemplates

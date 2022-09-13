@@ -1,6 +1,7 @@
 import createAdler from "../../vendor/adler.js";
 import createStellae from "../../vendor/stellae/stellae.js";
 import createEvaluatorsManagement from "../common_project_management/evaluators_management.js";
+import evaluatorTemplates from "./evaluator_nodes_templates.js";
 
 var softUpdate= function (event, data, instance) {
 
@@ -14,6 +15,7 @@ var setUp = function (event, data, instance) {
     
         var repo = createEvaluatorsManagement()
         var currentGraph = repo.getById(instance.props.get("evaluatorId"))
+        data.graph.getNodeManager().useTemplate(evaluatorTemplates)
         
         if (currentGraph.attributes.nodeLayout) {
             
@@ -35,7 +37,7 @@ var saveNetwork = function (event, data, instance) {
 var evaluator_node_ui =createAdler({
     content: p => /*html*/`
     <div class="Component">
-        <nav class="navbar" role="navigation" aria-label="main navigation">
+        <nav class="navbar container" role="navigation" aria-label="main navigation">
 
             <div id="navbarBasicExample" class="navbar-menu">
                 <div class="navbar-start">
