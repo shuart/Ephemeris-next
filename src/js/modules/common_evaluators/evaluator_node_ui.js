@@ -2,6 +2,8 @@ import createAdler from "../../vendor/adler.js";
 import createStellae from "../../vendor/stellae/stellae.js";
 import createEvaluatorsManagement from "../common_project_management/evaluators_management.js";
 import evaluatorTemplates from "./evaluator_nodes_templates.js";
+import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
+import table_viewport from "../viewports/table_viewport/table_ui.js"
 
 var softUpdate= function (event, data, instance) {
 
@@ -34,6 +36,16 @@ var saveNetwork = function (event, data, instance) {
     // alert(instance.props.get("evaluatorId"))
 }
 
+var showPreview = function (event,data,instance) {
+    mainPopup.mount()
+    mainPopup.append(table_viewport.instance({
+        props:{
+            settings:{evaluatorId:instance.props.get("evaluatorId")},
+        }
+    }), "main-slot")
+    mainPopup.update();
+}
+
 var evaluator_node_ui =createAdler({
     content: p => /*html*/`
     <div class="Component">
@@ -48,9 +60,12 @@ var evaluator_node_ui =createAdler({
                 <a class="navbar-item action_settings_save_network">
                     Save
                 </a>
+                <a class="navbar-item action_settings_show_preview">
+                    preview
+                </a>
 
                 <div class="navbar-item has-dropdown is-hoverable">
-                    <a class="navbar-link">
+                    <a class="navbar-link action_settings_show_preview">
                     More
                     </a>
 
@@ -108,6 +123,7 @@ var evaluator_node_ui =createAdler({
         },
         on:[
             [".action_settings_save_network","click", saveNetwork ],
+            [".action_settings_show_preview","click", showPreview ],
         ],
         events:{
             // onBeforeMount:(event, data, instance) => setUp(event, data, instance),

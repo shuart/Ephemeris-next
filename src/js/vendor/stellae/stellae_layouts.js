@@ -149,7 +149,11 @@ var createNode  = function({
     }
 
     function createSocket(group, prop){
-        const materialSocketFlow = new THREE.MeshBasicMaterial( { color: 0x00d6a3,side: THREE.DoubleSide  } );
+        var socketColor = 0x00d6a3
+        if (Array.isArray(prop.value)) {
+            socketColor = 0x6767d1
+        }
+        const materialSocketFlow = new THREE.MeshBasicMaterial( { color: socketColor,side: THREE.DoubleSide  } );
         var socket = new THREE.Mesh( roundSocketGeometry, materialSocketFlow );
         
         group.add(socket)
@@ -165,6 +169,15 @@ var createNode  = function({
 
     function createPropAction(prop){
         var action = undefined
+
+        if (Array.isArray(prop.value)) {
+            action = function (param) {
+                // inputElements.createFieldView({field:prop.value})
+                console.log(prop.value);
+                alert(JSON.stringify(prop.value ))
+            }
+            return action
+        }
         if (prop.type == "text") {
             action = function (param) {
                 var newValue = prompt(prop.value)
@@ -188,16 +201,22 @@ var createNode  = function({
         //text
         var propGroup = new THREE.Group()
         var spritetext = createCharacterLabel(prop.label)
+        var isField = false;
         propGroup.add(spritetext)
         if (prop.type == "hidden") {
             spritetext.position.set(+0.5,0,0)
         }else if (prop.type == "text" || prop.type == "select") {
             spritetext.position.set(-0.5,0,0)
-            var spritetextValue = createCharacterLabel(prop.value)
+            var textToDisplay = prop.value
+            if (Array.isArray(textToDisplay)) {
+                textToDisplay = "Field"
+                isField =true
+            }
+            var spritetextValue = createCharacterLabel(textToDisplay)
             propGroup.add(spritetextValue)
             spritetextValue.position.set(0.5,0,0)
             layoutItems.props[spritetextValue.uuid] = {mesh:spritetextValue}
-            spritetextValue.edata = { root:node, uuid:prop.id, value:prop.value, prop:prop, nodeData: nodeData, action:createPropAction(prop), }
+            spritetextValue.edata = { root:node, uuid:prop.id, value:prop.value, prop:prop, nodeData: nodeData, isField:isField, action:createPropAction(prop), }
         }
         
         if(prop.socket && prop.socket != "none"){

@@ -20,12 +20,11 @@ var instanceAggregate = function(aggregate, projectStore){
             var propertyName = property.name
             propNameUuidMapping[propertyName]=key
             propUuidNameMapping[key]=propertyName
-            // ownProperties[propertyName] = aggregate.attributes[key]
             ownProperties[propertyName] = aggregate.attributes[key]
         }
-    }
+    }      
     aggregate.properties = ownProperties
-
+    
     // //parameters "Relations"
     // var ownRelations = []
     // var currentRelations = projectStore.get("relations").toArray()

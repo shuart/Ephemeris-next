@@ -92,9 +92,17 @@ var createNode= function({
             }
             if (element.options) {
                 interactivePropsObject[element.id].setOptions= function (options) {
-                    element.options = options
-                    element.value = options[0].value
-                }    
+                    if (options && options[0]) {
+                        element.options = options
+                        element.value = options[0].value
+                    }
+                    
+                }
+                interactivePropsObject[element.id].getOptionId= function () {
+                    for (let i = 0; i < element.options.length; i++) {
+                        if (element.options[i].value == element.value) { return element.options[i].id }
+                    }
+                }       
             }
         }
         return interactivePropsObject
@@ -265,6 +273,7 @@ var createNodeManager = function ({
             self.addNode(element.templateName, element.params)
         }
         self.addLinks(graph.links)
+        evaluateTree()
         
     }
 
