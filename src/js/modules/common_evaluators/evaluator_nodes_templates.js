@@ -191,6 +191,7 @@ evaluatorTemplates.outputTable = {
     props :[
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"cols", multiple:true, label:"cols definition", type:"hidden", editable:true, socket:"input", value:false},
         {id:"rows", label:"rows", type:"text", editable:true, socket:"input", value:"0"},
     ],
     methods:{
@@ -199,6 +200,33 @@ evaluatorTemplates.outputTable = {
         onEvaluate:(props) =>{
 
             
+        },
+        onInit:(props) =>{
+
+        },
+    },
+}
+
+evaluatorTemplates.colParameters = {
+    templateName : "col_parameters",
+    name : "col_parameters",
+    props :[
+        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"name", label:"data", type:"text", editable:true, socket:"input", value:"Col Name"},
+        {id:"paramName", label:"param name", type:"text", editable:true, socket:"input", value:"0"},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            // if (props.data.get()) {
+            //     props.output.set(props.a.get().map(function (e) {
+            //         console.log(e.properties);
+            //         return {[props.method.get()]:e.properties[props.method.get()]}
+            //     }))
+            // }
+            props.output.set({title:props.name.get(), field:props.paramName.get(), editor:"input"})     
         },
         onInit:(props) =>{
 

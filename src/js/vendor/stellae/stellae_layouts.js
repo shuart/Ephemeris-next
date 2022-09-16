@@ -162,8 +162,13 @@ var createNode  = function({
         }else{
             socket.position.set(-1.47,0,0)
         }
+
+        if (prop.multiple) { //set aspect
+            socket.scale.set(0.02,0.03,0.02)
+        }else{
+            socket.scale.set(0.02,0.02,0.02)
+        }
         
-        socket.scale.set(0.02,0.02,0.02)
         return socket
     }
 

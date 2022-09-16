@@ -13,6 +13,7 @@ var createNode= function({
     position={x:0,y:0},
     templateName = undefined,
     propsValue = undefined,
+    propsValueFromInput = {},
     name = "Node",
     props =[
         // {id:demoId1, label:"demo", type:"text", editable:true, socket:"input", value:"Default"},
@@ -49,13 +50,15 @@ var createNode= function({
 
     var exportParams = function(){
         var propsValue = {}
+        var propsValueFromInput = {}
         for (const key in interactiveProps) {
             if (Object.hasOwnProperty.call(interactiveProps, key)) {
                 const element = interactiveProps[key];
                 propsValue[key] = interactiveProps[key].get()
+                propsValueFromInput[key] = interactiveProps[key]._getFromInput()
             }
         }
-        return {templateName,params:{uuid,name, position, propsValue}}
+        return {templateName,params:{uuid,name, position, propsValue, propsValueFromInput}}
     }
 
 
@@ -71,19 +74,51 @@ var createNode= function({
                     console.log(internalProps, key);
                     if (internalProps.find(n=>n.id == key)) {
                         internalProps.find(n=>n.id == key).value = currentValue
+                        internalProps.find(n=>n.id == key).valueFromInput = propsValueFromInput[key] //load defaut value not based on nodes
                     }
+                    
                 }
             }
         }
         var interactivePropsObject = {}
         for (let i = 0; i < internalProps.length; i++) {
             const element = internalProps[i];
+            if (!element.valueFromInput) {
+                element.valueFromInput = element.value //save Default and set input for when no nodes
+            }
             interactivePropsObject[element.id] = {
                 get:function () {
-                    return element.value
+                    return element.valueFromLink || element.value
+                },
+                _getFromInput:function () {
+                    return element.valueFromInput || element.value
                 },
                 set:function (newValue) {
+                    element.valueFromInput = newValue
                     element.value = newValue
+                    // evaluate()
+                    if (!inEvaluation) {
+                        evaluate() //reevaluate if outside event
+                    }
+                },
+                _setFromLink:function (newValue) {
+                    if (newValue) {
+                        if (element.multiple) { //if socket can have multiple input
+                            if (!Array.isArray(element.valueFromLink )) {//initiate array
+                                element.valueFromLink=[]
+                                element.value = element.valueFromLink
+                            }
+                            element.valueFromLink.push(newValue) 
+                        } else {
+                            element.valueFromLink = newValue
+                            element.value = newValue
+                        }
+                        
+                    }else{ //if no links, reset to previous value
+                        element.valueFromLink = newValue
+                        element.value = element.valueFromInput
+                    }
+                    
                     // evaluate()
                     if (!inEvaluation) {
                         evaluate() //reevaluate if outside event
@@ -119,6 +154,10 @@ var createNode= function({
 
     var updateFromInputs = function () {
         // var relatedLinks = []
+        for (let i = 0; i < props.length; i++) { //reset all sockets
+            interactiveProps[props[i].id]._setFromLink(undefined) 
+            
+        }
         console.log(contextLinks, uuid);
         for (let i = 0; i < contextLinks.list.length; i++) {
             const link = contextLinks.list[i];
@@ -128,7 +167,7 @@ var createNode= function({
                     const prop = props[k];
                     if (link.to_socket == prop.id) {
                         var otherSocketValue = getValueFromOtherNode(link.from, link.from_socket)
-                        interactiveProps[prop.id].set(otherSocketValue)  //update socket value
+                        interactiveProps[prop.id]._setFromLink(otherSocketValue)  //update socket value
                     }
                 }   
             }

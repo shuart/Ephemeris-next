@@ -2,7 +2,7 @@ import createAdler from "../../../vendor/adler.js";
 import table_component from "../../common_ui_components/table/table.js";
 import projectManagement from "../../common_project_management/project_management.js";
 import createEvaluator from "../../common_evaluators/evaluators.js";
-import createEvaluatorsManagement from "../../common_project_management/evaluators_management.js";
+
 
 var softUpdate= function (event, data, instance) {
     
@@ -16,7 +16,8 @@ var addItem = function (event, data, instance) {
         var currentEntityType = instance.props.settings.get().entityType
         createEvaluator({type:currentEntityType}).evaluate().addAction({name:name,theTime:Date.now(), type:currentEntityType})
         //update table
-        instance.getNodes().tablevp.setData({list:getItemsList(event,data, instance)}, false)
+        var itemsData = getItemsList(event,data, instance)
+        instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols}, false)
         instance.getNodes().tablevp.do.softUpdate()
     }
 }
@@ -25,20 +26,31 @@ var getItemsList = function (event, data, instance){
     // var evaluator = createEvaluator({type:instance.props.settings.get().entityType})
     // console.log(evaluator.evaluate().list);
     // return evaluator.evaluate().list
-    var repo = createEvaluatorsManagement()
-    var currentGraph = repo.getById(instance.props.get("settings").evaluatorId)
-    if (currentGraph.attributes.nodeLayout) {
-        var layout = JSON.parse(currentGraph.attributes.nodeLayout)
-        console.log(layout);
-        return layout.nodes.find(e=>e.templateName == "output_table").params.propsValue.rows
-    }
-    return []
+
+    // var repo = createEvaluatorsManagement()
+    // var currentGraph = repo.getById(instance.props.get("settings").evaluatorId)
+    // if (currentGraph.attributes.nodeLayout) {
+    //     var layout = JSON.parse(currentGraph.attributes.nodeLayout)
+    //     console.log(layout);
+    //     return layout.nodes.find(e=>e.templateName == "output_table").params.propsValue.rows
+    // }
+    // return []
+    var data = {}
+    var evaluator = createEvaluator({type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
+    console.log(evaluator);
+    data.list =evaluator.evaluate().list
+    data.cols =evaluator.evaluate().cols
+    console.log(data);
+
+    
+    return data
 }
 
 var setUpTable = function (event, data, instance) {
      console.log(instance.getNodes());
      console.log(instance.props.settings.get());
-     instance.getNodes().tablevp.setData({list:getItemsList(event,data, instance)})
+     var itemsData = getItemsList(event,data, instance)
+     instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols })
 }
 
 var component =createAdler({

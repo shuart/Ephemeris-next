@@ -3,6 +3,7 @@ import {TabulatorFull as Tabulator} from "../../../vendor/tabulator_esm.min.js";
 
 var setUpTable = function(event, data, instance){
     var itemsList = data.list
+    var colsList = data.cols
     // var itemsList = []
     console.log(itemsList);
     console.log(instance);
@@ -18,6 +19,13 @@ var setUpTable = function(event, data, instance){
             // {id:5, name:"Margret Marmajuke", age:"16", col:"yellow", dob:"31/01/1999"},
         ];
     }
+    if (!colsList || !colsList[0]) {
+        colsList = [
+            {title:"id", field:"uuid", },
+            {title:"value", field:"name", },
+            {title:"added", field:"theTime", },
+        ];
+    }
 
     var tableAra = instance.query("div")
     console.log(tableAra);
@@ -25,15 +33,14 @@ var setUpTable = function(event, data, instance){
         height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
         data:itemsList, //assign data to table
         layout:"fitColumns", //fit columns to width of table (optional)
-        columns:[ //Define Table Columns
-            {title:"id", field:"uuid", },
-            {title:"value", field:"name", },
-            {title:"added", field:"theTime", },
-        //     {title:"Name", field:"name", width:150},
-	 	// {title:"Age", field:"age", hozAlign:"left", formatter:"progress"},
-	 	// {title:"Favourite Color", field:"col"},
-	 	// {title:"Date Of Birth", field:"dob", sorter:"date", hozAlign:"center"},
-        ],
+        columns:colsList,
+        // [ //Define Table Columns
+            
+        // //     {title:"Name", field:"name", width:150},
+	 	// // {title:"Age", field:"age", hozAlign:"left", formatter:"progress"},
+	 	// // {title:"Favourite Color", field:"col"},
+	 	// // {title:"Date Of Birth", field:"dob", sorter:"date", hozAlign:"center"},
+        // ],
    });
    instance.setData({table:table},false)
    console.log(table.rowManager)
@@ -85,6 +92,7 @@ var table_component =createAdler({
         data:{
             value:"Hello",
             list:[],
+            cols:[],
             table:undefined,
             // onClick:()=>console.log("click")
         },
