@@ -20,8 +20,8 @@ const squareShape = new THREE.Shape()
 
 const squareShapeBack = new THREE.Shape()
     .moveTo( 0, 0 )
-    .lineTo( 0, hheight+2 )
-    .lineTo( hwidth, hheight+2 )
+    .lineTo( 0, hheight+0.5 )
+    .lineTo( hwidth, hheight+0.5 )
     .lineTo( hwidth, 0 )
     .lineTo( 0, 0 );
 var circleRadius =5
@@ -133,19 +133,26 @@ var createNode  = function({
         return header
     }
 
-    function createBack(node){
+    function createBack(node, props){
         const materialBack = new THREE.MeshBasicMaterial( { color: 0x303030,side: THREE.DoubleSide  } );
         var geometryBack = new THREE.ShapeGeometry( squareShapeBack );
         var background = new THREE.Mesh( geometryBack, materialBack );
         background.layoutItemType ="header"
         background.layoutItemRoot =node
+        background.scale.y = (props.length+1)/2
         background.position.set((0-hwidth/2),0-hheight/2,0.002)
         node.add(background)
         //createShadow
         var spriteShadow = createShadow()
         node.add(spriteShadow)
-        spriteShadow.position.set(0,1.7,0.008)
-        spriteShadow.scale.set(3.5,4.5,1)
+        // spriteShadow.position.set(0,1.7,0.008)
+        // spriteShadow.scale.set(3.5,4.5/3,1)
+        // background.scale.y = (props.length+1)/2
+        var scaler = props.length+1
+        scaler = Math.min(props.length,5)
+        spriteShadow.position.set(0.1,scaler/4 +(scaler/10) ,0.008)
+        spriteShadow.scale.set(3.7,scaler,1)
+        // spriteShadow.scale.y = (props.length+1)
     }
 
     function createSocket(group, prop){
@@ -248,7 +255,7 @@ var createNode  = function({
      
     var node= new THREE.Group();
     var header = createHeader(node,name)
-    createBack(node)
+    createBack(node,props)
     // createSocket(node)
     createRows (node, props)
 
