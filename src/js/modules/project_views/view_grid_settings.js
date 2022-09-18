@@ -23,7 +23,7 @@ var mountModules = function (event, data, instance) {
                 console.log(comp);
                 instance.append(table_viewport.instance({
                     props:{
-                        settings:{entityType:comp.settings.entityType},
+                        settings:{evaluatorId:comp.settings.evaluatorUuid},
                     }
                 },), `view_mount_point_${i}_${j}_${k}`);
             }
@@ -116,7 +116,7 @@ var renderComp = function ({
 var setUpSettingsEvent = function (event, data, instance){
     var compPos = [event.target.dataset.rowId,event.target.dataset.colId,event.target.dataset.compId,]
     var projectId = projectManagement.getCurrent().id
-    var entities = projectManagement.getProjectStore(projectId,"entities").getAll()
+    var entities = projectManagement.getProjectStore(projectId,"evaluators").getAll()
 
     mainPopup.mount()
     mainPopup.append(select.instance({
@@ -124,7 +124,8 @@ var setUpSettingsEvent = function (event, data, instance){
             list:entities,
             callback:function(event){
                 var currentSchema = instance.props.schema.get(); 
-                currentSchema[ compPos[0] ].cols[ compPos[1] ].components[ compPos[2] ].settings={entityType:event.value.uuid};
+                // currentSchema[ compPos[0] ].cols[ compPos[1] ].components[ compPos[2] ].settings={entityType:event.value.uuid};
+                currentSchema[ compPos[0] ].cols[ compPos[1] ].components[ compPos[2] ].settings={evaluatorUuid:event.value.uuid};
             }
         }
     }), "main-slot")

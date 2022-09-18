@@ -1,16 +1,6 @@
 import createInstancesManagement from "../common_project_management/instances_management.js";
 import createEntityManagement from "../common_project_management/entity_management.js";
 
-var basicEvaluation = function(){
-    // var result = {}
-    // var instancesRepo = createInstancesManagement()
-    // console.log(instancesRepo.getByType(type));
-    // result.list = instancesRepo.getByType(type)
-    // result.addAction = instancesRepo.add
-    // return result;
-
-    var entityRepo = createEntityManagement()
-}
 
 var evaluatorTemplates = {}
 
@@ -61,6 +51,7 @@ evaluatorTemplates.sourceEntity = {
     name : "Source",
     props :[
         {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"outputReference", label:"Type Reference", type:"hidden", editable:false, socket:"output", value:""},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
         {id:"method", label:"", type:"select", options:[
             {id:"Greater_Than", value:"Greater Than"},
@@ -69,8 +60,8 @@ evaluatorTemplates.sourceEntity = {
             {id:"Less_Than_Or_Equal", value:"Less Than or Equal"},
             {id:"Equal", value:"Equal"},
         ],editable:true, socket:"none", value:"Greater Than"},
-        {id:"a", label:"A", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"b", label:"B", type:"text", editable:true, socket:"input", value:"0"},
+        // {id:"a", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        // {id:"b", label:"B", type:"text", editable:true, socket:"input", value:"0"},
     ],
     methods:{
     },
@@ -80,19 +71,20 @@ evaluatorTemplates.sourceEntity = {
             var instanceRepo = createInstancesManagement()
             console.log(instanceRepo.getByType());
             // alert()
-            if (props.method.get() == "Greater Than") {
-                if (parseInt(props.a.get())  > parseInt(props.b.get())) {props.output.set(1)} else {props.output.set(0)}
-            }else if (props.method.get() == "Less Than"){
-                if (parseInt(props.a.get())  < parseInt(props.b.get())) {props.output.set(1)} else {props.output.set(0)}
-            }else if (props.method.get() == "Equal"){
-                if (parseInt(props.a.get()) == parseInt(props.b.get())) {props.output.set(1)} else {props.output.set(0)}
-            }else if (props.method.get() == "Greater Than or Equal"){
-                if (parseInt(props.a.get()) >= parseInt(props.b.get())) {props.output.set(1)} else {props.output.set(0)}
-            }else if (props.method.get() == "Less Than or Equal"){
-                if (parseInt(props.a.get()) <= parseInt(props.b.get())) {props.output.set(1)} else {props.output.set(0)}
-            }
+            // if (props.method.get() == "Greater Than") {
+            //     if (parseInt(props.a.get())  > parseInt(props.b.get())) {props.output.set(1)} else {props.output.set(0)}
+            // }else if (props.method.get() == "Less Than"){
+            //     if (parseInt(props.a.get())  < parseInt(props.b.get())) {props.output.set(1)} else {props.output.set(0)}
+            // }else if (props.method.get() == "Equal"){
+            //     if (parseInt(props.a.get()) == parseInt(props.b.get())) {props.output.set(1)} else {props.output.set(0)}
+            // }else if (props.method.get() == "Greater Than or Equal"){
+            //     if (parseInt(props.a.get()) >= parseInt(props.b.get())) {props.output.set(1)} else {props.output.set(0)}
+            // }else if (props.method.get() == "Less Than or Equal"){
+            //     if (parseInt(props.a.get()) <= parseInt(props.b.get())) {props.output.set(1)} else {props.output.set(0)}
+            // }
             // props.output.set(entityRepo.getAll()[0].uuid)
             props.output.set(instanceRepo.getByType(props.method.getOptionId()))
+            props.outputReference.set(props.method.getOptionId())
         },
         onInit:(props) =>{
             var entityRepo = createEntityManagement()
@@ -193,13 +185,13 @@ evaluatorTemplates.outputTable = {
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
         {id:"cols", multiple:true, label:"cols definition", type:"hidden", editable:true, socket:"input", value:false},
         {id:"rows", label:"rows", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"actions", label:"action", type:"hidden", editable:true, socket:"input", value:false},
     ],
     methods:{
     },
     event:{
         onEvaluate:(props) =>{
-
-            
+            console.log(props.actions.get());
         },
         onInit:(props) =>{
 
@@ -231,6 +223,39 @@ evaluatorTemplates.colParameters = {
         onInit:(props) =>{
 
         },
+    },
+}
+
+evaluatorTemplates.actionAddInstance = {
+    templateName : "action_add_instance",
+    name : "action_add_instance",
+    props :[
+        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
+        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"instanceRef", label:"Instance Reference", type:"text", editable:true, socket:"input", value:""},
+        // {id:"paramName", label:"param name", type:"text", editable:true, socket:"input", value:"0"},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            var functionToUse = function () {
+                if (props.instanceRef.get() && props.instanceRef.get() != "") {
+                    var name= prompt("Name")
+                    if (name) {
+                        var currentEntityType = props.instanceRef.get()
+                        var instancesRepo = createInstancesManagement()
+                        instancesRepo.add({name:name,theTime:Date.now(), type:currentEntityType})
+                    }
+                }else{
+                    alert("reference missing") 
+                }
+            }
+            props.output.set(functionToUse)     
+        },
+        // onInit:(props) =>{
+
+        // },
     },
 }
 

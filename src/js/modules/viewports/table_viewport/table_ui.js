@@ -9,17 +9,13 @@ var softUpdate= function (event, data, instance) {
 }
 
 var addItem = function (event, data, instance) {
-    var projectId = projectManagement.getCurrent().id
-    console.log(projectId)
-    var name= prompt("Name")
-    if (name) {
-        var currentEntityType = instance.props.settings.get().entityType
-        createEvaluator({type:currentEntityType}).evaluate().addAction({name:name,theTime:Date.now(), type:currentEntityType})
-        //update table
-        var itemsData = getItemsList(event,data, instance)
-        instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols}, false)
-        instance.getNodes().tablevp.do.softUpdate()
-    }
+    
+    data.addAction()
+    //update table
+    var itemsData = getItemsList(event,data, instance)
+    instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols}, false)
+    instance.getNodes().tablevp.do.softUpdate()
+
 }
 
 var getItemsList = function (event, data, instance){
@@ -38,8 +34,12 @@ var getItemsList = function (event, data, instance){
     var data = {}
     var evaluator = createEvaluator({type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
     console.log(evaluator);
+    if (!evaluator.evaluate()) {
+        return {list:[{name:"undefined LIST"}], cols:[]}
+    }
     data.list =evaluator.evaluate().list
     data.cols =evaluator.evaluate().cols
+    data.actions =evaluator.evaluate().actions
     console.log(data);
 
     
@@ -50,6 +50,9 @@ var setUpTable = function (event, data, instance) {
      console.log(instance.getNodes());
      console.log(instance.props.settings.get());
      var itemsData = getItemsList(event,data, instance)
+     data.addAction = itemsData.actions
+     console.log(data.addAction);
+    //  alert()
      instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols })
 }
 
@@ -78,6 +81,7 @@ var component =createAdler({
             value:"Hello",
             list:[],
             table:undefined,
+            addAction: undefined,
             // onClick:()=>console.log("click")
         },
         on:[

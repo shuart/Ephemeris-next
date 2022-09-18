@@ -236,11 +236,17 @@ var createNode= function({
     //UI
     
     var addToScene = function (currentScene) {
-        refInScene =  currentScene.addNode({headerColor, uuid, position, name, props:internalProps, links, nodeData:self})
+        if (ui) {
+            refInScene =  currentScene.addNode({headerColor, uuid, position, name, props:internalProps, links, nodeData:self})
+        }
+        
     }
     var updateInScene = function (){
-        currentScene.removeNode(refInScene)
-        refInScene =  currentScene.addNode({headerColor, uuid, position, name, props:internalProps, links, nodeData:self})
+        if (ui) {
+            currentScene.removeNode(refInScene)
+            refInScene =  currentScene.addNode({headerColor, uuid, position, name, props:internalProps, links, nodeData:self}) 
+        }
+        
     }
     //init
     init()
@@ -271,14 +277,20 @@ var createNodeManager = function ({
             }
             // linksInUse[links[i].to] = element
             linksInUse.list.push(element)
-            ui.addLinks(links)
+            if (ui) {
+                ui.addLinks(links)
+            }
+            
         }
     }
     var removeLinks = function(uuid){
         var indexToRemove = linksInUse.list.findIndex(l=>l.uuid==uuid)
         linksInUse.list[indexToRemove] = linksInUse.list[linksInUse.list.length -1];
-        linksInUse.list.pop();  
-        ui.removeLinks(uuid)
+        linksInUse.list.pop(); 
+        if (ui) {
+            ui.removeLinks(uuid) 
+        }
+        
     }
     var evaluateTree =function(){
         for (const node in nodeInUse) {

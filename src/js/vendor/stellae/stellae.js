@@ -7,6 +7,7 @@ function createStellae({
     canvasWidth =1500,
     canvasHeight = 500,
     darkMode = "auto",
+    headless = false,
     } = {}) {
     var self = {};
     var ui = undefined;
@@ -41,13 +42,20 @@ function createStellae({
             canvasWidth = container.clientWidth;
             canvasHeight = container.clientHeight;
             
+        }
+        // else{
+        //     // ui = createStellaeUi({container:container,canvasWidth:canvasWidth,canvasHeight:canvasHeight,darkMode:darkMode})
+        //     // nodeManager = createNodeManager({ui:ui})
+        //     // nodeManager.useBaseTemplates()
+        // }
+        if (headless) {
+            nodeManager = createNodeManager()
         }else{
             ui = createStellaeUi({container:container,canvasWidth:canvasWidth,canvasHeight:canvasHeight,darkMode:darkMode})
             nodeManager = createNodeManager({ui:ui})
-            nodeManager.useBaseTemplates()
+            
         }
-        ui = createStellaeUi({container:container,canvasWidth:canvasWidth,canvasHeight:canvasHeight,darkMode:darkMode})
-        nodeManager = createNodeManager({ui:ui})
+        
         nodeManager.useBaseTemplates()
         // nodeManager.addNodeTemplate("test", templateData)
 
