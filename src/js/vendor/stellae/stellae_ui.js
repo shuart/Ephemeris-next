@@ -324,7 +324,7 @@ export default function createStellaeUi({
         container.addEventListener( 'mousedown', onClick );
         container.addEventListener( 'mousemove', onMove );
         container.addEventListener( 'mouseup', onMouseUp );
-        document.addEventListener('dblclick', onDblClick, false);
+        state.canvas.addEventListener('dblclick', onDblClick, false);
     }
 
     var startRenderer = function () {

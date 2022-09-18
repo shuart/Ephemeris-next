@@ -197,7 +197,9 @@ var createAdler = function({
             for (const key in params.props){
                 console.log(params.props[key]);
                 // console.log(params.props[key].type != "adler-props");
-                if (params.props[key] && params.props[key].type != "adler-props") {
+                if (!params.props[key]) {
+                    self.props[key] = createProp(params.props[key])
+                }else if(params.props[key] && params.props[key].type != "adler-props") {
                     self.props[key] = createProp(params.props[key])
                     console.log(self);
                 }else if (params.props[key] && params.props[key].type == "adler-props"){

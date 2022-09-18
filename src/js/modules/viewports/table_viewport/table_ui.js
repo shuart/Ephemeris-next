@@ -9,8 +9,9 @@ var softUpdate= function (event, data, instance) {
 }
 
 var addItem = function (event, data, instance) {
-    
-    data.addAction()
+    // alert(data.value)
+    // data.addAction()
+    instance.props.get("addAction" )()
     //update table
     var itemsData = getItemsList(event,data, instance)
     instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols}, false)
@@ -41,6 +42,7 @@ var getItemsList = function (event, data, instance){
     data.cols =evaluator.evaluate().cols
     data.actions =evaluator.evaluate().actions
     console.log(data);
+    
 
     
     return data
@@ -51,8 +53,11 @@ var setUpTable = function (event, data, instance) {
      console.log(instance.props.settings.get());
      var itemsData = getItemsList(event,data, instance)
      data.addAction = itemsData.actions
-     console.log(data.addAction);
-    //  alert()
+     instance.props.set("addAction",itemsData.actions )
+    //  data.value = Date.now()
+    // // alert(data.value)
+    //  console.log(data.addAction);
+    // //  alert()
      instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols })
 }
 
@@ -67,6 +72,7 @@ var component =createAdler({
     params:{
         props:{
             test:15,
+            addAction: undefined,
             settings:{
                 entityType:false,
                 evaluatorId:false,

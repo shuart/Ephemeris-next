@@ -24,8 +24,8 @@ var loadLayout = function(currentPageId){
 function setUp(event, data, instance){
 
     instance.append(viewGridSettings.instance({props:{currentPageId:data.viewId,showSettings:true, schema:loadLayout(data.viewId)}}), "view_mount_point_grid");
-    instance.append(graph.instance(), "view_mount_point0");
-    instance.append(table_viewport.instance(), "view_mount_point1");
+    // instance.append(graph.instance(), "view_mount_point0");
+    // instance.append(table_viewport.instance(), "view_mount_point1");
 }
 
 function addEntity(event, data, instance){
