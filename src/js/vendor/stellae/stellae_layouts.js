@@ -85,8 +85,11 @@ var createNode  = function({
         return sprite;
     }
 
-    function createCharacterLabel( text ) {
+    function createCharacterLabel( text, maxLength ) {
 
+        if (text.length > maxLength) {
+            text = text.substring(0, maxLength-2)+"..";
+        }
         const ctx = textCanvas.getContext( '2d' );
         const font = '32px arial';
 
@@ -192,7 +195,7 @@ var createNode  = function({
         }
         if (prop.type == "text") {
             action = function (param) {
-                var newValue = prompt(prop.value)
+                var newValue = prompt("Set "+prop.label,prop.value)
                 if (newValue && newValue != "") {
                     var propId = prop.id
                     nodeData.setProp(propId, newValue)
@@ -212,7 +215,7 @@ var createNode  = function({
     function createProp (node,position, prop){
         //text
         var propGroup = new THREE.Group()
-        var spritetext = createCharacterLabel(prop.label)
+        var spritetext = createCharacterLabel(prop.label,15)
         var isField = false;
         propGroup.add(spritetext)
         if (prop.type == "hidden") {
@@ -224,7 +227,7 @@ var createNode  = function({
                 textToDisplay = "Field"
                 isField =true
             }
-            var spritetextValue = createCharacterLabel(textToDisplay)
+            var spritetextValue = createCharacterLabel(textToDisplay, 8)
             propGroup.add(spritetextValue)
             spritetextValue.position.set(0.5,0,0)
             layoutItems.props[spritetextValue.uuid] = {mesh:spritetextValue}
