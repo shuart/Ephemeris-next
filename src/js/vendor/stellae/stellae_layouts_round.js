@@ -1,6 +1,5 @@
 import * as THREE from "../three.module.js"
 import inputElements from "./stellae_inputs.js"
-import createNodeLayoutRound from "./stellae_layouts_round.js"
 
 let nanoid=(t=21)=>crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?"-":"_"),"");
 
@@ -32,7 +31,7 @@ const circleShape = new THREE.Shape()
     .quadraticCurveTo( circleRadius, - circleRadius, 0, - circleRadius )
     .quadraticCurveTo( - circleRadius, - circleRadius, - circleRadius, 0 )
     .quadraticCurveTo( - circleRadius, circleRadius, 0, circleRadius );
-var headerGeometry = new THREE.ShapeGeometry( squareShape );
+var headerGeometry = new THREE.ShapeGeometry( circleShape );
 var roundSocketGeometry = new THREE.ShapeGeometry( circleShape );
 
 var propsHeightMap={
@@ -42,9 +41,7 @@ var propsHeightMap={
 }
 
 
-
-
-var createNodeSquare  = function({
+var createNodeRound  = function({
     headerColor = 0xffff00,
     name = "Node",
     position={x:0,y:0},
@@ -75,7 +72,10 @@ var createNodeSquare  = function({
 
         // Rectangle
         ctx.fillStyle = 'white';
-        ctx.fillRect(20, 20, 150, 100);
+        ctx.fillRect(25, 25, 75, 75);
+        // ctx.beginPath();
+        // ctx.arc(100, 100, 200, 0, 2 * Math.PI);
+        // ctx.fill();
         const spriteMap = new THREE.Texture( ctx.getImageData( 0, 0, shadowCanvas.width, shadowCanvas.height ) );
         spriteMap.minFilter = THREE.LinearFilter;
         spriteMap.generateMipmaps = false;
@@ -128,11 +128,12 @@ var createNodeSquare  = function({
         var header = new THREE.Mesh( headerGeometry, materialHeader );
         header.layoutItemType ="header"
         header.layoutItemRoot =node
-        header.position.set((0-hwidth/2),0-hheight/2,0)
+        header.scale.set(0.08,0.08,0.08)
+        header.position.set(0,0,0)
         //text
         var spritetext = createCharacterLabel(name)
         node.add(spritetext)
-        spritetext.position.set(0,0,-0.01)
+        spritetext.position.set(0,0.7,-0.01)
 
         node.add(header)
         layoutItems.header = header
@@ -140,24 +141,25 @@ var createNodeSquare  = function({
     }
 
     function createBack(node, props){
-        const materialBack = new THREE.MeshBasicMaterial( { color: 0x303030,side: THREE.DoubleSide  } );
-        var geometryBack = new THREE.ShapeGeometry( squareShapeBack );
-        var background = new THREE.Mesh( geometryBack, materialBack );
-        background.layoutItemType ="header"
-        background.layoutItemRoot =node
-        background.scale.y = (props.length+1)/2
-        background.position.set((0-hwidth/2),0-hheight/2,0.002)
-        node.add(background)
+        // const materialBack = new THREE.MeshBasicMaterial( { color: 0x303030,side: THREE.DoubleSide  } );
+        // var geometryBack = new THREE.ShapeGeometry( circleShape );
+        // var background = new THREE.Mesh( geometryBack, materialBack );
+        // background.layoutItemType ="header"
+        // background.layoutItemRoot =node
+        // // background.scale.y = (props.length+1)/2
+        // background.scale.set(0.1,0.1,0.1)
+        // background.position.set(0,0,0.002)
+        // node.add(background)
+
         //createShadow
         var spriteShadow = createShadow()
         node.add(spriteShadow)
         // spriteShadow.position.set(0,1.7,0.008)
         // spriteShadow.scale.set(3.5,4.5/3,1)
         // background.scale.y = (props.length+1)/2
-        var scaler = props.length+1
-        scaler = Math.min(props.length,5)
-        spriteShadow.position.set(0.1,scaler/4 +(scaler/10) ,0.008)
-        spriteShadow.scale.set(3.7,scaler,1)
+        var scaler = 1
+        spriteShadow.position.set(0.4,0.3 ,0.008)
+        spriteShadow.scale.set(2,1.5,1)
         // spriteShadow.scale.y = (props.length+1)
     }
 
@@ -170,18 +172,19 @@ var createNodeSquare  = function({
         var socket = new THREE.Mesh( roundSocketGeometry, materialSocketFlow );
         
         group.add(socket)
-        if (prop.socket == "output") {
-            socket.position.set(1.47,0,0)
-        }else{
-            socket.position.set(-1.47,0,0)
-        }
+        // if (prop.socket == "output") {
+        //     socket.position.set(1.47,0,0)
+        // }else{
+        //     socket.position.set(-1.47,0,0)
+        // }
 
-        if (prop.multiple) { //set aspect
-            socket.scale.set(0.02,0.03,0.02)
-        }else{
-            socket.scale.set(0.02,0.02,0.02)
-        }
-        
+        // if (prop.multiple) { //set aspect
+        //     socket.scale.set(0.02,0.03,0.02)
+        // }else{
+        //     socket.scale.set(0.02,0.02,0.02)
+        // }
+        socket.scale.set(0.1,0.1,0.1)
+        socket.position.set(0,0,0.007)
         return socket
     }
 
@@ -220,32 +223,32 @@ var createNodeSquare  = function({
         var propGroup = new THREE.Group()
         var spritetext = createCharacterLabel(prop.label,15)
         var isField = false;
-        propGroup.add(spritetext)
-        if (prop.type == "hidden") {
-            spritetext.position.set(+0.5,0,0)
-        }else if (prop.type == "text" || prop.type == "select") {
-            spritetext.position.set(-0.5,0,0)
-            var textToDisplay = prop.value
-            if (Array.isArray(textToDisplay)) {
-                textToDisplay = "Field"
-                isField =true
-            }
-            var spritetextValue = createCharacterLabel(textToDisplay, 8)
-            propGroup.add(spritetextValue)
-            spritetextValue.position.set(0.5,0,0)
-            layoutItems.props[spritetextValue.uuid] = {mesh:spritetextValue}
-            spritetextValue.edata = { root:node, uuid:prop.id, value:prop.value, prop:prop, nodeData: nodeData, isField:isField, action:createPropAction(prop), }
-        }
+        // propGroup.add(spritetext)
+        // if (prop.type == "hidden") {
+        //     spritetext.position.set(+0.5,0,0)
+        // }else if (prop.type == "text" || prop.type == "select") {
+        //     spritetext.position.set(-0.5,0,0)
+        //     var textToDisplay = prop.value
+        //     if (Array.isArray(textToDisplay)) {
+        //         textToDisplay = "Field"
+        //         isField =true
+        //     }
+        //     var spritetextValue = createCharacterLabel(textToDisplay, 8)
+        //     propGroup.add(spritetextValue)
+        //     spritetextValue.position.set(0.5,0,0)
+        //     layoutItems.props[spritetextValue.uuid] = {mesh:spritetextValue}
+        //     spritetextValue.edata = { root:node, uuid:prop.id, value:prop.value, prop:prop, nodeData: nodeData, isField:isField, action:createPropAction(prop), }
+        // }
         
         if(prop.socket && prop.socket != "none"){
             var socket = createSocket(propGroup, prop)
             socket.layoutItemRoot =node
-            socket.edata = { root:node, nodeData: nodeData, uuid:prop.id, positionOffset:{x:socket.position.x,y:0.5+position,z:0} }
-            layoutItems.sockets[socket.uuid] = {mesh:socket, positionOffset:{x:socket.position.x,y:0.5+position,z:0}}
+            socket.edata = { root:node, nodeData: nodeData, uuid:prop.id, positionOffset:{x:socket.position.x,y:position,z:0} }
+            layoutItems.sockets[socket.uuid] = {mesh:socket, positionOffset:{x:socket.position.x,y:position,z:0}}
         }
         
         node.add(propGroup)
-        propGroup.position.set(0,0.5+position,0)
+        // propGroup.position.set(0,0.5+position,0)
         
         return propGroup
 
@@ -262,6 +265,7 @@ var createNodeSquare  = function({
     var node= new THREE.Group();
     var header = createHeader(node,name)
     createBack(node,props)
+
     // createSocket(node)
     createRows (node, props)
 
@@ -278,18 +282,5 @@ var createNodeSquare  = function({
     return node
 }
 
-var createNode = function (params) {
-    
-    if (params.nodeLayout == "round") {
-        return createNodeLayoutRound(params)
-    } else {
-        return createNodeSquare(params)
-    }
-}
 
-var createNodeLayout =function (scene, params) {
-    var node = createNode(params)
-    return node
-}
-
-export default createNodeLayout
+export default createNodeRound

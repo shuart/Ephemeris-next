@@ -5,6 +5,7 @@ import select from "../common_ui_components/select/select.js"
 import projectManagement from "../common_project_management/project_management.js";
 import thumbs from "./view_grid_settings_select_comp.js"
 import table_viewport from "../viewports/table_viewport/table_ui.js"
+import graph_viewport from "../viewports/graph_viewport/graph_ui.js"
 
 var softUpdate= function (event, data, instance) {
 
@@ -21,11 +22,20 @@ var mountModules = function (event, data, instance) {
             for (let k = 0; k < col.components.length; k++) {
                 const comp = col.components[k];
                 console.log(comp);
-                instance.append(table_viewport.instance({
-                    props:{
-                        settings:{evaluatorId:comp.settings.evaluatorUuid},
-                    }
-                },), `view_mount_point_${i}_${j}_${k}`);
+                if (comp.componentType == "table" || comp.componentType == "undefined") {
+                    instance.append(table_viewport.instance({
+                        props:{
+                            settings:{evaluatorId:comp.settings.evaluatorUuid},
+                        }
+                    },), `view_mount_point_${i}_${j}_${k}`);
+                } else if(comp.componentType == "graph"){
+                    instance.append(graph_viewport.instance({
+                        props:{
+                            settings:{evaluatorId:comp.settings.evaluatorUuid},
+                        }
+                    },), `view_mount_point_${i}_${j}_${k}`);
+                }
+                
             }
         }
     }
@@ -86,6 +96,8 @@ var renderCol = function ({
     if (showSettings) {
         for (let i = 0; i < components.length; i++) {
             const compItem = components[i];
+            console.log(compItem);
+            alert()
             area +=`<div a-slot="view_mount_point_${rowId}_${colId}_${i}" data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${i}"  class="adler_grid_comp_area" >` + renderComp(compItem) +'</div>'
         }
     }else{
@@ -105,9 +117,10 @@ var renderCol = function ({
 var renderComp = function ({
     width = undefined,
     height= "100%",
-    uuid = nanoid()
+    uuid = nanoid(),
+    componentType ="undefined",
 }={}) {
-    var area = 'test'
+    var area = componentType
     
     return area
     
@@ -173,11 +186,25 @@ var removeCol = function(event, data, instance){
 }
 
 var addComp = function(event, data, instance){
+    // mainPopup.mount()
+    // mainPopup.append(thumbs, "main-slot")
+    // mainPopup.update();
     mainPopup.mount()
-    mainPopup.append(thumbs, "main-slot")
+    mainPopup.append(select.instance({
+        data:{
+            list:[
+                {uuid:"table", name:"Table"},
+                {uuid:"graph", name:"Graph"},
+
+            ],
+            callback:function(result){
+                var currentSchema = instance.props.schema.get(); currentSchema[event.target.dataset.rowId].cols[event.target.dataset.colId].components.push({ settings:{}, componentType:result.value.uuid});
+                instance.props.schema.set(currentSchema); instance.update();
+            }
+        }
+    }), "main-slot")
     mainPopup.update();
-    var currentSchema = instance.props.schema.get(); currentSchema[event.target.dataset.rowId].cols[event.target.dataset.colId].components.push({ setting:{}, componentType:"undefined"});
-    instance.props.schema.set(currentSchema); instance.update();
+    
 }
 
 var setUp = function (event, data, instance) {

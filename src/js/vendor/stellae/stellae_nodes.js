@@ -15,6 +15,7 @@ var createNode= function({
     propsValue = undefined,
     propsValueFromInput = {},
     name = "Node",
+    nodeLayout ="square",
     props =[
         // {id:demoId1, label:"demo", type:"text", editable:true, socket:"input", value:"Default"},
         // {id:demoId2, label:"demo2", type:"text", editable:true, socket:"input", value:"Default2"},
@@ -237,14 +238,14 @@ var createNode= function({
     
     var addToScene = function (currentScene) {
         if (ui) {
-            refInScene =  currentScene.addNode({headerColor, uuid, position, name, props:internalProps, links, nodeData:self})
+            refInScene =  currentScene.addNode({headerColor,nodeLayout, uuid, position, name, props:internalProps, links, nodeData:self})
         }
         
     }
     var updateInScene = function (){
         if (ui) {
             currentScene.removeNode(refInScene)
-            refInScene =  currentScene.addNode({headerColor, uuid, position, name, props:internalProps, links, nodeData:self}) 
+            refInScene =  currentScene.addNode({headerColor,nodeLayout, uuid, position, name, props:internalProps, links, nodeData:self}) 
         }
         
     }
@@ -301,12 +302,14 @@ var createNodeManager = function ({
         }
     }
     var addNode = function(templateName, params){
+        
         if (params && !params.uuid) {
             params.uuid = nanoid()
         }
         var template = nodeTemplates[templateName]
         var newParams= Object.assign({},template,params,{ui:ui, contextNodes:nodeInUse,contextLinks:linksInUse})
         var node = createNode(newParams)
+        
         nodeInUse[node.getUuid()] = node 
     }
 
