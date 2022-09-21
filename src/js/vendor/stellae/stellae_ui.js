@@ -2,12 +2,14 @@ import * as THREE from "../three.module.js"
 import { MapControls } from '../three.orbitcontrols.js';
 import createNodeLayout from "./stellae_layouts.js";
 import inputElements from "./stellae_inputs.js"
+import simulation from "./stellae_d3_forces.js"
 
 
 export default function createStellaeUi({
     container = document.body,
     canvasWidth =800, canvasHeight = 500,
     darkMode = "auto",
+    useSimulation = true,
     } = {}) {
     var self = {};
     var state ={
@@ -100,6 +102,9 @@ export default function createStellaeUi({
         // state.triggers.sockets= Object.assign({},state.triggers.sockets, node.layout.sockets)
         // state.triggers.props= Object.assign({},state.triggers.props, node.layout.props)
         // nodeMeshStorage[node.uuid] = node
+        if (useSimulation) {
+            simulation.addNodes(node)
+        }
         return node;
     }
 
@@ -263,6 +268,10 @@ export default function createStellaeUi({
 
                 state.selectedToMove[0].position.set(intersects.x, 0.1, intersects.z);
                 state.selectedToMove[0].edata.nodeData.setPosition(intersects.x, intersects.z)
+
+                if (useSimulation) {
+                    simulation.dragNode(state.selectedToMove[0].edata.uuid,intersects.x, intersects.z)
+                }
             }
             if (state.draggingSocket) {
                 state.controls.enabled = false;
