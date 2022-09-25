@@ -4,6 +4,7 @@ var createSimulation = function (params) {
     var self = {}
     var simulation = undefined;
     var simulationNodes = [];
+    var simulationLinks = [];
     var simulationNodesByUuid = {};
     var simulationNodesByRootUuid = {};
     var running = false;
@@ -21,6 +22,9 @@ var createSimulation = function (params) {
             //we're going to add a charge to each node 
             //also going to add a centering force
             d3ForceSimulation
+            .force("link", d3.forceLink(simulationLinks3))
+            // .force("link", d3.forceLink(links).id(d => d.id).distance(0).strength(1))
+            // .force("charge", d3.forceManyBody().strength(-50))
             .force("charge_force", d3.forceManyBody().strength(-0.07).distanceMax(10))
             .force("x", d3.forceX())
             .force("y", d3.forceY())
@@ -60,7 +64,7 @@ var createSimulation = function (params) {
 
     var startSimulation = function () {
         if (!d3ForceSimulation) {
-            setTimeout(setUpForceSimulation,2000)
+            setTimeout(setUpForceSimulation,1000)
             // setUpForceSimulation()
         }
         if (!running) {

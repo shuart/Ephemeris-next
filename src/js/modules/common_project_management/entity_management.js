@@ -25,7 +25,10 @@ var entityAggregate = function(aggregate, projectStore){
     var currentRelations = projectStore.get("relations").toArray()
     for (let i = 0; i < currentRelations.length; i++) {
         const element = currentRelations[i];
-        ownRelations.push(element);
+        if (element["from_"+aggregate.uuid]) {
+            ownRelations.push(element);
+        }
+        
     }
     aggregate.relations = ownRelations
 
@@ -40,7 +43,7 @@ var entityAggregate = function(aggregate, projectStore){
     //methods
     aggregate.addRelation = function (type, targetId) {
         var currentRelationTarget = projectStore.get("entities").where("uuid").equals(targetId)
-        projectStore.add("relations",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, type:type})
+        projectStore.add("relations",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, type:type, ["from_"+aggregate.uuid]:true,["to_"+currentRelationTarget.uuid]:true })
     }
 
     return aggregate

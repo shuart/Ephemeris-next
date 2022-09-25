@@ -1,4 +1,5 @@
 import projectManagement from "../common_project_management/project_management.js";
+import createRelationManagement from "../common_project_management/relations_management.js";
 import userManagement from "../common_user_management/user_management.js";
 import createAdler from "../../vendor/adler.js";
 import state_manager from "../common_state/state_manager.js"
@@ -27,8 +28,34 @@ var addEntityToProject = function(event, data, instance){
 var getItemsList = function (data){
     var projectId = projectManagement.getCurrent().id
     console.log(projectId)
+    var listData ={ list:undefined, cols:undefined}
+
+    if (data.modelElementType != "relations") {
+        listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
+        listData.cols = [
+            {title:"id", field:"uuid", },
+            {title:"value", field:"name", },
+        ];
+    } else {
+        var relationManagement = createRelationManagement()
+        listData.list = relationManagement.getAll()
+        // listData.list.forEach(element => {
+        //     if (element.fromList) {
+        //         element.fromList = element.fromList.map(i=>i.name)
+        //     }
+            
+        // });
+        
+        listData.cols = [
+            {title:"id", field:"uuid", },
+            {title:"value", field:"name", },
+            {title:"From", field:"fromList", },
+            {title:"To", field:"to", },
+        ];
+    }
     // return projectManagement.getProjectStore(projectId,"default").getAll().map((i)=> {return {value:i.name, onClick:(event, data, instance)=> console.log(i.id, instance)} } )
-    return projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
+    
+    return listData
     // return projectManagement.getProjectStore(projectId,"default").getAll().toString()
 }
 
@@ -52,7 +79,8 @@ var setUpData = function (event, data, instance) {
 
 var setUpTable = function (event, data, instance) {
      console.log(instance.getNodes());
-     instance.getNodes().table.setData({list:getItemsList(data)})
+     var tableData = getItemsList(data)
+     instance.getNodes().table.setData({list:tableData.list, cols:tableData.cols})
 }
 
 
