@@ -177,6 +177,65 @@ evaluatorTemplates.extractProperty = {
     },
 }
 
+evaluatorTemplates.extractRelations = {
+    templateName : "extract_relations",
+    name : "extract_relations",
+    props :[
+        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"method", label:"", type:"select", options:[
+            {id:"Greater_Than", value:"Greater Than"},
+        ],editable:true, socket:"none", value:"Greater Than"},
+        {id:"a", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            
+            // console.log(entityRepo.getAll());
+            
+            // props.method.setOptions(props.a.get().map(function (e) {
+            //         var currentKey = e.parameters.keys
+            //         return {id:e.uuid, value:e.name}
+            // }))
+            console.log(props.a.get()[0] );
+            if (Array.isArray(props.a.get()) && props.a.get()[0].attributes.type) {
+                var entityRepo = createEntityManagement()
+                var entity = entityRepo.getById(props.a.get()[0].attributes.type)
+                if (entity.relations) {
+                    props.method.setOptions(entity.relations.map(function (e) {
+                        return {id:e.uuid, value:e.name}
+                    }))
+                }
+                
+            }
+
+            // var getEntity = entityRepo
+
+            // console.log(props.a.get());
+            // alert("fdfes")
+            // if (props.a.get()[0] && props.a.get()[0].relations) {
+            //     props.method.setOptions(props.a.get()[0].relations.map(function (e) {
+            //         return {id:e.uuid, value:e.name}
+            //     }))
+            //     // props.output.set("undefined")
+            //     if (props.method.get()) {
+            //         props.output.set(props.a.get().map(function (e) {
+            //             console.log(e.properties);
+            //             return {[props.method.get()]:e.relations[props.method.get()]}
+            //         }))
+            //     }
+            // }else{
+            //     props.output.set("undefined")
+            // }
+            
+        },
+        onInit:(props) =>{
+        },
+    },
+}
+
 evaluatorTemplates.outputTable = {
     templateName : "output_table",
     name : "output_table",

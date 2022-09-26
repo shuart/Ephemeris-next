@@ -22,7 +22,7 @@ var createSimulation = function (params) {
             //we're going to add a charge to each node 
             //also going to add a centering force
             d3ForceSimulation
-            .force("link", d3.forceLink(simulationLinks3))
+            .force("link", d3.forceLink(simulationLinks))
             // .force("link", d3.forceLink(links).id(d => d.id).distance(0).strength(1))
             // .force("charge", d3.forceManyBody().strength(-50))
             .force("charge_force", d3.forceManyBody().strength(-0.07).distanceMax(10))

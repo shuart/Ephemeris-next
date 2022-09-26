@@ -9,7 +9,7 @@ export default function createStellaeUi({
     container = document.body,
     canvasWidth =800, canvasHeight = 500,
     darkMode = "auto",
-    useSimulation = true,
+    useSimulation = false,
     } = {}) {
     var self = {};
     var state ={

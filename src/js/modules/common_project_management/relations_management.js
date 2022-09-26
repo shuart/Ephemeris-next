@@ -23,23 +23,33 @@ var relationAggregate = function(aggregate, projectStore){
 
     //parameters "from"
     var from = {}
-    var fromlist = []
+    var fromList = []
+    var to = {}
+    var toList = []
     var entityManagement = createEntityManagement()
     var currentFromEntities = entityManagement.getAll()
     for (let i = 0; i < currentFromEntities.length; i++) {
         const element = currentFromEntities[i];
         if (aggregate.attributes["from_"+element.uuid]) {
-            fromlist.push(element);
+            fromList.push(element);
         }
         // fromlist.push(element);
         // console.log(fromlist);
-        
+    }
+    for (let i = 0; i < currentFromEntities.length; i++) {
+        const element = currentFromEntities[i];
+        if (aggregate.attributes["to_"+element.uuid]) {
+            toList.push(element);
+        }
+        // fromlist.push(element);
+        // console.log(fromlist);
     }
     // console.log(aggregate);
     // console.log(fromlist);
     // alert()
     
-    aggregate.fromlist = fromlist
+    aggregate.fromList = fromList
+    aggregate.toList = toList
 
     // //parameters "Relations"
     // var ownRelations = []
@@ -61,11 +71,15 @@ var relationAggregate = function(aggregate, projectStore){
     //     projectStore.add("entities",{uuid:aggregate.uuid,[refId]:true})
     // }
 
-    // //methods
-    // aggregate.addRelation = function (type, targetId) {
-    //     var currentRelationTarget = projectStore.get("entities").where("uuid").equals(targetId)
-    //     projectStore.add("relations",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, type:type, ["from_"+aggregate.uuid]:true,["to_"+currentRelationTarget.uuid]:true })
-    // }
+    //methods
+    aggregate.addTarget = function (targetId) {
+        var currentRelationTarget = projectStore.get("entities").where("uuid").equals(targetId)
+        projectStore.add("relations",{uuid:aggregate.uuid,["to_"+currentRelationTarget.uuid]:true })
+    }
+    aggregate.addSource = function (targetId) {
+        var currentRelationTarget = projectStore.get("entities").where("uuid").equals(targetId)
+        projectStore.add("relations",{uuid:aggregate.uuid,["from_"+currentRelationTarget.uuid]:true })
+    }
 
     return aggregate
 }

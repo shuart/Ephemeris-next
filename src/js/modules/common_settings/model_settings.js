@@ -3,8 +3,11 @@ import createRelationManagement from "../common_project_management/relations_man
 import userManagement from "../common_user_management/user_management.js";
 import createAdler from "../../vendor/adler.js";
 import state_manager from "../common_state/state_manager.js"
+import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
+import select from "../common_ui_components/select/select.js"
 
 import table_component from "../common_ui_components/table/table.js";
+import createEntityManagement from "../common_project_management/entity_management.js";
 
 // import {Tabulator} from "../../vendor/tabulator_esm.min.js";
 
@@ -36,21 +39,48 @@ var getItemsList = function (data){
             {title:"id", field:"uuid", },
             {title:"value", field:"name", },
         ];
-    } else {
+    } else if (data.modelElementType == "relations"){
         var relationManagement = createRelationManagement()
         listData.list = relationManagement.getAll()
-        // listData.list.forEach(element => {
-        //     if (element.fromList) {
-        //         element.fromList = element.fromList.map(i=>i.name)
-        //     }
+        listData.list.forEach(element => {
+            console.log(element);
+            if (element.fromList) {
+                
+                element.fromList = element.fromList.map(i=>i.name).join(',')
+                console.log(element.fromList);
+            }
+            if (element.toList) {
+                
+                element.toList = element.toList.map(i=>i.name).join(',')
+                console.log(element.toList);
+            }
             
-        // });
+        });
         
         listData.cols = [
-            {title:"id", field:"uuid", },
             {title:"value", field:"name", },
-            {title:"From", field:"fromList", },
-            {title:"To", field:"to", },
+            {title:"From", field:"fromList", cellClick:function(e, cell){
+                var entityRepo = createEntityManagement()
+                mainPopup.mount()
+                mainPopup.append(select.instance({
+                    data:{
+                        list:entityRepo.getAll(),
+                        callback:function(event){ cell.getData().addSource(event.value.uuid) }
+                    }
+                }), "main-slot")
+                mainPopup.update();
+            }, },
+            {title:"To", field:"toList", cellClick:function(e, cell){
+                var entityRepo = createEntityManagement()
+                mainPopup.mount()
+                mainPopup.append(select.instance({
+                    data:{
+                        list:entityRepo.getAll(),
+                        callback:function(event){ cell.getData().addTarget(event.value.uuid) }
+                    }
+                }), "main-slot")
+                mainPopup.update();
+            },},
         ];
     }
     // return projectManagement.getProjectStore(projectId,"default").getAll().map((i)=> {return {value:i.name, onClick:(event, data, instance)=> console.log(i.id, instance)} } )
