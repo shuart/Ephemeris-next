@@ -25,14 +25,16 @@ var instanceAggregate = function(aggregate, projectStore){
     }      
     aggregate.properties = ownProperties
     
-    // //parameters "Relations"
-    // var ownRelations = []
-    // var currentRelations = projectStore.get("relations").toArray()
-    // for (let i = 0; i < currentRelations.length; i++) {
-    //     const element = currentRelations[i];
-    //     ownRelations.push(element);
-    // }
-    // aggregate.relations = ownRelations
+    //parameters "Relations"
+    var ownRelations = []
+    var currentRelations = projectStore.get("relationsInstances").toArray()
+    for (let i = 0; i < currentRelations.length; i++) {
+        const element = currentRelations[i];
+        if (element.from == aggregate.uuid) {
+            ownRelations.push(element);
+        }
+    }
+    aggregate.relations = ownRelations
 
     //methods
     aggregate.setProperty = function (propName, value) {
@@ -42,11 +44,11 @@ var instanceAggregate = function(aggregate, projectStore){
         }
     }
 
-    // //methods
-    // aggregate.addRelation = function (type, targetId) {
-    //     var currentRelationTarget = projectStore.get("entities").where("uuid").equals(targetId)
-    //     projectStore.add("relations",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, type:type})
-    // }
+    //methods
+    aggregate.addRelation = function (type, targetId) {
+        var currentRelationTarget = projectStore.get("entitiesInstances").where("uuid").equals(targetId)
+        projectStore.add("relationsInstances",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, from:aggregate.uuid, to:currentRelationTarget.uuid, type:type})
+    }
 
     return aggregate
 }

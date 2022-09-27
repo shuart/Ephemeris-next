@@ -104,6 +104,7 @@ evaluatorTemplates.extractProperty = {
     name : "extract_property",
     props :[
         {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"id", label:"prop id", type:"hidden", editable:false, socket:"output", value:false},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
         {id:"method", label:"", type:"select", options:[
             {id:"Greater_Than", value:"Greater Than"},
@@ -135,6 +136,7 @@ evaluatorTemplates.extractProperty = {
                         console.log(e.properties);
                         return {[props.method.get()]:e.properties[props.method.get()]}
                     }))
+                    props.id.set(props.method.get())
                 }
             }else{
                 props.output.set("undefined")
