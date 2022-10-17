@@ -268,6 +268,7 @@ evaluatorTemplates.colParameters = {
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
         {id:"name", label:"data", type:"text", editable:true, socket:"input", value:"Col Name"},
         {id:"paramName", label:"param name", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"clickAction", label:"action", type:"hidden", editable:true, socket:"input", value:false},
     ],
     methods:{
     },
@@ -279,7 +280,11 @@ evaluatorTemplates.colParameters = {
             //         return {[props.method.get()]:e.properties[props.method.get()]}
             //     }))
             // }
-            props.output.set({title:props.name.get(), field:props.paramName.get(), editor:"input"})     
+            var cellAction = undefined;
+            if (props.clickAction.get()) {
+                cellAction =function(e, cell){ props.clickAction.get()() }
+            }
+            props.output.set({title:props.name.get(), field:props.paramName.get(), editor:"input", cellClick:cellAction,})     
         },
         onInit:(props) =>{
 
@@ -308,6 +313,32 @@ evaluatorTemplates.actionAddInstance = {
                         var instancesRepo = createInstancesManagement()
                         instancesRepo.add({name:name,theTime:Date.now(), type:currentEntityType})
                     }
+                }else{
+                    alert("reference missing") 
+                }
+            }
+            props.output.set(functionToUse)     
+        },
+        // onInit:(props) =>{
+
+        // },
+    },
+}
+
+evaluatorTemplates.actionShowMessage = {
+    templateName : "action_show_message",
+    name : "action_show_message",
+    props :[
+        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
+        {id:"message", label:"Message", type:"text", editable:true, socket:"input", value:""},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            var functionToUse = function () {
+                if (props.message.get() && props.message.get() != "") {
+                    alert(props.message.get())
                 }else{
                     alert("reference missing") 
                 }
