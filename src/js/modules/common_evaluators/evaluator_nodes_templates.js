@@ -282,7 +282,15 @@ evaluatorTemplates.colParameters = {
             // }
             var cellAction = undefined;
             if (props.clickAction.get()) {
-                cellAction =function(e, cell){ props.clickAction.get()() }
+                cellAction =function(e, cell){ 
+                    var actionData = {
+                        input:{
+                            clickedItem:cell.getData().name,
+                            clickedItemUuid:cell.getData().uuid,
+                        }
+                    }
+                    props.clickAction.get()(actionData) 
+                }
             }
             props.output.set({title:props.name.get(), field:props.paramName.get(), editor:"input", cellClick:cellAction,})     
         },
@@ -336,14 +344,45 @@ evaluatorTemplates.actionShowMessage = {
     },
     event:{
         onEvaluate:(props) =>{
-            var functionToUse = function () {
+            var functionToUse = function (data) {
                 if (props.message.get() && props.message.get() != "") {
-                    alert(props.message.get())
+                    var valuePassed = props.message.get()
+                    if (valuePassed instanceof Function) {
+                        valuePassed = valuePassed(data)
+                    }
+
+                    alert(valuePassed)
                 }else{
                     alert("reference missing") 
                 }
             }
             props.output.set(functionToUse)     
+        },
+        // onInit:(props) =>{
+
+        // },
+    },
+}
+
+evaluatorTemplates.actionInput = {
+    templateName : "action_Input",
+    name : "action_Input",
+    props :[
+        {id:"clicked_item", label:"clicked_item", type:"hidden", editable:false, socket:"output", value:()=>"test1"},
+        {id:"clicked_item_uuid", label:"clicked_item_uuid", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            var functionToUse = function (data) {
+                return data.input.clickedItem
+            }
+            props.clicked_item.set(functionToUse)  
+            var functionToUse = function (data) {
+                return data.input.clickedItemUuid
+            }
+            props.clicked_item_uuid.set(functionToUse)  
         },
         // onInit:(props) =>{
 

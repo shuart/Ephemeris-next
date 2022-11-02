@@ -166,6 +166,9 @@ var createNodeSquare  = function({
         if (Array.isArray(prop.value)) {
             socketColor = 0x6767d1
         }
+        if (prop.value instanceof Function) {
+            socketColor = 0x686363
+        }
         const materialSocketFlow = new THREE.MeshBasicMaterial( { color: socketColor,side: THREE.DoubleSide  } );
         var socket = new THREE.Mesh( roundSocketGeometry, materialSocketFlow );
         
@@ -220,6 +223,7 @@ var createNodeSquare  = function({
         var propGroup = new THREE.Group()
         var spritetext = createCharacterLabel(prop.label,15)
         var isField = false;
+        var isFunc = false;
         propGroup.add(spritetext)
         if (prop.type == "hidden") {
             spritetext.position.set(+0.5,0,0)
@@ -230,6 +234,11 @@ var createNodeSquare  = function({
                 textToDisplay = "Field"
                 isField =true
             }
+            if (textToDisplay instanceof Function) {
+                textToDisplay = "Function"
+                isFunc =true
+            }
+            
             var spritetextValue = createCharacterLabel(textToDisplay, 8)
             propGroup.add(spritetextValue)
             spritetextValue.position.set(0.5,0,0)
