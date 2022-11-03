@@ -1,5 +1,7 @@
 import createInstancesManagement from "../common_project_management/instances_management.js";
 import createEntityManagement from "../common_project_management/entity_management.js";
+import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
+import select from "../common_ui_components/select/select.js"
 
 
 var evaluatorTemplates = {}
@@ -363,6 +365,48 @@ evaluatorTemplates.actionShowMessage = {
         // },
     },
 }
+
+evaluatorTemplates.actionAddRelation = {
+    templateName : "action_add_relation",
+    name : "action_add_relation",
+    props :[
+        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
+        {id:"message", label:"Message", type:"text", editable:true, socket:"input", value:""},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            var functionToUse = function (data) {
+                var instanceRepo = createInstancesManagement()
+                
+                var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) //change to generic
+                console.log(currentSelectedInstance);
+                console.log(currentSelectedInstance.getPotentialEntitiesForRelations());
+                alert()
+                
+                mainPopup.mount()
+                mainPopup.append(select.instance({
+                    data:{
+                        list:currentSelectedInstance.getPotentialEntitiesForRelations(),
+                        callback:function(event){ //TODO add callback
+                            //element.addRelation("type",event.value.uuid)
+                            // var currentSchema = instance.props.schema.get(); 
+                            // currentSchema[ compPos[0] ].cols[ compPos[1] ].components[ compPos[2] ].settings={entityType:event.value.uuid};
+                        }
+                    }
+                }), "main-slot")
+                mainPopup.update();
+            }
+            props.output.set(functionToUse)     
+        },
+        // onInit:(props) =>{
+
+        // },
+    },
+}
+
+
 
 evaluatorTemplates.actionInput = {
     templateName : "action_Input",

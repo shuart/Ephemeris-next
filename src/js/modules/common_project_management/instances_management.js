@@ -1,5 +1,6 @@
 import createRepoManagement from "./repo_management.js";
 import projectManagement from "./project_management.js";
+import createRelationsManagement from "./relations_management.js";
 import projectStores from "./project_data_store.js";
 import nanoid from "../../vendor/nanoid.js";
 
@@ -35,6 +36,53 @@ var instanceAggregate = function(aggregate, projectStore){
         }
     }
     aggregate.relations = ownRelations
+
+    //methods
+    aggregate.getPotentialRelations = function () {
+        var relationsRepo = createRelationsManagement()
+        var relationsAvailable = relationsRepo.getAll()
+        var availableList =[]
+        for (let i = 0; i < relationsAvailable.length; i++) {
+            const element = relationsAvailable[i];
+            console.log(element);
+            for (let j = 0; j < element.fromList.length; j++) {
+                if (element.fromList[j].uuid == aggregate.attributes.type) {
+                    availableList.push(element)
+                }
+            }
+        }
+        return availableList
+    }
+    aggregate.getPotentialEntitiesForRelations = function () {
+        var relationsRepo = createRelationsManagement()
+        var relationsAvailable = relationsRepo.getAll()
+        
+        var availableRelationsList =aggregate.getPotentialRelations() 
+        var availableTargetTypes = []
+        for (let i = 0; i < availableRelationsList.length; i++) {
+            const availableRelation = availableRelationsList[i];
+            for (let j = 0; j < availableRelation.toList.length; j++) {
+                const targetCat = availableRelation.toList[j];
+                availableTargetTypes.push(targetCat.uuid)
+            }
+        }
+        console.log(availableTargetTypes);
+        var availableList =[]
+        var allInstances = projectStore.get("instances").toArray()
+        console.log(allInstances);
+
+        for (let i = 0; i < allInstances.length; i++) {
+            const instance = allInstances[i];
+            for (let j = 0; j < availableTargetTypes.length; j++) {
+                const availableTargetUuid = availableTargetTypes[j];
+                if (availableTargetUuid == instance.type) {
+                    availableList.push(instance)
+                }
+            }
+        }
+
+        return availableList
+    }
 
     //methods
     aggregate.setProperty = function (propName, value) {
