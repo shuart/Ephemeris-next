@@ -1,5 +1,6 @@
 import createInstancesManagement from "../common_project_management/instances_management.js";
 import createEntityManagement from "../common_project_management/entity_management.js";
+import createRelationsManagement from "../common_project_management/relations_management.js";
 import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
 import select from "../common_ui_components/select/select.js"
 
@@ -380,6 +381,7 @@ evaluatorTemplates.actionAddRelation = {
             var functionToUse = function (data) {
                 var instanceRepo = createInstancesManagement()
                 
+                
                 var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) //change to generic
                 console.log(currentSelectedInstance);
                 console.log(currentSelectedInstance.getPotentialEntitiesForRelations());
@@ -390,9 +392,18 @@ evaluatorTemplates.actionAddRelation = {
                     data:{
                         list:currentSelectedInstance.getPotentialEntitiesForRelations(),
                         callback:function(event){ //TODO add callback
-                            //element.addRelation("type",event.value.uuid)
-                            // var currentSchema = instance.props.schema.get(); 
-                            // currentSchema[ compPos[0] ].cols[ compPos[1] ].components[ compPos[2] ].settings={entityType:event.value.uuid};
+                            //Display a new popup to choose the relation type
+                            mainPopup.append(select.instance({
+                                data:{
+                                    list:currentSelectedInstance.getPotentialRelationsWithInstance(event.value.uuid),
+                                    callback:function(eventInCallback){ //TODO add callback
+                                        currentSelectedInstance.addRelation(eventInCallback.value.uuid,event.value.uuid)
+                                        console.log(currentSelectedInstance.getRelations());
+                                        
+                                    }
+                                }
+                            }), "main-slot")
+                            mainPopup.update();
                         }
                     }
                 }), "main-slot")

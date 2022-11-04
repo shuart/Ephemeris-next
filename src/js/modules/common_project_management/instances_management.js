@@ -38,6 +38,17 @@ var instanceAggregate = function(aggregate, projectStore){
     aggregate.relations = ownRelations
 
     //methods
+    aggregate.getRelations = function () {
+        var ownRelations = []
+        var currentRelations = projectStore.get("relationsInstances").toArray()
+        for (let i = 0; i < currentRelations.length; i++) {
+            const element = currentRelations[i];
+            if (element.from == aggregate.uuid) {
+                ownRelations.push(element);
+            }
+        }
+        return ownRelations
+    }
     aggregate.getPotentialRelations = function () {
         var relationsRepo = createRelationsManagement()
         var relationsAvailable = relationsRepo.getAll()
@@ -51,6 +62,22 @@ var instanceAggregate = function(aggregate, projectStore){
                 }
             }
         }
+        return availableList
+    }
+    aggregate.getPotentialRelationsWithInstance = function (targetId) {
+        var currentRelationTarget = projectStore.get("instances").where("uuid").equals(targetId)
+        var availableRelationsList =aggregate.getPotentialRelations()
+        var availableList = []
+        for (let i = 0; i < availableRelationsList.length; i++) {
+            const availableRelation = availableRelationsList[i];
+            for (let j = 0; j < availableRelation.toList.length; j++) {
+                const targetCat = availableRelation.toList[j];
+                if (targetCat.uuid == currentRelationTarget.type) {
+                    availableList.push(availableRelation)
+                }
+            }
+        }
+
         return availableList
     }
     aggregate.getPotentialEntitiesForRelations = function () {
@@ -94,7 +121,7 @@ var instanceAggregate = function(aggregate, projectStore){
 
     //methods
     aggregate.addRelation = function (type, targetId) {
-        var currentRelationTarget = projectStore.get("entitiesInstances").where("uuid").equals(targetId)
+        var currentRelationTarget = projectStore.get("instances").where("uuid").equals(targetId)
         projectStore.add("relationsInstances",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, from:aggregate.uuid, to:currentRelationTarget.uuid, type:type})
     }
 
