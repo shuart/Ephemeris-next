@@ -116,7 +116,7 @@ evaluatorTemplates.extractProperty = {
             {id:"Less_Than_Or_Equal", value:"Less Than or Equal"},
             {id:"Equal", value:"Equal"},
         ],editable:true, socket:"none", value:"Greater Than"},
-        {id:"a", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"a", label:"Field", type:"text", editable:true, socket:"input", value:"0"},
     ],
     methods:{
     },
@@ -191,7 +191,7 @@ evaluatorTemplates.extractRelations = {
         {id:"method", label:"", type:"select", options:[
             {id:"Greater_Than", value:"Greater Than"},
         ],editable:true, socket:"none", value:"Greater Than"},
-        {id:"a", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"a", label:"Field", type:"text", editable:true, socket:"input", value:"0"},
     ],
     methods:{
     },
@@ -212,6 +212,23 @@ evaluatorTemplates.extractRelations = {
                     props.method.setOptions(entity.relations.map(function (e) {
                         return {id:e.uuid, value:e.name}
                     }))
+                }
+
+                if (props.method.get()) {
+                    var instancesRepo = createInstancesManagement()
+                    props.output.set(props.a.get().map(function (e) {
+                        
+                        var targetsOfRelation=[]
+                        for (let i = 0; i < e.relations.length; i++) {
+                            const relation = e.relations[i];
+                            var relationTarget = instancesRepo.getById(relation.to)
+                            targetsOfRelation.push(relationTarget)
+                        }
+                        console.log(targetsOfRelation);
+                        // alert("fesfe")
+                        return {[props.method.get()]:targetsOfRelation}
+                    }))
+                    // props.id.set(props.method.get())
                 }
                 
             }
@@ -237,6 +254,45 @@ evaluatorTemplates.extractRelations = {
             
         },
         onInit:(props) =>{
+        },
+    },
+}
+
+evaluatorTemplates.joinFields = {
+    templateName : "join_fields",
+    name : "join_fields",
+    props :[
+        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"field", label:"Source Field", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"fields_to_join", multiple:true, label:"Fields to join", type:"hidden", editable:true, socket:"input", value:false},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            console.log(props.fields_to_join.get());
+            var newFields = []
+            var sourceField = props.field.get()
+            var fieldsToJoin = props.fields_to_join.get()
+            if (sourceField && fieldsToJoin) {
+                var fieldsQt = fieldsToJoin.length
+                
+                for (let i = 0; i < sourceField.length; i++) {
+                    const sourceFieldElement = sourceField[i];
+                    var newFieldElement = Object.assign({},sourceFieldElement)
+                    for (let j = 0; j < fieldsToJoin.length; j++) {
+                        const fieldToJoin = fieldsToJoin[j];
+                        newFieldElement = Object.assign(sourceFieldElement,fieldToJoin[i])
+                    }
+                    newFields.push(newFieldElement)
+                }
+                props.output.set(newFields)
+            }
+            
+        },
+        onInit:(props) =>{
+
         },
     },
 }
