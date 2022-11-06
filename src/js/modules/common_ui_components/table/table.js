@@ -1,5 +1,6 @@
 import createAdler from "../../../vendor/adler.js";
 import {TabulatorFull as Tabulator} from "../../../vendor/tabulator_esm.min.js";
+import {checkColsForCustomFormating} from "./table_custom_formaters.js"
 
 var setUpTable = function(event, data, instance){
     var itemsList = data.list
@@ -26,6 +27,9 @@ var setUpTable = function(event, data, instance){
             {title:"added", field:"theTime", },
         ];
     }
+
+    //check if cols need custom formatters
+    checkColsForCustomFormating(itemsList,colsList)
 
     var tableAra = instance.query("div")
     console.log(tableAra);

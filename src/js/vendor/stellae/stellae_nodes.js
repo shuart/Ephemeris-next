@@ -249,6 +249,14 @@ var createNode= function({
         }
         
     }
+    var removeInScene = function (){
+        if (ui) {
+            currentScene.removeNode(refInScene)
+        } 
+    }
+    var remove = function (){
+        removeInScene()
+    }
     //init
     init()
     self.exportParams=exportParams
@@ -257,6 +265,7 @@ var createNode= function({
     self.setProp=setProp;
     self.getUuid=getUuid;
     self.init=init;
+    self.remove = remove;
     self.evaluate = evaluate;
     return self
 }
@@ -278,10 +287,17 @@ var createNodeManager = function ({
             }
             // linksInUse[links[i].to] = element
             linksInUse.list.push(element)
-            if (ui) {
-                ui.addLinks(links)
+        }
+        if (ui) {
+            ui.addLinks(links)
+        }
+    }
+    var cleanLinks = function(){//remove links from or to inexisting nodes
+        for (let i = 0; i < linksInUse.list.length; i++) {
+            const link = linksInUse.list[i];
+            if (!nodeInUse[link.to]) {
+                removeLinks(link.uuid)
             }
-            
         }
     }
     var removeLinks = function(uuid){
@@ -313,6 +329,14 @@ var createNodeManager = function ({
         nodeInUse[node.getUuid()] = node 
     }
 
+    var removeNode = function (uuid) {
+        
+        var node = getNode(uuid)
+        node.remove()
+        delete nodeInUse[uuid]
+        cleanLinks()
+    }
+
     var getNode = function(uuid){
         return nodeInUse[uuid]
     }
@@ -327,9 +351,11 @@ var createNodeManager = function ({
             self.addNode(element.templateName, element.params)
         }
         self.addLinks(graph.links)
+        
         evaluateTree()
         
     }
+
 
     var exportNodes = function () {
         var nodesToExport= []
@@ -386,6 +412,7 @@ var createNodeManager = function ({
     self.useBaseTemplates = useBaseTemplates
     self.getNode = getNode
     self.addLinks = addLinks
+    self.removeNode = removeNode;
     self.removeLinks = removeLinks;
     self.addNodeTemplate = addNodeTemplate
     self.addNode = addNode

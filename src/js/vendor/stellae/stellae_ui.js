@@ -17,7 +17,7 @@ export default function createStellaeUi({
         canvas:undefined,containerDim:undefined,controls:undefined,play:true,helperLine:undefined,
         nodes:[],links:[], mapping:undefined,
         triggers:{headers:[], sockets:{}, props:{}},
-        selectedToMove:[], selectedSocket:undefined, selectedLine:undefined, linkToAdd: undefined,
+        selectedToMove:[], selectedSocket:undefined,lastSelectedHeader:undefined, selectedLine:undefined, linkToAdd: undefined,
         draggingNodes:false,draggingSocket:false,
     }
     var dataManager = undefined
@@ -206,7 +206,14 @@ export default function createStellaeUi({
     
                 const object = intersections[ 0 ].object;
                 state.selectedToMove.push(object.layoutItemRoot)
+                state.lastSelectedHeader = object.layoutItemRoot;
                 state.draggingNodes=true;
+                if (event.button == 2) {
+                    console.log(object.layoutItemRoot);
+                    if (confirm("Delete node?")) {
+                        dataManager.removeNode(state.lastSelectedHeader.edata.uuid)
+                    }
+                }
                 // if ( group.children.includes( object ) === true ) {
                 // 	object.material.emissive.set( 0x000000 );
                 // 	scene.attach( object );
@@ -243,13 +250,12 @@ export default function createStellaeUi({
 
             }
             if(!intersections[0] && !intersectionsSockets[0]){
-                state.raycaster.params.Line.threshold = 0.1;
+                state.raycaster.params.Line.threshold = 0.05;
                 const intersectionsLines = state.raycaster.intersectObjects( nodeMeshManager.getLinksMesh(), true );
                 if ( intersectionsLines.length > 0 ) { //Case hit header
                     const object = intersectionsLines[ 0 ].object;
                     console.log(object)
                     state.selectedLine = object
-    
                 }
             }
         }
@@ -258,7 +264,9 @@ export default function createStellaeUi({
             state.mouse.y = - ( (event.clientY-state.containerDim.y) / state.containerDim.height ) * 2 + 1;
             if (state.selectedLine) {
                 console.log(state.selectedLine);
-                dataManager.removeLinks(state.selectedLine.edata.uuid)
+                if (confirm("Delete Line?")) {
+                    dataManager.removeLinks(state.selectedLine.edata.uuid)
+                }
             }
             if (state.draggingNodes) {
                 state.controls.enabled = false;
