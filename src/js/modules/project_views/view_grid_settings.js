@@ -3,6 +3,7 @@ import nanoid from "../../vendor/nanoid.js";
 import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
 import select from "../common_ui_components/select/select.js"
 import projectManagement from "../common_project_management/project_management.js";
+import createEvaluatorsManagement from "../common_project_management/evaluators_management.js";
 import thumbs from "./view_grid_settings_select_comp.js"
 import table_viewport from "../viewports/table_viewport/table_ui.js"
 import graph_viewport from "../viewports/graph_viewport/graph_ui.js"
@@ -119,10 +120,17 @@ var renderComp = function ({
     height= "100%",
     uuid = nanoid(),
     componentType ="undefined",
+    settings ={evaluatorUuid:undefined},
 }={}) {
     var area = componentType
+    var evaluatorUuid = settings.evaluatorUuid
+    var evaluatorName = " no evaluator"
+    if (evaluatorUuid) {
+        var evaluatorRepo = createEvaluatorsManagement()
+        evaluatorName =evaluatorRepo.getById(evaluatorUuid).name
+    }
     
-    return area
+    return area + ' using ' +evaluatorName
     
 }
 

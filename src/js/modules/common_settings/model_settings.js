@@ -99,11 +99,13 @@ var setUpData = function (event, data, instance) {
 
      }, false)
     //  alert()
-    if (instance.props.modelElementType.get() != "evaluators") {
-        instance.props.callback.set((e)=>state_manager.goTo("/:/settings/details/"+instance.props.modelElementType.get()+"/"+e.uuid)) //"/:project/settings/details/:entity/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
+    if (instance.props.modelElementType.get() == "evaluators") {
+        instance.props.callback.set((e)=>state_manager.goTo("/:/"+instance.props.modelElementType.get()+"/"+e.uuid) ) ///evaluators/:evaluatorId 
+    } else if (instance.props.modelElementType.get() == "views") {
+        instance.props.callback.set((e)=>state_manager.goTo("/:/settings/"+instance.props.modelElementType.get()+"/"+e.uuid)) //"/:project/settings/views/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
     } else {
-        
-        instance.props.callback.set((e)=>state_manager.goTo("/:/"+instance.props.modelElementType.get()+"/"+e.uuid) ) ///evaluators/:evaluatorId"
+        instance.props.callback.set((e)=>state_manager.goTo("/:/settings/details/"+instance.props.modelElementType.get()+"/"+e.uuid)) //"/:project/settings/details/:entity/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
+
     }
 }
 

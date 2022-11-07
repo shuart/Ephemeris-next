@@ -10,7 +10,7 @@ var getItemsList = function (){
 
 var renderElement = function(p){
     var htmlElement= document.createElement("div");
-    htmlElement.innerHTML= `<div class="side-bar-page-item" >${p.uuid}</div>`
+    htmlElement.innerHTML= `<div class="side-bar-page-item" >${p.name}</div>`
     htmlElement.addEventListener("click", ()=> state.goTo("/:/views/"+p.uuid))
     return htmlElement
 }
