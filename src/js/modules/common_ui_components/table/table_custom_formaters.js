@@ -15,7 +15,7 @@ var getCustomFormatterForCol = function (rows, col) {
                 var instances = cell.getValue()
                 for (let i = 0; i < instances.length; i++) {
                     const element = instances[i];
-                    html += `<span style='background-color:green; margin-right:5px;padding:2px; border-radius:4px;' > ${element.name} </span>`
+                    html += `<span onclick='alert();  event.stopPropagation();' style='background-color:green; margin-right:5px;padding:2px; border-radius:4px;' > ${element.name} </span>`
                 }
                 
                 return html

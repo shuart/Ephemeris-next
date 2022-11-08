@@ -139,7 +139,7 @@ evaluatorTemplates.extractProperty = {
                         console.log(e.properties);
                         return {[props.method.get()]:e.properties[props.method.get()]}
                     }))
-                    props.id.set(props.method.get())
+                    props.id.set(props.method.getOptionId())
                 }
             }else{
                 props.output.set("undefined")
@@ -187,6 +187,7 @@ evaluatorTemplates.extractRelations = {
     name : "extract_relations",
     props :[
         {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"id", label:"prop id", type:"hidden", editable:false, socket:"output", value:false},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
         {id:"method", label:"", type:"select", options:[
             {id:"Greater_Than", value:"Greater Than"},
@@ -221,14 +222,18 @@ evaluatorTemplates.extractRelations = {
                         var targetsOfRelation=[]
                         for (let i = 0; i < e.relations.length; i++) {
                             const relation = e.relations[i];
-                            var relationTarget = instancesRepo.getById(relation.to)
-                            targetsOfRelation.push(relationTarget)
+
+                            if (relation.type == props.method.getOptionId()) {
+                                var relationTarget = instancesRepo.getById(relation.to)
+                                targetsOfRelation.push(relationTarget)
+                            }
+                            
                         }
                         console.log(targetsOfRelation);
                         // alert("fesfe")
                         return {[props.method.get()]:targetsOfRelation}
                     }))
-                    // props.id.set(props.method.get())
+                    props.id.set(props.method.getOptionId())
                 }
                 
             }
@@ -351,7 +356,7 @@ evaluatorTemplates.colParameters = {
                     props.clickAction.get()(actionData) 
                 }
             }
-            props.output.set({title:props.name.get(), field:props.paramName.get(), editor:"input", cellClick:cellAction,})     
+            props.output.set({title:props.name.get(), field:props.paramName.get(), editor:undefined, cellClick:cellAction,})     
         },
         onInit:(props) =>{
 
@@ -460,6 +465,41 @@ evaluatorTemplates.actionAddRelation = {
                                 }
                             }), "main-slot")
                             mainPopup.update();
+                        }
+                    }
+                }), "main-slot")
+                mainPopup.update();
+            }
+            props.output.set(functionToUse)     
+        },
+        // onInit:(props) =>{
+
+        // },
+    },
+}
+
+evaluatorTemplates.actionEditRelation = {
+    templateName : "action_edit_relation",
+    name : "action_edit_relation",
+    props :[
+        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
+        {id:"relationType", label:"Relation Type", type:"text", editable:true, socket:"input", value:""},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            var functionToUse = function (data) {
+                var instanceRepo = createInstancesManagement()
+                
+                var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) //change to generic
+                mainPopup.mount()
+                mainPopup.append(select.instance({
+                    data:{
+                        list:currentSelectedInstance.getPotentialAndLinkedEntitiesForRelationType(props.relationType.get()).potentials,
+                        callback:function(event){ //TODO add callback
+                            //Display a new popup to choose the relation type
+                            currentSelectedInstance.addRelation(props.relationType.get(),event.value.uuid)
                         }
                     }
                 }), "main-slot")

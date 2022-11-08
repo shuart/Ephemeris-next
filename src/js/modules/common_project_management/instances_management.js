@@ -110,6 +110,57 @@ var instanceAggregate = function(aggregate, projectStore){
 
         return availableList
     }
+    aggregate.getPotentialAndLinkedEntitiesForRelationType = function (typeUuid) {
+        // var relationsRepo = createRelationsManagement()
+        // var relationsAvailable = relationsRepo.getAll()
+        var potentials = []
+        var alreadyLinked= []
+        var alreadyLinkedObjects= {}
+        
+        var availableRelationsList =aggregate.getPotentialRelations() 
+        var availableTargetTypes = []
+        //find acceptable target type
+        for (let i = 0; i < availableRelationsList.length; i++) {
+            const availableRelation = availableRelationsList[i];
+            console.log(typeUuid);
+            console.log(availableRelation.attributes.type);
+            if (availableRelation.uuid == typeUuid) {
+                for (let j = 0; j < availableRelation.toList.length; j++) {
+                    const targetCat = availableRelation.toList[j];
+                    availableTargetTypes.push(targetCat.uuid)
+                }
+            }
+        }
+        //find already targeted by relations
+        var currentRelations = projectStore.get("relationsInstances").toArray()
+        for (let i = 0; i < currentRelations.length; i++) {
+            const element = currentRelations[i];
+            if (element.from == aggregate.uuid && element.type == typeUuid) {
+                // alreadyLinked.push(element); //add it to the list afterward to do one loop only
+                alreadyLinkedObjects[element.to] = true
+            }
+        }
+        
+        //find potential element to be linked
+        var allInstances = projectStore.get("instances").toArray()
+        console.log(allInstances);
+
+        for (let i = 0; i < allInstances.length; i++) {
+            const instance = allInstances[i];
+            console.log(availableTargetTypes);
+            for (let j = 0; j < availableTargetTypes.length; j++) {
+                const availableTargetUuid = availableTargetTypes[j];
+                if (availableTargetUuid == instance.type && !alreadyLinkedObjects[instance.uuid]) {
+                    potentials.push(instance)
+                }
+                if (alreadyLinkedObjects[instance.uuid]) {
+                    alreadyLinked.push(instance);
+                }
+            }
+        }
+
+        return {alreadyLinked:alreadyLinked, potentials:potentials}
+    }
 
     //methods
     aggregate.setProperty = function (propName, value) {

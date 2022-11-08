@@ -130,7 +130,7 @@ var createNode= function({
                 interactivePropsObject[element.id].setOptions= function (options) {
                     if (options && options[0]) {
                         element.options = options
-                        element.value = options[0].value
+                        // element.value = options[0].value
                     }
                     
                 }
