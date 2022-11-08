@@ -158,7 +158,6 @@ var instanceAggregate = function(aggregate, projectStore){
                 }
             }
         }
-
         return {alreadyLinked:alreadyLinked, potentials:potentials}
     }
 
@@ -174,6 +173,10 @@ var instanceAggregate = function(aggregate, projectStore){
     aggregate.addRelation = function (type, targetId) {
         var currentRelationTarget = projectStore.get("instances").where("uuid").equals(targetId)
         projectStore.add("relationsInstances",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, from:aggregate.uuid, to:currentRelationTarget.uuid, type:type})
+    }
+    aggregate.removeRelation = function (type, targetId) {
+        var currentRelationTarget = projectStore.get("instances").where("uuid").equals(targetId)
+        // projectStore.add("relationsInstances",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, from:aggregate.uuid, to:currentRelationTarget.uuid, type:type})
     }
 
     return aggregate

@@ -3,7 +3,12 @@ import {TabulatorFull as Tabulator} from "../../../vendor/tabulator_esm.min.js";
 
 
 var softUpdate= function (event, data, instance) {
-
+    var itemsList = data.list
+    if (typeof itemsList === 'function') {
+        itemsList = data.list()
+    }
+    populateSelected(data, instance)
+    data.table.replaceData(itemsList) //load data array
 }
 
 var setUp = function (event, data, instance) {
@@ -17,6 +22,11 @@ var filterTable = function (event, data, instance) {
 
 var setUpTable = function(event, data, instance){
     var itemsList = data.list
+    if (typeof itemsList === 'function') {
+        itemsList = data.list()
+    }
+
+    populateSelected(data, instance)
     console.log(itemsList);
 
     if (!itemsList[0]) {
@@ -49,8 +59,25 @@ var setUpTable = function(event, data, instance){
 
    table.on("cellClick", function(e, cell){ 
         data.callback({value : cell.getData()})
+        instance.do.softUpdate()
    });
 
+}
+
+var populateSelected = function (data, instance) {
+    var itemsList = data.selectedlist
+    if (typeof itemsList === 'function') {
+        itemsList = data.selectedlist()
+    }
+    var selectedArea = instance.query(".selectedArea")
+    var html = itemsList.map(i=>'<span class="selectTag">'+i.name+'<span data-uuid="'+i.uuid+'" class="selectCloseTag"> | X</span></span>').join('')
+    selectedArea.innerHTML =html 
+    selectedArea.querySelectorAll('.selectCloseTag').forEach(item => {
+        item.addEventListener('click', event => {
+          
+            data.closeSelectedCallback({uuid:event.target.dataset.uuid})
+        })
+      })
 }
 
 var component =createAdler({
@@ -61,6 +88,7 @@ var component =createAdler({
             <div class="control">
                 <input class="input action_select_filter" type="text" placeholder="Text input">
             </div>
+            <div class="selectedArea"></div>
             <div class="tableArea"></div>
             <p class="help">This is a help text</p>
         </div>
@@ -78,12 +106,14 @@ var component =createAdler({
         data:{
             value:"Hello",
             list:[],
+            selectedlist:[],
             callback : (event)=> alert(event.value.id),
+            closeSelectedCallback: (event)=> console.log(event.value.id),
             table:undefined,
             // onClick:()=>console.log("click")
         },
         on:[
-            [".action_select_filter","keydown", filterTable ],
+            [".action_select_filter","keyup", filterTable ],
         ],
         events:{
             // onBeforeMount:(event, data, instance) => setUp(event, data, instance),
@@ -96,8 +126,28 @@ var component =createAdler({
     },
     components:{
         // table_component: table_component
+    },
+    css:/*css*/`
+    .selectTag {
+        align-items: center;
+        background-color: #f5f5f5;
+        border-radius: .375em;
+        display: inline-flex;
+        font-size: .75rem;
+        height: 2em;
+        justify-content: center;
+        line-height: 1.5;
+        padding-left: .75em;
+        padding-right: .75em;
+        white-space: nowrap;
+        background-color: #00d1b2;
+        margin-right:5px;
     }
-    // css:/*css*/` `,
+    .selectCloseTag {
+        cursor:pointer;
+        color:red;
+    }
+    `,
 })
 
 export default component

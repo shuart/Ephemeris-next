@@ -5,7 +5,7 @@ import createEvaluator from "../../common_evaluators/evaluators.js";
 
 
 var softUpdate= function (event, data, instance) {
-    
+    instance.getNodes().tablevp.do.softUpdate()
 }
 
 var addItem = function (event, data, instance) {

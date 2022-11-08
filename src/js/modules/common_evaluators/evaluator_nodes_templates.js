@@ -494,15 +494,28 @@ evaluatorTemplates.actionEditRelation = {
                 
                 var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) //change to generic
                 mainPopup.mount()
-                mainPopup.append(select.instance({
+                var generateList = function () {
+                    return currentSelectedInstance.getPotentialAndLinkedEntitiesForRelationType(props.relationType.get()).potentials
+                }
+                var generateSelectedList = function () {
+                    return currentSelectedInstance.getPotentialAndLinkedEntitiesForRelationType(props.relationType.get()).alreadyLinked
+                }
+                var selectInstance = select.instance({
                     data:{
-                        list:currentSelectedInstance.getPotentialAndLinkedEntitiesForRelationType(props.relationType.get()).potentials,
-                        callback:function(event){ //TODO add callback
+                        list:generateList,
+                        selectedlist:generateSelectedList,
+                        callback:function(event){
                             //Display a new popup to choose the relation type
                             currentSelectedInstance.addRelation(props.relationType.get(),event.value.uuid)
+                        },
+                        closeSelectedCallback:function(event){
+                            alert(event.uuid)
                         }
+                        
                     }
-                }), "main-slot")
+                })
+                mainPopup.append(selectInstance, "main-slot")
+                
                 mainPopup.update();
             }
             props.output.set(functionToUse)     
