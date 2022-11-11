@@ -508,55 +508,55 @@ evaluatorTemplates.actionShowMessage = {
     },
 }
 
-evaluatorTemplates.actionAddRelation = {
-    templateName : "action_add_relation",
-    name : "action_add_relation",
-    props :[
-        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
-        {id:"message", label:"Message", type:"text", editable:true, socket:"input", value:""},
-    ],
-    methods:{
-    },
-    event:{
-        onEvaluate:(props) =>{
-            var functionToUse = function (data) {
-                var instanceRepo = createInstancesManagement()
+// evaluatorTemplates.actionAddRelation = {
+//     templateName : "action_add_relation",
+//     name : "action_add_relation",
+//     props :[
+//         {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
+//         {id:"message", label:"Message", type:"text", editable:true, socket:"input", value:""},
+//     ],
+//     methods:{
+//     },
+//     event:{
+//         onEvaluate:(props) =>{
+//             var functionToUse = function (data) {
+//                 var instanceRepo = createInstancesManagement()
                 
                 
-                var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) //change to generic
-                console.log(currentSelectedInstance);
-                console.log(currentSelectedInstance.getPotentialEntitiesForRelations());
-                alert()
+//                 var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) //change to generic
+//                 console.log(currentSelectedInstance);
+//                 console.log(currentSelectedInstance.getPotentialEntitiesForRelations());
+//                 alert()
                 
-                mainPopup.mount()
-                mainPopup.append(select.instance({
-                    data:{
-                        list:currentSelectedInstance.getPotentialEntitiesForRelations(),
-                        callback:function(event){ //TODO add callback
-                            //Display a new popup to choose the relation type
-                            mainPopup.append(select.instance({
-                                data:{
-                                    list:currentSelectedInstance.getPotentialRelationsWithInstance(event.value.uuid),
-                                    callback:function(eventInCallback){ //TODO add callback
-                                        currentSelectedInstance.addRelation(eventInCallback.value.uuid,event.value.uuid)
-                                        console.log(currentSelectedInstance.getRelations());
+//                 mainPopup.mount()
+//                 mainPopup.append(select.instance({
+//                     data:{
+//                         list:currentSelectedInstance.getPotentialEntitiesForRelations(),
+//                         callback:function(event){ //TODO add callback
+//                             //Display a new popup to choose the relation type
+//                             mainPopup.append(select.instance({
+//                                 data:{
+//                                     list:currentSelectedInstance.getPotentialRelationsWithInstance(event.value.uuid),
+//                                     callback:function(eventInCallback){ //TODO add callback
+//                                         currentSelectedInstance.addRelation(eventInCallback.value.uuid,event.value.uuid)
+//                                         console.log(currentSelectedInstance.getRelations());
                                         
-                                    }
-                                }
-                            }), "main-slot")
-                            mainPopup.update();
-                        }
-                    }
-                }), "main-slot")
-                mainPopup.update();
-            }
-            props.output.set(functionToUse)     
-        },
-        // onInit:(props) =>{
+//                                     }
+//                                 }
+//                             }), "main-slot")
+//                             mainPopup.update();
+//                         }
+//                     }
+//                 }), "main-slot")
+//                 mainPopup.update();
+//             }
+//             props.output.set(functionToUse)     
+//         },
+//         // onInit:(props) =>{
 
-        // },
-    },
-}
+//         // },
+//     },
+// }
 
 evaluatorTemplates.actionEditRelation = {
     templateName : "action_edit_relation",
@@ -587,9 +587,12 @@ evaluatorTemplates.actionEditRelation = {
                         callback:function(event){
                             //Display a new popup to choose the relation type
                             currentSelectedInstance.addRelation(props.relationType.get(),event.value.uuid)
+                            selectInstance.do.softUpdate();
                         },
                         closeSelectedCallback:function(event){
-                            alert(event.uuid)
+                            // alert(event.uuid)
+                            currentSelectedInstance.removeRelation(props.relationType.get(),event.uuid)
+                            selectInstance.do.softUpdate();
                         }
                         
                     }

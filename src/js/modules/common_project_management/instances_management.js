@@ -175,8 +175,16 @@ var instanceAggregate = function(aggregate, projectStore){
         projectStore.add("relationsInstances",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, from:aggregate.uuid, to:currentRelationTarget.uuid, type:type})
     }
     aggregate.removeRelation = function (type, targetId) {
-        var currentRelationTarget = projectStore.get("instances").where("uuid").equals(targetId)
-        // projectStore.add("relationsInstances",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, from:aggregate.uuid, to:currentRelationTarget.uuid, type:type})
+        var currentRelationTarget = projectStore.get("relationsInstances").where("type").equals(type)
+        var relationToRemove = undefined;
+        for (let i = 0; i < currentRelationTarget.length; i++) {
+            const element = currentRelationTarget[i];
+            if (element.to == targetId) { relationToRemove = element  }
+        }
+        if (relationToRemove) {
+            projectStore.remove("relationsInstances",relationToRemove.uuid)
+        }
+        
     }
 
     return aggregate
