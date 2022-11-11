@@ -38,18 +38,21 @@ var checkColsForCustomFormating = function(rows, cols){
             if (!newCols[i].formatter) {
                 newCols[i].formatter= getCustomFormatterForCol(rows, col)
             }
+            if (newCols[i].customButton) {
+                newCols[i]= getCustomButtonFormatterForCol(rows, col)
+            }
             
         }
     }
 }
 
-var addRemoveButton = function(rows, cols){
+var getCustomButtonFormatterForCol = function(rows, col){
     
     var printIcon = function(cell, formatterParams, onRendered){ //plain text value
-        return "<i class='fa fa-print'>X</i>";
+        return "<i class='fa fa-print'>"+col.customButton.value+"</i>";
     };
-    var formatterButton = {formatter:printIcon, width:40, hozAlign:"center", cellClick:function(e, cell){e.stopPropagation();e.preventDefault(); alert("Printing row data for: " + cell.getRow().getData().name)}};
-    cols.push(formatterButton)
+    var formatterButton = {formatter:printIcon, width:40, hozAlign:"center", cellClick:col.customButton.onClick};
+    return formatterButton
 }
 
-export {checkColsForCustomFormating,addRemoveButton}
+export {checkColsForCustomFormating}

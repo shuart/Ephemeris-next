@@ -364,6 +364,47 @@ evaluatorTemplates.colParameters = {
     },
 }
 
+evaluatorTemplates.colCustomButton = {
+    templateName : "col_custom_button",
+    name : "col_custom_button",
+    props :[
+        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        // {id:"name", label:"data", type:"text", editable:true, socket:"input", value:"Col Name"},
+        {id:"buttonLabel", label:"Label", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"clickAction", label:"action", type:"hidden", editable:true, socket:"input", value:false},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            var cellAction = undefined;
+            if (props.clickAction.get()) {
+                cellAction =function(e, cell){ 
+                    var actionData = {
+                        input:{
+                            clickedItem:cell.getData().name,
+                            clickedItemUuid:cell.getData().uuid,
+                        }
+                    }
+                    props.clickAction.get()(actionData) 
+                }
+            }
+            // props.output.set({title:props.name.get(), field:props.paramName.get(), editor:undefined, cellClick:cellAction,})    
+            props.output.set({customButton: {value:props.buttonLabel.get(), onClick:cellAction } } )    
+            // props.output.set({customButton: {value:props.buttonLabel.get(), onClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).remove(cell.getRow().getData().uuid)} } } )    
+            
+        },
+        onInit:(props) =>{
+
+        },
+    },
+}
+
+
+
+
+
 evaluatorTemplates.actionAddInstance = {
     templateName : "action_add_instance",
     name : "action_add_instance",
@@ -388,6 +429,45 @@ evaluatorTemplates.actionAddInstance = {
                 }else{
                     alert("reference missing") 
                 }
+            }
+            props.output.set(functionToUse)     
+        },
+        // onInit:(props) =>{
+
+        // },
+    },
+}
+
+evaluatorTemplates.actionRemoveInstance = {
+    templateName : "action_remove_instance",
+    name : "action_remove_instance",
+    props :[
+        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
+        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"instanceRef", label:"Instance Reference", type:"text", editable:true, socket:"input", value:""},
+        // {id:"paramName", label:"param name", type:"text", editable:true, socket:"input", value:"0"},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            var functionToUse = function (data) {
+                var okToRemove= confirm("Remove element")
+                if (okToRemove) {
+                    // var currentEntityType = props.instanceRef.get()
+                    var instancesRepo = createInstancesManagement()
+                    instancesRepo.remove(data.input.clickedItemUuid)
+                }
+                // if (props.instanceRef.get() && props.instanceRef.get() != "") {
+                //     var okToRemove= confirm("Remove element")
+                //     if (okToRemove) {
+                //         // var currentEntityType = props.instanceRef.get()
+                //         var instancesRepo = createInstancesManagement()
+                //         instancesRepo.remove(data.input.clickedItemUuid)
+                //     }
+                // }else{
+                //     alert("reference missing") 
+                // }
             }
             props.output.set(functionToUse)     
         },
