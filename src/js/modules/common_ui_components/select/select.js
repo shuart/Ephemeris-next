@@ -47,7 +47,11 @@ var setUpTable = function(event, data, instance){
         layout:"fitColumns", //fit columns to width of table (optional)
         columns:[ //Define Table Columns
             // {title:"id", field:"uuid", },
-            {title:"value", field:"name", },
+            {title:"value", field:"name", cellClick:function(e,cell){
+                    data.callback({value : cell.getData()})
+                    instance.do.softUpdate()
+                },
+            },
             // {title:"added", field:"theTime", },
         //     {title:"Name", field:"name", width:150},
 	 	// {title:"Age", field:"age", hozAlign:"left", formatter:"progress"},
@@ -57,10 +61,10 @@ var setUpTable = function(event, data, instance){
    });
    instance.setData({table:table},false)
 
-   table.on("cellClick", function(e, cell){ 
-        data.callback({value : cell.getData()})
-        instance.do.softUpdate()
-   });
+//    table.on("cellClick", function(e, cell){ 
+//         data.callback({value : cell.getData()})
+//         instance.do.softUpdate()
+//    });
 
 }
 

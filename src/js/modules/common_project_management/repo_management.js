@@ -40,6 +40,9 @@ var createRepoManagement = function (projectId, rootType, aggregateMethods, cust
     var add = function (data) {
         return projectStore.add(rootType, data)
     }
+    var remove = function (uuid) {
+        return projectStore.remove(rootType, uuid)
+    }
     var update = function (data) {
         return projectStore.add(rootType, data)
     }
@@ -48,6 +51,7 @@ var createRepoManagement = function (projectId, rootType, aggregateMethods, cust
     self.getAll = getAll;
     self.getById = getById;
     self.add = add;
+    self.remove = remove;
     self.update = update;
     return self;
 }

@@ -28,18 +28,31 @@ var addEntityToProject = function(event, data, instance){
     }
     // instance.update()
 }
-var getItemsList = function (data){
+var getItemsList = function (data, instance){
     var projectId = projectManagement.getCurrent().id
     console.log(projectId)
     var listData ={ list:undefined, cols:undefined}
 
-    if (data.modelElementType != "relations") {
+    if (instance.props.modelElementType.get() == "entities") {
         listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
         listData.cols = [
             {title:"id", field:"uuid", },
-            {title:"value", field:"name", },
+            {title:"value", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/details/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid), }, //"/:project/settings/details/:entity/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
         ];
-    } else if (data.modelElementType == "relations"){
+    } else if (instance.props.modelElementType.get() == "evaluators") {
+        listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
+        listData.cols = [
+            {title:"id", field:"uuid", },
+            {title:"value", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) }, ///evaluators/:evaluatorId 
+        ];
+    } else if (instance.props.modelElementType.get() == "views") {
+        listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
+        listData.cols = [
+            {title:"id", field:"uuid", },
+            {title:"value", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) },  //"/:project/settings/views/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
+            {formatter:e=>"x", width:40, hozAlign:"center", cellClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).remove(cell.getRow().getData().uuid)}},
+        ];
+    } else if (instance.props.modelElementType.get() == "relations")  {
         var relationManagement = createRelationManagement()
         listData.list = relationManagement.getAll()
         listData.list.forEach(element => {
@@ -83,6 +96,57 @@ var getItemsList = function (data){
             },},
         ];
     }
+
+    // if (data.modelElementType != "relations") {
+    //     listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
+    //     listData.cols = [
+    //         {title:"id", field:"uuid", },
+    //         {title:"value", field:"name",  },
+    //     ];
+    // } else if (data.modelElementType == "relations"){
+    //     var relationManagement = createRelationManagement()
+    //     listData.list = relationManagement.getAll()
+    //     listData.list.forEach(element => {
+    //         console.log(element);
+    //         if (element.fromList) {
+                
+    //             element.fromList = element.fromList.map(i=>i.name).join(',')
+    //             console.log(element.fromList);
+    //         }
+    //         if (element.toList) {
+                
+    //             element.toList = element.toList.map(i=>i.name).join(',')
+    //             console.log(element.toList);
+    //         }
+            
+    //     });
+        
+    //     listData.cols = [
+    //         {title:"value", field:"name", },
+    //         {title:"From", field:"fromList", cellClick:function(e, cell){
+    //             var entityRepo = createEntityManagement()
+    //             mainPopup.mount()
+    //             mainPopup.append(select.instance({
+    //                 data:{
+    //                     list:entityRepo.getAll(),
+    //                     callback:function(event){ cell.getData().addSource(event.value.uuid) }
+    //                 }
+    //             }), "main-slot")
+    //             mainPopup.update();
+    //         }, },
+    //         {title:"To", field:"toList", cellClick:function(e, cell){
+    //             var entityRepo = createEntityManagement()
+    //             mainPopup.mount()
+    //             mainPopup.append(select.instance({
+    //                 data:{
+    //                     list:entityRepo.getAll(),
+    //                     callback:function(event){ cell.getData().addTarget(event.value.uuid) }
+    //                 }
+    //             }), "main-slot")
+    //             mainPopup.update();
+    //         },},
+    //     ];
+    // }
     // return projectManagement.getProjectStore(projectId,"default").getAll().map((i)=> {return {value:i.name, onClick:(event, data, instance)=> console.log(i.id, instance)} } )
     
     return listData
@@ -111,7 +175,7 @@ var setUpData = function (event, data, instance) {
 
 var setUpTable = function (event, data, instance) {
      console.log(instance.getNodes());
-     var tableData = getItemsList(data)
+     var tableData = getItemsList(data, instance)
      instance.getNodes().table.setData({list:tableData.list, cols:tableData.cols})
 }
 

@@ -35,10 +35,21 @@ var checkColsForCustomFormating = function(rows, cols){
         newCols = cols
         for (let i = 0; i < cols.length; i++) {
             const col = cols[i];
+            if (!newCols[i].formatter) {
+                newCols[i].formatter= getCustomFormatterForCol(rows, col)
+            }
             
-            newCols[i].formatter= getCustomFormatterForCol(rows, col)
         }
     }
 }
 
-export {checkColsForCustomFormating}
+var addRemoveButton = function(rows, cols){
+    
+    var printIcon = function(cell, formatterParams, onRendered){ //plain text value
+        return "<i class='fa fa-print'>X</i>";
+    };
+    var formatterButton = {formatter:printIcon, width:40, hozAlign:"center", cellClick:function(e, cell){e.stopPropagation();e.preventDefault(); alert("Printing row data for: " + cell.getRow().getData().name)}};
+    cols.push(formatterButton)
+}
+
+export {checkColsForCustomFormating,addRemoveButton}

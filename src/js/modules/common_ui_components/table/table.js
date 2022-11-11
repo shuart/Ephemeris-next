@@ -1,6 +1,6 @@
 import createAdler from "../../../vendor/adler.js";
 import {TabulatorFull as Tabulator} from "../../../vendor/tabulator_esm.min.js";
-import {checkColsForCustomFormating} from "./table_custom_formaters.js"
+import {checkColsForCustomFormating,addRemoveButton} from "./table_custom_formaters.js"
 
 var setUpTable = function(event, data, instance){
     var itemsList = data.list
@@ -30,6 +30,8 @@ var setUpTable = function(event, data, instance){
 
     //check if cols need custom formatters
     checkColsForCustomFormating(itemsList,colsList)
+    addRemoveButton(itemsList,colsList)
+    
 
     var tableAra = instance.query("div")
     console.log(tableAra);
@@ -55,10 +57,10 @@ var setUpTable = function(event, data, instance){
 //         console.log('efssssssss');
 //     });
    //trigger an alert message when the row is clicked
-   table.on("cellClick", function(e, cell){ 
-        instance.props.callback.get()(cell.getData())
-    //    alert("cell " + cell.getData()+ " Clicked!!!!");
-   });
+//    table.on("cellClick", function(e, cell){ 
+//         instance.props.callback.get()(cell.getData())
+//     //    alert("cell " + cell.getData()+ " Clicked!!!!");
+//    });
 //    table.on("scrollVertical", function(top){
 //     //top - the current vertical scroll position
 //     console.log(top)

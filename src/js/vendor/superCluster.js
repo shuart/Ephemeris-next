@@ -41,6 +41,20 @@ var createCluster = function(initialSchema, options){
         persist()
     }
 
+    var remove = function (storeName, id) {
+        if (storageUUID[storeName][id]) {
+            if (useCrdt) {
+                deleteCrdt(storeName, id);
+            }else{
+                deleteJson(storeName, id);
+            }
+            persist()
+        }else{
+            alert("record does not exist")
+        }
+        
+    }
+
     var addJson = function(storeName, object){
         object = addIdIfMissing(storeName, object)
         const objectKeys = Object.keys(object);
@@ -54,6 +68,9 @@ var createCluster = function(initialSchema, options){
         }
         storage[storeName].push(object)
         
+    }
+    var deleteJson = function(storeName, id){
+        storageUUID[storeName][id]["tombstone"]= 1;
     }
 
     var addIdIfMissing= function(storeName, object){
@@ -81,7 +98,7 @@ var createCluster = function(initialSchema, options){
                             var exportList=[]
                             for (let i = 0; i < storage[storeName].length; i++) {
                                 const element = storage[storeName][i];
-                                if (element[currentKey] == value) {exportList.push(element) }
+                                if (element[currentKey] == value && element["tombstone"] != 1) {exportList.push(element) }
                             }
                             console.log(exportList);
                             return exportList;
@@ -91,7 +108,12 @@ var createCluster = function(initialSchema, options){
 
             },
             toArray : function(){
-                return storage[storeName]
+                var exportList=[]
+                for (let i = 0; i < storage[storeName].length; i++) {
+                    if (storage[storeName][i]["tombstone"] != 1) {exportList.push(storage[storeName][i]) }//TODO check if tombstone removal could be done before
+                }
+                return exportList;
+                // return storage[storeName]
             }
         }
     }
@@ -348,6 +370,7 @@ var createCluster = function(initialSchema, options){
 
     self.addStores=addStores;
     self.add=add;
+    self.remove=remove
     self.get=get
     return self
 }
