@@ -220,18 +220,20 @@ evaluatorTemplates.extractRelations = {
                     props.output.set(props.a.get().map(function (e) {
                         
                         var targetsOfRelation=[]
+                        var relatedRelation=[]
                         for (let i = 0; i < e.relations.length; i++) {
                             const relation = e.relations[i];
 
                             if (relation.type == props.method.getOptionId()) {
                                 var relationTarget = instancesRepo.getById(relation.to)
                                 targetsOfRelation.push(relationTarget)
+                                relatedRelation.push({displayAs:"relation", relation:relation, target:relationTarget})
                             }
                             
                         }
                         console.log(targetsOfRelation);
                         // alert("fesfe")
-                        return {[props.method.get()]:targetsOfRelation}
+                        return {[props.method.get()]:relatedRelation}
                     }))
                     props.id.set(props.method.getOptionId())
                 }
@@ -310,6 +312,28 @@ evaluatorTemplates.outputTable = {
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
         {id:"cols", multiple:true, label:"cols definition", type:"hidden", editable:true, socket:"input", value:false},
         {id:"rows", label:"rows", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"actions", label:"action", type:"hidden", editable:true, socket:"input", value:false},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            console.log(props.actions.get());
+        },
+        onInit:(props) =>{
+
+        },
+    },
+}
+
+evaluatorTemplates.outputGraph = {
+    templateName : "output_graph",
+    name : "output_graph",
+    props :[
+        // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"nodes", multiple:true, label:"Entities", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"links", multiple:true, label:"links", type:"text", editable:true, socket:"input", value:"0"},
         {id:"actions", label:"action", type:"hidden", editable:true, socket:"input", value:false},
     ],
     methods:{

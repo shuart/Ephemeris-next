@@ -53,9 +53,17 @@ var createEvaluator = function ({
                 var exportGraph = graphNodes.getNodeManager().exportNodes()
                 // console.log(exportGraph);
                 // alert(54)
-                result.list = exportGraph.nodes.find(e=>e.templateName == "output_table").params.propsValue.rows
-                result.cols = exportGraph.nodes.find(e=>e.templateName == "output_table").params.propsValue.cols||undefined
-                result.actions = exportGraph.nodes.find(e=>e.templateName == "output_table").params.propsValue.actions||undefined
+
+                if (exportGraph.nodes.find(e=>e.templateName == "output_table")) {
+                    result.list = exportGraph.nodes.find(e=>e.templateName == "output_table").params.propsValue.rows
+                    result.cols = exportGraph.nodes.find(e=>e.templateName == "output_table").params.propsValue.cols||undefined
+                    result.actions = exportGraph.nodes.find(e=>e.templateName == "output_table").params.propsValue.actions||undefined
+                }
+                if (exportGraph.nodes.find(e=>e.templateName == "output_graph")) {
+                    result.nodes = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.nodes||undefined
+                    result.links = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.links||undefined
+                }
+                
                 // console.log(result);
                 // alert(55)
                 return result;

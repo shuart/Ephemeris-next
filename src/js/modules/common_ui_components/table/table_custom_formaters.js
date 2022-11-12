@@ -6,7 +6,8 @@ var getCustomFormatterForCol = function (rows, col) {
     //check if is an entity instance
     for (let i = 0; i < rows.length; i++) {
         var rowColToCheck =rows[i][col.field]
-        if (rowColToCheck && rowColToCheck[0] && rowColToCheck[0].uuid && rowColToCheck[0].attributes) { //iterate to find a row with something
+        if (rowColToCheck && rowColToCheck[0] && rowColToCheck[0].displayAs=="relation") { //iterate to find a row with something
+            // if (rowColToCheck && rowColToCheck[0] && rowColToCheck[0].uuid && rowColToCheck[0].name &&  rowColToCheck[0].relation) { //iterate to find a row with something
             formatterFunction = function(cell, formatterParams, onRendered){
                 //cell - the cell component
                 //formatterParams - parameters set for the column
@@ -15,13 +16,14 @@ var getCustomFormatterForCol = function (rows, col) {
                 var instances = cell.getValue()
                 for (let i = 0; i < instances.length; i++) {
                     const element = instances[i];
-                    html += `<span onclick='alert();  event.stopPropagation();' style='background-color:green; margin-right:5px;padding:2px; border-radius:4px;' > ${element.name} </span>`
+                    html += `<span onclick='alert();  event.stopPropagation();' style='background-color:green; margin-right:5px;padding:2px; border-radius:4px;' > ${element.target.name} </span>`
                 }
                 
                 return html
             }
             break
         }
+        
     }
     
 

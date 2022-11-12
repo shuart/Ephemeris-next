@@ -161,14 +161,19 @@ export default function createStellaeUi({
     var updateLinks = function(){
         for (let i = 0; i < state.links.length; i++) {
             const link = state.links[i];
-
-            var startPositon = state.mapping[link.edata.from].position; var endPositon = state.mapping[link.edata.to].position;
-            var startPositonOffset = state.mapping[link.edata.from].sockets[link.edata.from_socket].positionOffset; var endPositonOffset = state.mapping[link.edata.to].sockets[link.edata.to_socket].positionOffset;
-            var attributes = link.geometry.attributes
-            
-            attributes.position.array[3] =endPositon.x+endPositonOffset.x; attributes.position.array[4] =endPositon.y; attributes.position.array[5] =endPositon.z+endPositonOffset.y
-            attributes.position.array[0] =startPositon.x+startPositonOffset.x; attributes.position.array[1] =startPositon.y; attributes.position.array[2] =startPositon.z+startPositonOffset.y
-            attributes.position.needsUpdate = true;
+            console.log(link.edata);
+                console.log(state.mapping);
+            if (state.mapping[link.edata.to]) {
+                
+                
+                var startPositon = state.mapping[link.edata.from].position; var endPositon = state.mapping[link.edata.to].position;
+                var startPositonOffset = state.mapping[link.edata.from].sockets[link.edata.from_socket].positionOffset; var endPositonOffset = state.mapping[link.edata.to].sockets[link.edata.to_socket].positionOffset;
+                var attributes = link.geometry.attributes
+                
+                attributes.position.array[3] =endPositon.x+endPositonOffset.x; attributes.position.array[4] =endPositon.y; attributes.position.array[5] =endPositon.z+endPositonOffset.y
+                attributes.position.array[0] =startPositon.x+startPositonOffset.x; attributes.position.array[1] =startPositon.y; attributes.position.array[2] =startPositon.z+startPositonOffset.y
+                attributes.position.needsUpdate = true;
+            }   
         }
     }
     var updateMapping = function(){

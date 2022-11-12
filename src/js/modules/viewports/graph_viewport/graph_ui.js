@@ -3,6 +3,7 @@ import createAdler from "../../../vendor/adler.js";
 // import projectManagement from "../../common_project_management/project_management.js";
 import createEvaluator from "../../common_evaluators/evaluators.js";
 import createStellae from "../../../vendor/stellae/stellae.js";
+import graphUiTemplates from "./graph_ui_node_templates.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -23,11 +24,37 @@ var getItemsList = function (event, data, instance){
     var data = {}
     var evaluator = createEvaluator({type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
     console.log(evaluator);
-    if (!evaluator.evaluate()) {
+    var evaluatorResult = evaluator.evaluate()
+    if (!evaluatorResult) {
         return {list:[{name:"undefined LIST"}], cols:[]}
     }
-    data.list =evaluator.evaluate().list
-    data.cols =evaluator.evaluate().cols
+    data.list =[]
+    if (evaluatorResult.nodes[0]) {
+        for (let i = 0; i < evaluatorResult.nodes.length; i++) {
+            const entityGroup = evaluatorResult.nodes[i];
+            for (let j = 0; j < entityGroup.length; j++) {
+                data.list.push(entityGroup[j])
+            }
+            
+        }
+    }
+    data.links =[]
+    if (evaluatorResult.links[0]) {
+        for (let i = 0; i < evaluatorResult.links.length; i++) {
+            const entityGroup = evaluatorResult.links[i];
+            for (let j = 0; j < entityGroup.length; j++) {
+                console.log(entityGroup[j]);
+                
+                for (let k = 0; k < entityGroup[j]['rel 1'].length; k++) {
+                    data.links.push({from:entityGroup[j]['rel 1'][k].relation.from, from_socket:"out", to:entityGroup[j]["rel 1"][k].relation.to, to_socket:"in",})
+                }
+            }
+            
+        }
+    }
+    // console.log(evaluatorResult.links);
+    // console.log(data.links);
+    // alert("esf")
     data.actions =evaluator.evaluate().actions
     console.log(data);
     
@@ -47,13 +74,17 @@ var setUpTable = function (event, data, instance) {
      setTimeout(() => {
         var element= instance.query('.graph_component')
         element.innerHTML = ''//TODO GRAPH IS LOADED 2 TIMES. PREVENT THAT
-        data.graph = createStellae({container:element, fullSize:true,})
+        data.graph = createStellae({container:element, fullSize:true,simulateForces:true})
+        data.graph.getNodeManager().useTemplate(graphUiTemplates)
         for (let i = 0; i < itemsData.list.length; i++) {
             const element = itemsData.list[i];
     //         console.log(element);
     // alert(element)
-            data.graph.getNodeManager().addNode("math_compare", { nodeLayout:"round",uuid:i, name:element.name})
+            data.graph.getNodeManager().addNode("action_Input", { nodeLayout:"round",uuid:element.uuid, name:element.name})
+            // data.graph.getNodeManager().addNode("action_Input", { uuid:element.uuid, name:element.name})
         }
+
+        data.graph.getNodeManager().addLinks(itemsData.links)
         
     
         // var repo = createEvaluatorsManagement()
