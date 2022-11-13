@@ -9,6 +9,7 @@ function createStellae({
     darkMode = "auto",
     headless = false,
     simulateForces = false,
+    uiCallbacks = {},
     } = {}) {
     var self = {};
     var ui = undefined;
@@ -52,7 +53,7 @@ function createStellae({
         if (headless) {
             nodeManager = createNodeManager()
         }else{
-            ui = createStellaeUi({container:container,canvasWidth:canvasWidth,canvasHeight:canvasHeight,darkMode:darkMode, useSimulation:simulateForces})
+            ui = createStellaeUi({container:container,canvasWidth:canvasWidth,canvasHeight:canvasHeight,darkMode:darkMode, useSimulation:simulateForces, uiCallbacks:uiCallbacks})
             nodeManager = createNodeManager({ui:ui})
             
         }

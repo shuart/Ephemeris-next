@@ -10,6 +10,7 @@ export default function createStellaeUi({
     canvasWidth =800, canvasHeight = 500,
     darkMode = "auto",
     useSimulation = false,
+    uiCallbacks = {},//onConnect,
     } = {}) {
     var self = {};
     var state ={
@@ -311,9 +312,13 @@ export default function createStellaeUi({
             state.controls.enabled = true;
             
             lineMeshManager.hideHelperLine()
-            if (state.linkToAdd ) {
-                console.log(state.linkToAdd);
-                dataManager.addLinks([state.linkToAdd])
+            if (state.linkToAdd && state.linkToAdd.from != state.linkToAdd.to) {
+                if (uiCallbacks.onConnect) {
+                    uiCallbacks.onConnect({dataManager, state})
+                }else{
+                    console.log(state.linkToAdd);
+                    dataManager.addLinks([state.linkToAdd])
+                }
                 dataManager.evaluateTree();
                 // alert()
                 state.linkToAdd = undefined;
