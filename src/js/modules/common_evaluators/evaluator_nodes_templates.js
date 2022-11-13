@@ -335,6 +335,8 @@ evaluatorTemplates.outputGraph = {
         {id:"nodes", multiple:true, label:"Entities", type:"hidden", editable:true, socket:"input", value:false},
         {id:"links", multiple:true, label:"links", type:"text", editable:true, socket:"input", value:"0"},
         {id:"actions", label:"action", type:"hidden", editable:true, socket:"input", value:false},
+
+        {id:"onConnectAction", label:"onConnect", type:"hidden", editable:true, socket:"input", value:false},
     ],
     methods:{
     },

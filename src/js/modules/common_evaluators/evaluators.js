@@ -62,6 +62,7 @@ var createEvaluator = function ({
                 if (exportGraph.nodes.find(e=>e.templateName == "output_graph")) {
                     result.nodes = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.nodes||undefined
                     result.links = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.links||undefined
+                    result.onConnect = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.onConnectAction||undefined
                 }
                 
                 // console.log(result);

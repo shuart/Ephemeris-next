@@ -162,8 +162,8 @@ export default function createStellaeUi({
     var updateLinks = function(){
         for (let i = 0; i < state.links.length; i++) {
             const link = state.links[i];
-            console.log(link.edata);
-                console.log(state.mapping);
+            // console.log(link.edata);
+            //     console.log(state.mapping);
             if (state.mapping[link.edata.to]) {
                 
                 
