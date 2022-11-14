@@ -314,7 +314,7 @@ export default function createStellaeUi({
             lineMeshManager.hideHelperLine()
             if (state.linkToAdd && state.linkToAdd.from != state.linkToAdd.to) {
                 if (uiCallbacks.onConnect) {
-                    uiCallbacks.onConnect({dataManager, state})
+                    uiCallbacks.onConnect({dataManager, state, input:{sourceItem:state.linkToAdd.from, targetItem:state.linkToAdd.to}})
                 }else{
                     console.log(state.linkToAdd);
                     dataManager.addLinks([state.linkToAdd])

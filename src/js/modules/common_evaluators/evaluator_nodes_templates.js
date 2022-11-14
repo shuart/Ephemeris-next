@@ -4,6 +4,14 @@ import createRelationsManagement from "../common_project_management/relations_ma
 import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
 import select from "../common_ui_components/select/select.js"
 
+var getProp = function(props,propName, data){
+    var valuePassed = props[propName].get()
+    if (data && valuePassed instanceof Function) {
+        valuePassed = valuePassed(data)
+    }
+    return valuePassed
+}
+
 
 var evaluatorTemplates = {}
 
@@ -377,6 +385,8 @@ evaluatorTemplates.colParameters = {
                         input:{
                             clickedItem:cell.getData().name,
                             clickedItemUuid:cell.getData().uuid,
+                            targetItem:cell.getData().uuid,
+                            sourceItem:false,
                         }
                     }
                     props.clickAction.get()(actionData) 
@@ -590,6 +600,8 @@ evaluatorTemplates.actionEditRelation = {
     props :[
         {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
         {id:"relationType", label:"Relation Type", type:"text", editable:true, socket:"input", value:""},
+        {id:"sourceItem", label:"source item", type:"text", editable:true, socket:"input", value:false},
+        {id:"targetItem", label:"target item", type:"text", editable:true, socket:"input", value:false},
     ],
     methods:{
     },
@@ -597,8 +609,18 @@ evaluatorTemplates.actionEditRelation = {
         onEvaluate:(props) =>{
             var functionToUse = function (data) {
                 var instanceRepo = createInstancesManagement()
+
+                var sourceItem = getProp(props,"sourceItem",data)
+                var targetItem = getProp(props,"targetItem",data)
+
+                console.log(sourceItem);
+                console.log(targetItem);
+                console.log(instanceRepo.getById(sourceItem));
+                console.log(props.relationType.get());
+                alert("itesm")
                 
-                var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) //change to generic
+                // var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) //change to generic
+                var currentSelectedInstance = instanceRepo.getById(sourceItem) //change to generic
                 mainPopup.mount()
                 var generateList = function () {
                     return currentSelectedInstance.getPotentialAndLinkedEntitiesForRelationType(props.relationType.get()).potentials
@@ -641,21 +663,38 @@ evaluatorTemplates.actionInput = {
     templateName : "action_Input",
     name : "action_Input",
     props :[
-        {id:"clicked_item", label:"clicked_item", type:"hidden", editable:false, socket:"output", value:()=>"test1"},
-        {id:"clicked_item_uuid", label:"clicked_item_uuid", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
+        // {id:"clicked_item", label:"clicked_item", type:"hidden", editable:false, socket:"output", value:()=>"test1"},
+        // {id:"clicked_item_uuid", label:"clicked_item_uuid", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
+        {id:"sourceItem", label:"Source Item", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
+        {id:"targetItem", label:"target Item", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
     ],
     methods:{
     },
     event:{
         onEvaluate:(props) =>{
-            var functionToUse = function (data) {
-                return data.input.clickedItem
+            // var functionToUse = function (data) {
+            //     return data.input.clickedItem
+            // }
+            // props.clicked_item.set(functionToUse)  
+            // var functionToUse = function (data) {
+            //     return data.input.clickedItemUuid
+            // }
+            // props.clicked_item_uuid.set(functionToUse)  
+            // var uuidToObject = function (input) {
+            //     var instanceRepo = createInstancesManagement()
+            //     var value = undefined;
+            //     if (typeof myVar === 'string' || myVar instanceof String){
+                    
+            //     }
+            // }
+            var functionTargetItem = function (data) {
+                return data.input.targetItem
             }
-            props.clicked_item.set(functionToUse)  
-            var functionToUse = function (data) {
-                return data.input.clickedItemUuid
+            props.targetItem.set(functionTargetItem)  
+            var functionSourceItem = function (data) {
+                return data.input.sourceItem
             }
-            props.clicked_item_uuid.set(functionToUse)  
+            props.sourceItem.set(functionSourceItem)  
         },
         // onInit:(props) =>{
 
