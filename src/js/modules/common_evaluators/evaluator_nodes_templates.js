@@ -618,36 +618,57 @@ evaluatorTemplates.actionEditRelation = {
                 console.log(instanceRepo.getById(sourceItem));
                 console.log(props.relationType.get());
                 alert("itesm")
-                
-                // var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) //change to generic
-                var currentSelectedInstance = instanceRepo.getById(sourceItem) //change to generic
-                mainPopup.mount()
-                var generateList = function () {
-                    return currentSelectedInstance.getPotentialAndLinkedEntitiesForRelationType(props.relationType.get()).potentials
-                }
-                var generateSelectedList = function () {
-                    return currentSelectedInstance.getPotentialAndLinkedEntitiesForRelationType(props.relationType.get()).alreadyLinked
-                }
-                var selectInstance = select.instance({
-                    data:{
-                        list:generateList,
-                        selectedlist:generateSelectedList,
-                        callback:function(event){
-                            //Display a new popup to choose the relation type
-                            currentSelectedInstance.addRelation(props.relationType.get(),event.value.uuid)
-                            selectInstance.do.softUpdate();
-                        },
-                        closeSelectedCallback:function(event){
-                            // alert(event.uuid)
-                            currentSelectedInstance.removeRelation(props.relationType.get(),event.uuid)
-                            selectInstance.do.softUpdate();
-                        }
-                        
+
+                if (sourceItem && !targetItem) {
+                    // var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) //change to generic
+                    var currentSelectedInstance = instanceRepo.getById(sourceItem) //change to generic
+                    mainPopup.mount()
+                    var generateList = function () {
+                        return currentSelectedInstance.getPotentialAndLinkedEntitiesForRelationType(props.relationType.get()).potentials
                     }
-                })
-                mainPopup.append(selectInstance, "main-slot")
+                    var generateSelectedList = function () {
+                        return currentSelectedInstance.getPotentialAndLinkedEntitiesForRelationType(props.relationType.get()).alreadyLinked
+                    }
+                    var selectInstance = select.instance({
+                        data:{
+                            list:generateList,
+                            selectedlist:generateSelectedList,
+                            callback:function(event){
+                                //Display a new popup to choose the relation type
+                                currentSelectedInstance.addRelation(props.relationType.get(),event.value.uuid)
+                                selectInstance.do.softUpdate();
+                            },
+                            closeSelectedCallback:function(event){
+                                // alert(event.uuid)
+                                currentSelectedInstance.removeRelation(props.relationType.get(),event.uuid)
+                                selectInstance.do.softUpdate();
+                            }
+                            
+                        }
+                    })
+                    mainPopup.append(selectInstance, "main-slot")
+                    
+                    mainPopup.update();
+                }else if(sourceItem && targetItem){
+                    alert("fesfesfefsfe")
+                    var currentSelectedInstance = instanceRepo.getById(sourceItem) //change to generic
+ 
+                    mainPopup.mount()
+                    mainPopup.append(select.instance({
+                        data:{
+                            list:currentSelectedInstance.getPotentialRelationsWithInstance(targetItem),
+                            callback:function(eventInCallback){ //TODO add callback
+                                currentSelectedInstance.addRelation(sourceItem,targetItem)
+                                // console.log(currentSelectedInstance.getRelations());
+                                currentSelectedInstance.addRelation(eventInCallback.value.uuid,targetItem)
+                                // selectInstance.do.softUpdate();
+                            }
+                        }
+                    }), "main-slot")
+                    mainPopup.update();
+                }
                 
-                mainPopup.update();
+
             }
             props.output.set(functionToUse)     
         },
