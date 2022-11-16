@@ -385,8 +385,8 @@ evaluatorTemplates.colParameters = {
                         input:{
                             clickedItem:cell.getData().name,
                             clickedItemUuid:cell.getData().uuid,
-                            targetItem:cell.getData().uuid,
-                            sourceItem:false,
+                            sourceItem:cell.getData().uuid,
+                            targetItem:false,
                         }
                     }
                     props.clickAction.get()(actionData) 
