@@ -118,6 +118,9 @@ export default function createStellaeUi({
             state.links.push(meshLine)
         }
         updateMapping()
+        if (useSimulation) {
+            simulation.addlinks(links, state)
+        }
     }
 
     var removeLinks = function(uuid){

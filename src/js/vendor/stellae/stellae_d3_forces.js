@@ -5,6 +5,7 @@ var createSimulation = function (params) {
     var simulation = undefined;
     var simulationNodes = [];
     var simulationLinks = [];
+    var simulationLinksByUuid = {};
     var simulationNodesByUuid = {};
     var simulationNodesByRootUuid = {};
     var running = false;
@@ -22,8 +23,9 @@ var createSimulation = function (params) {
             //we're going to add a charge to each node 
             //also going to add a centering force
             d3ForceSimulation
-            .force("link", d3.forceLink(simulationLinks))
-            // .force("link", d3.forceLink(links).id(d => d.id).distance(0).strength(1))
+            .force("link", d3.forceLink(simulationLinks).id(d => d.id).distance(4).strength(0.1))
+            // .force("link", d3.forceLink(simulationLinks).id(d => d.id).distance(0).strength(-1))
+            // .force("link", d3.forceLink(links).id(d => d.id).distance(0).strength(-1))
             // .force("charge", d3.forceManyBody().strength(-50))
             .force("charge_force", d3.forceManyBody().strength(-0.07).distanceMax(10))
             .force("x", d3.forceX())
@@ -81,12 +83,37 @@ var createSimulation = function (params) {
 
     var createNode = function(element){
         if (!simulationNodesByUuid[element.edata.uuid]) {
-            var node = {x:element.position.x,y:element.position.y, uuid:element.edata.uuid, reference:element }
+            var node = {id:element.edata.uuid , x:element.position.x,y:element.position.y, uuid:element.edata.uuid, reference:element }
             simulationNodesByUuid[element.edata.uuid]=node
             simulationNodes.push(node)
         }else if (simulationNodesByUuid[element.edata.uuid]) {
             simulationNodesByUuid[element.edata.uuid].reference = element
         }
+        
+
+    }
+    // var createNode = function(element){
+    //     if (!simulationNodesByUuid[element.uuid]) {
+    //         var node = {id:element.uuid , x:element.position.x,y:element.position.y, uuid:element.uuid, reference:element }
+    //         simulationNodesByUuid[element.uuid]=node
+    //         simulationNodes.push(node)
+    //     }else if (simulationNodesByUuid[element.uuid]) {
+    //         simulationNodesByUuid[element.uuid].reference = element
+    //     }
+    // }
+    var createLink = function(element){
+        
+        if (!simulationLinksByUuid[element.uuid]) {
+            var link = {source:element.from, target:element.to, reference:element }
+            simulationLinksByUuid[element.uuid]=link
+            simulationLinks.push(link)
+        }else if (simulationLinksByUuid[element.uuid]) {
+            simulationLinksByUuid[element.uuid].reference = element
+        }
+        // console.log(element);
+        // console.log(simulationNodesByUuid);
+        // console.log(simulationLinksByUuid);
+        // alert("link")
         
 
     }
@@ -98,6 +125,20 @@ var createSimulation = function (params) {
             }
         }else{
             createNode(nodeOrArray)
+        }
+        startSimulation()
+        setTimeout(function () {
+            stopSimulation()
+        },3000)
+    }
+
+    var addLinks = function(linkOrArray,state){
+        if (Array.isArray(linkOrArray)) {
+            for (let i = 0; i < linkOrArray.length; i++) {
+                createLink(linkOrArray[i],state)
+            }
+        }else{
+            createLink(linkOrArray,state)
         }
         startSimulation()
         setTimeout(function () {
@@ -130,6 +171,7 @@ var createSimulation = function (params) {
     self.dragNode = dragNode
     self.addNodes = addNodes
     self.startSimulation= startSimulation
+    self.addlinks= addLinks
     return self
 }
 var simulation = createSimulation()
