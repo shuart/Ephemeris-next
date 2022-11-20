@@ -35,6 +35,7 @@ var createProjectManagement = function(){
 
     var createProjectStoreGenericFront = function (projectId, type) {
         var front = {}
+        var frontSubscribers = []
         var projectStore = projectStores.getProjectDB(projectId)
 
         front.getAll = function () {
@@ -52,6 +53,15 @@ var createProjectManagement = function(){
         front.update = function (data) {
             return projectStore.add(type, data)
         }
+        // front.notifyChange(data){
+        //     for (let i = 0; i < subscribers.length; i++) {
+        //         subscribers[i].callback(data);
+                
+        //     }
+        // }
+        // front.subscribeToChange(id, callback) {
+        //     subscribers.push({id, callback})
+        // }
 
         return front;
     }

@@ -7,6 +7,7 @@ var createCluster = function(initialSchema, options){
     var storageUUID={}
     var storageCrdt =[]
     var storage = {}
+    var subscribers = []
     var _syncEnabled =false
     let nanoid=(t=21)=>crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?"-":"_"),"");
 
@@ -39,6 +40,7 @@ var createCluster = function(initialSchema, options){
             addJson(storeName, object);
         }
         persist()
+        notifyChange()
     }
 
     var remove = function (storeName, id) {
@@ -52,6 +54,7 @@ var createCluster = function(initialSchema, options){
         }else{
             alert("record does not exist")
         }
+        notifyChange()
         
     }
 
@@ -363,6 +366,19 @@ var createCluster = function(initialSchema, options){
         applyMessages(messages);
     }
 
+    function notifyChange(data){
+        for (let i = 0; i < subscribers.length; i++) {
+            subscribers[i].callback(data);
+            
+        }
+        //use global event
+        const event = new CustomEvent('cluster_update', { detail: {} });
+        window.dispatchEvent(event);
+    }
+    function subscribeToChange(id, callback) {
+        subscribers.push({id, callback})
+    }
+
 
     //OUTPUT & INIT
 
@@ -372,6 +388,7 @@ var createCluster = function(initialSchema, options){
     self.add=add;
     self.remove=remove
     self.get=get
+    self.subscribeToChange=subscribeToChange
     return self
 }
 

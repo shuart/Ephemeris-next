@@ -309,6 +309,14 @@ var createNodeManager = function ({
         }
         
     }
+    var getLink = function(uuid){
+        for (let i = 0; i < linksInUse.list.length; i++) {
+            const element = linksInUse.list[i];
+            if (element.uuid = uuid) {
+                return element
+            }
+        }
+    }
     var evaluateTree =function(){
         for (const node in nodeInUse) {
             if (Object.hasOwnProperty.call(nodeInUse, node)) {
@@ -352,6 +360,36 @@ var createNodeManager = function ({
         }
         self.addLinks(graph.links)
         
+        evaluateTree()
+        
+    }
+    var replaceData = function (nodes, links) {
+        for (let i = 0; i < nodes.length; i++) {
+            const element = nodes[i];
+            if (getNode(element.uuid)) {
+                
+            }else{
+                self.addNode(element.templateName, element.params)
+            }
+            
+        }
+        var existingLinks = {}
+        var linksToAdd = []
+        for (let i = 0; i < linksInUse.list.length; i++) {
+            const element = linksInUse.list[i];
+            existingLinks[element.uuid] = element
+        }
+        for (let j = 0; j < links.length; j++) {
+            const link = links[j];
+            if (!existingLinks[link.uuid]) {
+                linksToAdd.push(link)
+            }
+        }
+        // console.log(links);
+        // console.log(existingLinks);
+        // console.log(linksToAdd);
+        // alert("adding links")
+        self.addLinks(linksToAdd)
         evaluateTree()
         
     }
@@ -416,6 +454,8 @@ var createNodeManager = function ({
     self.removeLinks = removeLinks;
     self.addNodeTemplate = addNodeTemplate
     self.addNode = addNode
+    self.replaceData = replaceData
+    
     return self
 }
 

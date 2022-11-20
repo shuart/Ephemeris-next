@@ -5,6 +5,8 @@ import createEvaluator from "../../common_evaluators/evaluators.js";
 
 
 var softUpdate= function (event, data, instance) {
+    var itemsData = getItemsList(event,data, instance)
+    instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols}, false)
     instance.getNodes().tablevp.do.softUpdate()
 }
 
@@ -13,9 +15,9 @@ var addItem = function (event, data, instance) {
     // data.addAction()
     instance.props.get("addAction" )()
     //update table
-    var itemsData = getItemsList(event,data, instance)
-    instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols}, false)
-    instance.getNodes().tablevp.do.softUpdate()
+    // var itemsData = getItemsList(event,data, instance)
+    // instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols}, false)
+    // instance.getNodes().tablevp.do.softUpdate()
 
 }
 
@@ -47,6 +49,19 @@ var getItemsList = function (event, data, instance){
     
     return data
 }
+var subscribeToDB = function (event, data, instance) {
+    var updateFunc = function (params) {
+        if (instance && instance.getDOMElement() && instance.getDOMElement().isConnected) {
+            softUpdate(event, data, instance)
+            // alert("update")//TODO sometimes to update. Why?
+        }else{
+            window.removeEventListener("cluster_update", updateFunc);
+        }
+        
+    }
+    window.addEventListener("cluster_update", updateFunc);
+}
+
 
 var setUpTable = function (event, data, instance) {
      console.log(instance.getNodes());
@@ -59,6 +74,7 @@ var setUpTable = function (event, data, instance) {
     //  console.log(data.addAction);
     // //  alert()
      instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols })
+     subscribeToDB(event, data, instance)
 }
 
 var component =createAdler({

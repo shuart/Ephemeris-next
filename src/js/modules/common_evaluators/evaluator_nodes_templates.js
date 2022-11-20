@@ -620,8 +620,8 @@ evaluatorTemplates.actionEditRelation = {
                 alert("itesm")
 
                 if (sourceItem && !targetItem) {
-                    // var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) //change to generic
-                    var currentSelectedInstance = instanceRepo.getById(sourceItem) //change to generic
+                    // var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) 
+                    var currentSelectedInstance = instanceRepo.getById(sourceItem) 
                     mainPopup.mount()
                     var generateList = function () {
                         return currentSelectedInstance.getPotentialAndLinkedEntitiesForRelationType(props.relationType.get()).potentials
@@ -651,14 +651,14 @@ evaluatorTemplates.actionEditRelation = {
                     mainPopup.update();
                 }else if(sourceItem && targetItem){
                     alert("fesfesfefsfe")
-                    var currentSelectedInstance = instanceRepo.getById(sourceItem) //change to generic
+                    var currentSelectedInstance = instanceRepo.getById(sourceItem) 
  
                     mainPopup.mount()
                     mainPopup.append(select.instance({
                         data:{
                             list:currentSelectedInstance.getPotentialRelationsWithInstance(targetItem),
                             callback:function(eventInCallback){ //TODO add callback
-                                currentSelectedInstance.addRelation(sourceItem,targetItem)
+                                // currentSelectedInstance.addRelation(sourceItem,targetItem)
                                 // console.log(currentSelectedInstance.getRelations());
                                 currentSelectedInstance.addRelation(eventInCallback.value.uuid,targetItem)
                                 // selectInstance.do.softUpdate();

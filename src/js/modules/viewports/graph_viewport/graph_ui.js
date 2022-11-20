@@ -7,7 +7,10 @@ import graphUiTemplates from "./graph_ui_node_templates.js";
 
 
 var softUpdate= function (event, data, instance) {
-    
+    var itemsData = getItemsList(event,data, instance)
+    console.log(itemsData);
+    alert ("updating graph")
+    data.graph.getNodeManager().replaceData(itemsData.list, itemsData.links)
 }
 
 var addItem = function (event, data, instance) {
@@ -65,6 +68,21 @@ var getItemsList = function (event, data, instance){
     return data
 }
 
+var subscribeToDB = function (event, data, instance) {
+    var updateFunc = function (params) {
+        if (instance && instance.getDOMElement() && instance.getDOMElement().isConnected) {
+            // console.log(instance.getDOMElement());
+            // alert("trigger event listenenr")
+            softUpdate(event, data, instance)
+        }else{
+            window.removeEventListener("cluster_update", updateFunc);
+            // alert("removing event listener")
+        }
+        
+    }
+    window.addEventListener("cluster_update", updateFunc);
+}
+
 var setUpTable = function (event, data, instance) {
     //  console.log(instance.getNodes());
     //  console.log(instance.props.settings.get());
@@ -98,6 +116,8 @@ var setUpTable = function (event, data, instance) {
         //     data.graph.getNodeManager().importGraph(JSON.parse(currentGraph.attributes.nodeLayout))
         // }
     }, 100);
+
+    subscribeToDB(event, data, instance)
 }
 
 var component =createAdler({
