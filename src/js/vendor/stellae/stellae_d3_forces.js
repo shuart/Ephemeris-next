@@ -174,6 +174,6 @@ var createSimulation = function (params) {
     self.addlinks= addLinks
     return self
 }
-var simulation = createSimulation()
-export default simulation
+// var simulation = createSimulation()
+export default createSimulation
 

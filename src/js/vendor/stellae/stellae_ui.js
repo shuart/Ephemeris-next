@@ -2,7 +2,7 @@ import * as THREE from "../three.module.js"
 import { MapControls } from '../three.orbitcontrols.js';
 import createNodeLayout from "./stellae_layouts.js";
 import inputElements from "./stellae_inputs.js"
-import simulation from "./stellae_d3_forces.js"
+import createSimulation from "./stellae_d3_forces.js"
 
 
 export default function createStellaeUi({
@@ -13,6 +13,10 @@ export default function createStellaeUi({
     uiCallbacks = {},//onConnect,
     } = {}) {
     var self = {};
+    var simulation = undefined;
+    if (useSimulation) {
+        simulation = createSimulation()
+    }
     var state ={
         scene:undefined,camera:undefined,renderer:undefined,mouse: new THREE.Vector2(),raycaster:new THREE.Raycaster(),raycasterPlan:undefined,
         canvas:undefined,containerDim:undefined,controls:undefined,play:true,helperLine:undefined,
@@ -23,6 +27,8 @@ export default function createStellaeUi({
     }
     var dataManager = undefined
     var nodeMeshStorage ={};var nodeMeshManager ={};var lineMeshManager ={};
+
+    
 
     nodeMeshManager.getHeadersMesh =function () {
         return state.triggers.headers

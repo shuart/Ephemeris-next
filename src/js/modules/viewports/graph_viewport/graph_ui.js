@@ -71,8 +71,8 @@ var getItemsList = function (event, data, instance){
 var subscribeToDB = function (event, data, instance) {
     var updateFunc = function (params) {
         if (instance && instance.getDOMElement() && instance.getDOMElement().isConnected) {
-            // console.log(instance.getDOMElement());
-            // alert("trigger event listenenr")
+            console.log(instance.getDOMElement());
+            alert("trigger event listenenr")
             softUpdate(event, data, instance)
         }else{
             window.removeEventListener("cluster_update", updateFunc);
