@@ -5,6 +5,7 @@ import createAdler from "../../vendor/adler.js";
 import state_manager from "../common_state/state_manager.js"
 import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
 import select from "../common_ui_components/select/select.js"
+import iconSelect from "../common_ui_components/icon_picker/iconPicker.js"
 
 import table_component from "../common_ui_components/table/table.js";
 import createEntityManagement from "../common_project_management/entity_management.js";
@@ -51,6 +52,7 @@ var getItemsList = function (data, instance){
             {title:"id", field:"uuid", },
             {title:"value", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) },  //"/:project/settings/views/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
             // {formatter:e=>"x", width:40, hozAlign:"center", cellClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).remove(cell.getRow().getData().uuid)}},
+            {customButton: {value:"Icon", onClick:function(e, cell){    iconSelect()  } } },
             {customButton: {value:"X", onClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).remove(cell.getRow().getData().uuid)} } },
         ];
     } else if (instance.props.modelElementType.get() == "relations")  {

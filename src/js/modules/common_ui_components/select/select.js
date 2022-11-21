@@ -1,5 +1,6 @@
 import createAdler from "../../../vendor/adler.js";
 import {TabulatorFull as Tabulator} from "../../../vendor/tabulator_esm.min.js";
+import {checkColsForCustomFormating} from "../table/table_custom_formaters.js"
 
 
 var softUpdate= function (event, data, instance) {
@@ -22,6 +23,7 @@ var filterTable = function (event, data, instance) {
 
 var setUpTable = function(event, data, instance){
     var itemsList = data.list
+    var colsList = []
     if (typeof itemsList === 'function') {
         itemsList = data.list()
     }
@@ -38,6 +40,17 @@ var setUpTable = function(event, data, instance){
             {id:5, name:"Margret Marmajuke", age:"16", col:"yellow", dob:"31/01/1999"},
         ];
     }
+    if (itemsList[0].iconPath) {
+        colsList.push({customIcon:true, field:"theTime", })
+    }
+    colsList.push({title:"value", field:"name", cellClick:function(e,cell){
+        data.callback({value : cell.getData()})
+        instance.do.softUpdate()
+        },
+    })
+
+    //check if cols need custom formatters
+    checkColsForCustomFormating(itemsList,colsList)
 
     var tableAra = instance.query(".tableArea")
     console.log(tableAra);
@@ -45,19 +58,16 @@ var setUpTable = function(event, data, instance){
         height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
         data:itemsList, //assign data to table
         layout:"fitColumns", //fit columns to width of table (optional)
-        columns:[ //Define Table Columns
-            // {title:"id", field:"uuid", },
-            {title:"value", field:"name", cellClick:function(e,cell){
-                    data.callback({value : cell.getData()})
-                    instance.do.softUpdate()
-                },
-            },
-            // {title:"added", field:"theTime", },
-        //     {title:"Name", field:"name", width:150},
-	 	// {title:"Age", field:"age", hozAlign:"left", formatter:"progress"},
-	 	// {title:"Favourite Color", field:"col"},
-	 	// {title:"Date Of Birth", field:"dob", sorter:"date", hozAlign:"center"},
-        ],
+        columns:colsList
+        
+        // [ //Define Table Columns
+        //     // {title:"id", field:"uuid", },
+            
+        // //     {title:"Name", field:"name", width:150},
+	 	// // {title:"Age", field:"age", hozAlign:"left", formatter:"progress"},
+	 	// // {title:"Favourite Color", field:"col"},
+	 	// // {title:"Date Of Birth", field:"dob", sorter:"date", hozAlign:"center"},
+        // ],
    });
    instance.setData({table:table},false)
 

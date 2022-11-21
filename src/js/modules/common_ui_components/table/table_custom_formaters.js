@@ -31,17 +31,21 @@ var getCustomFormatterForCol = function (rows, col) {
 }
 
 var checkColsForCustomFormating = function(rows, cols){
-    
+
     var newCols = []
     if (rows[0] && cols[0]) {
         newCols = cols
         for (let i = 0; i < cols.length; i++) {
             const col = cols[i];
+            
             if (!newCols[i].formatter) {
                 newCols[i].formatter= getCustomFormatterForCol(rows, col)
             }
             if (newCols[i].customButton) {
                 newCols[i]= getCustomButtonFormatterForCol(rows, col)
+            }
+            if (newCols[i].customIcon) {
+                newCols[i]= getCustomButtonFormatterForIcons(rows, col)
             }
             
         }
@@ -55,6 +59,14 @@ var getCustomButtonFormatterForCol = function(rows, col){
     };
     var formatterButton = {formatter:printIcon, width:40, hozAlign:"center", cellClick:col.customButton.onClick};
     return formatterButton
+}
+var getCustomButtonFormatterForIcons = function(rows, col){
+    
+    var toDisplay= function(cell, formatterParams, onRendered){ //plain text value
+        return `<img src="./img/icons/${cell.getData().iconPath}" style="filter: invert(100%);">`;
+    };
+    var formatterIcon = {formatter:toDisplay, width:40, hozAlign:"center"};
+    return formatterIcon
 }
 
 export {checkColsForCustomFormating}
