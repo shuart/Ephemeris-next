@@ -8,6 +8,8 @@ var common_ui =createAdler({
             <div a-slot="main_area_mount_point"></div>
             <div adler="user_button" class="user_button_list"></div>
         </div>
+        <div class="cui_toolbar_area_back">
+        </div>
         <div class="cui_toolbar_area">
             <div a-slot="toolbar_area_mount_point"></div>
         </div>
@@ -24,7 +26,7 @@ var common_ui =createAdler({
         ]
     },
     css:/*css*/`
-        .cui_toolbar_area {
+        .cui_toolbar_area_back {
             background: rgb(0,181,173);
                
             background: linear-gradient(90deg, rgba(0,181,173,1) 8%, rgba(228,255,254,1) 8%, rgba(255,255,255,1) 75%);
@@ -33,6 +35,13 @@ var common_ui =createAdler({
             width:55px;
             height:100%;
             position: absolute;
+        }
+        .cui_toolbar_area {
+
+            width:55px;
+            height:100%;
+            position: absolute;
+            z-index: 9999999999999999999999999999999999999999999999999999999;
         }
         .cui_main_area {
             width: calc(100% - 50px);

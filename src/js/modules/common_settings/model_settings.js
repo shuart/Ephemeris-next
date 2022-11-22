@@ -49,10 +49,16 @@ var getItemsList = function (data, instance){
     } else if (instance.props.modelElementType.get() == "views") {
         listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
         listData.cols = [
-            {title:"id", field:"uuid", },
+            // {title:"id", field:"uuid", },
+            {customIcon:true, field:"theTime", },
             {title:"value", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) },  //"/:project/settings/views/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
             // {formatter:e=>"x", width:40, hozAlign:"center", cellClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).remove(cell.getRow().getData().uuid)}},
-            {customButton: {value:"Icon", onClick:function(e, cell){    iconSelect()  } } },
+            {customButton: {value:"Icon", onClick:function(e, cell){
+                iconSelect({
+                    callback:e=>{console.log(cell.getData()); console.log(e);projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, iconPath:e.value.name})}
+                    })  
+                } } 
+            },
             {customButton: {value:"X", onClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).remove(cell.getRow().getData().uuid)} } },
         ];
     } else if (instance.props.modelElementType.get() == "relations")  {
