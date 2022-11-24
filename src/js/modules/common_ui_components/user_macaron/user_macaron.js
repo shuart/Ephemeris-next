@@ -21,7 +21,7 @@ var softUpdate= function (event, data, instance) {
 var component =createAdler({
     content: p => /*html*/`
     <div class="user-macaron">
-        <div class="user-macaron-settings">settings</div>
+        <div class="user-macaron-settings"><img src="./img/icons/settings.svg" style="filter: invert(100%);"></div>
         <div class="user-macaron-pic">${p.user.name}</div>
     </div>
         `,
@@ -61,13 +61,23 @@ var component =createAdler({
             bottom: 5px;
             cursor:pointer;
         }
+        .user-macaron-settings{
+            width: 42px;
+            height: 84px;
+            position: absolute;
+            left: 10px;
+            bottom: 10px;
+            cursor:pointer;
+        }
         .user-macaron-pic{
             width: 42px;
             height: 42px;
             background-color: #686363;
             border-radius: 90px;
-            position: relative;
-            cursor:pointer;
+            position: absolute;
+            cursor: pointer;
+            bottom: 8px;
+            left: 2px;
         }
     `,
 })

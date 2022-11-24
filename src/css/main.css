@@ -118,6 +118,16 @@ textarea {
       column-count: 2;
     }
   }
+  
+  .is-active .darkModeCompatibleIcons{
+    filter: invert(100%);
+  }
+  @media (prefers-color-scheme: dark) {
+    .darkModeCompatibleIcons{
+      filter: invert(100%);
+    }
+    
+  }
 /* ==========================================================================
    Helper classes
    ========================================================================== */

@@ -77,16 +77,16 @@ var common_settings =createAdler({
                     value:"Model",
                     items:[
                         // {id:"entities", value:"Entities",onClick:()=> state_manager.goTo({mode:"replace", url:"model/entities"})},
-                        {id:"entities", value:"Entities",onClick:()=> state_manager.goTo("/:/:/model/entities")},
+                        {id:"entities", iconPath:"box.svg", value:"Entities",onClick:()=> state_manager.goTo("/:/:/model/entities")},
                         // {id:"relations", value:"Relations",onClick:()=> state_manager.goTo({mode:"replace", url:"model/relations"})},
-                        {id:"relations", value:"Relations",onClick:()=> state_manager.goTo("/:/:/model/relations")},
+                        {id:"relations", iconPath:"share-2.svg", value:"Relations",onClick:()=> state_manager.goTo("/:/:/model/relations")},
                     ]
                 },
                 {
                     value:"Interface",
                     items:[
-                        {id:"views", value:"views",onClick:()=> state_manager.goTo({mode:"replace", url:"interface/views"})},
-                        {id:"evaluators", value:"evaluators",onClick:()=> state_manager.goTo({mode:"replace", url:"interface/evaluators"})},
+                        {id:"views", iconPath:"monitor.svg", value:"Views",onClick:()=> state_manager.goTo({mode:"replace", url:"interface/views"})},
+                        {id:"evaluators", iconPath:"code.svg", value:"Evaluators",onClick:()=> state_manager.goTo({mode:"replace", url:"interface/evaluators"})},
                     ]
                 },
             ],

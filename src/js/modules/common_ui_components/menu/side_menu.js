@@ -22,10 +22,15 @@ var setUpData= function(event, data, instance) {
         for (let j = 0; j < element.items.length; j++) {
             const listElement = element.items[j];
             var htmlItem = document.createElement("li");
+            var icon=''
+            if (listElement.iconPath) {
+                icon= `<img class="darkModeCompatibleIcons" src="./img/icons/${listElement.iconPath}" style="height: 1.2em;">`
+                // icon= `<img class="darkModeCompatibleIcons" src="./img/icons/${listElement.iconPath}" style="filter: invert(100%);">`
+            }
             if (instance.props.activeItem.get() && instance.props.activeItem.get() == listElement.id) {
-                htmlItem.innerHTML=`<a class="is-active" >${listElement.value}</a>`;
+                htmlItem.innerHTML=`<a class="is-active" >${icon} ${listElement.value}</a>`;
             }else{
-                htmlItem.innerHTML=`<a>${listElement.value}</a>`;
+                htmlItem.innerHTML=`<a>${icon} ${listElement.value}</a>`;
             }
             
             htmlItem.addEventListener("click", listElement.onClick)
