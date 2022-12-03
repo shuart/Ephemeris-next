@@ -62,8 +62,8 @@ var common_settings =createAdler({
             <div class="" a-id="settingsAreaSideMenu" a-props="sections:sideMenuLinks,activeItem:activeSideMenuLink" adler="side_menu_component" ></div>
         
         </div>
-        <div class="">
-            <div class="main-settings" a-props="modelElementType:modelElementType,modelElementDetails:modelElementDetails" a-id="settingsArea"  adler="settings_component" ></div>
+        <div class="inherit_height">
+            <div class="main-settings inherit_height" a-props="modelElementType:modelElementType,modelElementDetails:modelElementDetails" a-id="settingsArea"  adler="settings_component" ></div>
         </div>
     </div>
     `

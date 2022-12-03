@@ -5,6 +5,7 @@ import {checkColsForCustomFormating} from "./table_custom_formaters.js"
 var setUpTable = function(event, data, instance){
     var itemsList = data.list
     var colsList = data.cols
+    var currentHeight = data.height
     // var itemsList = []
     console.log(itemsList);
     console.log(instance);
@@ -30,12 +31,26 @@ var setUpTable = function(event, data, instance){
 
     //check if cols need custom formatters
     checkColsForCustomFormating(itemsList,colsList)
+
+    //get corret height:
+    var instanceElem = instance.query("div")
+    var tableHeight = 205
+    if (currentHeight<0) {
+        tableHeight = window.innerHeight + currentHeight
+    } else if(typeof currentHeight == 'int'){
+        tableHeight = currentHeight
+    }
+    // if (instanceElem.parentElement && instanceElem.parentElement.parentElement) {
+    //     tableHeight = instanceElem.parentElement.parentElement.clientHeight
+    //     tableHeight = window.innerHeight
+        
+    // }
     
 
-    var tableAra = instance.query("div")
+    var tableAra = instanceElem
     console.log(tableAra);
-    var table = new Tabulator(tableAra, {
-        height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+    var table = new Tabulator(instanceElem, {
+        height:tableHeight, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
         data:itemsList, //assign data to table
         layout:"fitColumns", //fit columns to width of table (optional)
         columns:colsList,
@@ -86,6 +101,7 @@ var table_component =createAdler({
         props:{
             test:15,
             dataList:[],
+            height: "auto",
             // onAdd: alert,
             callback:(event)=>alert(event.name),
         },
@@ -96,6 +112,7 @@ var table_component =createAdler({
         },
         data:{
             value:"Hello",
+            height: "auto",
             list:[],
             cols:[],
             table:undefined,

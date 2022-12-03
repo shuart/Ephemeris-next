@@ -185,14 +185,14 @@ var setUpData = function (event, data, instance) {
 var setUpTable = function (event, data, instance) {
      console.log(instance.getNodes());
      var tableData = getItemsList(data, instance)
-     instance.getNodes().table.setData({list:tableData.list, cols:tableData.cols})
+     instance.getNodes().table.setData({list:tableData.list, cols:tableData.cols, height:-180})
 }
 
 
 
 var model_settings_component =createAdler({
     content: p => /*html*/`
-        <div class="container">
+        <div class="container inherit_height" >
             <nav class="navbar" role="navigation" aria-label="main navigation">
 
                 <div id="navbarBasicExample" class="navbar-menu">
@@ -244,7 +244,7 @@ var model_settings_component =createAdler({
             </nav>
         
 
-            <div class="example-table" a-id="table" a-props="test:test,callback:callback" adler="table_component" >${p.modelElementType}</div>
+            <div class="example-table" style="height:580px" a-id="table" a-props="test:test,callback:callback" adler="table_component" >${p.modelElementType}</div>
         </div>
         `
         ,

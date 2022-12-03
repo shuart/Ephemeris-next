@@ -5,13 +5,13 @@ var common_ui =createAdler({
     content: p => /*html*/`
         <div class="cui_lateral_area"></div>
         <div class="cui_main_area">
-            <div a-slot="main_area_mount_point"></div>
+            <div a-slot="main_area_mount_point" class="inherit_height"></div>
             <div adler="user_button" class="user_button_list"></div>
         </div>
         <div class="cui_toolbar_area_back">
         </div>
         <div class="cui_toolbar_area">
-            <div a-slot="toolbar_area_mount_point"></div>
+            <div a-slot="toolbar_area_mount_point" ></div>
         </div>
 
         `,
