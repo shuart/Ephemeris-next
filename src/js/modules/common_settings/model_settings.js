@@ -186,6 +186,26 @@ var setUpTable = function (event, data, instance) {
      console.log(instance.getNodes());
      var tableData = getItemsList(data, instance)
      instance.getNodes().table.setData({list:tableData.list, cols:tableData.cols, height:-180})
+     subscribeToDB(event, data, instance)
+}
+
+var subscribeToDB = function (event, data, instance) {
+    var updateFunc = function (params) {
+        if (instance && instance.getDOMElement() && instance.getDOMElement().isConnected) {
+            softUpdate(event, data, instance)
+            // alert("update")//TODO sometimes to update. Why?
+        }else{
+            window.removeEventListener("cluster_update", updateFunc);
+        }
+        
+    }
+    window.addEventListener("cluster_update", updateFunc);
+}
+
+var softUpdate= function (event, data, instance) {
+    var itemsData = getItemsList(data, instance)
+    instance.getNodes().table.setData({list:itemsData.list, cols:itemsData.cols, height:-180}, false)
+    instance.getNodes().table.do.softUpdate()
 }
 
 
