@@ -37,21 +37,21 @@ var getItemsList = function (data, instance){
     if (instance.props.modelElementType.get() == "entities") {
         listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
         listData.cols = [
-            {title:"id", field:"uuid", },
-            {title:"value", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/details/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid), }, //"/:project/settings/details/:entity/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
+            // {title:"id", field:"uuid", },
+            {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/details/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid), }, //"/:project/settings/details/:entity/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
         ];
     } else if (instance.props.modelElementType.get() == "evaluators") {
         listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
         listData.cols = [
-            {title:"id", field:"uuid", },
-            {title:"value", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) }, ///evaluators/:evaluatorId 
+            // {title:"id", field:"uuid", },
+            {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) }, ///evaluators/:evaluatorId 
         ];
     } else if (instance.props.modelElementType.get() == "views") {
         listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
         listData.cols = [
             // {title:"id", field:"uuid", },
             {customIcon:true, field:"theTime", },
-            {title:"value", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) },  //"/:project/settings/views/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
+            {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) },  //"/:project/settings/views/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
             // {formatter:e=>"x", width:40, hozAlign:"center", cellClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).remove(cell.getRow().getData().uuid)}},
             {customButton: {value:"Icon", onClick:function(e, cell){
                 iconSelect({
@@ -80,7 +80,7 @@ var getItemsList = function (data, instance){
         });
         
         listData.cols = [
-            {title:"value", field:"name", },
+            {title:"Name", field:"name", },
             {title:"From", field:"fromList", cellClick:function(e, cell){
                 var entityRepo = createEntityManagement()
                 mainPopup.mount()

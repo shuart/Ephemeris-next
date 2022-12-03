@@ -16,7 +16,7 @@ var getCustomFormatterForCol = function (rows, col) {
                 var instances = cell.getValue()
                 for (let i = 0; i < instances.length; i++) {
                     const element = instances[i];
-                    html += `<span onclick='alert();  event.stopPropagation();' style='background-color:green; margin-right:5px;padding:2px; border-radius:4px;' > ${element.target.name} </span>`
+                    html += `<span onclick='alert();  event.stopPropagation();' class="table-tag" > ${element.target.name} </span>`
                 }
                 
                 return html
@@ -63,7 +63,7 @@ var getCustomButtonFormatterForCol = function(rows, col){
 var getCustomButtonFormatterForIcons = function(rows, col){
     
     var toDisplay= function(cell, formatterParams, onRendered){ //plain text value
-        return `<img src="./img/icons/${cell.getData().iconPath}" style="filter: invert(100%);">`;
+        return `<img class="darkModeCompatibleIcons" src="./img/icons/${cell.getData().iconPath}" >`;
     };
     var formatterIcon = {formatter:toDisplay, width:40, hozAlign:"center"};
     return formatterIcon

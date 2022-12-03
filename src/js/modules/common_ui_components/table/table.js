@@ -128,7 +128,23 @@ var table_component =createAdler({
             softUpdate:(event, data, instance)=>softUpdate(event, data, instance),
         },
     },
-    // css:/*css*/` `,
+    css:/*css*/`
+    .table-tag{
+        background-color:#069c95;
+        margin-right:5px;
+        padding:2px;
+        border-radius:4px;
+        color:white;
+        padding-left: 6px;
+        padding-right: 4px;
+    }
+    @media (prefers-color-scheme: dark) {
+        .table-tag{
+            color:white
+        }
+        
+      }
+    `,
 })
 
 export default table_component

@@ -156,10 +156,11 @@ var component =createAdler({
         white-space: nowrap;
         background-color: #00d1b2;
         margin-right:5px;
+        font-weight: bold;
     }
     .selectCloseTag {
         cursor:pointer;
-        color:red;
+        color:#b32415;
     }
     .selectedArea {
         margin:8px;
