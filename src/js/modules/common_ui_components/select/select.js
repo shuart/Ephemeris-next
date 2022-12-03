@@ -55,9 +55,10 @@ var setUpTable = function(event, data, instance){
     var tableAra = instance.query(".tableArea")
     console.log(tableAra);
     var table = new Tabulator(tableAra, {
-        height:205, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+        height:window.innerHeight*0.5, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
         data:itemsList, //assign data to table
         layout:"fitColumns", //fit columns to width of table (optional)
+        headerVisible:false,
         columns:colsList
         
         // [ //Define Table Columns
@@ -98,13 +99,12 @@ var component =createAdler({
     content: p => /*html*/`
     <div class="Component container is-max-desktop">
         <div class="field">
-            <label class="label">Label</label>
+            <label class="label"></label>
             <div class="control">
-                <input class="input action_select_filter" type="text" placeholder="Text input">
+                <input class="input action_select_filter" type="text" placeholder="Search">
             </div>
             <div class="selectedArea"></div>
             <div class="tableArea"></div>
-            <p class="help">This is a help text</p>
         </div>
     </div>
         `,
@@ -160,6 +160,9 @@ var component =createAdler({
     .selectCloseTag {
         cursor:pointer;
         color:red;
+    }
+    .selectedArea {
+        margin:8px;
     }
     `,
 })

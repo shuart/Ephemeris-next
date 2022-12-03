@@ -622,7 +622,8 @@ evaluatorTemplates.actionEditRelation = {
                 if (sourceItem && !targetItem) {
                     // var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) 
                     var currentSelectedInstance = instanceRepo.getById(sourceItem) 
-                    mainPopup.mount()
+                    var mainPopupNarrow = mainPopup.with({data:{narrow:true,title:"Select Items"}})
+                    mainPopupNarrow.mount()
                     var generateList = function () {
                         return currentSelectedInstance.getPotentialAndLinkedEntitiesForRelationType(props.relationType.get()).potentials
                     }
@@ -646,15 +647,15 @@ evaluatorTemplates.actionEditRelation = {
                             
                         }
                     })
-                    mainPopup.append(selectInstance, "main-slot")
+                    mainPopupNarrow.append(selectInstance, "main-slot")
                     
-                    mainPopup.update();
+                    mainPopupNarrow.update();
                 }else if(sourceItem && targetItem){
                     alert("fesfesfefsfe")
                     var currentSelectedInstance = instanceRepo.getById(sourceItem) 
- 
-                    mainPopup.mount()
-                    mainPopup.append(select.instance({
+                    var mainPopupNarrow = mainPopup.with({data:{narrow:true,title:"Select Items"}})
+                    mainPopupNarrow.mount()
+                    mainPopupNarrow.append(select.instance({
                         data:{
                             list:currentSelectedInstance.getPotentialRelationsWithInstance(targetItem),
                             callback:function(eventInCallback){ //TODO add callback
@@ -665,7 +666,7 @@ evaluatorTemplates.actionEditRelation = {
                             }
                         }
                     }), "main-slot")
-                    mainPopup.update();
+                    mainPopupNarrow.update();
                 }
                 
 

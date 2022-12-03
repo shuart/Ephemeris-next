@@ -266,6 +266,15 @@ var createAdler = function({
                 element.remove();
             } 
         }
+        foundComponents = wrapper.DOMElement.querySelectorAll("[a-if-not]")
+        for (let i = 0; i < foundComponents.length; i++) {
+            const element = foundComponents[i];
+            
+            var checkIfCond = params.data[element.getAttribute("a-if-not")] || self.props.get(element.getAttribute("a-if-not"))
+            if( checkIfCond){
+                element.remove();
+            } 
+        }
     }
     var registerInNodeMap = function(id, instance){
         nodeMap[id]=instance;
@@ -421,6 +430,7 @@ var createAdler = function({
     self.getNodes = getNodes;
     self.getData = getData;
     self.instance = instance;
+    self.with = instance;
     self.setData = setData;
     self.mount = mount;
     return self
