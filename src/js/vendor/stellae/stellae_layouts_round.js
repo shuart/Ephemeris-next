@@ -129,7 +129,7 @@ var createNodeRound  = function({
         header.layoutItemType ="header"
         header.layoutItemRoot =node
         header.scale.set(0.08,0.08,0.08)
-        header.position.set(0,0,0)
+        header.position.set(0,0,-0.01)
         //text
         var spritetext = createCharacterLabel(name)
         node.add(spritetext)
@@ -243,8 +243,8 @@ var createNodeRound  = function({
         if(prop.socket && prop.socket != "none"){
             var socket = createSocket(propGroup, prop)
             socket.layoutItemRoot =node
-            socket.edata = { root:node, nodeData: nodeData, uuid:prop.id, positionOffset:{x:socket.position.x,y:position,z:0} }
-            layoutItems.sockets[socket.uuid] = {mesh:socket, positionOffset:{x:socket.position.x,y:position,z:0}}
+            socket.edata = { root:node, nodeData: nodeData, uuid:prop.id, positionOffset:{x:0,y:0,z:0} }
+            layoutItems.sockets[socket.uuid] = {mesh:socket, positionOffset:{x:0,y:0,z:0}}
         }
         
         node.add(propGroup)
