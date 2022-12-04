@@ -9,7 +9,7 @@ import graphUiTemplates from "./graph_ui_node_templates.js";
 var softUpdate= function (event, data, instance) {
     var itemsData = getItemsList(event,data, instance)
     console.log(itemsData);
-    alert ("updating graph")
+    // alert ("updating graph")
     data.graph.getNodeManager().replaceData(itemsData.list, itemsData.links)
 }
 
@@ -47,10 +47,12 @@ var getItemsList = function (event, data, instance){
             const entityGroup = evaluatorResult.links[i];
             for (let j = 0; j < entityGroup.length; j++) {
                 console.log(entityGroup[j]);
-                
-                for (let k = 0; k < entityGroup[j]['rel 1'].length; k++) {
-                    data.links.push({from:entityGroup[j]['rel 1'][k].relation.from, from_socket:"out", to:entityGroup[j]["rel 1"][k].relation.to, to_socket:"in",})
+                for (var prop in entityGroup[j]) { //TODO Should be optimized
+                    for (let k = 0; k < entityGroup[j][prop].length; k++) {
+                        data.links.push({uuid:entityGroup[j][prop][k].relation.uuid, from:entityGroup[j][prop][k].relation.from, from_socket:"out", to:entityGroup[j][prop][k].relation.to, to_socket:"in",})
+                    }
                 }
+                
             }
             
         }
@@ -72,7 +74,7 @@ var subscribeToDB = function (event, data, instance) {
     var updateFunc = function (params) {
         if (instance && instance.getDOMElement() && instance.getDOMElement().isConnected) {
             console.log(instance.getDOMElement());
-            alert("trigger event listenenr")
+            // alert("trigger event listen  enr") // TODO event is sometimes not cleared
             softUpdate(event, data, instance)
         }else{
             window.removeEventListener("cluster_update", updateFunc);

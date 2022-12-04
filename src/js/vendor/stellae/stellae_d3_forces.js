@@ -23,6 +23,7 @@ var createSimulation = function (params) {
             //we're going to add a charge to each node 
             //also going to add a centering force
             d3ForceSimulation
+            // .force("link", d3.forceLink(simulationLinks).distance(4).strength(0.1))
             .force("link", d3.forceLink(simulationLinks).id(d => d.id).distance(4).strength(0.1))
             // .force("link", d3.forceLink(simulationLinks).id(d => d.id).distance(0).strength(-1))
             // .force("link", d3.forceLink(links).id(d => d.id).distance(0).strength(-1))
@@ -102,7 +103,6 @@ var createSimulation = function (params) {
     //     }
     // }
     var createLink = function(element){
-        
         if (!simulationLinksByUuid[element.uuid]) {
             var link = {source:element.from, target:element.to, reference:element }
             simulationLinksByUuid[element.uuid]=link
@@ -110,10 +110,11 @@ var createSimulation = function (params) {
         }else if (simulationLinksByUuid[element.uuid]) {
             simulationLinksByUuid[element.uuid].reference = element
         }
+        
         // console.log(element);
         // console.log(simulationNodesByUuid);
         // console.log(simulationLinksByUuid);
-        // alert("link")
+        // alert("create link")
         
 
     }
@@ -140,6 +141,10 @@ var createSimulation = function (params) {
         }else{
             createLink(linkOrArray,state)
         }
+        if (d3ForceSimulation) {//if a force system is already setup, update it
+            d3ForceSimulation.force("link", d3.forceLink(simulationLinks).id(d => d.id).distance(4).strength(0.1))
+        }
+        
         startSimulation()
         setTimeout(function () {
             stopSimulation()
@@ -167,6 +172,8 @@ var createSimulation = function (params) {
         d3ForceSimulation.restart();
         d3ForceSimulation.alpha(1.0);
         setNodeForcedPosition(uuid, x,y)
+        // console.log(simulationLinks);
+        // alert("simulation forces")
     }
     self.dragNode = dragNode
     self.addNodes = addNodes

@@ -126,6 +126,7 @@ export default function createStellaeUi({
         updateMapping()
         if (useSimulation) {
             simulation.addlinks(links, state)
+            
         }
     }
 

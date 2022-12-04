@@ -613,11 +613,11 @@ evaluatorTemplates.actionEditRelation = {
                 var sourceItem = getProp(props,"sourceItem",data)
                 var targetItem = getProp(props,"targetItem",data)
 
-                console.log(sourceItem);
-                console.log(targetItem);
-                console.log(instanceRepo.getById(sourceItem));
-                console.log(props.relationType.get());
-                alert("itesm")
+                // console.log(sourceItem);
+                // console.log(targetItem);
+                // console.log(instanceRepo.getById(sourceItem));
+                // console.log(props.relationType.get());
+                // alert("itesm")
 
                 if (sourceItem && !targetItem) {
                     // var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) 
@@ -651,7 +651,7 @@ evaluatorTemplates.actionEditRelation = {
                     
                     mainPopupNarrow.update();
                 }else if(sourceItem && targetItem){
-                    alert("fesfesfefsfe")
+                    // alert("fesfesfefsfe")
                     var currentSelectedInstance = instanceRepo.getById(sourceItem) 
                     var mainPopupNarrow = mainPopup.with({data:{narrow:true,title:"Select Items"}})
                     mainPopupNarrow.mount()
