@@ -47,6 +47,9 @@ var checkColsForCustomFormating = function(rows, cols){
             if (newCols[i].customIcon) {
                 newCols[i]= getCustomButtonFormatterForIcons(rows, col)
             }
+            if (newCols[i].customColor) {
+                newCols[i]= getCustomButtonFormatterForColors(rows, col)
+            }
             
         }
     }
@@ -63,9 +66,30 @@ var getCustomButtonFormatterForCol = function(rows, col){
 var getCustomButtonFormatterForIcons = function(rows, col){
     
     var toDisplay= function(cell, formatterParams, onRendered){ //plain text value
-        return `<img class="darkModeCompatibleIcons" src="./img/icons/${cell.getData().iconPath}" >`;
+        return `<img class="darkModeCompatibleIcons" src="./img/icons/${cell.getData()[col.field]}" >`;
     };
     var formatterIcon = {formatter:toDisplay, width:40, hozAlign:"center"};
+    return formatterIcon
+}
+
+var getCustomButtonFormatterForColors = function(rows, col){
+    
+    var toDisplay= function(cell, formatterParams, onRendered){ //plain text value
+        // return `<img class="darkModeCompatibleIcons" src="./img/icons/${cell.getData().iconPath}" >`;
+        // return `<input type="color" id="head" name="head" value="${cell.getData()[col.field]|| '#e66465'}">`;
+        return `
+        <div style="overflow: hidden;width: 2em;height: 2em;border-radius: 50%; ">
+            <input type="color" class="color_input" style="padding: 0;width: 150%;height: 150%;margin: -25%;" name="head" value="${cell.getData()[col.field]|| '#effffff'}">
+        </div>
+        `;
+    };
+    var formatterIcon = {formatter:toDisplay, width:50, hozAlign:"center", cellClick:function (e,cell) {
+        //e.preventDefault()
+        var input=cell.getElement().querySelector(".color_input")
+        input.addEventListener('change', function (event) {
+            col.callback({value:{color:input.value}}, cell)
+        })
+    }};
     return formatterIcon
 }
 

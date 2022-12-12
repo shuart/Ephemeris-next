@@ -36,6 +36,7 @@ var instanceAggregate = function(aggregate, projectStore){
         }
     }
     aggregate.relations = ownRelations
+    aggregate.color = sourceEntity.color
 
     //methods
     aggregate.getRelations = function () {

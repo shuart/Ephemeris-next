@@ -39,6 +39,7 @@ var getItemsList = function (data, instance){
         listData.cols = [
             // {title:"id", field:"uuid", },
             {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/details/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid), }, //"/:project/settings/details/:entity/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
+            {customColor:true, field:"color", callback:(e,cell)=>{ projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, color:e.value.color}) }},
         ];
     } else if (instance.props.modelElementType.get() == "evaluators") {
         listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
@@ -50,7 +51,7 @@ var getItemsList = function (data, instance){
         listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
         listData.cols = [
             // {title:"id", field:"uuid", },
-            {customIcon:true, field:"theTime", },
+            {customIcon:true, field:"iconPath", },
             {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) },  //"/:project/settings/views/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
             // {formatter:e=>"x", width:40, hozAlign:"center", cellClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).remove(cell.getRow().getData().uuid)}},
             {customButton: {value:"Icon", onClick:function(e, cell){

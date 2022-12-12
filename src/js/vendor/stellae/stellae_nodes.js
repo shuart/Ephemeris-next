@@ -9,7 +9,7 @@ var demoId3 = nanoid()
 var createNode= function({
     uuid=nanoid(),
     ui=undefined,
-    headerColor = 0xffff00,
+    headerColor = 0x00b5ad,
     position={x:0,y:0},
     templateName = undefined,
     propsValue = undefined,
@@ -332,6 +332,7 @@ var createNodeManager = function ({
         }
         var template = nodeTemplates[templateName]
         var newParams= Object.assign({},template,params,{ui:ui, contextNodes:nodeInUse,contextLinks:linksInUse})
+        // alert(newParams.color) //TODO find why undefined first?
         var node = createNode(newParams)
         
         nodeInUse[node.getUuid()] = node 

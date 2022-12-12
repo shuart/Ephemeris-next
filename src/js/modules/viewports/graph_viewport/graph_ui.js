@@ -100,9 +100,10 @@ var setUpTable = function (event, data, instance) {
         data.graph.getNodeManager().useTemplate(graphUiTemplates)
         for (let i = 0; i < itemsData.list.length; i++) {
             const element = itemsData.list[i];
-    //         console.log(element);
-    // alert(element)
-            data.graph.getNodeManager().addNode("action_Input", { nodeLayout:"round",uuid:element.uuid, name:element.name})
+            console.log(element);
+    // alert(element.color)
+    // alert("element.color")
+            data.graph.getNodeManager().addNode("action_Input", { nodeLayout:"round",uuid:element.uuid, name:element.name, headerColor:element.color})
             // data.graph.getNodeManager().addNode("action_Input", { uuid:element.uuid, name:element.name})
         }
 
