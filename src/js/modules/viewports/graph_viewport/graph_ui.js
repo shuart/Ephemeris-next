@@ -96,7 +96,7 @@ var setUpTable = function (event, data, instance) {
      setTimeout(() => {
         var element= instance.query('.graph_component')
         element.innerHTML = ''//TODO GRAPH IS LOADED 2 TIMES. PREVENT THAT
-        data.graph = createStellae({container:element, fullSize:true,simulateForces:true, uiCallbacks:itemsData.uiCallbacks})
+        data.graph = createStellae({container:element, fullSize:true,simulateForces:true, uiCallbacks:itemsData.uiCallbacks, canvasHeight:1500})
         data.graph.getNodeManager().useTemplate(graphUiTemplates)
         for (let i = 0; i < itemsData.list.length; i++) {
             const element = itemsData.list[i];
