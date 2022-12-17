@@ -50,7 +50,9 @@ var checkColsForCustomFormating = function(rows, cols){
             if (newCols[i].customColor) {
                 newCols[i]= getCustomButtonFormatterForColors(rows, col)
             }
-            
+            if (newCols[i].customSwitch) {
+                newCols[i]= getCustomButtonFormatterForSwitch(rows, col)
+            }
         }
     }
 }
@@ -61,6 +63,25 @@ var getCustomButtonFormatterForCol = function(rows, col){
         return "<i class='fa fa-print'>"+col.customButton.value+"</i>";
     };
     var formatterButton = {formatter:printIcon, width:40, hozAlign:"center", cellClick:col.customButton.onClick};
+    return formatterButton
+}
+var getCustomButtonFormatterForSwitch = function(rows, col){
+
+    var printIcon = function(cell, formatterParams, onRendered){ //plain text value
+        return `
+        <label class="tbl_toggle" for="tg_${cell.getData().uuid}">
+            <input class="tbl_toggle__input" name="" type="checkbox" id="tg_${cell.getData().uuid}" ${cell.getData()[col.field] ? "checked":""}/>
+            <div class="tbl_toggle__fill"></div>
+        </label>
+        `;
+    };
+    // var formatterButton = {formatter:printIcon, width:400, hozAlign:"center", cellClick:col.customSwitch.onClick};
+    var formatterButton = {formatter:printIcon, width:60, hozAlign:"center", cellClick:function (e,cell) {
+        //e.preventDefault()
+        var input=cell.getElement().querySelector(".tbl_toggle__input")
+        input.checked = !input.checked 
+        col.customSwitch.onClick({value:{checked:input.checked}}, cell)
+    }};
     return formatterButton
 }
 var getCustomButtonFormatterForIcons = function(rows, col){

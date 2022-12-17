@@ -138,9 +138,54 @@ var table_component =createAdler({
         padding-left: 6px;
         padding-right: 4px;
     }
+    .tbl_toggle {
+        --width: 40px;
+        --height: calc(var(--width) / 2);
+        --border-radius: calc(var(--height) / 2);
+    
+        display: inline-block;
+        cursor: pointer;
+    }
+    .tbl_toggle__input {
+        display: none;
+    }
+    .tbl_toggle__fill {
+        position: relative;
+        width: var(--width);
+        height: var(--height);
+        border-radius: var(--border-radius);
+        background: #dddddd;
+        transition: background 0.2s;
+    }
+    .tbl_toggle__fill::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: var(--height);
+        width: var(--height);
+        background: #ffffff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+        border-radius: var(--border-radius);
+        transition: transform 0.2s;
+    }
+    .tbl_toggle__input:checked ~ .tbl_toggle__fill {
+        background: #00b5ad;
+    }
+    
+    .tbl_toggle__input:checked ~ .tbl_toggle__fill::after {
+        transform: translateX(var(--height));
+    }
+    
     @media (prefers-color-scheme: dark) {
         .table-tag{
             color:white
+        }
+        .tbl_toggle__fill::after {
+            background: #464545;
+        }
+        .tbl_toggle__fill {
+            background: #000000;
         }
         
       }

@@ -61,6 +61,8 @@ var getItemsList = function (data, instance){
                 } } 
             },
             {customButton: {value:"X", onClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).remove(cell.getRow().getData().uuid)} } },
+            {customSwitch: {onClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, isVisible:e.value.checked})}}, field:"isVisible"  },
+            
         ];
     } else if (instance.props.modelElementType.get() == "relations")  {
         var relationManagement = createRelationManagement()
