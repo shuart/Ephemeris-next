@@ -17,16 +17,38 @@ var renderElement = function(p){
 
 var renderList = function(event,data, instance){
     var items = getItemsList()
-    
+    instance.getDOMElement().innerHTML = ''
     for (let i = 0; i < items.length; i++) {
         const element = items[i];
-        var htmlItem = renderElement(element)
-        instance.getDOMElement().appendChild(htmlItem)
+        if (element.isVisible) {
+            var htmlItem = renderElement(element)
+            instance.getDOMElement().appendChild(htmlItem)
+        }
     }
+}
+
+var setUp = function(event,data, instance){
+    renderList(event,data, instance)
+    subscribeToDB(event,data, instance)
 }
 
 var softUpdate= function (event, data, instance) {
 
+}
+
+var subscribeToDB = function (event, data, instance) {
+    
+    var updateFunc = function (params) {
+        
+        if (instance && instance.getDOMElement() && instance.getDOMElement().isConnected) {
+            renderList(event, data, instance)
+            // alert("update")//TODO sometimes to update. Why?
+        }else{
+            window.removeEventListener("cluster_update", updateFunc);
+        }
+        
+    }
+    window.addEventListener("cluster_update", updateFunc);
 }
 
 var component =createAdler({
@@ -54,7 +76,7 @@ var component =createAdler({
         ],
         events:{
             // onBeforeMount:(event, data, instance) => setUpData(event, data, instance),
-            onMount:(event, data, instance) => renderList(event, data, instance),
+            onMount:(event, data, instance) => setUp(event, data, instance),
             
         },
         methods:{
