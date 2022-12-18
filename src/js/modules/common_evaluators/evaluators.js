@@ -66,6 +66,12 @@ var createEvaluator = function ({
                     result.links = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.links||undefined
                     result.onConnect = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.onConnectAction||undefined
                 }
+                if (exportGraph.nodes.find(e=>e.templateName == "output_instance_card")) {
+                    result.instance_card = {}
+                    result.instance_card.instance = exportGraph.nodes.find(e=>e.templateName == "output_instance_card").params.propsValue.instance||undefined
+                    // result.links = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.links||undefined
+                    // result.onConnect = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.onConnectAction||undefined
+                }
                 
                 // console.log(result);
                 // alert(55)

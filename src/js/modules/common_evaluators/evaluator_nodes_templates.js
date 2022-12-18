@@ -394,6 +394,29 @@ evaluatorTemplates.outputGraph = {
     },
 }
 
+evaluatorTemplates.outputInstanceCard = {
+    templateName : "output_instance_card",
+    name : "output_instance_card",
+    props :[
+        // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"instance", multiple:false, label:"instance", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"actions", label:"action", type:"hidden", editable:true, socket:"input", value:false},
+
+        {id:"onConnectAction", label:"onConnect", type:"hidden", editable:true, socket:"input", value:false},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            console.log(props.actions.get());
+        },
+        onInit:(props) =>{
+
+        },
+    },
+}
+
 evaluatorTemplates.colParameters = {
     templateName : "col_parameters",
     name : "col_parameters",

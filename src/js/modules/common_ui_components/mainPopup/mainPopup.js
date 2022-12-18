@@ -63,6 +63,7 @@ var popup =createAdler({
         @media (prefers-color-scheme: dark) {
             .main_popup_menu_area {
                 background-color: #303030;
+                background-color: #1b1b1b;
                 color:white;
             }
           }

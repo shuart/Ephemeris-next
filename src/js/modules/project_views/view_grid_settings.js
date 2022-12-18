@@ -7,6 +7,7 @@ import createEvaluatorsManagement from "../common_project_management/evaluators_
 import thumbs from "./view_grid_settings_select_comp.js"
 import table_viewport from "../viewports/table_viewport/table_ui.js"
 import graph_viewport from "../viewports/graph_viewport/graph_ui.js"
+import cardViewport from "../viewports/card_viewport/card_viewport.js";
 
 var softUpdate= function (event, data, instance) {
 
@@ -31,6 +32,12 @@ var mountModules = function (event, data, instance) {
                     },), `view_mount_point_${i}_${j}_${k}`);
                 } else if(comp.componentType == "graph"){
                     instance.append(graph_viewport.instance({
+                        props:{
+                            settings:{evaluatorId:comp.settings.evaluatorUuid, calledFromInstance:instance.props.get('calledFromInstance')},
+                        }
+                    },), `view_mount_point_${i}_${j}_${k}`);
+                } else if(comp.componentType == "instanceCard"){
+                    instance.append(cardViewport.instance({
                         props:{
                             settings:{evaluatorId:comp.settings.evaluatorUuid, calledFromInstance:instance.props.get('calledFromInstance')},
                         }
@@ -203,6 +210,7 @@ var addComp = function(event, data, instance){
             list:[
                 {uuid:"table", name:"Table"},
                 {uuid:"graph", name:"Graph"},
+                {uuid:"instanceCard", name:"Instance Card"},
 
             ],
             callback:function(result){
