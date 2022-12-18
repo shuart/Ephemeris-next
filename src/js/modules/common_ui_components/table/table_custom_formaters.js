@@ -92,7 +92,12 @@ var getCustomButtonFormatterForIcons = function(rows, col){
     var toDisplay= function(cell, formatterParams, onRendered){ //plain text value
         return `<img class="darkModeCompatibleIcons" src="./img/icons/${cell.getData()[col.field]}" >`;
     };
-    var formatterIcon = {formatter:toDisplay, width:40, hozAlign:"center"};
+    var formatterIcon = {formatter:toDisplay, width:40, hozAlign:"center",cellClick:function (e,cell) {
+        if (col.callback) {
+            col.callback(e, cell)
+        }
+        
+    }};
     return formatterIcon
 }
 

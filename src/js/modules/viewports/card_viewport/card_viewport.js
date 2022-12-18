@@ -34,7 +34,7 @@ var getEvaluatorData = function (event, data, instance){
         var instanceRepo = createInstancesManagement()
         data.instance = instanceRepo.getById(data.instance)
     }
-    debugger
+    
     console.log(data);
     
 
@@ -64,8 +64,9 @@ var setUpTable = function (event, data, instance) {
 var cardViewport =createAdler({
     content: p => /*html*/`
     <div class="Component container">
-        <div class="action_add_entity" >TABLE</div>
+        
         <div  a-id="instance_card" adler="instance_card" ></div>
+        <div class="action_add_entity" ></div>
         
     </div>
         `,

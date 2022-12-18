@@ -44,10 +44,18 @@ var getItemsList = function (data, instance){
             const element = listData.list[i];
             element.defaultView = element.getDefaultView()
             element.color = element.attributes.color
+            element.iconPath = element.attributes.iconPath
         } 
         
         listData.cols = [
             // {title:"id", field:"uuid", },
+            
+            {customIcon:true, field:"iconPath", callback:(e,cell)=>{ 
+                iconSelect({
+                    callback:e=>{projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, iconPath:e.value.name})}
+                    })  
+                }  
+            },
             {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/details/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid), }, //"/:project/settings/details/:entity/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
             {customColor:true, field:"color", callback:(e,cell)=>{ projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, color:e.value.color}) }},
             {customObject:true, title:"default view", field:"defaultView", callback:(e,cell)=>{  }, cellClick:function(e, cell){

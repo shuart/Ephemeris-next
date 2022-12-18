@@ -41,7 +41,7 @@ var setUpTable = function(event, data, instance){
         ];
     }
     if (itemsList[0].iconPath) {
-        colsList.push({customIcon:true, field:"theTime", })
+        colsList.push({customIcon:true, field:"iconPath", })
     }
     colsList.push({title:"value", field:"name", cellClick:function(e,cell){
         data.callback({value : cell.getData()})
