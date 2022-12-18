@@ -23,7 +23,7 @@ var loadLayout = function(currentPageId){
 }
 
 function setUp(event, data, instance){
-    instance.append(viewGridSettings.instance({props:{currentPageId:data.viewId, schema:loadLayout(data.viewId)}}), "view_mount_point_grid");
+    instance.append(viewGridSettings.instance({props:{currentPageId:data.viewId,calledFromInstance:data.calledFromInstance, schema:loadLayout(data.viewId)}}), "view_mount_point_grid");
     // instance.append(graph.instance(), "view_mount_point0");
     // instance.append(table_viewport.instance(), "view_mount_point1");
     // alert("append")
@@ -38,7 +38,7 @@ function addEntity(event, data, instance){
 var component =createAdler({
     content: p => /*html*/`
     <div class="Component">
-        ${p.viewId} VIEW
+        ${p.viewId} VIEW, called from ${p.calledFromInstance}
         <div a-slot="view_mount_point_grid"></div>
         <div a-slot="view_mount_point0"></div>
         <div a-slot="view_mount_point1"></div>
@@ -55,6 +55,7 @@ var component =createAdler({
         },
         data:{
             viewId:"Hello",
+            calledFromInstance:undefined,
             list:[],
             table:undefined,
             // onClick:()=>console.log("click")

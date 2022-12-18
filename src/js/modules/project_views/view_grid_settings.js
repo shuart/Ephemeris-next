@@ -26,13 +26,13 @@ var mountModules = function (event, data, instance) {
                 if (comp.componentType == "table" || comp.componentType == "undefined") {
                     instance.append(table_viewport.instance({
                         props:{
-                            settings:{evaluatorId:comp.settings.evaluatorUuid},
+                            settings:{evaluatorId:comp.settings.evaluatorUuid, calledFromInstance:instance.props.get('calledFromInstance')},
                         }
                     },), `view_mount_point_${i}_${j}_${k}`);
                 } else if(comp.componentType == "graph"){
                     instance.append(graph_viewport.instance({
                         props:{
-                            settings:{evaluatorId:comp.settings.evaluatorUuid},
+                            settings:{evaluatorId:comp.settings.evaluatorUuid, calledFromInstance:instance.props.get('calledFromInstance')},
                         }
                     },), `view_mount_point_${i}_${j}_${k}`);
                 }
@@ -257,6 +257,7 @@ var component =createAdler({
         props:{
             currentPageId:false,
             showSettings:false,
+            calledFromInstance:false,
             schema:[
                 { settings:{}, cols:[
                     { settings:{}, components:[]},{ settings:{}, components:[ { settings:{}, componentType:"test"} ]}

@@ -2,6 +2,7 @@ import createAdler from "../../../vendor/adler.js";
 import table_component from "../../common_ui_components/table/table.js";
 import projectManagement from "../../common_project_management/project_management.js";
 import createEvaluator from "../../common_evaluators/evaluators.js";
+import showPopupInstancePreview from "../../popup_instance_preview/popup_instance_preview.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -35,7 +36,7 @@ var getItemsList = function (event, data, instance){
     // }
     // return []
     var data = {}
-    var evaluator = createEvaluator({type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
+    var evaluator = createEvaluator({originInstance:instance.props.get('settings').calledFromInstance, type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
     console.log(evaluator);
     if (!evaluator.evaluate()) {
         return {list:[{name:"undefined LIST"}], cols:[]}
@@ -92,6 +93,7 @@ var component =createAdler({
             settings:{
                 entityType:false,
                 evaluatorId:false,
+                calledFromInstance:false,
             },
         },
         listen:{

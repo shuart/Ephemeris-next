@@ -3,6 +3,7 @@ import createEntityManagement from "../common_project_management/entity_manageme
 import createRelationsManagement from "../common_project_management/relations_management.js";
 import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
 import select from "../common_ui_components/select/select.js"
+import showPopupInstancePreview from "../popup_instance_preview/popup_instance_preview.js";
 
 var getProp = function(props,propName, data){
     var valuePassed = props[propName].get()
@@ -109,6 +110,41 @@ evaluatorTemplates.sourceEntity = {
         },
     },
 }
+
+evaluatorTemplates.sourceInstance = {
+    templateName : "source_instance",
+    name : "Source Instance",
+    props :[
+        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props, globals) =>{
+            props.output.set(globals.originInstance)
+        },
+        // onInit:(props) =>{
+        // },
+    },
+}
+
+evaluatorTemplates.debugAlert = {
+    templateName : "debug_alert",
+    name : "debug alert",
+    props :[
+        {id:"message", label:"Message", type:"text", editable:true, socket:"input", value:"This is a debug alert"},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            alert("Debug:" + props.message.get())
+        },
+        // onInit:(props) =>{
+        // },
+    },
+}
+
 
 evaluatorTemplates.extractProperty = {
     templateName : "extract_property",
@@ -512,6 +548,48 @@ evaluatorTemplates.actionRemoveInstance = {
         // },
     },
 }
+
+evaluatorTemplates.previewInstance = {
+    templateName : "action_preview_instance",
+    name : "action_preview_instance",
+    props :[
+        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
+        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"instanceRef", label:"Instance Reference", type:"text", editable:true, socket:"input", value:""},
+        // {id:"paramName", label:"param name", type:"text", editable:true, socket:"input", value:"0"},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props, globals) =>{
+            var functionToUse = function (data) {
+                showPopupInstancePreview(data.input.clickedItemUuid)
+                // var okToRemove= confirm("Remove element")
+                // if (okToRemove) {
+                //     // var currentEntityType = props.instanceRef.get()
+                //     var instancesRepo = createInstancesManagement()
+                //     instancesRepo.remove(data.input.clickedItemUuid)
+                // }
+                // if (props.instanceRef.get() && props.instanceRef.get() != "") {
+                //     var okToRemove= confirm("Remove element")
+                //     if (okToRemove) {
+                //         // var currentEntityType = props.instanceRef.get()
+                //         var instancesRepo = createInstancesManagement()
+                //         instancesRepo.remove(data.input.clickedItemUuid)
+                //     }
+                // }else{
+                //     alert("reference missing") 
+                // }
+            }
+            props.output.set(functionToUse)     
+        },
+        // onInit:(props) =>{
+
+        // },
+    },
+}
+
+
 
 evaluatorTemplates.actionShowMessage = {
     templateName : "action_show_message",

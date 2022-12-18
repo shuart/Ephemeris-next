@@ -9,7 +9,6 @@ import graphUiTemplates from "./graph_ui_node_templates.js";
 var softUpdate= function (event, data, instance) {
     var itemsData = getItemsList(event,data, instance)
     console.log(itemsData);
-    // alert ("updating graph")
     data.graph.getNodeManager().replaceData(itemsData.list, itemsData.links)
 }
 
@@ -25,7 +24,7 @@ var addItem = function (event, data, instance) {
 
 var getItemsList = function (event, data, instance){
     var data = {}
-    var evaluator = createEvaluator({type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
+    var evaluator = createEvaluator({originInstance:instance.props.get('settings').calledFromInstance, type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
     console.log(evaluator);
     var evaluatorResult = evaluator.evaluate()
     if (!evaluatorResult) {
@@ -57,9 +56,6 @@ var getItemsList = function (event, data, instance){
             
         }
     }
-    // console.log(evaluatorResult.links);
-    // console.log(data.links);
-    // alert("esf")
     data.actions =evaluator.evaluate().actions
     data.uiCallbacks={
         onConnect: evaluator.evaluate().onConnect
@@ -101,8 +97,6 @@ var setUpTable = function (event, data, instance) {
         for (let i = 0; i < itemsData.list.length; i++) {
             const element = itemsData.list[i];
             console.log(element);
-    // alert(element.color)
-    // alert("element.color")
             data.graph.getNodeManager().addNode("action_Input", { nodeLayout:"round",uuid:element.uuid, name:element.name, headerColor:element.color})
             // data.graph.getNodeManager().addNode("action_Input", { uuid:element.uuid, name:element.name})
         }
@@ -138,6 +132,7 @@ var component =createAdler({
             settings:{
                 entityType:false,
                 evaluatorId:false,
+                calledFromInstance: false,
             },
         },
         listen:{

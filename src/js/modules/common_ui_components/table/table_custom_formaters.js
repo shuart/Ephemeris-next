@@ -53,6 +53,9 @@ var checkColsForCustomFormating = function(rows, cols){
             if (newCols[i].customSwitch) {
                 newCols[i]= getCustomButtonFormatterForSwitch(rows, col)
             }
+            if (newCols[i].customObject) {
+                newCols[i]= getCustomFormatterForObject(rows, col)
+            }
         }
     }
 }
@@ -112,6 +115,43 @@ var getCustomButtonFormatterForColors = function(rows, col){
         })
     }};
     return formatterIcon
+}
+
+var getCustomFormatterForObject = function (rows, col) {
+    
+    var formatterFunction = undefined
+    console.log(col);
+    
+    //check if is an entity instance
+    // for (let i = 0; i < rows.length; i++) {
+    //     var rowColToCheck =rows[i][col.field]
+    //     if (rowColToCheck && rowColToCheck[0] && rowColToCheck[0].displayAs=="relation") { //iterate to find a row with something
+    //         // if (rowColToCheck && rowColToCheck[0] && rowColToCheck[0].uuid && rowColToCheck[0].name &&  rowColToCheck[0].relation) { //iterate to find a row with something
+    //         formatterFunction = function(cell, formatterParams, onRendered){
+    //             //cell - the cell component
+    //             //formatterParams - parameters set for the column
+    //             //onRendered - function to call when the formatter has been rendered
+    //             var html = ""
+    //             var instances = cell.getValue()
+    //             for (let i = 0; i < instances.length; i++) {
+    //                 const element = instances[i];
+    //                 html += `<span onclick='alert();  event.stopPropagation();' class="table-tag" > ${element.target.name} </span>`
+    //             }
+                
+    //             return html
+    //         }
+    //         break
+    //     }
+        
+    // }
+    
+    var toDisplay= function(cell, formatterParams, onRendered){ //plain text value
+        return `<span onclick='alert();  event.stopPropagation();' class="table-tag" > ${cell.getData()[col.field]? cell.getData()[col.field].name : ""} </span>`;
+    };
+    var formatterIcon = {formatter:toDisplay, width:90, title:col.title, cellClick:col.cellClick};
+    return formatterIcon
+
+    // return formatterFunction
 }
 
 export {checkColsForCustomFormating}

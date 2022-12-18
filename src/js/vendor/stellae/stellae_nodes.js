@@ -24,6 +24,7 @@ var createNode= function({
     ],
     contextNodes=undefined,
     contextLinks = undefined,
+    globalSettings={},
     links={
         // demoId1:undefined,
         // demoId2:undefined,
@@ -187,7 +188,7 @@ var createNode= function({
 
     var doEvent = function(eventName){
         if (event[eventName]) {
-            event[eventName](interactiveProps)
+            event[eventName](interactiveProps, globalSettings)
         }
     }
 
@@ -278,6 +279,7 @@ var createNodeManager = function ({
     var nodeTemplates ={};
     var nodeInUse = {};
     var linksInUse={list:[]}
+    var globalSettings={}
     
     var addLinks = function(links){
         for (let i = 0; i < links.length; i++) {
@@ -331,7 +333,7 @@ var createNodeManager = function ({
             params.uuid = nanoid()
         }
         var template = nodeTemplates[templateName]
-        var newParams= Object.assign({},template,params,{ui:ui, contextNodes:nodeInUse,contextLinks:linksInUse})
+        var newParams= Object.assign({},template,params,{ui:ui, contextNodes:nodeInUse,contextLinks:linksInUse, globalSettings:globalSettings})
         // alert(newParams.color) //TODO find why undefined first?
         var node = createNode(newParams)
         
@@ -436,6 +438,10 @@ var createNodeManager = function ({
         return nodeTemplates
     }
 
+    var setGlobalSetting = function(propName, value){
+        globalSettings[propName] = value
+    }
+
     var init= function () {
         if (ui) {
             ui.attachDataManager(self)
@@ -456,6 +462,7 @@ var createNodeManager = function ({
     self.addNodeTemplate = addNodeTemplate
     self.addNode = addNode
     self.replaceData = replaceData
+    self.setGlobalSetting = setGlobalSetting
     
     return self
 }

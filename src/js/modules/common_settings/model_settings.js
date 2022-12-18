@@ -9,6 +9,7 @@ import iconSelect from "../common_ui_components/icon_picker/iconPicker.js"
 
 import table_component from "../common_ui_components/table/table.js";
 import createEntityManagement from "../common_project_management/entity_management.js";
+// import createViewManagement from "../common_project_management/view_management.js";
 
 // import {Tabulator} from "../../vendor/tabulator_esm.min.js";
 
@@ -35,11 +36,31 @@ var getItemsList = function (data, instance){
     var listData ={ list:undefined, cols:undefined}
 
     if (instance.props.modelElementType.get() == "entities") {
-        listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
+        // listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
+        var entityRepo = createEntityManagement()
+        listData.list = entityRepo.getAll()
+        //Create extra fields
+        for (let i = 0; i < listData.list.length; i++) {
+            const element = listData.list[i];
+            element.defaultView = element.getDefaultView()
+            element.color = element.attributes.color
+        } 
+        
         listData.cols = [
             // {title:"id", field:"uuid", },
             {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/details/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid), }, //"/:project/settings/details/:entity/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
             {customColor:true, field:"color", callback:(e,cell)=>{ projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, color:e.value.color}) }},
+            {customObject:true, title:"default view", field:"defaultView", callback:(e,cell)=>{  }, cellClick:function(e, cell){
+                var viewRepo = projectManagement.getProjectStore(projectId,"views").getAll()
+                mainPopup.mount()
+                mainPopup.append(select.instance({
+                    data:{
+                        list:viewRepo,
+                        callback:function(event){ cell.getData().setDefaultViewId(event.value.uuid) }
+                    }
+                }), "main-slot")
+                mainPopup.update();
+            }},
         ];
     } else if (instance.props.modelElementType.get() == "evaluators") {
         listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()

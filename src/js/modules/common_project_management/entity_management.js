@@ -45,6 +45,14 @@ var entityAggregate = function(aggregate, projectStore){
         var currentRelationTarget = projectStore.get("entities").where("uuid").equals(targetId)
         projectStore.add("relations",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, type:type, ["from_"+aggregate.uuid]:true,["to_"+currentRelationTarget.uuid]:true })
     }
+    //methods
+    aggregate.setDefaultViewId = function (targetId) {
+        projectStore.add("entities",{uuid:aggregate.uuid, defaultViewId:targetId})
+    }
+    aggregate.getDefaultView = function () {
+        var view = projectStore.get("views").where("uuid").equals(aggregate.attributes.defaultViewId) 
+        return view
+    }
 
     return aggregate
 }

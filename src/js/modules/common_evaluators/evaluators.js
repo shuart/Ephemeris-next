@@ -7,9 +7,10 @@ import evaluatorTemplates from "./evaluator_nodes_templates.js";
 var createEvaluator = function ({
     type=undefined,
     graphId = undefined,
+    originInstance = undefined,
 }={}) {
     var self = {};
-
+    // alert(originInstance)
     var basicEvaluation = function(){
         var result = {}
         var instancesRepo = createInstancesManagement()
@@ -48,6 +49,7 @@ var createEvaluator = function ({
             graphNodes.getNodeManager().useTemplate(evaluatorTemplates)
             
             if (currentGraph.attributes.nodeLayout) {
+                graphNodes.getNodeManager().setGlobalSetting("originInstance",originInstance)
                 graphNodes.getNodeManager().importGraph(JSON.parse(currentGraph.attributes.nodeLayout))
                 graphNodes.getNodeManager().evaluateTree()
                 var exportGraph = graphNodes.getNodeManager().exportNodes()
