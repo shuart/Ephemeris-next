@@ -228,6 +228,10 @@ export default function createStellaeUi({
                     if (confirm("Delete node?")) {
                         dataManager.removeNode(state.lastSelectedHeader.edata.uuid)
                     }
+                }else{
+                    if (uiCallbacks.onNodeClick) {
+                        uiCallbacks.onNodeClick({dataManager, state, input:{targetItem:state.lastSelectedHeader.edata.uuid}})
+                    }
                 }
                 // if ( group.children.includes( object ) === true ) {
                 // 	object.material.emissive.set( 0x000000 );

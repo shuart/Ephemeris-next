@@ -65,6 +65,8 @@ var createEvaluator = function ({
                     result.nodes = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.nodes||undefined
                     result.links = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.links||undefined
                     result.onConnect = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.onConnectAction||undefined
+                    result.onNodeClick = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.onNodeClickAction||undefined  
+
                 }
                 if (exportGraph.nodes.find(e=>e.templateName == "output_instance_card")) {
                     result.instance_card = {}

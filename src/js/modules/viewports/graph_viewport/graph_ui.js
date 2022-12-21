@@ -58,7 +58,8 @@ var getItemsList = function (event, data, instance){
     }
     data.actions =evaluator.evaluate().actions
     data.uiCallbacks={
-        onConnect: evaluator.evaluate().onConnect
+        onConnect: evaluator.evaluate().onConnect,
+        onNodeClick:evaluator.evaluate().onNodeClick
     } 
     
 

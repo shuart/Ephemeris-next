@@ -381,6 +381,7 @@ evaluatorTemplates.outputGraph = {
         {id:"actions", label:"action", type:"hidden", editable:true, socket:"input", value:false},
 
         {id:"onConnectAction", label:"onConnect", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"onNodeClickAction", label:"onNodeClick", type:"hidden", editable:true, socket:"input", value:false},
     ],
     methods:{
     },
@@ -442,7 +443,7 @@ evaluatorTemplates.colParameters = {
                 cellAction =function(e, cell){ 
                     var actionData = {
                         input:{
-                            clickedItem:cell.getData().name,
+                            clickedItem:cell.getData().uuid,
                             clickedItemUuid:cell.getData().uuid,
                             sourceItem:cell.getData().uuid,
                             targetItem:false,
@@ -578,7 +579,7 @@ evaluatorTemplates.previewInstance = {
     props :[
         {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"instanceRef", label:"Instance Reference", type:"text", editable:true, socket:"input", value:""},
+        {id:"targetItem", label:"target Instance", type:"text", editable:true, socket:"input", value:""},
         // {id:"paramName", label:"param name", type:"text", editable:true, socket:"input", value:"0"},
     ],
     methods:{
@@ -586,7 +587,13 @@ evaluatorTemplates.previewInstance = {
     event:{
         onEvaluate:(props, globals) =>{
             var functionToUse = function (data) {
-                showPopupInstancePreview(data.input.clickedItemUuid)
+                var targetItem = getProp(props,"targetItem",data)
+                if (targetItem && targetItem !="") {
+                    showPopupInstancePreview(targetItem)
+                }else{
+                    alert("Reference Missing")
+                }
+                // showPopupInstancePreview(data.input.clickedItemUuid)
                 // var okToRemove= confirm("Remove element")
                 // if (okToRemove) {
                 //     // var currentEntityType = props.instanceRef.get()
@@ -790,6 +797,7 @@ evaluatorTemplates.actionInput = {
         // {id:"clicked_item_uuid", label:"clicked_item_uuid", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
         {id:"sourceItem", label:"Source Item", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
         {id:"targetItem", label:"target Item", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
+        {id:"clickedItem", label:"clicked Item", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
     ],
     methods:{
     },
@@ -811,13 +819,17 @@ evaluatorTemplates.actionInput = {
             //     }
             // }
             var functionTargetItem = function (data) {
-                return data.input.targetItem
+                return data.input.targetItem || data.input.clickedItem 
             }
             props.targetItem.set(functionTargetItem)  
             var functionSourceItem = function (data) {
                 return data.input.sourceItem
             }
             props.sourceItem.set(functionSourceItem)  
+            var functionclickedItem = function (data) {
+                return data.input.clickedItem || data.input.targetItem 
+            }
+            props.clickedItem.set(functionclickedItem)  
         },
         // onInit:(props) =>{
 
