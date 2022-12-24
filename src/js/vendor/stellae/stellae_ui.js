@@ -3,6 +3,7 @@ import { MapControls } from '../three.orbitcontrols.js';
 import createNodeLayout from "./stellae_layouts.js";
 import inputElements from "./stellae_inputs.js"
 import createSimulation from "./stellae_d3_forces.js"
+import createListView from "./stellae_side_list.js";
 
 
 export default function createStellaeUi({
@@ -11,11 +12,16 @@ export default function createStellaeUi({
     darkMode = "auto",
     useSimulation = false,
     uiCallbacks = {},//onConnect,
+    showList = true,
     } = {}) {
     var self = {};
     var simulation = undefined;
+    var sideList = undefined;
     if (useSimulation) {
         simulation = createSimulation()
+    }
+    if (showList) {
+        sideList= createListView(container)
     }
     var state ={
         scene:undefined,camera:undefined,renderer:undefined,mouse: new THREE.Vector2(),raycaster:new THREE.Raycaster(),raycasterPlan:undefined,
@@ -24,6 +30,7 @@ export default function createStellaeUi({
         triggers:{headers:[], sockets:{}, props:{}},
         selectedToMove:[], selectedSocket:undefined,lastSelectedHeader:undefined, selectedLine:undefined, linkToAdd: undefined,
         draggingNodes:false,draggingSocket:false,
+        recordedClickForMouseUp:false,
     }
     var dataManager = undefined
     var nodeMeshStorage ={};var nodeMeshManager ={};var lineMeshManager ={};
@@ -110,6 +117,9 @@ export default function createStellaeUi({
         // nodeMeshStorage[node.uuid] = node
         if (useSimulation) {
             simulation.addNodes(node)
+        }
+        if (showList) {
+            sideList.addNodes(state.nodes)
         }
         return node;
     }
@@ -224,14 +234,14 @@ export default function createStellaeUi({
                 state.lastSelectedHeader = object.layoutItemRoot;
                 state.draggingNodes=true;
                 if (event.button == 2) {
+                    
                     console.log(object.layoutItemRoot);
                     if (confirm("Delete node?")) {
                         dataManager.removeNode(state.lastSelectedHeader.edata.uuid)
                     }
                 }else{
-                    if (uiCallbacks.onNodeClick) {
-                        uiCallbacks.onNodeClick({dataManager, state, input:{targetItem:state.lastSelectedHeader.edata.uuid}})
-                    }
+                    state.recordedClickForMouseUp = {x:state.mouse.x, y:state.mouse.y}
+                    
                 }
                 // if ( group.children.includes( object ) === true ) {
                 // 	object.material.emissive.set( 0x000000 );
@@ -323,7 +333,14 @@ export default function createStellaeUi({
             state.draggingSocket=false;
             state.selectedLine =undefined;
             state.controls.enabled = true;
-            
+            //check for click up
+            if (state.recordedClickForMouseUp && state.recordedClickForMouseUp.x == state.mouse.x && state.recordedClickForMouseUp.y == state.mouse.y) {
+                if (uiCallbacks.onNodeClick) {
+                    uiCallbacks.onNodeClick({dataManager, state, input:{targetItem:state.lastSelectedHeader.edata.uuid}})
+                }
+            }
+            state.recordedClickForMouseUp = false
+            //check for connections
             lineMeshManager.hideHelperLine()
             if (state.linkToAdd && state.linkToAdd.from != state.linkToAdd.to) {
                 if (uiCallbacks.onConnect) {
@@ -333,7 +350,6 @@ export default function createStellaeUi({
                     dataManager.addLinks([state.linkToAdd])
                 }
                 dataManager.evaluateTree();
-                // alert()
                 state.linkToAdd = undefined;
             }
         }
@@ -365,6 +381,35 @@ export default function createStellaeUi({
         container.addEventListener( 'mousemove', onMove );
         container.addEventListener( 'mouseup', onMouseUp );
         state.canvas.addEventListener('dblclick', onDblClick, false);
+    }
+
+    var fadeNodes = function(nodes){
+        if (typeof nodes == "string" && nodes == "all") {
+            for (let i = 0; i < state.nodes.length; i++) {
+                fadeNode(state.nodes[i])
+            }
+        }
+    }
+    var fadeNode = function(node){
+        node.children[2].visible = false
+            node.traverse(o=>{
+                if (o.material) {
+                    o.material.transparent = true;
+                    o.material.opacity = 0.1;
+                }
+            })
+    }
+    var hideNodes = function(nodes){
+        if (typeof nodes == "string" && nodes == "all") {
+            for (let i = 0; i < state.nodes.length; i++) {
+                hideNode(state.nodes[i])
+            }
+        }else{
+
+        }
+    }
+    var hideNode = function(node){
+        node.visible = false
     }
 
     var startRenderer = function () {
