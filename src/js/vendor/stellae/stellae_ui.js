@@ -4,6 +4,7 @@ import createNodeLayout from "./stellae_layouts.js";
 import inputElements from "./stellae_inputs.js"
 import createSimulation from "./stellae_d3_forces.js"
 import createListView from "./stellae_side_list.js";
+import createStellaeSearchBox from "./stellae_search_box.js";
 
 
 export default function createStellaeUi({
@@ -13,15 +14,20 @@ export default function createStellaeUi({
     useSimulation = false,
     uiCallbacks = {},//onConnect,
     showList = true,
+    showSearchBox= true,
     } = {}) {
     var self = {};
     var simulation = undefined;
     var sideList = undefined;
+    var searchBox = undefined;
     if (useSimulation) {
         simulation = createSimulation()
     }
     if (showList) {
         sideList= createListView(container)
+    }
+    if (showSearchBox) {
+        searchBox = createStellaeSearchBox(container)
     }
     var state ={
         scene:undefined,camera:undefined,renderer:undefined,mouse: new THREE.Vector2(),raycaster:new THREE.Raycaster(),raycasterPlan:undefined,
@@ -120,6 +126,9 @@ export default function createStellaeUi({
         }
         if (showList) {
             sideList.addNodes(state.nodes)
+        }
+        if (showSearchBox) {
+            searchBox.addNodes(state.nodes)
         }
         return node;
     }
