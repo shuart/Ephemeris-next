@@ -5,6 +5,7 @@ import inputElements from "./stellae_inputs.js"
 import createSimulation from "./stellae_d3_forces.js"
 import createListView from "./stellae_side_list.js";
 import createStellaeSearchBox from "./stellae_search_box.js";
+import createConnectionHighlighter from "./stellae_connection_highlighter.js";
 
 
 export default function createStellaeUi({
@@ -15,11 +16,15 @@ export default function createStellaeUi({
     uiCallbacks = {},//onConnect,
     showList = true,
     showSearchBox= true,
+    useConnectionHighlighter =true,
     } = {}) {
     var self = {};
+
     var simulation = undefined;
     var sideList = undefined;
     var searchBox = undefined;
+    var connectionHighlighter = undefined;
+
     if (useSimulation) {
         simulation = createSimulation()
     }
@@ -28,6 +33,9 @@ export default function createStellaeUi({
     }
     if (showSearchBox) {
         searchBox = createStellaeSearchBox(container)
+    }
+    if (useConnectionHighlighter) {
+        connectionHighlighter = createConnectionHighlighter()
     }
     var state ={
         scene:undefined,camera:undefined,renderer:undefined,mouse: new THREE.Vector2(),raycaster:new THREE.Raycaster(),raycasterPlan:undefined,
@@ -130,6 +138,9 @@ export default function createStellaeUi({
         if (showSearchBox) {
             searchBox.addNodes(state.nodes)
         }
+        if (useConnectionHighlighter) {
+            connectionHighlighter.updateNodes(state.nodes)
+        }
         return node;
     }
 
@@ -144,7 +155,9 @@ export default function createStellaeUi({
         updateMapping()
         if (useSimulation) {
             simulation.addlinks(links, state)
-            
+        }
+        if (useConnectionHighlighter) {
+            connectionHighlighter.updateRelations(state.links)
         }
     }
 
@@ -251,6 +264,11 @@ export default function createStellaeUi({
                 }else{
                     state.recordedClickForMouseUp = {x:state.mouse.x, y:state.mouse.y}
                     
+                }
+
+                //TODO move in other function
+                if (useConnectionHighlighter) {
+                    connectionHighlighter.highlight(object.layoutItemRoot)
                 }
                 // if ( group.children.includes( object ) === true ) {
                 // 	object.material.emissive.set( 0x000000 );
@@ -392,34 +410,34 @@ export default function createStellaeUi({
         state.canvas.addEventListener('dblclick', onDblClick, false);
     }
 
-    var fadeNodes = function(nodes){
-        if (typeof nodes == "string" && nodes == "all") {
-            for (let i = 0; i < state.nodes.length; i++) {
-                fadeNode(state.nodes[i])
-            }
-        }
-    }
-    var fadeNode = function(node){
-        node.children[2].visible = false
-            node.traverse(o=>{
-                if (o.material) {
-                    o.material.transparent = true;
-                    o.material.opacity = 0.1;
-                }
-            })
-    }
-    var hideNodes = function(nodes){
-        if (typeof nodes == "string" && nodes == "all") {
-            for (let i = 0; i < state.nodes.length; i++) {
-                hideNode(state.nodes[i])
-            }
-        }else{
+    // var fadeNodes = function(nodes){
+    //     if (typeof nodes == "string" && nodes == "all") {
+    //         for (let i = 0; i < state.nodes.length; i++) {
+    //             fadeNode(state.nodes[i])
+    //         }
+    //     }
+    // }
+    // var fadeNode = function(node){
+    //     node.children[2].visible = false
+    //         node.traverse(o=>{
+    //             if (o.material) {
+    //                 o.material.transparent = true;
+    //                 o.material.opacity = 0.1;
+    //             }
+    //         })
+    // }
+    // var hideNodes = function(nodes){
+    //     if (typeof nodes == "string" && nodes == "all") {
+    //         for (let i = 0; i < state.nodes.length; i++) {
+    //             hideNode(state.nodes[i])
+    //         }
+    //     }else{
 
-        }
-    }
-    var hideNode = function(node){
-        node.visible = false
-    }
+    //     }
+    // }
+    // var hideNode = function(node){
+    //     node.visible = false
+    // }
 
     var startRenderer = function () {
         function animate() {
