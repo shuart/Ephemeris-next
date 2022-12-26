@@ -26,6 +26,7 @@ var createProjectStore = function(){
         }
         var projectDB = createdb({
             default:["uuid","test"],
+            cycles:["uuid"],
             entities:["uuid","test"],
             properties:["uuid"],
             relations:["uuid","test"],

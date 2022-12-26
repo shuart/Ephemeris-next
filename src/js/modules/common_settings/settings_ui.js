@@ -74,6 +74,12 @@ var common_settings =createAdler({
             modelElementDetails:false,
             sideMenuLinks:[
                 {
+                    value:"Workflow",
+                    items:[
+                        {id:"cycles", iconPath:"repeat.svg", value:"Cycles",onClick:()=> state_manager.goTo("/:/:/workflow/cycles")},
+                    ]
+                },
+                {
                     value:"Model",
                     items:[
                         // {id:"entities", value:"Entities",onClick:()=> state_manager.goTo({mode:"replace", url:"model/entities"})},

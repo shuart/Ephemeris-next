@@ -151,6 +151,25 @@ var createCluster = function(initialSchema, options){
                     var newIndexedStorage = rebuildIndexes(currentPersistence.currentUUIDS, currentPersistence.storage)
                     currentSchema = currentPersistence.currentSchema; currentUUIDS = currentPersistence.currentUUIDS; storageIndexes = currentPersistence.storageIndexes; storageUUID = newIndexedStorage ;storage = currentPersistence.storage;storageCrdt=currentPersistence.storageCrdt
                 }
+                updatePersitenceSchema(currentSchema,initialSchema)
+            }
+        }
+    }
+
+    var updatePersitenceSchema = function(currentSchema, initialSchema){
+        //When a schema is updated this function compare the saved persitence schema with it and fill the missing elements
+        for (const store in initialSchema) {
+            var needsUpdate = false;
+            var missingSchemaParts={};
+            if (Object.hasOwnProperty.call(initialSchema, store)) {
+                if (!currentSchema[store]) {
+                    alert("Store '"+ store+ "'is missing. Update DB?")
+                    missingSchemaParts[store]=initialSchema[store]
+                    needsUpdate =true;
+                }
+                if (needsUpdate) {
+                    setSchema(missingSchemaParts)
+                }
             }
         }
     }
