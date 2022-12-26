@@ -187,6 +187,17 @@ export default function createStellaeUi({
     }
 
     var createMeshLine = function(data){
+        const lineGroup = new THREE.Group();
+        
+        var dir = new THREE.Vector3( 1, 2, 0 );
+        // //normalize the direction vector (convert to vector of length 1)
+        dir.normalize();
+
+        var origin = new THREE.Vector3( 0, 0, 0 );
+        var length = 1;
+        // var hex = 0xffff00;
+        var hex = 0xa5abb6;
+
         const lineMaterial = new THREE.LineBasicMaterial( {
             color: 0xa5abb6,
             linewidth: 0.01,
@@ -197,7 +208,15 @@ export default function createStellaeUi({
         const lineGeometry = new THREE.BufferGeometry().setFromPoints( linePoints );
         var line = new THREE.Line( lineGeometry, lineMaterial );
         line.edata= data
-        return line
+        lineGroup.add( line );
+        lineGroup.geometry = line.geometry
+        lineGroup.edata = line.edata
+        //add arrow
+        const arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
+        lineGroup.arrowOrigin = arrowHelper.position
+        lineGroup.arrowItem = arrowHelper 
+        lineGroup.add( arrowHelper );
+        return lineGroup
     }
 
     var updateLinks = function(){
@@ -207,7 +226,6 @@ export default function createStellaeUi({
             //     console.log(state.mapping);
             if (state.mapping[link.edata.to]) {
                 
-                
                 var startPositon = state.mapping[link.edata.from].position; var endPositon = state.mapping[link.edata.to].position;
                 var startPositonOffset = state.mapping[link.edata.from].sockets[link.edata.from_socket].positionOffset; var endPositonOffset = state.mapping[link.edata.to].sockets[link.edata.to_socket].positionOffset;
                 var attributes = link.geometry.attributes
@@ -215,6 +233,17 @@ export default function createStellaeUi({
                 attributes.position.array[3] =endPositon.x+endPositonOffset.x; attributes.position.array[4] =endPositon.y; attributes.position.array[5] =endPositon.z+endPositonOffset.y
                 attributes.position.array[0] =startPositon.x+startPositonOffset.x; attributes.position.array[1] =startPositon.y; attributes.position.array[2] =startPositon.z+startPositonOffset.y
                 attributes.position.needsUpdate = true;
+
+                //update arrow position
+                // link.arrowOrigin.set(attributes.position.array[0],attributes.position.array[1],attributes.position.array[2] )
+                link.arrowOrigin.set((attributes.position.array[0]+attributes.position.array[3])/2,(attributes.position.array[1]+attributes.position.array[4])/2,(attributes.position.array[2]+attributes.position.array[5])/2 )
+                var arrowDir = new THREE.Vector3(); // create once an reuse it
+                // const v1 = new THREE.Vector3(attributes.position.array[0], attributes.position.array[1], attributes.position.array[2] ) 
+                // const v2 = new THREE.Vector3( attributes.position.array[3], attributes.position.array[4], attributes.position.array[5] ) 
+                // arrowDir.subVectors( v2, v1 ).normalize();
+                arrowDir = new THREE.Vector3(attributes.position.array[3] - attributes.position.array[0],attributes.position.array[4]-attributes.position.array[1],attributes.position.array[5]-attributes.position.array[2]); // create once an reuse it
+                arrowDir.normalize();
+                link.arrowItem.setDirection(arrowDir)
             }   
         }
     }
