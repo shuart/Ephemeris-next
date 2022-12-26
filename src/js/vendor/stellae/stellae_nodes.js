@@ -14,6 +14,7 @@ var createNode= function({
     templateName = undefined,
     propsValue = undefined,
     propsValueFromInput = {},
+    imgPath = undefined,
     name = "Node",
     nodeLayout ="square",
     props =[
@@ -239,14 +240,14 @@ var createNode= function({
     
     var addToScene = function (currentScene) {
         if (ui) {
-            refInScene =  currentScene.addNode({headerColor,nodeLayout, uuid, position, name, props:internalProps, links, nodeData:self})
+            refInScene =  currentScene.addNode({headerColor,nodeLayout, uuid, position, name, props:internalProps, links, nodeData:self, imgPath})
         }
         
     }
     var updateInScene = function (){
         if (ui) {
             currentScene.removeNode(refInScene)
-            refInScene =  currentScene.addNode({headerColor,nodeLayout, uuid, position, name, props:internalProps, links, nodeData:self}) 
+            refInScene =  currentScene.addNode({headerColor,nodeLayout, uuid, position, name, props:internalProps, links, nodeData:self, imgPath}) 
         }
         
     }

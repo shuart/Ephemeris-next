@@ -417,15 +417,7 @@ export default function createStellaeUi({
     //         }
     //     }
     // }
-    // var fadeNode = function(node){
-    //     node.children[2].visible = false
-    //         node.traverse(o=>{
-    //             if (o.material) {
-    //                 o.material.transparent = true;
-    //                 o.material.opacity = 0.1;
-    //             }
-    //         })
-    // }
+
     // var hideNodes = function(nodes){
     //     if (typeof nodes == "string" && nodes == "all") {
     //         for (let i = 0; i < state.nodes.length; i++) {
@@ -435,9 +427,7 @@ export default function createStellaeUi({
 
     //     }
     // }
-    // var hideNode = function(node){
-    //     node.visible = false
-    // }
+
 
     var startRenderer = function () {
         function animate() {

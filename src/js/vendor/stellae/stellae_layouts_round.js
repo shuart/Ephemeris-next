@@ -88,7 +88,7 @@ var createNodeRound  = function({
     color = "#000000",
     headerColor = "0x00b5ad",
     
-    
+    imgPath = undefined,
     name = "Node",
     position={x:0,y:0},
     uuid = nanoid(),
@@ -132,6 +132,26 @@ var createNodeRound  = function({
         // sprite.position.y = 0.7 ;
 
         return sprite;
+    }
+    function createImage(){
+        //do it only one time
+        
+        var ext = imgPath.slice(-3);
+        if (ext == "svg") {
+            imgPath= imgPath.slice(0, -3) + "png";
+        }
+        const textureLoader = new THREE.TextureLoader();
+        const imageMap = textureLoader.load( imgPath );
+        
+        imageMap.minFilter = THREE.LinearFilter;
+        // spriteMap.generateMipmaps = false;
+        // spriteMap.needsUpdate = true;
+        const spriteImage = new THREE.Sprite( new THREE.SpriteMaterial( { map: imageMap } ) );
+        // var mult = 2
+        // sprite.scale.set( mult * 0.12 * shadowCanvas.width / shadowCanvas.height , mult *0.12, 1 );
+        // sprite.position.y = 0.7 ;
+        
+        return spriteImage;
     }
 
     function createCharacterLabel( text, maxLength ) {
@@ -183,6 +203,15 @@ var createNodeRound  = function({
 
         node.add(header)
         layoutItems.header = header
+        if (imgPath && ( imgPath.slice(-3)=="svg"||imgPath.slice(-3)=="png" ) ) {
+            var headerImage = createImage()
+            headerImage.layoutItemType ="headerImage"
+            headerImage.layoutItemRoot =node
+            node.add(headerImage)
+            layoutItems.headerImage = headerImage
+            headerImage.position.set(0,0,-0.02)
+            headerImage.scale.set(0.5,0.5,0.5)
+        }
         return header
     }
 
@@ -199,6 +228,7 @@ var createNodeRound  = function({
 
         //createShadow
         var spriteShadow = createShadow()
+        spriteShadow.layoutItemType ="shadow"
         node.add(spriteShadow)
         // spriteShadow.position.set(0,1.7,0.008)
         // spriteShadow.scale.set(3.5,4.5/3,1)

@@ -288,7 +288,6 @@ var createNodeSquare  = function({
 }
 
 var createNode = function (params) {
-    
     if (params.nodeLayout == "round") {
         return createNodeLayoutRound(params)
     } else {
