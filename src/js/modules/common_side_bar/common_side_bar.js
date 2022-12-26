@@ -10,6 +10,7 @@ var softUpdate= function (event, data, instance) {
 var component =createAdler({
     content: p => /*html*/`
     <div class="toolbar">
+        <div class="common_side_bar_logo" ></div>
         <div class="side-bar-page-area">
             <div adler="common_side_bar" ></div>
         </div>
@@ -45,7 +46,18 @@ var component =createAdler({
             // softUpdate:(event, data, instance)=>softUpdate(event, data, instance),
         },
     },
-    css:/*css*/` 
+    css:/*css*/`
+    .common_side_bar_logo{
+        position: absolute;
+        top: 5px;
+        left: 3px;
+        width:45px;
+        height:45px;
+        background-image: url("img/logo.png");
+        background-position: center; /* Center the image */
+        background-repeat: no-repeat; /* Do not repeat the image */
+        background-size: cover; /* Resize the background image to cover the entire container */
+    }
     .user-area{
         position: absolute;
         bottom: 0px;
