@@ -24,6 +24,29 @@ baseTemplates.input_number = {
     },
 }
 
+baseTemplates.input_number = {
+    templateName : "in_out",
+    name : "in_out",
+    props :[
+        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"input", label:"input", type:"text", editable:true, socket:"input", value:"0"},
+    ],
+    methods:{
+        // mixString:(props) => {
+        //     props.demoId3.set(props.plif.get() +props.plaf.get())
+        // }
+    },
+    event:{
+        // onEvaluate:(props) =>{
+        //     props.demoId3.set(props.plif.get() +props.plaf.get())
+        // },
+        onEvaluate:(props) =>{
+            props.output.set(props.input.get())
+        },
+        // onInit:(props) => alert(props.plif.get()),
+    },
+}
+
 baseTemplates.math_add = {
     templateName : "math_add",
     name : "Add",
