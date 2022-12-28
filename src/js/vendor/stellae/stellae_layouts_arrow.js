@@ -1,6 +1,8 @@
 import * as THREE from "../three.module.js"
 import inputElements from "./stellae_inputs.js"
 import createNodeLayoutRound from "./stellae_layouts_round.js"
+import { createLine2 } from "./stellae_layout_arrow_fat.js";
+import { createLine } from "./stellae_layout_arrow_meshlines.js";
 
 let nanoid=(t=21)=>crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?"-":"_"),"");
 
@@ -9,25 +11,36 @@ textCanvas.height = 34;
 
 var updatePositions = function(link, startPosition, endPosition, startPositionOffset, endPositionOffset){
 
-    var attributes = link.geometry.attributes
-    
-    attributes.position.array[3] =endPosition.x+endPositionOffset.x; attributes.position.array[4] =endPosition.y; attributes.position.array[5] =endPosition.z+endPositionOffset.y
-    attributes.position.array[0] =startPosition.x+startPositionOffset.x; attributes.position.array[1] =startPosition.y; attributes.position.array[2] =startPosition.z+startPositionOffset.y
-    attributes.position.needsUpdate = true;
+    var attributes = link.geometry.attributes;
+    var pos0 = startPosition.x+startPositionOffset.x;
+    var pos1 = startPosition.y;
+    var pos2 = startPosition.z+startPositionOffset.y;
+    var pos3 = endPosition.x+endPositionOffset.x;
+    var pos4 = endPosition.y;
+    var pos5 = endPosition.z+endPositionOffset.y;
 
+    if (link.geometry.setPositions) { //if using fat lines
+        link.geometry.setPositions( [pos0,pos1,pos2,pos3,pos4,pos5] )
+
+    }else{ //if using mesh lines
+        attributes.position.array[3] =pos3; attributes.position.array[4] =pos4; attributes.position.array[5] =pos5
+        attributes.position.array[0] =pos0; attributes.position.array[1] =pos1; attributes.position.array[2] =pos2
+        attributes.position.needsUpdate = true;
+    }
+    
     //update arrow position
     // link.arrowOrigin.set(attributes.position.array[0],attributes.position.array[1],attributes.position.array[2] )
     if (link.labelItem) {
-        link.labelItem.position.set((attributes.position.array[0]+attributes.position.array[3])/2,(attributes.position.array[1]+attributes.position.array[4])/2,(attributes.position.array[2]+attributes.position.array[5])/2 )
+        link.labelItem.position.set((pos0+pos3)/2,(pos1+pos4)/2,(pos2+pos5)/2 )
     }
     
-    link.arrowOrigin.set((attributes.position.array[0]+attributes.position.array[3])/2,(attributes.position.array[1]+attributes.position.array[4])/2,(attributes.position.array[2]+attributes.position.array[5])/2 )
+    link.arrowOrigin.set((pos0+pos3)/2,(pos1+pos4)/2,(pos2+pos5)/2 )
     var arrowDir = new THREE.Vector3(); // create once an reuse it
     
     // const v1 = new THREE.Vector3(attributes.position.array[0], attributes.position.array[1], attributes.position.array[2] ) 
     // const v2 = new THREE.Vector3( attributes.position.array[3], attributes.position.array[4], attributes.position.array[5] ) 
     // arrowDir.subVectors( v2, v1 ).normalize();
-    arrowDir = new THREE.Vector3(attributes.position.array[3] - attributes.position.array[0],attributes.position.array[4]-attributes.position.array[1],attributes.position.array[5]-attributes.position.array[2]); // create once an reuse it
+    arrowDir = new THREE.Vector3(pos3 - pos0,pos4-pos1,pos5-pos2); // create once an reuse it
     arrowDir.normalize();
     link.arrowItem.setDirection(arrowDir)
 }
@@ -43,16 +56,9 @@ function createCharacterLabel( text, maxLength ) {
     ctx.font = font;
     textCanvas.width = Math.ceil( ctx.measureText( text ).width + 16 );
 
-    ctx.font = font;
-    ctx.strokeStyle = '#222';
-    ctx.lineWidth = 4;
-    ctx.lineJoin = 'miter';
-    ctx.miterLimit = 3;
-    ctx.strokeText( text, 8, 26 );
-    ctx.fillStyle = 'white';
+    ctx.font = font; ctx.strokeStyle = '#222'; ctx.lineWidth = 4; ctx.lineJoin = 'miter'; ctx.miterLimit = 3;
+    ctx.strokeText( text, 8, 26 ); ctx.fillStyle = 'white';ctx.fillText( text, 8, 26 );
     // ctx.textAlign = 'left';
-    ctx.fillText( text, 8, 26 );
-
     const spriteMap = new THREE.Texture( ctx.getImageData( 0, 0, textCanvas.width, textCanvas.height ) );
     spriteMap.minFilter = THREE.LinearFilter;
     spriteMap.generateMipmaps = false;
@@ -82,19 +88,12 @@ var createMeshLineArrow  = function({
     dir.normalize();
 
     var origin = new THREE.Vector3( 0, 0, 0 );
-    var length = 1;
+    var length = 1.2;
     // var hex = 0xffff00;
     var hex = 0xa5abb6;
 
-    const lineMaterial = new THREE.LineBasicMaterial( {
-        color: 0xa5abb6,
-        linewidth: 0.01,
-    } );
-    const linePoints = [];
-    linePoints.push( new THREE.Vector3( - 1, -1, -0.15 ) );
-    linePoints.push( new THREE.Vector3( -1.01, -1.01, -0.15 ) );
-    const lineGeometry = new THREE.BufferGeometry().setFromPoints( linePoints );
-    var line = new THREE.Line( lineGeometry, lineMaterial );
+
+    var line = createLine2()
     // line.edata= data
     lineGroup.add( line );
     lineGroup.geometry = line.geometry
