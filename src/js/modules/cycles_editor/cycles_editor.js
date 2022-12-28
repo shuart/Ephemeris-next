@@ -3,6 +3,7 @@ import createStellae from "../../vendor/stellae/stellae.js";
 import createEntityManagement from "../common_project_management/entity_management.js";
 import createRelationManagement from "../common_project_management/relations_management.js";
 import createEvaluatorsManagement from "../common_project_management/evaluators_management.js";
+import createPropertyManagement from "../common_project_management/properties_management.js";
 // import evaluatorTemplates from "./evaluator_nodes_templates.js";
 import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
 import table_viewport from "../viewports/table_viewport/table_ui.js"
@@ -30,6 +31,26 @@ var setUp = function (event, data, instance) {
             // data.graph.getNodeManager().addNode(element)
             data.graph.getNodeManager().addNode("in_out", { nodeLayout:"round",uuid:element.uuid, name:element.name, headerColor:element.attributes.color, imgPath:'img/iconsPNG/'+element.attributes.iconPath})
         }
+        //unpack properties
+        // debugger
+        var repoProperties = createPropertyManagement()
+        var properties = repoProperties.getAll()
+        var propertyToEntityRelations = []
+        for (let i = 0; i < properties.length; i++) {
+            const property = properties[i];
+            // data.graph.getNodeManager().addNode(element)
+            data.graph.getNodeManager().addNode("in_out", { nodeLayout:"round",uuid:property.uuid, name:property.name, headerColor:"#c0bfbc", imgPath:'img/iconsPNG/info.svg'})
+            //unpack properties relations
+            var relatedEntities = property.getRelatedEntities()
+            for (let j = 0; j < relatedEntities.length; j++) {
+                const relatedEntity = relatedEntities[j];
+                propertyToEntityRelations.push({from:property.uuid, from_socket:"output", to:relatedEntity.uuid, to_socket:"input"});
+            }
+        }
+
+        
+
+
         var unpackedRelations = [] //unpack relations in smaller relations for the graph
         for (let i = 0; i < relations.length; i++) {
             const relation = relations[i];
@@ -43,6 +64,7 @@ var setUp = function (event, data, instance) {
         }
         
         data.graph.getNodeManager().addLinks(unpackedRelations)
+        data.graph.getNodeManager().addLinks(propertyToEntityRelations)
         
         
         // if (currentGraph.attributes.nodeLayout) {
