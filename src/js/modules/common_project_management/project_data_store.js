@@ -20,7 +20,7 @@ var createProjectStore = function(){
     //     db.add("projects", { name:name})
     // }
 
-    var mountProjectStore = function(projectId){
+    var mountProjectStore = function(projectId){ //If project is not yet in memory, this will mount it the first time it is called
         if(typeof projectId != 'string'){
             throw console.error('Project ID is not a string and DB cannot be mounted');
         }
@@ -44,7 +44,7 @@ var createProjectStore = function(){
         return projectDB
     }
 
-    var getProjectDB = function(projectId){
+    var getProjectDB = function(projectId){ //Check if the project is in memory and mount it if needed
         if (mountedDBs[projectId]) {
             return mountedDBs[projectId]
         }else{

@@ -156,6 +156,10 @@ var createCluster = function(initialSchema, options){
         }
     }
 
+    var exportLocalStorage = function(){
+        return localStorage.getItem('supercluster-'+options.persistence);
+    }
+
     var updatePersitenceSchema = function(currentSchema, initialSchema){
         //When a schema is updated this function compare the saved persitence schema with it and fill the missing elements
         for (const store in initialSchema) {
@@ -403,6 +407,7 @@ var createCluster = function(initialSchema, options){
 
     init()
 
+    self.exportLocalStorage=exportLocalStorage
     self.addStores=addStores;
     self.add=add;
     self.remove=remove

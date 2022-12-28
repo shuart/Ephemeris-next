@@ -1,6 +1,7 @@
 import createAdler from "../../vendor/adler.js";
 import user_macaron from "../common_ui_components/user_macaron/user_macaron.js";
 import common_side_bar from "./page_links.js";
+import state from "../common_state/state_manager.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -35,7 +36,7 @@ var component =createAdler({
             // onClick:()=>console.log("click")
         },
         on:[
-            // [".tableCddomponent","click", (event, data, instance)=> data.onClick(event, data, instance) ],
+            [".common_side_bar_logo","click", (event, data, instance)=> state.goTo("/") ],
         ],
         events:{
             // onBeforeMount:(event, data, instance) => setUpData(event, data, instance),
@@ -49,6 +50,7 @@ var component =createAdler({
     css:/*css*/`
     .common_side_bar_logo{
         position: absolute;
+        cursor:pointer;
         top: 5px;
         left: 3px;
         width:45px;

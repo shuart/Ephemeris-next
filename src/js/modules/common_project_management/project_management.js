@@ -1,5 +1,6 @@
 import createdb from "../../vendor/superCluster.js";
 import projectStores from "./project_data_store.js";
+import nanoid from "../../vendor/nanoid.js";
 
 var createProjectManagement = function(){
     var self={}
@@ -19,6 +20,28 @@ var createProjectManagement = function(){
     }={}){
         console.log(name);
         db.add("projects", { name:name})
+    }
+    var removeCurrentProject = function(id){
+        var currentProject = db.get("projects").where("id").equals(current)
+        var deleteProject = confirm("Are you sure to delete project "+currentProject.name+ " with UUID "+currentProject.id)
+        if (deleteProject) {
+            db.remove("projects", currentProject.id)
+            localStorage.removeItem('supercluster-'+currentProject.id)
+        }
+    }
+
+    var addFromTemplate =function({
+        name=undefined,
+        email=undefined,
+        password=undefined,
+        uuid=undefined,
+        template = undefined,
+    }={}){
+        console.log(name);
+        var newUuid = nanoid()
+        alert(newUuid)
+        localStorage.setItem('supercluster-'+newUuid, template)
+        db.add("projects", { name:name, id:newUuid})
     }
 
     var setCurrent= function(id){
@@ -66,10 +89,12 @@ var createProjectManagement = function(){
         return front;
     }
 
-
+    
+    self.removeCurrentProject = removeCurrentProject;
     self.getProjectStore = getProjectStore;
     self.getCurrent = getCurrent;
     self.setCurrent= setCurrent;
+    self.addFromTemplate = addFromTemplate;
     self.add = add;
     self.getAll= getAll
     return self

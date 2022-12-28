@@ -6,6 +6,7 @@ import state_manager from "../common_state/state_manager.js"
 import settings_component from "./model_settings.js";
 import settings_component_details from "./model_settings_details.js";
 import side_menu_component from "../common_ui_components/menu/side_menu.js";
+import { createTemplateManager } from "../common_import_export/common_import_export.js";
 
 // import {Tabulator} from "../../vendor/tabulator_esm.min.js";
 
@@ -95,6 +96,14 @@ var common_settings =createAdler({
                         {id:"evaluators", iconPath:"code.svg", value:"Evaluators",onClick:()=> state_manager.goTo({mode:"replace", url:"interface/evaluators"})},
                     ]
                 },
+                {
+                    value:"Project",
+                    items:[
+                        {id:"export_as_template", iconPath:"download.svg", value:"Export as template",onClick:()=> createTemplateManager().exportTemplate()},
+                        // {id:"import_template", iconPath:"upload-cloud.svg", value:"Import template",onClick:()=> createTemplateManager().importTemplateFromFile()},
+                        {id:"delete_project", iconPath:"trash-2.svg", value:"Delete Project",onClick:()=> projectManagement.removeCurrentProject()},
+                    ]
+                },
             ],
             activeSideMenuLink:"entities"
         },
@@ -132,6 +141,7 @@ var common_settings =createAdler({
         height:100%;
         padding: 7px;
         padding-top: 20px;
+        margin-left: 9px;
     }
     .main-settings {
         width:calc(100% - 200px);

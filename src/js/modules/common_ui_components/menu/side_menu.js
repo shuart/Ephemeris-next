@@ -24,7 +24,7 @@ var setUpData= function(event, data, instance) {
             var htmlItem = document.createElement("li");
             var icon=''
             if (listElement.iconPath) {
-                icon= `<img class="darkModeCompatibleIcons" src="./img/icons/${listElement.iconPath}" style="height: 1.2em;">`
+                icon= `<img class="darkModeCompatibleIcons" src="./img/icons/${listElement.iconPath}" style="height: 1.2em; margin-top: -4px;">`
                 // icon= `<img class="darkModeCompatibleIcons" src="./img/icons/${listElement.iconPath}" style="filter: invert(100%);">`
             }
             if (instance.props.activeItem.get() && instance.props.activeItem.get() == listElement.id) {

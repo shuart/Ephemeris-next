@@ -58,7 +58,7 @@ var setUp = function (event, data, instance) {
                 const unpackedSource = relation.fromList[j];
                 for (let k = 0; k < relation.toList.length; k++) {
                     const unpackedTarget = relation.toList[k];
-                    unpackedRelations.push({from:unpackedSource.uuid, from_socket:"output", to:unpackedTarget.uuid, to_socket:"input"});
+                    unpackedRelations.push({name:relation.name, from:unpackedSource.uuid, from_socket:"output", to:unpackedTarget.uuid, to_socket:"input"});
                 }
             }
         }
