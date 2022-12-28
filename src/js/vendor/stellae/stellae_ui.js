@@ -6,6 +6,7 @@ import createSimulation from "./stellae_d3_forces.js"
 import createListView from "./stellae_side_list.js";
 import createStellaeSearchBox from "./stellae_search_box.js";
 import createConnectionHighlighter from "./stellae_connection_highlighter.js";
+import createArrowLayout from "./stellae_layouts_arrow.js";
 
 
 export default function createStellaeUi({
@@ -147,7 +148,7 @@ export default function createStellaeUi({
     var addLinks = function(links){
         for (let i = 0; i < links.length; i++) {
             const element = links[i];
-            var meshLine = createMeshLine()
+            var meshLine = createMeshLine(element)
             state.scene.add(meshLine)
             meshLine.edata = element
             state.links.push(meshLine)
@@ -187,63 +188,20 @@ export default function createStellaeUi({
     }
 
     var createMeshLine = function(data){
-        const lineGroup = new THREE.Group();
-        
-        var dir = new THREE.Vector3( 1, 2, 0 );
-        // //normalize the direction vector (convert to vector of length 1)
-        dir.normalize();
 
-        var origin = new THREE.Vector3( 0, 0, 0 );
-        var length = 1;
-        // var hex = 0xffff00;
-        var hex = 0xa5abb6;
+        var lineGroup =createArrowLayout(state.scene,data)
 
-        const lineMaterial = new THREE.LineBasicMaterial( {
-            color: 0xa5abb6,
-            linewidth: 0.01,
-        } );
-        const linePoints = [];
-        linePoints.push( new THREE.Vector3( - 1, -1, -0.15 ) );
-        linePoints.push( new THREE.Vector3( -1.01, -1.01, -0.15 ) );
-        const lineGeometry = new THREE.BufferGeometry().setFromPoints( linePoints );
-        var line = new THREE.Line( lineGeometry, lineMaterial );
-        line.edata= data
-        lineGroup.add( line );
-        lineGroup.geometry = line.geometry
-        lineGroup.edata = line.edata
-        //add arrow
-        const arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
-        lineGroup.arrowOrigin = arrowHelper.position
-        lineGroup.arrowItem = arrowHelper 
-        lineGroup.add( arrowHelper );
         return lineGroup
     }
 
     var updateLinks = function(){
         for (let i = 0; i < state.links.length; i++) {
             const link = state.links[i];
-            // console.log(link.edata);
-            //     console.log(state.mapping);
             if (state.mapping[link.edata.to]) {
-                
-                var startPositon = state.mapping[link.edata.from].position; var endPositon = state.mapping[link.edata.to].position;
-                var startPositonOffset = state.mapping[link.edata.from].sockets[link.edata.from_socket].positionOffset; var endPositonOffset = state.mapping[link.edata.to].sockets[link.edata.to_socket].positionOffset;
-                var attributes = link.geometry.attributes
-                
-                attributes.position.array[3] =endPositon.x+endPositonOffset.x; attributes.position.array[4] =endPositon.y; attributes.position.array[5] =endPositon.z+endPositonOffset.y
-                attributes.position.array[0] =startPositon.x+startPositonOffset.x; attributes.position.array[1] =startPositon.y; attributes.position.array[2] =startPositon.z+startPositonOffset.y
-                attributes.position.needsUpdate = true;
+                var startPosition = state.mapping[link.edata.from].position; var endPosition = state.mapping[link.edata.to].position;
+                var startPositionOffset = state.mapping[link.edata.from].sockets[link.edata.from_socket].positionOffset; var endPositionOffset = state.mapping[link.edata.to].sockets[link.edata.to_socket].positionOffset;
 
-                //update arrow position
-                // link.arrowOrigin.set(attributes.position.array[0],attributes.position.array[1],attributes.position.array[2] )
-                link.arrowOrigin.set((attributes.position.array[0]+attributes.position.array[3])/2,(attributes.position.array[1]+attributes.position.array[4])/2,(attributes.position.array[2]+attributes.position.array[5])/2 )
-                var arrowDir = new THREE.Vector3(); // create once an reuse it
-                // const v1 = new THREE.Vector3(attributes.position.array[0], attributes.position.array[1], attributes.position.array[2] ) 
-                // const v2 = new THREE.Vector3( attributes.position.array[3], attributes.position.array[4], attributes.position.array[5] ) 
-                // arrowDir.subVectors( v2, v1 ).normalize();
-                arrowDir = new THREE.Vector3(attributes.position.array[3] - attributes.position.array[0],attributes.position.array[4]-attributes.position.array[1],attributes.position.array[5]-attributes.position.array[2]); // create once an reuse it
-                arrowDir.normalize();
-                link.arrowItem.setDirection(arrowDir)
+                link.update(startPosition, endPosition, startPositionOffset, endPositionOffset)
             }   
         }
     }
