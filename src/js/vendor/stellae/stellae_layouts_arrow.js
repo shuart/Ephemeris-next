@@ -19,30 +19,41 @@ var updatePositions = function(link, startPosition, endPosition, startPositionOf
     var pos4 = endPosition.y;
     var pos5 = endPosition.z+endPositionOffset.y;
 
-    if (link.geometry.setPositions) { //if using fat lines
+    if (link.geometry.setPositions && !link.isCircular) { //if using fat lines
         link.geometry.setPositions( [pos0,pos1,pos2,pos3,pos4,pos5] )
 
-    }else{ //if using mesh lines
+    }else if(link.geometry.setPositions && link.isCircular) { //if using fat lines
+        link.position.set( pos0+0.4, pos1-0.001, pos2-0.4 )
+
+    } else { //if using mesh lines
         attributes.position.array[3] =pos3; attributes.position.array[4] =pos4; attributes.position.array[5] =pos5
         attributes.position.array[0] =pos0; attributes.position.array[1] =pos1; attributes.position.array[2] =pos2
         attributes.position.needsUpdate = true;
     }
-    
-    //update arrow position
-    // link.arrowOrigin.set(attributes.position.array[0],attributes.position.array[1],attributes.position.array[2] )
-    if (link.labelItem) {
-        link.labelItem.position.set((pos0+pos3)/2,(pos1+pos4)/2,(pos2+pos5)/2 )
+
+    if (!link.isCircular) {
+        //update arrow position
+        // link.arrowOrigin.set(attributes.position.array[0],attributes.position.array[1],attributes.position.array[2] )
+        if (link.labelItem) {
+            link.labelItem.position.set((pos0+pos3)/2,(pos1+pos4)/2,(pos2+pos5)/2 )
+        }
+
+        link.arrowOrigin.set((pos0+pos3)/2,(pos1+pos4)/2,(pos2+pos5)/2 )
+        var arrowDir = new THREE.Vector3(); // create once an reuse it
+
+        // const v1 = new THREE.Vector3(attributes.position.array[0], attributes.position.array[1], attributes.position.array[2] ) 
+        // const v2 = new THREE.Vector3( attributes.position.array[3], attributes.position.array[4], attributes.position.array[5] ) 
+        // arrowDir.subVectors( v2, v1 ).normalize();
+        arrowDir = new THREE.Vector3(pos3 - pos0,pos4-pos1,pos5-pos2); // create once an reuse it
+        arrowDir.normalize();
+        link.arrowItem.setDirection(arrowDir)
+    }else{
+        if (link.labelItem) {
+            link.labelItem.position.set(0.4, 0, -0.4 )
+        }
     }
     
-    link.arrowOrigin.set((pos0+pos3)/2,(pos1+pos4)/2,(pos2+pos5)/2 )
-    var arrowDir = new THREE.Vector3(); // create once an reuse it
     
-    // const v1 = new THREE.Vector3(attributes.position.array[0], attributes.position.array[1], attributes.position.array[2] ) 
-    // const v2 = new THREE.Vector3( attributes.position.array[3], attributes.position.array[4], attributes.position.array[5] ) 
-    // arrowDir.subVectors( v2, v1 ).normalize();
-    arrowDir = new THREE.Vector3(pos3 - pos0,pos4-pos1,pos5-pos2); // create once an reuse it
-    arrowDir.normalize();
-    link.arrowItem.setDirection(arrowDir)
 }
 
 function createCharacterLabel( text, maxLength ) {
@@ -73,12 +84,14 @@ function createCharacterLabel( text, maxLength ) {
 }
 
 
-var createMeshLineArrow  = function({
+var createLineArrow  = function({
     headerColor = 0xffff00,
     name = undefined,
     position={x:0,y:0},
     uuid = nanoid(),
     nodeData = {},
+    dashed = false,
+    circular = false, //if is cicular, don't use arrow and update group position instead of line
     } = {}){
 
     const lineGroup = new THREE.Group();
@@ -93,7 +106,7 @@ var createMeshLineArrow  = function({
     var hex = 0xa5abb6;
 
 
-    var line = createLine2()
+    var line = createLine2({dashed, circular})
     // line.edata= data
     lineGroup.add( line );
     lineGroup.geometry = line.geometry
@@ -105,13 +118,19 @@ var createMeshLineArrow  = function({
     lineGroup.update = function(startPosition, endPosition, startPositionOffset, endPositionOffset){
         updatePositions(lineGroup, startPosition, endPosition, startPositionOffset, endPositionOffset)
     }
-    lineGroup.add( arrowHelper );
+    if (!circular) {
+        lineGroup.add( arrowHelper );
+    }
+    
     //create label
     if (name) {
         var spritetext = createCharacterLabel(name)
         lineGroup.add(spritetext)
         spritetext.position.set(0,0,-0.01)
         lineGroup.labelItem = spritetext 
+    }
+    if (circular) {
+        lineGroup.isCircular = true
     }
     return lineGroup
 }
@@ -122,10 +141,14 @@ var createArrow = function (params) {
     // } else {
     //     return createNodeSquare(params)
     // }
-    return createMeshLineArrow(params)
+    return createLineArrow(params)
 }
 
 var createArrowLayout =function (scene, params) {
+    
+    if (params && params.from == params.to) { //check if some arrowe are circular
+        params.circular = true
+    }
     var arrow = createArrow(params)
     return arrow
 }

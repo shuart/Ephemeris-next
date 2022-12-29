@@ -44,7 +44,7 @@ var setUp = function (event, data, instance) {
             var relatedEntities = property.getRelatedEntities()
             for (let j = 0; j < relatedEntities.length; j++) {
                 const relatedEntity = relatedEntities[j];
-                propertyToEntityRelations.push({name:"is property of", from:property.uuid, from_socket:"output", to:relatedEntity.uuid, to_socket:"input"});
+                propertyToEntityRelations.push({name:"is property of", dashed:true, from:property.uuid, from_socket:"output", to:relatedEntity.uuid, to_socket:"input"});
             }
         }
 
