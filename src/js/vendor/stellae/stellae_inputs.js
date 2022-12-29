@@ -102,8 +102,9 @@ function addCSS(cssText){
 inputElements.createListInput = function ({
     container=document.body,
     mutlipleSelect=false,
+    customName = false,
     options =[
-        {id:"1", value:"Default"},
+        {id:"1", value:"Default", params:{}},
         {id:"2", value:"Default"},
         {id:"3",  value:"Default"},
     ],
@@ -118,7 +119,17 @@ inputElements.createListInput = function ({
         optionsDomElement.classList ='stellae_input_list_items'
         optionsDomElement.innerText = data.value
         optionsDomElement.addEventListener("click",function () {
-            callback({id:data.id, value:data.value})
+            if (!data.params) {
+                data.params ={}
+            }
+            if (customName) {
+                data.params.name = prompt("Name")
+                callback({id:data.id, value:data.value, params:data.params})
+            }else{
+                data.params.name = data.value
+                callback({id:data.id, value:data.value, params:data.params})
+            }
+            
             domElement.remove()
         })
         

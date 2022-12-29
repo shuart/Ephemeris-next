@@ -10,6 +10,11 @@ function createStellae({
     headless = false,
     simulateForces = false,
     uiCallbacks = {},
+    showNodeList:showNodeList= false,
+    showSearchBox:showSearchBox= false,
+    highlightConnections:highlightConnections= false,
+    addNodesFromCustomList:addNodesFromCustomList= false,
+    allowCustomNameForNodes:allowCustomNameForNodes= false,
     } = {}) {
     var self = {};
     var ui = undefined;
@@ -53,7 +58,19 @@ function createStellae({
         if (headless) {
             nodeManager = createNodeManager()
         }else{
-            ui = createStellaeUi({container:container,canvasWidth:canvasWidth,canvasHeight:canvasHeight,darkMode:darkMode, useSimulation:simulateForces, uiCallbacks:uiCallbacks})
+            ui = createStellaeUi({
+                container:container,
+                canvasWidth:canvasWidth,
+                canvasHeight:canvasHeight,
+                darkMode:darkMode, 
+                useSimulation:simulateForces, 
+                uiCallbacks:uiCallbacks,
+                showList:showNodeList,
+                showSearchBox:showSearchBox,
+                useConnectionHighlighter:highlightConnections,
+                useCustomNodeAddList:addNodesFromCustomList,
+                allowCustomNameForNodes:allowCustomNameForNodes,
+            })
             nodeManager = createNodeManager({ui:ui})
             
         }

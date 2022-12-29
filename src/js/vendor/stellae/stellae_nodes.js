@@ -17,6 +17,7 @@ var createNode= function({
     imgPath = undefined,
     name = "Node",
     nodeLayout ="square",
+    userData = {},
     props =[
         // {id:demoId1, label:"demo", type:"text", editable:true, socket:"input", value:"Default"},
         // {id:demoId2, label:"demo2", type:"text", editable:true, socket:"input", value:"Default2"},
@@ -61,7 +62,7 @@ var createNode= function({
                 propsValueFromInput[key] = interactiveProps[key]._getFromInput()
             }
         }
-        return {templateName,params:{uuid,name, position, propsValue, propsValueFromInput}}
+        return {templateName,params:{uuid,name, position, propsValue, propsValueFromInput, headerColor, imgPath, nodeLayout, userData}}
     }
 
 

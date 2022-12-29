@@ -7,18 +7,34 @@ import createPropertyManagement from "../common_project_management/properties_ma
 // import evaluatorTemplates from "./evaluator_nodes_templates.js";
 import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
 import table_viewport from "../viewports/table_viewport/table_ui.js"
+import nanoid from "../../vendor/nanoid.js";
 
 var softUpdate= function (event, data, instance) {
 
 }
-
 var setUp = function (event, data, instance) {
     setTimeout(() => {
         var element= instance.query('.graph')
         element.innerHTML = ''//TODO GRAPH IS LOADED 2 TIMES. PREVENT THAT
-        data.graph = createStellae({container:element, fullSize:true,simulateForces:true, uiCallbacks:undefined,})
+        var customNewNodeList = function(data){
+            return [
+                {id:"in_out", value:"Entity", params:{ nodeLayout:"round",uuid:nanoid(), userData:{type:"entity"}, name:"Entity", headerColor:"#069c95", imgPath:'img/iconsPNG/box.svg'}},
+                {id:"in_out", value:"Property", params:{ nodeLayout:"round",uuid:nanoid(), userData:{type:"property"}, name:"Property", headerColor:"#c0bfbc", imgPath:'img/iconsPNG/info.svg'}},
+            ]
+        }
+        data.graph = createStellae({
+            container:element, 
+            fullSize:true,
+            simulateForces:true, 
+            uiCallbacks:undefined,
+            showNodeList: false,
+            showSearchBox: true,
+            highlightConnections: false,
+            addNodesFromCustomList: customNewNodeList,
+            allowCustomNameForNodes:true,
+        })
     
-        var repo = createEvaluatorsManagement()
+        // var repo = createEvaluatorsManagement()
         var repoEntities = createEntityManagement()
         var repoRelations = createRelationManagement()
         // var repoEntities = createEntityManagement()
@@ -29,7 +45,7 @@ var setUp = function (event, data, instance) {
         for (let i = 0; i < entities.length; i++) {
             const element = entities[i];
             // data.graph.getNodeManager().addNode(element)
-            data.graph.getNodeManager().addNode("in_out", { nodeLayout:"round",uuid:element.uuid, name:element.name, headerColor:element.attributes.color, imgPath:'img/iconsPNG/'+element.attributes.iconPath})
+            data.graph.getNodeManager().addNode("in_out", { nodeLayout:"round",uuid:element.uuid,userData:{type:"entity"}, name:element.name, headerColor:element.attributes.color, imgPath:'img/iconsPNG/'+element.attributes.iconPath})
         }
         //unpack properties
         // debugger
@@ -39,18 +55,16 @@ var setUp = function (event, data, instance) {
         for (let i = 0; i < properties.length; i++) {
             const property = properties[i];
             // data.graph.getNodeManager().addNode(element)
-            data.graph.getNodeManager().addNode("in_out", { nodeLayout:"round",uuid:property.uuid, name:property.name, headerColor:"#c0bfbc", imgPath:'img/iconsPNG/info.svg'})
+            data.graph.getNodeManager().addNode("in_out", { nodeLayout:"round",uuid:property.uuid,userData:{type:"property"},  name:property.name, headerColor:"#c0bfbc", imgPath:'img/iconsPNG/info.svg'})
             //unpack properties relations
             var relatedEntities = property.getRelatedEntities()
             for (let j = 0; j < relatedEntities.length; j++) {
                 const relatedEntity = relatedEntities[j];
-                propertyToEntityRelations.push({name:"is property of", dashed:true, from:property.uuid, from_socket:"output", to:relatedEntity.uuid, to_socket:"input"});
+                propertyToEntityRelations.push({name:"is property of",userData:{}, dashed:true, from:property.uuid, from_socket:"output", to:relatedEntity.uuid, to_socket:"input"});
             }
         }
 
-        
         // data.graph.getNodeManager().addNode("in_out", { nodeLayout:"group",uuid:"feefsfesfsefsdfsd", name:"group", headerColor:"#c0bfbc", imgPath:'img/iconsPNG/info.svg'})
-
         var unpackedRelations = [] //unpack relations in smaller relations for the graph
         for (let i = 0; i < relations.length; i++) {
             const relation = relations[i];
@@ -65,8 +79,7 @@ var setUp = function (event, data, instance) {
         
         data.graph.getNodeManager().addLinks(unpackedRelations)
         data.graph.getNodeManager().addLinks(propertyToEntityRelations)
-        
-        
+
         // if (currentGraph.attributes.nodeLayout) {
             
         //     data.graph.getNodeManager().importGraph(JSON.parse(currentGraph.attributes.nodeLayout))
@@ -78,9 +91,42 @@ var setUp = function (event, data, instance) {
 var saveNetwork = function (event, data, instance) {
     var exportGraph = data.graph.getNodeManager().exportNodes()
     console.log(exportGraph);
-    var repo = createEvaluatorsManagement()
-    repo.update({uuid:instance.props.get("evaluatorId"), nodeLayout:JSON.stringify(exportGraph)})
-    console.log(repo.getAll())
+
+    var repoEntities = createEntityManagement()
+    var repoRelations = createRelationManagement()
+    var repoProperties = createPropertyManagement()
+    var properties = repoProperties.getAll()
+    // var repoEntities = createEntityManagement()
+    // var currentGraph = repo.getById(instance.props.get("evaluatorId"))
+    // data.graph.getNodeManager().useTemplate(evaluatorTemplates)
+    var entities = repoEntities.getAll()
+    var relations = repoRelations.getAll()
+
+    var NewEntityNode = []
+    var NewPropertyNode = []
+    var NewUnknownNode = []
+    var entitiesAlreadyInGraph = []
+    for (let i = 0; i < exportGraph.nodes.length; i++) { //find new nodes
+        const node = exportGraph.nodes[i];
+        if (node.params.userData.type == "entity") {
+            if (!entities.find(e=>e.uuid == node.params.uuid)) {
+                NewEntityNode.push(node)
+            }
+        }
+        if (node.params.userData.type == "property") {
+            if (!properties.find(e=>e.uuid == node.params.uuid)) {
+                NewPropertyNode.push(node)
+            }
+        }else {
+            if (!properties.find(e=>e.uuid == node.params.uuid)&&!entities.find(e=>e.uuid == node.params.uuid)) {
+                NewUnknownNode.push(node)
+            }
+        }
+        
+    }
+    // var repo = createEvaluatorsManagement()
+    // repo.update({uuid:instance.props.get("evaluatorId"), nodeLayout:JSON.stringify(exportGraph)})
+    // console.log(repo.getAll())
     // alert(instance.props.get("evaluatorId"))
 }
 

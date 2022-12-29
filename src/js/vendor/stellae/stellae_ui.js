@@ -19,6 +19,8 @@ export default function createStellaeUi({
     showList = true,
     showSearchBox= true,
     useConnectionHighlighter =true,
+    useCustomNodeAddList = false,
+    allowCustomNameForNodes = false,
     } = {}) {
     var self = {};
 
@@ -412,19 +414,32 @@ export default function createStellaeUi({
             var intersects = new THREE.Vector3();
             state.raycaster.setFromCamera(state.mouse, state.camera);
             state.raycaster.ray.intersectPlane(state.raycasterPlan, intersects);
+
+            //fill the selector with templates
             var usedTemplates = dataManager.getUsedTemplates()
             var usedTemplatesList = []
+            var selectionList = []
             for (const key in usedTemplates) {
                 if (Object.hasOwnProperty.call(usedTemplates, key)) {
                     const template = usedTemplates[key];
                     usedTemplatesList.push({id:template.templateName, value:template.name})
                 }
             }
+            //check if there is an alternative user provided list
+            if (useCustomNodeAddList) {
+                selectionList = useCustomNodeAddList({usedTemplates , position:{x:intersects.x,y:intersects.z}}) //has to be a function
+            }else{
+                selectionList = usedTemplatesList
+            }
             inputElements.createListInput({
-                options :usedTemplatesList,
+                options :selectionList,
+                customName : allowCustomNameForNodes,
                 callback:function (event) {
-                    console.log(usedTemplates[event.id], {name:event.value,  position:{x:intersects.x,y:intersects.z}});
-                    dataManager.addNode(event.id, {name:event.value,  position:{x:intersects.x,y:intersects.z}})
+                    if (!event.params.position) {
+                        event.params.position={x:intersects.x,y:intersects.z}
+                    }
+                    // console.log(usedTemplates[event.id], {name:event.value,  position:{x:intersects.x,y:intersects.z}});
+                    dataManager.addNode(event.id, event.params)
                 },
             })
                 // state.selectedToMove[0].position.set(intersects.x, 0.1, intersects.z);
