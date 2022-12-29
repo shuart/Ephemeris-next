@@ -7,6 +7,7 @@ import createListView from "./stellae_side_list.js";
 import createStellaeSearchBox from "./stellae_search_box.js";
 import createConnectionHighlighter from "./stellae_connection_highlighter.js";
 import createArrowLayout from "./stellae_layouts_arrow.js";
+import behaveAsNormalNode from "./stellae_utils_check_if_normal_node.js";
 
 
 export default function createStellaeUi({
@@ -43,8 +44,8 @@ export default function createStellaeUi({
         canvas:undefined,containerDim:undefined,controls:undefined,play:true,helperLine:undefined,
         nodes:[],links:[], mapping:undefined,
         triggers:{headers:[], sockets:{}, props:{}},
-        selectedToMove:[], selectedSocket:undefined,lastSelectedHeader:undefined, selectedLine:undefined, linkToAdd: undefined,
-        draggingNodes:false,draggingSocket:false,
+        selectedToMove:[], selectedSocket:undefined, selectedHandle:undefined, lastSelectedHeader:undefined, selectedLine:undefined, linkToAdd: undefined,
+        draggingNodes:false,draggingSocket:false,draggingHandle:false,draggingPreviousPosition:undefined,dragStarted:false,dragOffset:{x:0,z:0},
         recordedClickForMouseUp:false,
     }
     var dataManager = undefined
@@ -73,6 +74,13 @@ export default function createStellaeUi({
         var result = []
         for (var key in state.triggers.props){
             result.push(state.triggers.props[key].mesh)
+        }
+        return result
+    }
+    nodeMeshManager.getHandlesMesh =function(){
+        var result = []
+        for (var key in state.triggers.handles){
+            result.push(state.triggers.handles[key].mesh)
         }
         return result
     }
@@ -126,12 +134,11 @@ export default function createStellaeUi({
         state.nodes.push(node)
         updateTriggers()
         updateMapping()
-        // state.triggers.headers.push(node.layout.header)
-        // state.triggers.sockets= Object.assign({},state.triggers.sockets, node.layout.sockets)
-        // state.triggers.props= Object.assign({},state.triggers.props, node.layout.props)
-        // nodeMeshStorage[node.uuid] = node
+
         if (useSimulation) {
-            simulation.addNodes(node)
+            if (behaveAsNormalNode(node)) {
+                simulation.addNodes(node) 
+            }
         }
         if (showList) {
             sideList.addNodes(state.nodes)
@@ -172,7 +179,7 @@ export default function createStellaeUi({
 
     var updateTriggers = function(){//update all triggers list for raycaster
         var newNodeList = []
-        state.triggers.headers = []; state.triggers.sockets={};state.triggers.props={};
+        state.triggers.headers = []; state.triggers.sockets={};state.triggers.props={};state.triggers.handles = {}
         for (let i = 0; i < state.nodes.length; i++) {
             const node = state.nodes[i];
             if (node.parent === state.scene) {
@@ -180,6 +187,7 @@ export default function createStellaeUi({
                 state.triggers.headers.push(node.layout.header)
                 state.triggers.sockets= Object.assign({},state.triggers.sockets, node.layout.sockets)
                 state.triggers.props= Object.assign({},state.triggers.props, node.layout.props)
+                state.triggers.handles= Object.assign({},state.triggers.handles, node.layout.handles)
             }else{
                 console.log("removed")
             }
@@ -222,6 +230,7 @@ export default function createStellaeUi({
         }
     }
 
+
     var interactions = function(){
         function onClick(event) {
             event.preventDefault();
@@ -254,16 +263,10 @@ export default function createStellaeUi({
                 }
 
                 //TODO move in other function
-                if (useConnectionHighlighter) {
+                if (useConnectionHighlighter && behaveAsNormalNode(object.layoutItemRoot) ) {
                     connectionHighlighter.highlight(object.layoutItemRoot)
                 }
-                // if ( group.children.includes( object ) === true ) {
-                // 	object.material.emissive.set( 0x000000 );
-                // 	scene.attach( object );
-                // } else {
-                // 	object.material.emissive.set( 0xaaaaaa );
-                // 	group.attach( object );
-                // }
+                
             }
             
             const intersectionsSockets = state.raycaster.intersectObjects( nodeMeshManager.getSocketsMesh(), true );
@@ -275,24 +278,19 @@ export default function createStellaeUi({
             const intersectionsProps = state.raycaster.intersectObjects( nodeMeshManager.getPropsMesh(), true );
             if ( intersectionsProps.length > 0 ) { //Case hit header
                 const object = intersectionsProps[ 0 ].object;
-                // state.selectedSocket= intersectionsProps[ 0 ].object;
-                // state.draggingSocket = true;
-                // if (prop.type =="text") {
-                //     inputElements.createListInput()
-                // }
 
                 console.log(intersectionsProps[ 0 ].object.edata);
-                // dataManager.evaluateTree();
                 intersectionsProps[ 0 ].object.edata.action({callback:dataManager.evaluateTree})
-                // var newValue = prompt(intersectionsProps[ 0 ].object.edata.value)
-                // if (newValue && newValue != "") {
-                //     var propId = intersectionsProps[ 0 ].object.edata.prop.id
-                //     intersectionsProps[ 0 ].object.edata.nodeData.setProp(propId, newValue)
-                //     dataManager.evaluateTree();
-                // }
+
 
             }
-            if(!intersections[0] && !intersectionsSockets[0]){
+            const intersectionsHandles = state.raycaster.intersectObjects( nodeMeshManager.getHandlesMesh(), true );
+            if ( intersectionsHandles.length > 0 ) { //Case hit header
+                const object = intersectionsHandles[ 0 ].object;
+                state.selectedHandle= intersectionsHandles[ 0 ].object;
+                state.draggingHandle = true;
+            }
+            if(!intersections[0] && !intersectionsSockets[0] && !intersectionsHandles[0]){
                 state.raycaster.params.Line.threshold = 0.05;
                 const intersectionsLines = state.raycaster.intersectObjects( nodeMeshManager.getLinksMesh(), true );
                 if ( intersectionsLines.length > 0 ) { //Case hit header
@@ -312,17 +310,53 @@ export default function createStellaeUi({
                 }
             }
             if (state.draggingNodes) {
+                
                 state.controls.enabled = false;
                 var intersects = new THREE.Vector3();
                 state.raycaster.setFromCamera(state.mouse, state.camera);
                 state.raycaster.ray.intersectPlane(state.raycasterPlan, intersects);
 
-                state.selectedToMove[0].position.set(intersects.x, 0.1, intersects.z);
-                state.selectedToMove[0].edata.nodeData.setPosition(intersects.x, intersects.z)
+                if (!state.draggingPreviousPosition) { //initialize dragging previous pos
+                    state.draggingPreviousPosition={x:intersects.x,z:intersects.z}
+                    console.log(state.draggingPreviousPosition);
+                }
+                if (!state.dragStarted) { //init offset from main dragging object
+                    state.dragStarted = true
+                    state.dragOffset.x =  state.selectedToMove[0].position.x  - intersects.x
+                    state.dragOffset.z =  state.selectedToMove[0].position.z  - intersects.z
+                    if (state.selectedToMove[0].layoutType=="group") {//when node is group
+                        state.selectedToMove[0].layoutItemInteractions.onDragStart(intersects.x,intersects.z,state, simulation) //delegate the move action of the other nodes to the group
+                    }
+                }
+
+                //find offset from previous position for smooth move
+                // var offIntersects ={}
+                // offIntersects.x = intersects.x - state.draggingPreviousPosition.x;
+                // offIntersects.z = intersects.z - state.draggingPreviousPosition.z;
+                var newPos = {}
+                newPos.x = state.dragOffset.x + intersects.x;
+                newPos.z = state.dragOffset.z + intersects.z;
+
+                state.selectedToMove[0].position.set(newPos.x, 0.1, newPos.z);
+                state.selectedToMove[0].edata.nodeData.setPosition(newPos.x, newPos.z)
+
+                if (state.selectedToMove[0].layoutType=="group") {//when node is group
+                    state.selectedToMove[0].layoutItemInteractions.onMove(newPos.x,newPos.z,state, simulation) //delegate the move action of the other nodes to the group
+                }
 
                 if (useSimulation) {
-                    simulation.dragNode(state.selectedToMove[0].edata.uuid,intersects.x, intersects.z)
+                    simulation.dragNode(state.selectedToMove[0].edata.uuid,newPos.x, newPos.z)
                 }
+                state.draggingPreviousPosition.x=intersects.x;//Record state for next move
+                state.draggingPreviousPosition.z=intersects.z;
+            }
+            if (state.draggingHandle) {
+                state.controls.enabled = false;
+                var intersects = new THREE.Vector3();
+                state.raycaster.setFromCamera(state.mouse, state.camera);
+                state.raycaster.ray.intersectPlane(state.raycasterPlan, intersects);
+                console.log(state.selectedHandle);
+                state.selectedHandle.layoutItemInteractions.onMove(intersects.x,intersects.z)
             }
             if (state.draggingSocket) {
                 state.controls.enabled = false;
@@ -345,7 +379,12 @@ export default function createStellaeUi({
         function onMouseUp (){
             state.draggingNodes=false;
             state.draggingSocket=false;
+            state.selectedHandle= false;
+            state.draggingHandle = false;
             state.selectedLine =undefined;
+            state.draggingPreviousPosition=undefined;
+            state.dragStarted = false;
+            state.dragOffset = {x:0,z:0};
             state.controls.enabled = true;
             //check for click up
             if (state.recordedClickForMouseUp && state.recordedClickForMouseUp.x == state.mouse.x && state.recordedClickForMouseUp.y == state.mouse.y) {
@@ -396,25 +435,6 @@ export default function createStellaeUi({
         container.addEventListener( 'mouseup', onMouseUp );
         state.canvas.addEventListener('dblclick', onDblClick, false);
     }
-
-    // var fadeNodes = function(nodes){
-    //     if (typeof nodes == "string" && nodes == "all") {
-    //         for (let i = 0; i < state.nodes.length; i++) {
-    //             fadeNode(state.nodes[i])
-    //         }
-    //     }
-    // }
-
-    // var hideNodes = function(nodes){
-    //     if (typeof nodes == "string" && nodes == "all") {
-    //         for (let i = 0; i < state.nodes.length; i++) {
-    //             hideNode(state.nodes[i])
-    //         }
-    //     }else{
-
-    //     }
-    // }
-
 
     var startRenderer = function () {
         function animate() {

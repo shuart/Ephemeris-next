@@ -40,7 +40,7 @@ var createSimulation = function (params) {
     }
 
     var forceTickActions = function () {
-        console.log(simulationNodes);
+        // console.log(simulationNodes);
         updateNodesReferencePositions()
     }
 

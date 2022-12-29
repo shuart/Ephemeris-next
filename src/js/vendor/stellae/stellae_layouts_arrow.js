@@ -1,6 +1,4 @@
 import * as THREE from "../three.module.js"
-import inputElements from "./stellae_inputs.js"
-import createNodeLayoutRound from "./stellae_layouts_round.js"
 import { createLine2 } from "./stellae_layout_arrow_fat.js";
 import { createLine } from "./stellae_layout_arrow_meshlines.js";
 

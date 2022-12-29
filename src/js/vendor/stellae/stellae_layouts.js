@@ -1,5 +1,6 @@
 import * as THREE from "../three.module.js"
 import inputElements from "./stellae_inputs.js"
+import { createGroup } from "./stellae_layouts_plane.js";
 import createNodeLayoutRound from "./stellae_layouts_round.js"
 
 let nanoid=(t=21)=>crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?"-":"_"),"");
@@ -290,6 +291,8 @@ var createNodeSquare  = function({
 var createNode = function (params) {
     if (params.nodeLayout == "round") {
         return createNodeLayoutRound(params)
+    } else if (params.nodeLayout == "group") {
+        return createGroup(params)
     } else {
         return createNodeSquare(params)
     }

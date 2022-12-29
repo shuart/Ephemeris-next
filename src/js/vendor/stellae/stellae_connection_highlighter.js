@@ -1,4 +1,5 @@
 import { fadeNode, unFadeNode } from "./stellae_hide_fade_nodes.js";
+import behaveAsNormalNode from "./stellae_utils_check_if_normal_node.js";
 
 var createConnectionHighlighter = function(){
     var self = {}
@@ -25,11 +26,14 @@ var createConnectionHighlighter = function(){
 
         for (let i = 0; i < nodesList.length; i++) {
             const element = nodesList[i];
-            if ( node == element || connectedNodes.mapping[element.edata.uuid]) { //if element was marked as connection
-                unFadeNode(element)
-            }else{
-                fadeNode(element)
+            if (behaveAsNormalNode(element)) {
+                if ( node == element || connectedNodes.mapping[element.edata.uuid] ) { //if element was marked as connection
+                    unFadeNode(element)
+                }else{
+                    fadeNode(element)
+                }
             }
+            
             
         }
     }
