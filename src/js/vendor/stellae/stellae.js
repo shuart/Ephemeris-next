@@ -10,11 +10,12 @@ function createStellae({
     headless = false,
     simulateForces = false,
     uiCallbacks = {},
-    showNodeList:showNodeList= false,
-    showSearchBox:showSearchBox= false,
-    highlightConnections:highlightConnections= false,
-    addNodesFromCustomList:addNodesFromCustomList= false,
-    allowCustomNameForNodes:allowCustomNameForNodes= false,
+    showNodeList= false,
+    showSearchBox= false,
+    highlightConnections= false,
+    addNodesFromCustomList= false,
+    allowCustomNameForNodes= false,
+    allowCustomNameForRelations = false,
     } = {}) {
     var self = {};
     var ui = undefined;
@@ -70,6 +71,7 @@ function createStellae({
                 useConnectionHighlighter:highlightConnections,
                 useCustomNodeAddList:addNodesFromCustomList,
                 allowCustomNameForNodes:allowCustomNameForNodes,
+                allowCustomNameForRelations:allowCustomNameForRelations,
             })
             nodeManager = createNodeManager({ui:ui})
             

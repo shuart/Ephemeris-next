@@ -132,6 +132,21 @@ var createSimulation = function (params) {
             stopSimulation()
         },3000)
     }
+    var fixNodes = function(nodeOrArray){
+        
+        if (Array.isArray(nodeOrArray)) {
+            for (let i = 0; i < nodeOrArray.length; i++) {
+                if (nodeOrArray[i].edata.position.y !=0 && nodeOrArray[i].edata.position.x !=0) {
+                    setNodeForcedPosition(nodeOrArray[i].edata.uuid,nodeOrArray[i].position.x,nodeOrArray[i].edata.position.y)
+                }
+            }
+        }else{
+            if (nodeOrArray.edata.position.y !=0 && nodeOrArray.edata.position.x !=0) {
+                setNodeForcedPosition(nodeOrArray.edata.uuid,nodeOrArray.position.x,nodeOrArray.edata.position.y)
+            }
+            
+        }
+    }
 
     var addLinks = function(linkOrArray,state){
         if (Array.isArray(linkOrArray)) {
@@ -154,6 +169,7 @@ var createSimulation = function (params) {
     var setNodeForcedPosition = function (uuid,x,y) {
         for (let i = 0; i < simulationNodes.length; i++) {
             const element = simulationNodes[i];
+            
             if (element.uuid == uuid) {
                 element.fx =x
                 element.fy =y
@@ -175,6 +191,8 @@ var createSimulation = function (params) {
         // console.log(simulationLinks);
         // alert("simulation forces")
     }
+    
+    self.fixNodes = fixNodes
     self.dragNode = dragNode
     self.addNodes = addNodes
     self.startSimulation= startSimulation

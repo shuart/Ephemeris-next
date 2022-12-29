@@ -21,6 +21,8 @@ export default function createStellaeUi({
     useConnectionHighlighter =true,
     useCustomNodeAddList = false,
     allowCustomNameForNodes = false,
+    allowCustomNameForRelations = false,
+    fixNodesWithPositions = true,
     } = {}) {
     var self = {};
 
@@ -139,7 +141,10 @@ export default function createStellaeUi({
 
         if (useSimulation) {
             if (behaveAsNormalNode(node)) {
-                simulation.addNodes(node) 
+                simulation.addNodes(node)
+                if (fixNodesWithPositions) {
+                    simulation.fixNodes(node)
+                }
             }
         }
         if (showList) {
@@ -402,6 +407,9 @@ export default function createStellaeUi({
                     uiCallbacks.onConnect({dataManager, state, input:{sourceItem:state.linkToAdd.from, targetItem:state.linkToAdd.to}})
                 }else{
                     console.log(state.linkToAdd);
+                    if (allowCustomNameForRelations) {
+                        state.linkToAdd.name = prompt("Name")
+                    }
                     dataManager.addLinks([state.linkToAdd])
                 }
                 dataManager.evaluateTree();

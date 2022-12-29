@@ -87,7 +87,7 @@ var createStateManager = function({
         {
             console.log(event);
             setCurrentProject(event.params.project)
-            mainUiElement.append(cycles_editor.instance({props:{evaluatorId:event.params.cycles}}), "main_area_mount_point");
+            mainUiElement.append(cycles_editor.instance({props:{cycleId:event.params.cycles}}), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
