@@ -105,12 +105,13 @@ var createLineArrow  = function({
 
 
     var line = createLine2({dashed, circular})
-    // line.edata= data
+    line.layoutItemRoot= lineGroup
     lineGroup.add( line );
     lineGroup.geometry = line.geometry
-    lineGroup.edata = line.edata
+    // lineGroup.edata = line.edata
     //add arrow
     const arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
+    arrowHelper.layoutItemRoot= lineGroup
     lineGroup.arrowOrigin = arrowHelper.position
     lineGroup.arrowItem = arrowHelper 
     lineGroup.update = function(startPosition, endPosition, startPositionOffset, endPositionOffset){
@@ -125,6 +126,7 @@ var createLineArrow  = function({
         var spritetext = createCharacterLabel(name)
         lineGroup.add(spritetext)
         spritetext.position.set(0,0,-0.01)
+        spritetext.layoutItemRoot = lineGroup
         lineGroup.labelItem = spritetext 
     }
     if (circular) {

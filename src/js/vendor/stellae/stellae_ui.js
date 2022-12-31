@@ -313,7 +313,14 @@ export default function createStellaeUi({
             if (state.selectedLine) {
                 console.log(state.selectedLine);
                 if (confirm("Delete Line?")) {
-                    dataManager.removeLinks(state.selectedLine.edata.uuid)
+                    
+                    console.log(state.links);
+                    if (state.selectedLine.layoutItemRoot) {
+                        dataManager.removeLinks(state.selectedLine.layoutItemRoot.edata.uuid)
+                    }else{
+                        dataManager.removeLinks(state.selectedLine.parent.layoutItemRoot.edata.uuid)//TODO sometimes have to go to parent, should avoid
+                    }
+                    
                 }
             }
             if (state.draggingNodes) {

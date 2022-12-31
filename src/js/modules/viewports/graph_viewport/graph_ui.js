@@ -31,17 +31,21 @@ var getItemsList = function (event, data, instance){
         return {list:[{name:"undefined LIST"}], cols:[]}
     }
     data.list =[]
-    if (evaluatorResult.nodes[0]) {
+    if (evaluatorResult.nodes && evaluatorResult.nodes[0]) {
         for (let i = 0; i < evaluatorResult.nodes.length; i++) {
             const entityGroup = evaluatorResult.nodes[i];
-            for (let j = 0; j < entityGroup.length; j++) {
-                data.list.push(entityGroup[j])
+            if (entityGroup.uuid) { //in case the entity is not a field but a an isolated entity
+                data.list.push(entityGroup)
+            }else{
+                for (let j = 0; j < entityGroup.length; j++) {
+                    data.list.push(entityGroup[j])
+                }
             }
-            
         }
     }
     data.links =[]
-    if (evaluatorResult.links[0]) {
+    debugger
+    if (evaluatorResult.links && evaluatorResult.links[0]) {
         for (let i = 0; i < evaluatorResult.links.length; i++) {
             const entityGroup = evaluatorResult.links[i];
             for (let j = 0; j < entityGroup.length; j++) {

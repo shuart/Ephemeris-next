@@ -121,7 +121,9 @@ evaluatorTemplates.sourceInstance = {
     },
     event:{
         onEvaluate:(props, globals) =>{
-            props.output.set(globals.originInstance)
+            var instanceRepo = createInstancesManagement()
+            var currentInstance = instanceRepo.getById(globals.originInstance)
+            props.output.set(currentInstance)
         },
         // onInit:(props) =>{
         // },
@@ -233,7 +235,11 @@ evaluatorTemplates.extractRelations = {
         {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         {id:"id", label:"prop id", type:"hidden", editable:false, socket:"output", value:false},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"method", label:"", type:"select", options:[
+        {id:"inOrOut", label:"Direction", type:"select", options:[
+            {id:"incoming", value:"Incoming"},
+            {id:"outgoing", value:"outgoing"},
+        ],editable:true, socket:"none", value:"Greater Than"},
+        {id:"method", label:"Relation", type:"select", options:[
             {id:"Greater_Than", value:"Greater Than"},
         ],editable:true, socket:"none", value:"Greater Than"},
         {id:"a", label:"Field", type:"text", editable:true, socket:"input", value:"0"},
@@ -253,11 +259,25 @@ evaluatorTemplates.extractRelations = {
             if (Array.isArray(props.a.get()) && props.a.get()[0].attributes.type) {
                 var entityRepo = createEntityManagement()
                 var entity = entityRepo.getById(props.a.get()[0].attributes.type)
-                if (entity.relations) {
-                    props.method.setOptions(entity.relations.map(function (e) {
-                        return {id:e.uuid, value:e.name}
-                    }))
+                var inOrOut = props.inOrOut.getOptionId()
+                if (inOrOut = "incoming" ) {
+                    if (entity.getIncomingRelations()) {
+                        props.method.setOptions(entity.getIncomingRelations().map(function (e) {
+                            return {id:e.uuid, value:e.name}
+                        }))
+                    }
+                }else{
+                    if (entity.getOutgoingRelations()) {
+                        props.method.setOptions(entity.getIncomingRelations().map(function (e) {
+                            return {id:e.uuid, value:e.name}
+                        }))
+                    }
                 }
+                // if (entity.relations) {
+                //     props.method.setOptions(entity.relations.map(function (e) {
+                //         return {id:e.uuid, value:e.name}
+                //     }))
+                // }
 
                 if (props.method.get()) {
                     var instancesRepo = createInstancesManagement()
@@ -377,7 +397,7 @@ evaluatorTemplates.outputGraph = {
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
         {id:"nodes", multiple:true, label:"Entities", type:"hidden", editable:true, socket:"input", value:false},
-        {id:"links", multiple:true, label:"links", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"links", multiple:true, label:"links", type:"text", editable:true, socket:"input", value:false},
         {id:"actions", label:"action", type:"hidden", editable:true, socket:"input", value:false},
 
         {id:"onConnectAction", label:"onConnect", type:"hidden", editable:true, socket:"input", value:false},
@@ -717,7 +737,7 @@ evaluatorTemplates.actionEditRelation = {
         onEvaluate:(props) =>{
             var functionToUse = function (data) {
                 var instanceRepo = createInstancesManagement()
-
+                debugger
                 var sourceItem = getProp(props,"sourceItem",data)
                 var targetItem = getProp(props,"targetItem",data)
 

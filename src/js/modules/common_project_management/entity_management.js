@@ -31,7 +31,31 @@ var entityAggregate = function(aggregate, projectStore){
         
     }
     aggregate.relations = ownRelations
-
+    //methods
+    aggregate.getOutgoingRelations = function (param, type) {
+        var outgoingRelations = []
+        var currentRelations = projectStore.get("relations").toArray()
+        for (let i = 0; i < currentRelations.length; i++) {
+            const element = currentRelations[i];
+            if (element["from_"+aggregate.uuid]) {
+                ownRelations.push(element);
+            }
+            
+        }
+        return outgoingRelations
+    }
+    aggregate.getIncomingRelations = function (param, type) {
+        var incomingRelations = []
+        var currentRelations = projectStore.get("relations").toArray()
+        for (let i = 0; i < currentRelations.length; i++) {
+            const element = currentRelations[i];
+            if (element["to_"+aggregate.uuid]) {
+                incomingRelations.push(element);
+            }
+            
+        }
+        return incomingRelations
+    }
     //methods
     aggregate.addProperty = function (param, type) {
         var futureId = nanoid()
