@@ -16,8 +16,21 @@ var getCustomFormatterForCol = function (rows, col) {
                 var instances = cell.getValue()
                 for (let i = 0; i < instances.length; i++) {
                     const element = instances[i];
-                    html += `<span onclick='alert();  event.stopPropagation();' class="table-tag" > ${element.target.name} </span>`
+                    html += `<span data-id='${element.target.uuid}' class="table-tag action-tag" > ${element.target.name} </span>`
                 }
+
+                onRendered(function(params) {
+                    
+                    var domElemOfCell = cell.getElement()
+                    var tags = domElemOfCell.querySelectorAll('.action-tag')
+                    for (let i = 0; i < tags.length; i++) {
+                        const tag = tags[i];
+                        tag.addEventListener('click', function (ev) {
+                            ev.stopPropagation();
+                            rowColToCheck[0].callback(ev.target.dataset.id)
+                        })
+                    }
+                })
                 
                 return html
             }

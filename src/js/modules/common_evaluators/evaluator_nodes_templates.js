@@ -256,19 +256,22 @@ evaluatorTemplates.extractRelations = {
             //         return {id:e.uuid, value:e.name}
             // }))
             console.log(props.a.get()[0] );
+            var currentRelationsToConsider = []
             if (Array.isArray(props.a.get()) && props.a.get()[0].attributes.type) {
                 var entityRepo = createEntityManagement()
                 var entity = entityRepo.getById(props.a.get()[0].attributes.type)
                 var inOrOut = props.inOrOut.getOptionId()
                 if (inOrOut = "incoming" ) {
                     if (entity.getIncomingRelations()) {
+                        currentRelationsToConsider = entity.getIncomingRelations()
                         props.method.setOptions(entity.getIncomingRelations().map(function (e) {
                             return {id:e.uuid, value:e.name}
                         }))
                     }
                 }else{
                     if (entity.getOutgoingRelations()) {
-                        props.method.setOptions(entity.getIncomingRelations().map(function (e) {
+                        currentRelationsToConsider = entity.getOutgoingRelations()
+                        props.method.setOptions(entity.getOutgoingRelations().map(function (e) {
                             return {id:e.uuid, value:e.name}
                         }))
                     }
@@ -278,21 +281,27 @@ evaluatorTemplates.extractRelations = {
                 //         return {id:e.uuid, value:e.name}
                 //     }))
                 // }
-
                 if (props.method.get()) {
                     var instancesRepo = createInstancesManagement()
+                    var inOrOut = props.inOrOut.getOptionId()
                     props.output.set(props.a.get().map(function (e) {
                         
                         var targetsOfRelation=[]
                         var relatedRelation=[]
-                        for (let i = 0; i < e.relations.length; i++) {
-                            const relation = e.relations[i];
-
-                            if (relation.type == props.method.getOptionId()) {
+                        var instancesRelations = e.getRelations()
+                        for (let i = 0; i < instancesRelations.length; i++) {
+                            const relation = instancesRelations[i];
+                            
+                            if (relation.type == props.method.getOptionId() && inOrOut == "incoming") {
+                                var relationSource = instancesRepo.getById(relation.from)
+                                targetsOfRelation.push(relationSource)
+                                relatedRelation.push({displayAs:"relation", relation:relation, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:relationSource})
+                            }else if (relation.type == props.method.getOptionId() ) {
                                 var relationTarget = instancesRepo.getById(relation.to)
                                 targetsOfRelation.push(relationTarget)
-                                relatedRelation.push({displayAs:"relation", relation:relation, target:relationTarget})
+                                relatedRelation.push({displayAs:"relation", relation:relation, direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:relationTarget})
                             }
+                            
                             
                         }
                         console.log(targetsOfRelation);
@@ -465,6 +474,7 @@ evaluatorTemplates.colParameters = {
                         input:{
                             clickedItem:cell.getData().uuid,
                             clickedItemUuid:cell.getData().uuid,
+                            contextualItemUuid:cell.getData().uuid,
                             sourceItem:cell.getData().uuid,
                             targetItem:false,
                         }
@@ -737,9 +747,14 @@ evaluatorTemplates.actionEditRelation = {
         onEvaluate:(props) =>{
             var functionToUse = function (data) {
                 var instanceRepo = createInstancesManagement()
-                debugger
                 var sourceItem = getProp(props,"sourceItem",data)
                 var targetItem = getProp(props,"targetItem",data)
+                if (sourceItem && typeof sourceItem == "string") {
+                    sourceItem = instanceRepo.getById(sourceItem) 
+                }
+                if (targetItem && typeof targetItem == "string") {
+                    targetItem = instanceRepo.getById(targetItem) 
+                }
 
                 // console.log(sourceItem);
                 // console.log(targetItem);
@@ -747,9 +762,42 @@ evaluatorTemplates.actionEditRelation = {
                 // console.log(props.relationType.get());
                 // alert("itesm")
 
-                if (sourceItem && !targetItem) {
+                if (!sourceItem && targetItem) {
                     // var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) 
-                    var currentSelectedInstance = instanceRepo.getById(sourceItem) 
+                    // var currentSelectedInstance = instanceRepo.getById(sourceItem) 
+                    var currentSelectedInstance = targetItem 
+                    var mainPopupNarrow = mainPopup.with({data:{narrow:true,title:"Select Items"}})
+                    mainPopupNarrow.mount()
+                    var generateList = function () {
+                        return currentSelectedInstance.getPotentialAndLinkedEntitiesForRelationType(props.relationType.get()).potentialsSource
+                    }
+                    var generateSelectedList = function () {
+                        return currentSelectedInstance.getPotentialAndLinkedEntitiesForRelationType(props.relationType.get()).alreadyLinkedSource
+                    }
+                    var selectInstance = select.instance({
+                        data:{
+                            list:generateList,
+                            selectedlist:generateSelectedList,
+                            callback:function(event){
+                                //Display a new popup to choose the relation type
+                                currentSelectedInstance.addRelationFromSource(props.relationType.get(),event.value.uuid)
+                                selectInstance.do.softUpdate();
+                            },
+                            closeSelectedCallback:function(event){
+                                // alert(event.uuid)
+                                currentSelectedInstance.removeRelationFromSource(props.relationType.get(),event.uuid)
+                                selectInstance.do.softUpdate();
+                            }
+                            
+                        }
+                    })
+                    mainPopupNarrow.append(selectInstance, "main-slot")
+                    mainPopupNarrow.update();
+
+                }else if (sourceItem && !targetItem) {
+                    // var currentSelectedInstance = instanceRepo.getById(data.input.clickedItemUuid) 
+                    // var currentSelectedInstance = instanceRepo.getById(sourceItem) 
+                    var currentSelectedInstance = sourceItem 
                     var mainPopupNarrow = mainPopup.with({data:{narrow:true,title:"Select Items"}})
                     mainPopupNarrow.mount()
                     var generateList = function () {
@@ -776,20 +824,20 @@ evaluatorTemplates.actionEditRelation = {
                         }
                     })
                     mainPopupNarrow.append(selectInstance, "main-slot")
-                    
                     mainPopupNarrow.update();
+
                 }else if(sourceItem && targetItem){
                     // alert("fesfesfefsfe")
-                    var currentSelectedInstance = instanceRepo.getById(sourceItem) 
+                    var currentSelectedInstance = sourceItem
                     var mainPopupNarrow = mainPopup.with({data:{narrow:true,title:"Select Items"}})
                     mainPopupNarrow.mount()
                     mainPopupNarrow.append(select.instance({
                         data:{
-                            list:currentSelectedInstance.getPotentialRelationsWithInstance(targetItem),
+                            list:currentSelectedInstance.getPotentialRelationsWithInstance(targetItem.uuid),
                             callback:function(eventInCallback){ //TODO add callback
                                 // currentSelectedInstance.addRelation(sourceItem,targetItem)
                                 // console.log(currentSelectedInstance.getRelations());
-                                currentSelectedInstance.addRelation(eventInCallback.value.uuid,targetItem)
+                                currentSelectedInstance.addRelation(eventInCallback.value.uuid,targetItem.uuid)
                                 // selectInstance.do.softUpdate();
                             }
                         }
@@ -818,11 +866,13 @@ evaluatorTemplates.actionInput = {
         {id:"sourceItem", label:"Source Item", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
         {id:"targetItem", label:"target Item", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
         {id:"clickedItem", label:"clicked Item", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
+        {id:"contextItem", expect:"object",label:"Context Item", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
     ],
     methods:{
     },
     event:{
         onEvaluate:(props) =>{
+            var repo = createInstancesManagement()
             // var functionToUse = function (data) {
             //     return data.input.clickedItem
             // }
@@ -838,6 +888,7 @@ evaluatorTemplates.actionInput = {
                     
             //     }
             // }
+            // contextualItemUuid
             var functionTargetItem = function (data) {
                 return data.input.targetItem || data.input.clickedItem 
             }
@@ -850,6 +901,14 @@ evaluatorTemplates.actionInput = {
                 return data.input.clickedItem || data.input.targetItem 
             }
             props.clickedItem.set(functionclickedItem)  
+            var functionContextItem = function (data) {
+                var contextualItem = data.input.contextualItemUuid
+                if (typeof contextualItem == "string") {
+                    contextualItem = repo.getById(data.input.contextualItemUuid)
+                }
+                return contextualItem
+            }
+            props.contextItem.set(functionContextItem)  
         },
         // onInit:(props) =>{
 

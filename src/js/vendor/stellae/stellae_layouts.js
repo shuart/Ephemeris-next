@@ -279,7 +279,7 @@ var createNodeSquare  = function({
             spritetext.position.set(-0.5,0,0)
             var textToDisplay = prop.value
             if (Array.isArray(textToDisplay)) {
-                textToDisplay = "Field"
+                textToDisplay = "Array"
                 isField =true
             }
             if (textToDisplay instanceof Function) {

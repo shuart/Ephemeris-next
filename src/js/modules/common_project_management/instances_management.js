@@ -48,6 +48,9 @@ var instanceAggregate = function(aggregate, projectStore){
             if (element.from == aggregate.uuid) {
                 ownRelations.push(element);
             }
+            if (element.to == aggregate.uuid) {
+                ownRelations.push(element);
+            }
         }
         return ownRelations
     }
@@ -60,6 +63,11 @@ var instanceAggregate = function(aggregate, projectStore){
             console.log(element);
             for (let j = 0; j < element.fromList.length; j++) {
                 if (element.fromList[j].uuid == aggregate.attributes.type) {
+                    availableList.push(element)
+                }
+            }
+            for (let j = 0; j < element.fromList.length; j++) {
+                if (element.toList[j].uuid == aggregate.attributes.type) {
                     availableList.push(element)
                 }
             }
@@ -116,11 +124,15 @@ var instanceAggregate = function(aggregate, projectStore){
         // var relationsRepo = createRelationsManagement()
         // var relationsAvailable = relationsRepo.getAll()
         var potentials = []
+        var potentialsSource = []
         var alreadyLinked= []
+        var alreadyLinkedSource= []
         var alreadyLinkedObjects= {}
+        var alreadyLinkedSourceObjects= {}
         
         var availableRelationsList =aggregate.getPotentialRelations() 
         var availableTargetTypes = []
+        var availableSourceTypes = []
         //find acceptable target type
         for (let i = 0; i < availableRelationsList.length; i++) {
             const availableRelation = availableRelationsList[i];
@@ -131,15 +143,23 @@ var instanceAggregate = function(aggregate, projectStore){
                     const targetCat = availableRelation.toList[j];
                     availableTargetTypes.push(targetCat.uuid)
                 }
+                for (let j = 0; j < availableRelation.fromList.length; j++) {
+                    const sourceCat = availableRelation.fromList[j];
+                    availableSourceTypes.push(sourceCat.uuid)
+                }
             }
         }
-        //find already targeted by relations
+        //find already targeted by relations or source of relation
         var currentRelations = projectStore.get("relationsInstances").toArray()
         for (let i = 0; i < currentRelations.length; i++) {
             const element = currentRelations[i];
             if (element.from == aggregate.uuid && element.type == typeUuid) {
                 // alreadyLinked.push(element); //add it to the list afterward to do one loop only
                 alreadyLinkedObjects[element.to] = true
+            }
+            if (element.to == aggregate.uuid && element.type == typeUuid) {
+                // alreadyLinked.push(element); //add it to the list afterward to do one loop only
+                alreadyLinkedSourceObjects[element.from] = true
             }
         }
         
@@ -159,8 +179,17 @@ var instanceAggregate = function(aggregate, projectStore){
                     alreadyLinked.push(instance);
                 }
             }
+            for (let j = 0; j < availableSourceTypes.length; j++) {
+                const availableSourceUuid = availableSourceTypes[j];
+                if (availableSourceUuid == instance.type && !alreadyLinkedSourceObjects[instance.uuid]) {
+                    potentialsSource.push(instance)
+                }
+                if (alreadyLinkedSourceObjects[instance.uuid]) {
+                    alreadyLinkedSource.push(instance);
+                }
+            }
         }
-        return {alreadyLinked:alreadyLinked, potentials:potentials}
+        return {alreadyLinked:alreadyLinked, potentials:potentials, alreadyLinkedSource, potentialsSource}
     }
 
     //methods
@@ -176,12 +205,28 @@ var instanceAggregate = function(aggregate, projectStore){
         var currentRelationTarget = projectStore.get("instances").where("uuid").equals(targetId)
         projectStore.add("relationsInstances",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, from:aggregate.uuid, to:currentRelationTarget.uuid, type:type})
     }
+    aggregate.addRelationFromSource = function (type, sourceId) {
+        var currentRelationSource = projectStore.get("instances").where("uuid").equals(sourceId)
+        projectStore.add("relationsInstances",{name:`from ${currentRelationSource.name} to ${aggregate.name} `, to:aggregate.uuid, from:currentRelationSource.uuid, type:type})
+    }
     aggregate.removeRelation = function (type, targetId) {
         var currentRelationTarget = projectStore.get("relationsInstances").where("type").equals(type)
         var relationToRemove = undefined;
         for (let i = 0; i < currentRelationTarget.length; i++) {
             const element = currentRelationTarget[i];
             if (element.to == targetId) { relationToRemove = element  }
+        }
+        if (relationToRemove) {
+            projectStore.remove("relationsInstances",relationToRemove.uuid)
+        }
+        
+    }
+    aggregate.removeRelationFromSource = function (type, sourceId) {
+        var currentRelationTarget = projectStore.get("relationsInstances").where("type").equals(type)
+        var relationToRemove = undefined;
+        for (let i = 0; i < currentRelationTarget.length; i++) {
+            const element = currentRelationTarget[i];
+            if (element.from == sourceId) { relationToRemove = element  }
         }
         if (relationToRemove) {
             projectStore.remove("relationsInstances",relationToRemove.uuid)
