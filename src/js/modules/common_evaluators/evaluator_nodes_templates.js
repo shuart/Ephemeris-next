@@ -62,8 +62,8 @@ evaluatorTemplates.sourceEntity = {
     templateName : "source_entity",
     name : "Source",
     props :[
-        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
-        {id:"outputReference", label:"Type Reference", type:"hidden", editable:false, socket:"output", value:""},
+        {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"outputReference", expect:"string", label:"Type Reference", type:"hidden", editable:false, socket:"output", value:""},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
         {id:"method", label:"", type:"select", options:[
             {id:"Greater_Than", value:"Greater Than"},
@@ -115,7 +115,7 @@ evaluatorTemplates.sourceInstance = {
     templateName : "source_instance",
     name : "Source Instance",
     props :[
-        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"output", expect:"object", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
     ],
     methods:{
     },
@@ -134,7 +134,7 @@ evaluatorTemplates.debugAlert = {
     templateName : "debug_alert",
     name : "debug alert",
     props :[
-        {id:"message", label:"Message", type:"text", editable:true, socket:"input", value:"This is a debug alert"},
+        {id:"message", expect:"string", label:"Message", type:"text", editable:true, socket:"input", value:"This is a debug alert"},
     ],
     methods:{
     },
@@ -232,8 +232,8 @@ evaluatorTemplates.extractRelations = {
     templateName : "extract_relations",
     name : "extract_relations",
     props :[
-        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
-        {id:"id", label:"prop id", type:"hidden", editable:false, socket:"output", value:false},
+        {id:"output", expect:"array", isSquare:true, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"id", expect:"string", label:"prop id", type:"hidden", editable:false, socket:"output", value:false},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
         {id:"inOrOut", label:"Direction", type:"select", options:[
             {id:"incoming", value:"Incoming"},
@@ -242,7 +242,7 @@ evaluatorTemplates.extractRelations = {
         {id:"method", label:"Relation", type:"select", options:[
             {id:"Greater_Than", value:"Greater Than"},
         ],editable:true, socket:"none", value:"Greater Than"},
-        {id:"a", label:"Field", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"a", expect:"data", label:"Data", type:"text", editable:true, socket:"input", value:"0"},
     ],
     methods:{
     },
@@ -333,10 +333,10 @@ evaluatorTemplates.joinFields = {
     templateName : "join_fields",
     name : "join_fields",
     props :[
-        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"output", expect:"data", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"field", label:"Source Field", type:"hidden", editable:true, socket:"input", value:false},
-        {id:"fields_to_join", multiple:true, label:"Fields to join", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"field", expect:"data", label:"Source Field", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"fields_to_join",expect:"array", isSquare:true, multiple:true, label:"Fields to join", type:"hidden", editable:true, socket:"input", value:false},
     ],
     methods:{
     },
@@ -374,9 +374,9 @@ evaluatorTemplates.outputTable = {
     props :[
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"cols", multiple:true, label:"cols definition", type:"hidden", editable:true, socket:"input", value:false},
-        {id:"rows", label:"rows", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"actions", label:"action", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"cols", expect:"configuration",multiple:true, label:"cols definition", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"rows", expect:"data", label:"rows", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"actions", expect:"function", label:"action", type:"hidden", editable:true, socket:"input", value:false},
     ],
     methods:{
     },
@@ -396,12 +396,12 @@ evaluatorTemplates.outputGraph = {
     props :[
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"nodes", multiple:true, label:"Entities", type:"hidden", editable:true, socket:"input", value:false},
-        {id:"links", multiple:true, label:"links", type:"text", editable:true, socket:"input", value:false},
-        {id:"actions", label:"action", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"nodes", expect:"data", multiple:true, label:"Entities", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"links", expect:"array", isSquare:true, multiple:true, label:"links", type:"text", editable:true, socket:"input", value:false},
+        {id:"actions", expect:"function" , label:"action", type:"hidden", editable:true, socket:"input", value:false},
 
-        {id:"onConnectAction", label:"onConnect", type:"hidden", editable:true, socket:"input", value:false},
-        {id:"onNodeClickAction", label:"onNodeClick", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"onConnectAction", expect:"function", label:"onConnect", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"onNodeClickAction", expect:"function", label:"onNodeClick", type:"hidden", editable:true, socket:"input", value:false},
     ],
     methods:{
     },
@@ -421,10 +421,10 @@ evaluatorTemplates.outputInstanceCard = {
     props :[
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"instance", multiple:false, label:"instance", type:"hidden", editable:true, socket:"input", value:false},
-        {id:"actions", label:"action", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"instance", expect:"object", multiple:false, label:"instance", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"actions", expect:"function", label:"action", type:"hidden", editable:true, socket:"input", value:false},
 
-        {id:"onConnectAction", label:"onConnect", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"onConnectAction",expect:"function", label:"onConnect", type:"hidden", editable:true, socket:"input", value:false},
     ],
     methods:{
     },
@@ -442,11 +442,11 @@ evaluatorTemplates.colParameters = {
     templateName : "col_parameters",
     name : "col_parameters",
     props :[
-        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"output", expect:"configuration", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"name", label:"data", type:"text", editable:true, socket:"input", value:"Col Name"},
-        {id:"paramName", label:"param name", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"clickAction", label:"action", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"name",expect:"string", label:"data", type:"text", editable:true, socket:"input", value:"Col Name"},
+        {id:"paramName",expect:"string", label:"param name", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"clickAction",expect:"function", label:"action", type:"hidden", editable:true, socket:"input", value:false},
     ],
     methods:{
     },
@@ -484,11 +484,11 @@ evaluatorTemplates.colCustomButton = {
     templateName : "col_custom_button",
     name : "col_custom_button",
     props :[
-        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"output", expect:"configuration", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
         // {id:"name", label:"data", type:"text", editable:true, socket:"input", value:"Col Name"},
-        {id:"buttonLabel", label:"Label", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"clickAction", label:"action", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"buttonLabel",expect:"string", label:"Label", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"clickAction",expect:"function", label:"action", type:"hidden", editable:true, socket:"input", value:false},
     ],
     methods:{
     },
@@ -525,9 +525,9 @@ evaluatorTemplates.actionAddInstance = {
     templateName : "action_add_instance",
     name : "action_add_instance",
     props :[
-        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
+        {id:"output",expect:"function", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"instanceRef", label:"Instance Reference", type:"text", editable:true, socket:"input", value:""},
+        {id:"instanceRef",expect:"string", label:"Instance Reference", type:"text", editable:true, socket:"input", value:""},
         // {id:"paramName", label:"param name", type:"text", editable:true, socket:"input", value:"0"},
     ],
     methods:{
@@ -558,9 +558,9 @@ evaluatorTemplates.actionRemoveInstance = {
     templateName : "action_remove_instance",
     name : "action_remove_instance",
     props :[
-        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
+        {id:"output", expect:"function", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"instanceRef", label:"Instance Reference", type:"text", editable:true, socket:"input", value:""},
+        {id:"instanceRef",expect:"string", label:"Instance Reference", type:"text", editable:true, socket:"input", value:""},
         // {id:"paramName", label:"param name", type:"text", editable:true, socket:"input", value:"0"},
     ],
     methods:{
@@ -597,9 +597,9 @@ evaluatorTemplates.previewInstance = {
     templateName : "action_preview_instance",
     name : "action_preview_instance",
     props :[
-        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
+        {id:"output", expect:"function", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"targetItem", label:"target Instance", type:"text", editable:true, socket:"input", value:""},
+        {id:"targetItem",expect:"string", label:"target Instance", type:"text", editable:true, socket:"input", value:""},
         // {id:"paramName", label:"param name", type:"text", editable:true, socket:"input", value:"0"},
     ],
     methods:{
@@ -645,8 +645,8 @@ evaluatorTemplates.actionShowMessage = {
     templateName : "action_show_message",
     name : "action_show_message",
     props :[
-        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
-        {id:"message", label:"Message", type:"text", editable:true, socket:"input", value:""},
+        {id:"output",expect:"function", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
+        {id:"message",expect:"string", label:"Message", type:"text", editable:true, socket:"input", value:""},
     ],
     methods:{
     },
@@ -726,10 +726,10 @@ evaluatorTemplates.actionEditRelation = {
     templateName : "action_edit_relation",
     name : "action_edit_relation",
     props :[
-        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
-        {id:"relationType", label:"Relation Type", type:"text", editable:true, socket:"input", value:""},
-        {id:"sourceItem", label:"source item", type:"text", editable:true, socket:"input", value:false},
-        {id:"targetItem", label:"target item", type:"text", editable:true, socket:"input", value:false},
+        {id:"output",expect:"function", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
+        {id:"relationType",expect:"string", label:"Relation Type", type:"text", editable:true, socket:"input", value:""},
+        {id:"sourceItem",expect:"string", label:"source item", type:"text", editable:true, socket:"input", value:false},
+        {id:"targetItem",expect:"string", label:"target item", type:"text", editable:true, socket:"input", value:false},
     ],
     methods:{
     },

@@ -19,6 +19,20 @@ const squareShape = new THREE.Shape()
     .lineTo( hwidth, hheight )
     .lineTo( hwidth, 0 )
     .lineTo( 0, 0 );
+const hwidthS = 12;
+const hheightS = 12;
+const squareShapeSocketStraight = new THREE.Shape()
+    .moveTo( -hwidthS/2, -hwidthS/2 )
+    .lineTo( -hwidthS/2, hheightS/2 )
+    .lineTo( hwidthS/2, hheightS/2 )
+    .lineTo( hwidthS/2, -hwidthS/2)
+    .lineTo( 0, -hwidthS/2 );
+const squareShapeSocket = new THREE.Shape()
+    .moveTo( 0, -hwidthS/2 )
+    .lineTo( -hwidthS/2, 0 )
+    .lineTo( 0, hheightS/2 )
+    .lineTo( hwidthS/2, 0)
+    .lineTo( 0, -hwidthS/2 );
 
 const squareShapeBack = new THREE.Shape()
     .moveTo( 0, 0 )
@@ -35,11 +49,29 @@ const circleShape = new THREE.Shape()
     .quadraticCurveTo( - circleRadius, circleRadius, 0, circleRadius );
 var headerGeometry = new THREE.ShapeGeometry( squareShape );
 var roundSocketGeometry = new THREE.ShapeGeometry( circleShape );
+var squareSocketGeometry = new THREE.ShapeGeometry( squareShapeSocket );
+var squareStraightSocketGeometry = new THREE.ShapeGeometry( squareShapeSocketStraight );
 
 var propsHeightMap={
     hidden:0.5,
     text:0.3,
     select:0.3,
+}
+
+var socketColorMap={
+    // array:0x6767d1,
+    array:0xa35abd,
+    float:0xbfbf96,
+    data:0x00d6a3,
+    boolean:0xcca6d6,
+    function:0x686363,
+    configuration:0xc14f57,
+    // vector:0x6363c7,
+    vector:0x6860c2,
+    color:0xc7c729,
+    string:0x70b2ff,
+    object:0xed9e5c,
+    default:0x00b5ad, 
 }
 
 
@@ -163,15 +195,30 @@ var createNodeSquare  = function({
     }
 
     function createSocket(group, prop){
-        var socketColor = 0x00d6a3
-        if (Array.isArray(prop.value)) {
-            socketColor = 0x6767d1
+        var socketColor = socketColorMap.default
+        if (prop.expect) {
+            if (socketColorMap[prop.expect]) {
+                socketColor = socketColorMap[prop.expect]
+            }
+        }else{
+            
+            if (Array.isArray(prop.value)) {
+                socketColor = socketColorMap.array
+            }
+            if (prop.value instanceof Function) {
+                socketColor = socketColorMap.function
+            }
         }
-        if (prop.value instanceof Function) {
-            socketColor = 0x686363
-        }
+        
         const materialSocketFlow = new THREE.MeshBasicMaterial( { color: socketColor,side: THREE.DoubleSide  } );
-        var socket = new THREE.Mesh( roundSocketGeometry, materialSocketFlow );
+        var socket = undefined;
+        if (prop.isSquare && !prop.multiple) {
+            socket = new THREE.Mesh( squareSocketGeometry, materialSocketFlow );
+        }else if (prop.isSquare && prop.multiple) {
+            socket = new THREE.Mesh( squareStraightSocketGeometry, materialSocketFlow );
+        }else{
+            socket = new THREE.Mesh( roundSocketGeometry, materialSocketFlow );
+        }
         
         group.add(socket)
         if (prop.socket == "output") {
