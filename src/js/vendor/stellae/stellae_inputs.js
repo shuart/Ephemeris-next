@@ -180,7 +180,7 @@ inputElements.createListInput = function ({
             domElement.remove()
             shieldElement.remove()
         })
-        shieldElement.addEventListener("click",function (event) {
+        shieldElement.addEventListener("mousedown",function (event) {
             domElement.remove()
             shieldElement.remove()
         })

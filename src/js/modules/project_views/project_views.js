@@ -39,6 +39,7 @@ var component =createAdler({
     content: p => /*html*/`
     <div class="Component">
         ${p.viewId} VIEW, called from ${p.calledFromInstance}
+        <div class="getTemplate">Get Template</div>
         <div a-slot="view_mount_point_grid"></div>
         <div a-slot="view_mount_point0"></div>
         <div a-slot="view_mount_point1"></div>
@@ -62,6 +63,7 @@ var component =createAdler({
         },
         on:[
             // [".tableCddomponent","click", (event, data, instance)=> data.onClick(event, data, instance) ],
+            [".getTemplate","click", (event, data, instance)=> console.log(loadLayout(data.viewId)) ],
         ],
         events:{
             // onBeforeMount:(event, data, instance) => alert("eeee"),

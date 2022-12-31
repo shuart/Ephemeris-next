@@ -9,6 +9,7 @@ import iconSelect from "../common_ui_components/icon_picker/iconPicker.js"
 
 import table_component from "../common_ui_components/table/table.js";
 import createEntityManagement from "../common_project_management/entity_management.js";
+import { createSimpleSummaryPageForEntities } from "../common_quick_settings/common_quick_settings.js";
 // import createViewManagement from "../common_project_management/view_management.js";
 
 // import {Tabulator} from "../../vendor/tabulator_esm.min.js";
@@ -200,6 +201,11 @@ var getItemsList = function (data, instance){
     // return projectManagement.getProjectStore(projectId,"default").getAll().toString()
 }
 
+var addSummaryPageToProject = function (event, data, instance) {
+    // alert("fefesfses")
+    createSimpleSummaryPageForEntities()
+}
+
 var setUpData = function (event, data, instance) {
     console.trace(getCurrentProject);
     instance.setData({
@@ -269,8 +275,8 @@ var model_settings_component =createAdler({
                         </a>
 
                         <div class="navbar-dropdown">
-                        <a class="navbar-item">
-                            About
+                        <a class="navbar-item action_settings_add_quick_view_summary">
+                            Add Summary Page
                         </a>
                         <a class="navbar-item">
                             Jobs
@@ -327,6 +333,7 @@ var model_settings_component =createAdler({
         on:[
             // [".action1","click", (event, data)=> alert("test "+ data.test)],
             [".action_settings_add_entity","click", (event, data, instance)=> addEntityToProject(event, data, instance) ],
+            [".action_settings_add_quick_view_summary","click", (event, data, instance)=> addSummaryPageToProject(event, data, instance) ],
         ],
         events:{
             // onBeforeMount:(event, data, instance)=> alert("MOUNTING"),

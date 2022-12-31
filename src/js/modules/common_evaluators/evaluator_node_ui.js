@@ -46,6 +46,14 @@ var showPreview = function (event,data,instance) {
     mainPopup.update();
 }
 
+var getSchema = function (event,data,instance) {
+    var exportGraph = data.graph.getNodeManager().exportNodes()
+    console.log(exportGraph);
+    console.log(JSON.stringify(exportGraph));
+}
+
+
+
 var evaluator_node_ui =createAdler({
     content: p => /*html*/`
     <div class="Component">
@@ -62,6 +70,9 @@ var evaluator_node_ui =createAdler({
                 </a>
                 <a class="navbar-item action_settings_show_preview">
                     preview
+                </a>
+                <a class="navbar-item action_settings_get_schema">
+                    Get Schema
                 </a>
 
                 <div class="navbar-item has-dropdown is-hoverable">
@@ -124,6 +135,7 @@ var evaluator_node_ui =createAdler({
         on:[
             [".action_settings_save_network","click", saveNetwork ],
             [".action_settings_show_preview","click", showPreview ],
+            [".action_settings_get_schema","click", getSchema ],
         ],
         events:{
             // onBeforeMount:(event, data, instance) => setUp(event, data, instance),

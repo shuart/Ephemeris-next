@@ -257,7 +257,7 @@ evaluatorTemplates.extractRelations = {
             // }))
             console.log(props.a.get()[0] );
             var currentRelationsToConsider = []
-            if (Array.isArray(props.a.get()) && props.a.get()[0].attributes.type) {
+            if (Array.isArray(props.a.get()) && props.a.get()[0] &&  props.a.get()[0].attributes.type) {
                 var entityRepo = createEntityManagement()
                 var entity = entityRepo.getById(props.a.get()[0].attributes.type)
                 var inOrOut = props.inOrOut.getOptionId()
