@@ -52,14 +52,23 @@ var createNode= function({
     var inEvaluation = false;
     var inInit = false;
 
-    var exportParams = function(){
+    var exportParams = function({
+        withAllValues=false,
+        } = {}){
         var propsValue = {}
         var propsValueFromInput = {}
         for (const key in interactiveProps) {
             if (Object.hasOwnProperty.call(interactiveProps, key)) {
                 const element = interactiveProps[key];
-                propsValue[key] = interactiveProps[key].get()
-                propsValueFromInput[key] = interactiveProps[key]._getFromInput()
+                var valueType = typeof interactiveProps[key].get()
+                
+                // debugger
+                // console.log(interactiveProps[key].get()); 
+                if ( (valueType  == "string" ||  valueType =="boolean" || valueType =="integer" || valueType =="float") || withAllValues ) {
+                    propsValue[key] = interactiveProps[key].get()
+                    propsValueFromInput[key] = interactiveProps[key]._getFromInput()
+                }
+                
             }
         }
         return {templateName,params:{uuid,name, position, propsValue, propsValueFromInput, headerColor, imgPath, nodeLayout, userData}}
@@ -400,13 +409,13 @@ var createNodeManager = function ({
     }
 
 
-    var exportNodes = function () {
+    var exportNodes = function (options) {
         var nodesToExport= []
         var linkToExport = linksInUse.list
         for (const key in nodeInUse) {
             if (Object.hasOwnProperty.call(nodeInUse, key)) {
                 const element = nodeInUse[key];
-                nodesToExport.push(element.exportParams())
+                nodesToExport.push(element.exportParams(options))
             }
         }
         return {nodes:nodesToExport, links:linkToExport}

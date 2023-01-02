@@ -52,7 +52,7 @@ var createEvaluator = function ({
                 graphNodes.getNodeManager().setGlobalSetting("originInstance",originInstance)
                 graphNodes.getNodeManager().importGraph(JSON.parse(currentGraph.attributes.nodeLayout))
                 graphNodes.getNodeManager().evaluateTree()
-                var exportGraph = graphNodes.getNodeManager().exportNodes()
+                var exportGraph = graphNodes.getNodeManager().exportNodes({withAllValues:true})
                 // console.log(exportGraph);
                 // alert(54)
 
