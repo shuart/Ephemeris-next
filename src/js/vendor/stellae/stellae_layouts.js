@@ -78,17 +78,25 @@ var socketColorMap={
 
 
 var createNodeSquare  = function({
-    headerColor = 0xffff00,
+    headerColor = undefined,
     name = "Node",
     position={x:0,y:0},
     uuid = nanoid(),
     nodeData = {},
+    template = undefined,
     props =[
         {id:nanoid(), label:"demo", type:"text", editable:true, socket:"output", value:"Default"},
         {id:nanoid(), label:"demo", type:"text", editable:true, socket:"input", value:"Default"},
         {id:nanoid(), label:"demo", type:"text", editable:true, socket:"input", value:"Default"},
     ],
     } = {}){
+    
+    if (!headerColor && template && template.style && template.style.headerColor) { //overide template color if local has one
+        headerColor = template.style.headerColor
+    }else if (!headerColor) {
+        headerColor = 0x00b5ad
+    }
+
 
     var layoutItems={
         header:undefined,
@@ -156,7 +164,7 @@ var createNodeSquare  = function({
     }
 
     function createHeader(node, name){
-        const materialHeader = new THREE.MeshBasicMaterial( { color: 0x00b5ad,side: THREE.DoubleSide  } );
+        const materialHeader = new THREE.MeshBasicMaterial( { color: headerColor,side: THREE.DoubleSide  } );
         
         var header = new THREE.Mesh( headerGeometry, materialHeader );
         header.layoutItemType ="header"

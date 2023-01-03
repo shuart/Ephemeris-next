@@ -9,12 +9,14 @@ var demoId3 = nanoid()
 var createNode= function({
     uuid=nanoid(),
     ui=undefined,
-    headerColor = 0x00b5ad,
+    // headerColor = 0x00b5ad,
+    headerColor = undefined,
     position={x:0,y:0},
     templateName = undefined,
     propsValue = undefined,
     propsValueFromInput = {},
     imgPath = undefined,
+    template = undefined,
     name = "Node",
     nodeLayout ="square",
     userData = {},
@@ -250,14 +252,14 @@ var createNode= function({
     
     var addToScene = function (currentScene) {
         if (ui) {
-            refInScene =  currentScene.addNode({headerColor,nodeLayout, uuid, position, name, props:internalProps, links, nodeData:self, imgPath})
+            refInScene =  currentScene.addNode({headerColor,nodeLayout, template, uuid, position, name, props:internalProps, links, nodeData:self, imgPath})
         }
         
     }
     var updateInScene = function (){
         if (ui) {
             currentScene.removeNode(refInScene)
-            refInScene =  currentScene.addNode({headerColor,nodeLayout, uuid, position, name, props:internalProps, links, nodeData:self, imgPath}) 
+            refInScene =  currentScene.addNode({headerColor,nodeLayout, template, uuid, position, name, props:internalProps, links, nodeData:self, imgPath}) 
         }
         
     }
@@ -344,7 +346,7 @@ var createNodeManager = function ({
             params.uuid = nanoid()
         }
         var template = nodeTemplates[templateName]
-        var newParams= Object.assign({},template,params,{ui:ui, contextNodes:nodeInUse,contextLinks:linksInUse, globalSettings:globalSettings})
+        var newParams= Object.assign({},template,params,{ui:ui,template:template, contextNodes:nodeInUse,contextLinks:linksInUse, globalSettings:globalSettings})
         // alert(newParams.color) //TODO find why undefined first?
         var node = createNode(newParams)
         

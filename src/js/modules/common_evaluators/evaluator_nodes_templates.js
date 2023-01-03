@@ -16,6 +16,13 @@ var getProp = function(props,propName, data){
 
 var evaluatorTemplates = {}
 
+var nodeColors = {
+    input:0x83314a,
+    inputData:0x00d6a3,
+    inputObject:0xed9e5c,
+    output:0x1d1d1d,
+    attribute:0xa35abd,
+}
 
 // baseTemplates.input_number = {
 //     templateName : "input_number",
@@ -61,6 +68,10 @@ var evaluatorTemplates = {}
 evaluatorTemplates.sourceEntity = {
     templateName : "source_entity",
     name : "Source",
+    style:{
+        headerColor:nodeColors.inputData,
+    },
+    category:"input",
     props :[
         {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         {id:"outputReference", expect:"string", label:"Type Reference", type:"hidden", editable:false, socket:"output", value:""},
@@ -114,6 +125,11 @@ evaluatorTemplates.sourceEntity = {
 evaluatorTemplates.sourceInstance = {
     templateName : "source_instance",
     name : "Source Instance",
+    style:{
+        headerColor:nodeColors.inputObject,
+    },
+    category:"input",
+
     props :[
         {id:"output", expect:"object", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
     ],
@@ -231,6 +247,10 @@ evaluatorTemplates.extractProperty = {
 evaluatorTemplates.extractRelations = {
     templateName : "extract_relations",
     name : "extract_relations",
+    style:{
+        headerColor:nodeColors.attribute,
+    },
+    category:"relations",
     props :[
         {id:"output", expect:"array", isSquare:true, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         {id:"id", expect:"string", label:"prop id", type:"hidden", editable:false, socket:"output", value:false},
@@ -380,6 +400,11 @@ evaluatorTemplates.joinFields = {
 evaluatorTemplates.outputTable = {
     templateName : "output_table",
     name : "output_table",
+    style:{
+        headerColor:nodeColors.output,
+    },
+    category:"output",
+
     props :[
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
@@ -402,6 +427,10 @@ evaluatorTemplates.outputTable = {
 evaluatorTemplates.outputGraph = {
     templateName : "output_graph",
     name : "output_graph",
+    style:{
+        headerColor:nodeColors.output,
+    },
+    category:"output",
     props :[
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
@@ -427,6 +456,10 @@ evaluatorTemplates.outputGraph = {
 evaluatorTemplates.outputInstanceCard = {
     templateName : "output_instance_card",
     name : "output_instance_card",
+    style:{
+        headerColor:nodeColors.output,
+    },
+    category:"output",
     props :[
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
@@ -450,6 +483,10 @@ evaluatorTemplates.outputInstanceCard = {
 evaluatorTemplates.colParameters = {
     templateName : "col_parameters",
     name : "col_parameters",
+    style:{
+        headerColor:nodeColors.input,
+    },
+    category:"input",
     props :[
         {id:"output", expect:"configuration", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
@@ -493,6 +530,10 @@ evaluatorTemplates.colParameters = {
 evaluatorTemplates.colCustomButton = {
     templateName : "col_custom_button",
     name : "col_custom_button",
+    style:{
+        headerColor:nodeColors.input,
+    },
+    category:"input",
     props :[
         {id:"output", expect:"configuration", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
