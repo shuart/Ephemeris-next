@@ -901,6 +901,10 @@ evaluatorTemplates.actionEditRelation = {
 evaluatorTemplates.actionInput = {
     templateName : "action_Input",
     name : "action_Input",
+    style:{
+        headerColor:nodeColors.inputObject,
+    },
+    category:"input",
     props :[
         // {id:"clicked_item", label:"clicked_item", type:"hidden", editable:false, socket:"output", value:()=>"test1"},
         // {id:"clicked_item_uuid", label:"clicked_item_uuid", type:"hidden", editable:false, socket:"output", value:()=>"test2"},

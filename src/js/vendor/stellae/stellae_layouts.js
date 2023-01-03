@@ -74,6 +74,75 @@ var socketColorMap={
     default:0x00b5ad, 
 }
 
+const colorShade = (color, amt) => {
+    // col = col.replace(/^#/, '')
+    var col = color
+    if (col[0]!='#') { //is decimal
+        // col = "#"+col.toString(16);
+        let r = (col & 0xff0000) >> 16;
+        let g = (col & 0x00ff00) >> 8;
+        let b = (col & 0x0000ff);
+        // var r = Math.floor(col / (256*256));
+        // var g = Math.floor(col / 256) % 256;
+        // var b = col % 256;
+        ([r, g, b] = [r + amt, g+ amt, b + amt])
+        r = Math.max(Math.min(255, r), 0).toString(16)
+        g = Math.max(Math.min(255, g), 0).toString(16)
+        b = Math.max(Math.min(255, b), 0).toString(16)
+    
+        const rr = (r.length < 2 ? '0' : '') + r
+        const gg = (g.length < 2 ? '0' : '') + g
+        const bb = (b.length < 2 ? '0' : '') + b
+    
+        return `#${rr}${gg}${bb}`
+        // const isValidHex = (hex) => /^#([A-Fa-f0-9]{3,4}){1,2}$/.test(hex)
+        // const getChunksFromString = (st, chunkSize) => st.match(new RegExp(`.{${chunkSize}}`, "g"))
+        // const convertHexUnitTo256 = (hexStr) => parseInt(hexStr.repeat(2 / hexStr.length), 16)
+        // const getAlphafloat = (a, alpha) => {
+        //     if (typeof a !== "undefined") {return a / 255}
+        //     if ((typeof alpha != "number") || alpha <0 || alpha >1){
+        //     return 1
+        //     }
+        //     return alpha
+        // }
+        // const hexToRGBA = (hex, alpha) => {
+        //     // if (!isValidHex(hex)) {throw new Error("Invalid HEX")}
+        //     const chunkSize = Math.floor((hex.length - 1) / 3)
+        //     const hexArr = getChunksFromString(hex.slice(1), chunkSize)
+        //     let [r, g, b, a] = hexArr.map(convertHexUnitTo256)
+        //     const original = `rgba(${r}, ${g}, ${b}, ${getAlphafloat(a, alpha)})`
+        //     ([r, g, b] = [parseInt(r, 16) + amt, parseInt(g, 16) + amt, parseInt(b, 16) + amt])
+    
+        //     r = Math.max(Math.min(255, r), 0).toString(16)
+        //     g = Math.max(Math.min(255, g), 0).toString(16)
+        //     b = Math.max(Math.min(255, b), 0).toString(16)
+        
+        //     const rr = (r.length < 2 ? '0' : '') + r
+        //     const gg = (g.length < 2 ? '0' : '') + g
+        //     const bb = (b.length < 2 ? '0' : '') + b
+        
+        //     return `#${rr}${gg}${bb}`
+        // }
+        // hexToRGBA(col)
+    }else{
+        col = col.substring(1)
+        if (col.length === 3) col = col[0] + col[0] + col[1] + col[1] + col[2] + col[2]
+  
+        let [r, g, b] = col.match(/.{2}/g);
+        ([r, g, b] = [parseInt(r, 16) + amt, parseInt(g, 16) + amt, parseInt(b, 16) + amt])
+    
+        r = Math.max(Math.min(255, r), 0).toString(16)
+        g = Math.max(Math.min(255, g), 0).toString(16)
+        b = Math.max(Math.min(255, b), 0).toString(16)
+    
+        const rr = (r.length < 2 ? '0' : '') + r
+        const gg = (g.length < 2 ? '0' : '') + g
+        const bb = (b.length < 2 ? '0' : '') + b
+    
+        return `#${rr}${gg}${bb}`
+    }
+  }
+
 
 
 
@@ -174,10 +243,22 @@ var createNodeSquare  = function({
         var spritetext = createCharacterLabel(name)
         node.add(spritetext)
         spritetext.position.set(0,0,-0.01)
-
+        
+        createSubHeader(node) //only for extra coolness
         node.add(header)
         layoutItems.header = header
         return header
+    }
+    function createSubHeader(node){
+        const materialHeader = new THREE.MeshBasicMaterial( { color: colorShade(headerColor, -35),side: THREE.DoubleSide  } );
+        
+        var subheader = new THREE.Mesh( headerGeometry, materialHeader );
+        subheader.layoutItemType ="subheader"
+        subheader.layoutItemRoot =node
+        subheader.position.set((0-hwidth/2),0-hheight/2+0.05,0.001)
+        node.add(subheader)
+        // layoutItems.subheader = subheader
+        return subheader
     }
 
     function createBack(node, props){
