@@ -83,6 +83,23 @@ function addCSS(cssText){
             margin: 5px;
             cursor:pointer;
         }
+        .stellae_input_back{
+            background-color: #3b3b3b;
+            height: 30px;
+            width: 30px;
+            border-radius: 20px;
+            padding: -3px;
+            padding-top: -21px;
+            text-align: center;
+            font-size: 19px;
+            color: white;
+            position: absolute;
+            left: 12px;
+            margin: 5px;
+            cursor: pointer;
+            top: 102px;
+            display:none;
+        }
         
 
         @media (prefers-color-scheme: dark) {
@@ -130,10 +147,65 @@ inputElements.createListInput = function ({
         alert(event.value)
     }
     }={}) {
+
+    function createCategories(listElement,options, domElement,shieldElement) {
+        var categoryElement = {}
+        for (let i = 0; i < options.length; i++) {
+            const data = options[i];
+            if (data.category && !categoryElement[data.category]) {
+                categoryElement[data.category ] = true;
+                var optionsDomElement= document.createElement('div')
+                optionsDomElement.classList ='stellae_input_list_items'
+                optionsDomElement.innerText = data.category+ " >"
+                optionsDomElement.addEventListener("click",function () {
+                
+                showOnlyInCategory(domElement, data.category)
+            })
+            listElement.appendChild(optionsDomElement)
+            }
+        }
+    }
+
+    function hideIfInCategories(domElement) {
+        var listElements=  domElement.querySelectorAll(".isInCategory")
+        for (let i = 0; i < listElements.length; i++) {
+            listElements[i].style.display="none";
+        }
+    }
+    function showOnlyInCategory(domElement, category) {
+        var listDisplayed = domElement.querySelectorAll(".stellae_input_list_items");
+        for (let i = 0; i < listDisplayed.length; i++) {
+            
+            if (listDisplayed[i].classList.contains("stellae_cat_"+category)) {
+                listDisplayed[i].style.display="block";
+            }else{
+                listDisplayed[i].style.display="none";
+            }
+        }
+        domElement.querySelector(".stellae_input_back").style.display="block";
+    }
+    function showOriginalView(domElement) {
+        var listDisplayed = domElement.querySelectorAll(".stellae_input_list_items");
+        for (let i = 0; i < listDisplayed.length; i++) {
+            
+            if (listDisplayed[i].classList.contains("isInCategory")) {
+                listDisplayed[i].style.display="none";
+            }else{
+                listDisplayed[i].style.display="block";
+            }
+        }
+        domElement.querySelector(".stellae_input_back").style.display="none";
+    }
+
+
     
     function createOption(data, domElement,shieldElement) {
         var optionsDomElement= document.createElement('div')
-        optionsDomElement.classList ='stellae_input_list_items'
+        var classExtraAttributes = ""
+        if (data.category) {
+            classExtraAttributes = "isInCategory stellae_cat_"+data.category
+        }
+        optionsDomElement.classList ='stellae_input_list_items '+classExtraAttributes
         optionsDomElement.innerText = data.value
         optionsDomElement.addEventListener("click",function () {
             if (!data.params) {
@@ -154,8 +226,8 @@ inputElements.createListInput = function ({
         return optionsDomElement
     }
     function createDomElement() {
-        var shieldElement= document.createElement('div')
-        shieldElement.classList="stellae_input_shield"
+
+        //create input area
         var domElement= document.createElement('div')
         domElement.classList="stellae_input_container"
 
@@ -167,7 +239,25 @@ inputElements.createListInput = function ({
             <div class=stellae_input_list></div>
 
         `
+
+        //create Back Button if needed
+        var backElement= document.createElement('div')
+        backElement.classList="stellae_input_back"
+        backElement.innerText="<"
+        backElement.addEventListener("mousedown",function (event) {
+            showOriginalView(domElement)
+        })
+
+        //create shield area
+        var shieldElement= document.createElement('div')
+        shieldElement.classList="stellae_input_shield"
+
+        //Create list and logic
         var listElement = domElement.querySelector(".stellae_input_list")
+
+        createCategories(listElement, options, domElement,shieldElement)
+        domElement.appendChild(backElement)
+
         for (let i = 0; i < options.length; i++) {
             const element = options[i];
             listElement.appendChild(createOption(element, domElement,shieldElement))
@@ -200,9 +290,14 @@ inputElements.createListInput = function ({
                 }else{
                     li.style.display = 'block';
                 }
-              }
+            }
+            if (searchValue == "") { //re-hide categories
+                hideIfInCategories(domElement)
+            }
             
         })
+
+        hideIfInCategories(domElement) //hide if in category
         document.body.appendChild(shieldElement)
         document.body.appendChild(domElement)
         domElement.querySelector(".stellae_input_field_input").focus()

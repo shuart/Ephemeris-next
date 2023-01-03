@@ -32,7 +32,7 @@ var common_ui =createAdler({
             background: linear-gradient(90deg, rgba(0,181,173,1) 8%, rgba(228,255,254,1) 8%, rgba(255,255,255,1) 75%);
             background: linear-gradient(165deg, rgba(0,181,173,1) 0%, rgba(149,235,231,1) 100%);    
             background: linear-gradient(165deg, rgb(0, 181, 173) 0%, rgb(33, 51, 50) 100%);
-            width:55px;
+            width:60px;
             height:100%;
             position: absolute;
         }
@@ -49,8 +49,8 @@ var common_ui =createAdler({
             position: absolute;
             left: 50px;
             background-color: white;
-            border-top-left-radius:8px;
-            border-bottom-left-radius:8px;
+            border-top-left-radius:13px;
+            border-bottom-left-radius:13px;
             z-index: 1;
         }
 

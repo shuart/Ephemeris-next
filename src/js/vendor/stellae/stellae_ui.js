@@ -437,7 +437,7 @@ export default function createStellaeUi({
             for (const key in usedTemplates) {
                 if (Object.hasOwnProperty.call(usedTemplates, key)) {
                     const template = usedTemplates[key];
-                    usedTemplatesList.push({id:template.templateName, value:template.name})
+                    usedTemplatesList.push({id:template.templateName, value:template.name, category:template.category})
                 }
             }
             //check if there is an alternative user provided list
