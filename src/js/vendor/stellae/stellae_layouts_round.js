@@ -64,29 +64,50 @@ var propsHeightMap={
 //     if(h)return"rgb"+(f?"a(":"(")+r+","+g+","+b+(f?","+m(a*1000)/1000:"")+")";
 //     else return"#"+(4294967296+r*16777216+g*65536+b*256+(f?m(a*255):0)).toString(16).slice(1,f?undefined:-2)
 // }
-const colorShade = (col, amt) => {
+const colorShade = (color, amt) => {
     // col = col.replace(/^#/, '')
-    col = col.substring(1)
-    if (col.length === 3) col = col[0] + col[0] + col[1] + col[1] + col[2] + col[2]
+    var col = color
+    if (col[0]!='#') { //is decimal
+        // col = "#"+col.toString(16);
+        let r = (col & 0xff0000) >> 16;
+        let g = (col & 0x00ff00) >> 8;
+        let b = (col & 0x0000ff);
+        // var r = Math.floor(col / (256*256));
+        // var g = Math.floor(col / 256) % 256;
+        // var b = col % 256;
+        ([r, g, b] = [r + amt, g+ amt, b + amt])
+        r = Math.max(Math.min(255, r), 0).toString(16)
+        g = Math.max(Math.min(255, g), 0).toString(16)
+        b = Math.max(Math.min(255, b), 0).toString(16)
+    
+        const rr = (r.length < 2 ? '0' : '') + r
+        const gg = (g.length < 2 ? '0' : '') + g
+        const bb = (b.length < 2 ? '0' : '') + b
+    
+        return `#${rr}${gg}${bb}`
+    }else{
+        col = col.substring(1)
+        if (col.length === 3) col = col[0] + col[0] + col[1] + col[1] + col[2] + col[2]
   
-    let [r, g, b] = col.match(/.{2}/g);
-    ([r, g, b] = [parseInt(r, 16) + amt, parseInt(g, 16) + amt, parseInt(b, 16) + amt])
-  
-    r = Math.max(Math.min(255, r), 0).toString(16)
-    g = Math.max(Math.min(255, g), 0).toString(16)
-    b = Math.max(Math.min(255, b), 0).toString(16)
-  
-    const rr = (r.length < 2 ? '0' : '') + r
-    const gg = (g.length < 2 ? '0' : '') + g
-    const bb = (b.length < 2 ? '0' : '') + b
-  
-    return `#${rr}${gg}${bb}`
-  }
+        let [r, g, b] = col.match(/.{2}/g);
+        ([r, g, b] = [parseInt(r, 16) + amt, parseInt(g, 16) + amt, parseInt(b, 16) + amt])
+    
+        r = Math.max(Math.min(255, r), 0).toString(16)
+        g = Math.max(Math.min(255, g), 0).toString(16)
+        b = Math.max(Math.min(255, b), 0).toString(16)
+    
+        const rr = (r.length < 2 ? '0' : '') + r
+        const gg = (g.length < 2 ? '0' : '') + g
+        const bb = (b.length < 2 ? '0' : '') + b
+    
+        return `#${rr}${gg}${bb}`
+    }
+}
 
 
 var createNodeRound  = function({
     color = "#000000",
-    headerColor = "0x00b5ad",
+    headerColor = 0x00b5ad,
     
     imgPath = undefined,
     name = "Node",
@@ -99,7 +120,6 @@ var createNodeRound  = function({
         {id:nanoid(), label:"demo", type:"text", editable:true, socket:"input", value:"Default"},
     ],
     } = {}){
-
     var layoutItems={
         header:undefined,
         sockets:{},
@@ -241,13 +261,14 @@ var createNodeRound  = function({
 
     function createSocket(group, prop){
         var socketColor = 0x00d6a3
-        if (Array.isArray(prop.value)) {
-            socketColor = 0x6767d1
-        }
-        if (typeof headerColor =="string") {
-        //    socketColor = pSBC(-0.4, "#6767d1") 
-           socketColor = colorShade(headerColor, -30)
-        }
+        // if (Array.isArray(prop.value)) {
+        //     socketColor = 0x6767d1
+        // }
+        // if (typeof headerColor =="string") {
+        // //    socketColor = pSBC(-0.4, "#6767d1") 
+        //    socketColor = colorShade(headerColor, -30)
+        // }
+        socketColor = colorShade(headerColor, -30)
         const materialSocketFlow = new THREE.MeshBasicMaterial( { color: socketColor,side: THREE.DoubleSide  } );
         var socket = new THREE.Mesh( roundSocketGeometry, materialSocketFlow );
         
