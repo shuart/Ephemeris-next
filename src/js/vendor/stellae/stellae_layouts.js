@@ -171,8 +171,8 @@ var createNodeSquare  = function({
         header:undefined,
         sockets:{},
         props:{},
+        label:undefined,
     }
-    
     function createShadow (){
         //do it only one time
         const ctx = shadowCanvas.getContext('2d');
@@ -199,7 +199,7 @@ var createNodeSquare  = function({
     }
 
     function createCharacterLabel( text, maxLength ) {
-
+        var text = text || "Missing"
         if (text.length > maxLength) {
             text = text.substring(0, maxLength-2)+"..";
         }
@@ -404,8 +404,22 @@ var createNodeSquare  = function({
             currentPosition +=propsHeightMap[props[i].type]
         }
     }
+    function createLabel (node, value){
+        var spritetext = createCharacterLabel(value)
+        if (node.layout.label) {
+            node.remove(node.layout.label)
+        }
+        node.layout.label = spritetext
+        node.add(spritetext)
+        spritetext.position.set(1,-0.5,-0.01)
+    }
      
     var node= new THREE.Group();
+    node.layoutItemInteractions = {
+        setLabel : function(value){
+            createLabel(node, value)
+        }
+    }
     var header = createHeader(node,name)
     createBack(node,props)
     // createSocket(node)

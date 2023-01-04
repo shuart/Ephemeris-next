@@ -480,7 +480,12 @@ export default function createStellaeUi({
     var removeNode=function (object) {
         state.scene.remove(object)
     }
-
+    var labelNode=function (object, value) {
+        if (object.layoutItemInteractions && object.layoutItemInteractions.setLabel) {
+            object.layoutItemInteractions.setLabel(value)
+        }
+        
+    }
     var attachDataManager = function (dataManagerToAttach) {
         dataManager = dataManagerToAttach
     }
@@ -496,5 +501,6 @@ export default function createStellaeUi({
     self.addLinks = addLinks;
     self.removeLinks = removeLinks;
     self.addNode = addNode;
+    self.labelNode = labelNode;
     return self
 }

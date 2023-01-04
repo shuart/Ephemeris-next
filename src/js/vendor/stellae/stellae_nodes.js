@@ -53,6 +53,7 @@ var createNode= function({
     var internalProps = undefined;
     var inEvaluation = false;
     var inInit = false;
+    var label =undefined;
 
     var exportParams = function({
         withAllValues=false,
@@ -220,6 +221,7 @@ var createNode= function({
 
         updateInScene()
     }
+    
 
     
     // var instance = function(ui, data){
@@ -249,6 +251,13 @@ var createNode= function({
         return uuid
     }
     //UI
+
+    var addLabel = function(newLabel){
+        label = newLabel
+        if (ui) {
+            currentScene.labelNode(refInScene, newLabel)
+        }
+    }
     
     var addToScene = function (currentScene) {
         if (ui) {
@@ -281,6 +290,7 @@ var createNode= function({
     self.init=init;
     self.remove = remove;
     self.evaluate = evaluate;
+    self.addLabel = addLabel;
     return self
 }
 
@@ -359,6 +369,12 @@ var createNodeManager = function ({
         node.remove()
         delete nodeInUse[uuid]
         cleanLinks()
+    }
+    var labelNodes = function(data){ //form [{nodeId, label}]
+        for (let i = 0; i < data.length; i++) {
+            const label = data[i];
+            nodeInUse[label.nodeId].addLabel(label.label)
+        }
     }
 
     var getNode = function(uuid){
@@ -476,6 +492,7 @@ var createNodeManager = function ({
     self.addNode = addNode
     self.replaceData = replaceData
     self.setGlobalSetting = setGlobalSetting
+    self.labelNodes = labelNodes
     
     return self
 }

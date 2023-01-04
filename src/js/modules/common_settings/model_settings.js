@@ -77,6 +77,12 @@ var getItemsList = function (data, instance){
             // {title:"id", field:"uuid", },
             {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) }, ///evaluators/:evaluatorId 
         ];
+    } else if (instance.props.modelElementType.get() == "simulations") { //TODO move to own page
+        listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
+        listData.cols = [
+            // {title:"id", field:"uuid", },
+            {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) }, ///evaluators/:evaluatorId 
+        ];
     } else if (instance.props.modelElementType.get() == "evaluators") {
         listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
         listData.cols = [

@@ -14,6 +14,7 @@ import login_ui from "../login/login_ui.js";
 
 import evaluator_node_ui from "../common_evaluators/evaluator_node_ui.js";
 import cycles_editor from "../cycles_editor/cycles_editor.js";
+import simulations_editor from "../simulations_editor/simulations_editor.js";
 
 
 const common_router = createRouter()
@@ -88,6 +89,14 @@ var createStateManager = function({
             console.log(event);
             setCurrentProject(event.params.project)
             mainUiElement.append(cycles_editor.instance({props:{cycleId:event.params.cycles}}), "main_area_mount_point");
+            mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
+            mainUiElement.update();
+        })
+        common_router.route("/:project/simulations/:simulation", (event)=>
+        {
+            console.log(event);
+            setCurrentProject(event.params.project)
+            mainUiElement.append(simulations_editor.instance({props:{simId:event.params.simulation}}), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
