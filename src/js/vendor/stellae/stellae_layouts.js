@@ -56,6 +56,7 @@ var propsHeightMap={
     hidden:0.5,
     text:0.3,
     select:0.3,
+    secret:0,
 }
 
 var socketColorMap={
@@ -267,7 +268,7 @@ var createNodeSquare  = function({
         var background = new THREE.Mesh( geometryBack, materialBack );
         background.layoutItemType ="header"
         background.layoutItemRoot =node
-        background.scale.y = (props.length+1)/2
+        background.scale.y = (props.filter(p=>p.type != 'secret').length+1)/2
         background.position.set((0-hwidth/2),0-hheight/2,0.002)
         node.add(background)
         //createShadow
@@ -277,7 +278,8 @@ var createNodeSquare  = function({
         // spriteShadow.scale.set(3.5,4.5/3,1)
         // background.scale.y = (props.length+1)/2
         var scaler = props.length+1
-        scaler = Math.min(props.length,5)
+        
+        scaler = Math.min(props.filter(p=>p.type != 'secret').length,5)
         spriteShadow.position.set(0.1,scaler/4 +(scaler/10) ,0.008)
         spriteShadow.scale.set(3.7,scaler,1)
         // spriteShadow.scale.y = (props.length+1)
@@ -400,8 +402,10 @@ var createNodeSquare  = function({
     function createRows (node,props){
         var currentPosition =0;
         for (let i = 0; i < props.length; i++) {
-            var propLayout = createProp(node, currentPosition, props[i])
-            currentPosition +=propsHeightMap[props[i].type]
+            if (props[i].type != "secret") {
+                var propLayout = createProp(node, currentPosition, props[i])
+                currentPosition +=propsHeightMap[props[i].type]
+            }
         }
     }
     function createLabel (node, value){

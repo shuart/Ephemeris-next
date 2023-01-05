@@ -36,7 +36,7 @@ var setUp = function (event, data, instance) {
             highlightConnections: false,
             // addNodesFromCustomList: customNewNodeList,
             allowCustomNameForNodes:true,
-            allowCustomNameForRelations:true,
+            // allowCustomNameForRelations:true,
         })
     
         // var repo = createEvaluatorsManagement()
@@ -81,6 +81,16 @@ var playSimulation = function(event, data, instance){
     } )
     data.currentSimulator.play()
 }
+
+var pauseSimulation = function(event, data, instance){
+    
+    data.currentSimulator.pause()
+}
+var resetSimulation = function(event, data, instance){
+    
+    data.currentSimulator.reset()
+}
+
 
 
 var saveNetwork = function (event, data, instance) {
@@ -130,6 +140,12 @@ var simulations_editor =createAdler({
                 </a>
                 <a class="navbar-item action_simulation_play">
                     play
+                </a>
+                <a class="navbar-item action_simulation_pause">
+                    pause
+                </a>
+                <a class="navbar-item action_simulation_reset">
+                    reset
                 </a>
                 
                 <div class="navbar-item has-dropdown is-hoverable">
@@ -194,6 +210,8 @@ var simulations_editor =createAdler({
             [".action_settings_save_network","click", saveNetwork ],
             [".action_settings_show_preview","click", showPreview ],
             [".action_simulation_play","click", playSimulation  ],
+            [".action_simulation_pause","click", pauseSimulation  ],
+            [".action_simulation_reset","click", resetSimulation  ],
         ],
         events:{
             // onBeforeMount:(event, data, instance) => setUp(event, data, instance),

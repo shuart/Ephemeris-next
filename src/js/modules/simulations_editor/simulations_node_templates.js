@@ -22,6 +22,8 @@ var nodeColors = {
     inputObject:0xed9e5c,
     output:0x1d1d1d,
     attribute:0xa35abd,
+    flux:0x3072d6,
+    process:0xed9e5c,
 }
 
 
@@ -36,8 +38,8 @@ simulationNodesTemplates.source = {
         {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         {id:"input", expect:"data", isSquare:false, label:"Input", type:"hidden", editable:false, socket:"input", value:"output"},
         {id:"qt", expect:undefined, label:"Quantity", type:"text", editable:false, socket:"none", value:5},
-        {id:"outValue", expect:undefined, label:"Contains", type:"text", editable:false, socket:"none", value:0},
-        {id:"outObjects", expect:undefined, label:"Quantity", type:"hidden", editable:false, socket:"none", value:[]},
+        {id:"outValue", expect:undefined, label:"Contains", type:"secret", editable:false, socket:"none", value:0},
+        {id:"outObjects", expect:undefined, label:"Quantity", type:"secret", editable:false, socket:"none", value:[]},
 
     ],
     methods:{
@@ -64,7 +66,7 @@ simulationNodesTemplates.flux = {
     templateName : "flux",
     name : "Flux",
     style:{
-        headerColor:nodeColors.attribute,
+        headerColor:nodeColors.flux,
     },
     // category:"input",
     props :[
@@ -102,7 +104,9 @@ simulationNodesTemplates.stock = {
     props :[
         {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         {id:"input", expect:"data", isSquare:false, label:"Input", type:"hidden", editable:false, socket:"input", value:"output"},
-        {id:"outValue", expect:undefined, label:"Value", type:"text", editable:false, socket:"none", value:5},
+        {id:"inObjects", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:[]},
+        {id:"outValue", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:0},
+        {id:"outObjects", expect:undefined, label:"Quantity", type:"secret", editable:false, socket:"none", value:[]},
     ],
     methods:{
     },
@@ -111,14 +115,33 @@ simulationNodesTemplates.stock = {
 
         },
         onInit:(props) =>{
-            // var entityRepo = createEntityManagement()
-            // console.log(entityRepo.getAll());
-            // // alert()
-            // props.method.setOptions(entityRepo.getAll().map(function (e) {
-            //     return {id:e.uuid, value:e.name}
-            // }))
-            
-            
+        },
+    },
+}
+
+simulationNodesTemplates.process = {
+    templateName : "process",
+    name : "Process",
+    style:{
+        headerColor:nodeColors.process,
+    },
+    // category:"input",
+    props :[
+        {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"input", expect:"data", isSquare:false, label:"Input", type:"hidden", editable:false, socket:"input", value:"output"},
+        {id:"duration", expect:undefined, label:"Duration", type:"text", editable:false, socket:"none", value:5},
+        {id:"outValue", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:0},
+        {id:"inObjects", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:[]},
+        {id:"bufferObjects", expect:undefined, label:"Quantity", type:"secret", editable:false, socket:"none", value:{}},
+        {id:"outObjects", expect:undefined, label:"Quantity", type:"secret", editable:false, socket:"none", value:[]},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+
+        },
+        onInit:(props) =>{
         },
     },
 }

@@ -1,5 +1,5 @@
 import topologicalOrdering from "./simulations_topologicalOrdering.js"
-import { resolveSourceNode,resolveFluxNode, resolveStockNode } from "./simulations_resolvers.js"
+import { resolveSourceNode,resolveFluxNode, resolveStockNode, resolveProcessNode } from "./simulations_resolvers.js"
 
 var createSimulator = function(graph){
     var self = {}
@@ -14,15 +14,25 @@ var createSimulator = function(graph){
     }
 
     var play =function(params) {
-        if (simulationState = "init") {
+        if (simulationState == "init") {
             startSimulation() 
-         } 
+        }else{
+            simulationState = "play"
+        } 
 
+    }
+    var pause =function(params) {
+        simulationState = "pause"
+
+    }
+    var reset =function(params) {
+        simulationState = "init"
     }
     var startSimulation = function (data) { //kickstart the sim
         console.log("Starting simulation");
         // updateData(data)
         resetSimulation()
+        simulationState = "play"
         iterate();
         
     }
@@ -41,7 +51,7 @@ var createSimulator = function(graph){
     }
 
     var iterate = function () { //iterate every x secondes and increment frame
-        if (Date.now() - lastFrameTime > timeBetweenFrames ) {
+        if ((Date.now() - lastFrameTime > timeBetweenFrames)&& simulationState == "play") {
             currentFrame ++ 
             lastFrameTime = Date.now()
             processFrame(currentFrame, currentSimulationData)
@@ -69,12 +79,17 @@ var createSimulator = function(graph){
             if (node.templateName =="stock") {
                 resolveStockNode(node, data, frame)
             }
+            if (node.templateName =="process") {
+                resolveProcessNode(node, data, frame)
+            }
         }
         callbacks.onIterate(data.orderedNodes);
     }
     
 
     self.play = play
+    self.pause = pause
+    self.reset = reset
     self.updateData = updateData
     self.updateCallbacks = updateCallbacks
     return self
