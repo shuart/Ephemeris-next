@@ -11,6 +11,7 @@ import nanoid from "../../vendor/nanoid.js";
 import createSimulationManagement from "../common_project_management/simulation_management.js";
 import simulationNodesTemplates from "./simulations_node_templates.js";
 import createSimulator from "./simulations_simulator.js";
+import create3dSimulationRender from "./simulation_3d_view.js";
 
 var softUpdate= function (event, data, instance) {
 
@@ -18,7 +19,9 @@ var softUpdate= function (event, data, instance) {
 var setUp = function (event, data, instance) {
     setTimeout(() => {
         var element= instance.query('.graph')
+        var renderArea= instance.query('.renderArea')
         element.innerHTML = ''//TODO GRAPH IS LOADED 2 TIMES. PREVENT THAT
+        renderArea.innerHTML = ''//TODO GRAPH IS LOADED 2 TIMES. PREVENT THAT
         var customNewNodeList = function(data){
             return [
                 {id:"in_out", value:"Entity", params:{ nodeLayout:"round",uuid:nanoid(), userData:{type:"entity"}, name:"Entity", headerColor:"#069c95", imgPath:'img/iconsPNG/box.svg'}},
@@ -26,6 +29,9 @@ var setUp = function (event, data, instance) {
                 {id:"in_out", value:"Group", params:{ nodeLayout:"group",uuid:nanoid(), userData:{type:"group"}, name:"Group", headerColor:"#c0bfbc", imgPath:'img/iconsPNG/info.svg'}},
             ]
         }
+        data.render = create3dSimulationRender({
+            container:renderArea,
+        })
         data.graph = createStellae({
             container:element, 
             fullSize:true,
@@ -185,7 +191,9 @@ var simulations_editor =createAdler({
                 </div>
             </div>
         </nav>
+        
         <div style="width:100%; height:800px; position:relative" class="graph" >GRAPH</div>
+        <div style="width:100%; height:400px; position:relative" class="renderArea" >GRAPH</div>
     </div>
         `,
     params:{
