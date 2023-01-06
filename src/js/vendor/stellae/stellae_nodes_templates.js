@@ -4,6 +4,7 @@ var baseTemplates = {}
 baseTemplates.input_number = {
     templateName : "input_number",
     name : "Number",
+    category:"Input",
     props :[
         {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         {id:"number", label:"Number", type:"text", editable:true, socket:"none", value:"0"},
@@ -24,9 +25,10 @@ baseTemplates.input_number = {
     },
 }
 
-baseTemplates.input_number = {
+baseTemplates.passtrough = {
     templateName : "in_out",
     name : "in_out",
+    category:"Helpers",
     props :[
         {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         {id:"input", label:"input", type:"text", editable:true, socket:"input", value:"0"},
@@ -47,19 +49,58 @@ baseTemplates.input_number = {
     },
 }
 
-baseTemplates.math_add = {
-    templateName : "math_add",
-    name : "Add",
+// baseTemplates.math_add = {
+//     templateName : "math_add",
+//     name : "Add",
+//     props :[
+//         {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+//         {id:"number1", label:"Number", type:"text", editable:true, socket:"input", value:"0"},
+//         {id:"number2", label:"Number", type:"text", editable:true, socket:"input", value:"0"},
+//     ],
+//     methods:{
+//     },
+//     event:{
+//         onEvaluate:(props) =>{
+//             props.output.set(parseInt( props.number1.get() ) +parseInt( props.number2.get() ) )
+//         },
+//     },
+// }
+
+baseTemplates.math = {
+    templateName : "math",
+    name : "Math",
+    // style:{
+    //     headerColor:nodeColors.inputData,
+    // },
+    category:"Mathematics",
     props :[
-        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
-        {id:"number1", label:"Number", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"number2", label:"Number", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"method", label:"", type:"select", options:[
+            {id:"add", value:"Add"},
+            {id:"substract", value:"Substract"},
+            {id:"multiply", value:"Multiply"},
+            {id:"divide", value:"Divide"},
+        ],editable:true, socket:"none", value:"Add"},
+        {id:"a",expect:"string", label:"a", type:"text", editable:true, socket:"input", value:1},
+        {id:"b",expect:"string", label:"b", type:"text", editable:true, socket:"input", value:1},
     ],
     methods:{
     },
     event:{
         onEvaluate:(props) =>{
-            props.output.set(parseInt( props.number1.get() ) +parseInt( props.number2.get() ) )
+            var method = props.method.getOptionId()
+            if (method =="add") {
+                props.output.set( parseInt( props.a.get() ) +parseInt( props.b.get() )  )   
+            } else if (method =="substract") {
+                props.output.set( props.a.get() ) - parseInt( props.b.get() ) 
+            } else if (method =="multiply") {
+                props.output.set( props.a.get() ) * parseInt( props.b.get() ) 
+            } else if (method =="divide") {
+                props.output.set( props.a.get() ) / parseInt( props.b.get() )  
+            }
+            
+        },
+        onInit:(props) =>{
         },
     },
 }
@@ -67,6 +108,7 @@ baseTemplates.math_add = {
 baseTemplates.math_compare = {
     templateName : "math_compare",
     name : "Compare",
+    category:"Mathematics",
     props :[
         {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
@@ -104,6 +146,7 @@ baseTemplates.math_compare = {
 baseTemplates.viewer_result = {
     templateName : "viewer_result",
     name : "viewer",
+    category:"Helpers",
     props :[
         {id:"result", label:"result", type:"text", editable:true, socket:"input", value:"0"},
     ],

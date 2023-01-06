@@ -64,6 +64,7 @@ var setUp = function (event, data, instance) {
 
         data.graph.getNodeManager().addNode("in_out", { nodeLayout:"group",uuid:"feefsfesfsefsdfsd", name:"group", headerColor:"#c0bfbc", imgPath:'img/iconsPNG/info.svg'})
         data.currentSimulator = createSimulator()
+        data.currentSimulator.setRenderer(data.render)
         // data.graph.getNodeManager().exportNodes({withAllValues:true})
 
         

@@ -23,6 +23,17 @@ var resolveSourceNode =function(node, graphData){
     updateNodeDisplayValue(node)
 }
 
+var resolveFrameNode =function(node, graphData, frame){
+    console.info("Resolve " + node.templateName + " " + node.params.uuid);
+    console.info(node);
+    let parents = graphData.parentsList
+    let children = graphData.adgencyList[node.params.uuid]
+    let nodes = graphData.orderedNodes
+    node.data.output = frame
+    node.data.outValue = frame
+    // updateNodeDisplayValue(node)
+}
+
 var resolveFluxNode =function(node, graphData){
     console.info("Resolve " + node.templateName + " " + node.params.uuid);
     console.info(node);
@@ -110,4 +121,4 @@ var resolveProcessNode =function(node, graphData, currentFrame){
     
 }
 
-export {resolveSourceNode,resolveFluxNode,resolveStockNode, resolveProcessNode }
+export {resolveSourceNode,resolveFluxNode,resolveStockNode, resolveProcessNode, resolveFrameNode }

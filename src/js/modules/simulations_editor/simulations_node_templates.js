@@ -33,7 +33,7 @@ simulationNodesTemplates.source = {
     style:{
         headerColor:nodeColors.inputData,
     },
-    // category:"input",
+    category:"Simulation",
     props :[
         {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         {id:"input", expect:"data", isSquare:false, label:"Input", type:"hidden", editable:false, socket:"input", value:"output"},
@@ -68,11 +68,11 @@ simulationNodesTemplates.flux = {
     style:{
         headerColor:nodeColors.flux,
     },
-    // category:"input",
+    category:"Simulation",
     props :[
         {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         {id:"input", expect:"data", isSquare:false, label:"Input", type:"hidden", editable:false, socket:"input", value:"output"},
-        {id:"flux", expect:undefined, label:"Quantity", type:"text", editable:false, socket:"none", value:5},
+        {id:"flux", expect:"string", label:"Quantity", type:"text", editable:false, socket:"input", value:5},
 
     ],
     methods:{
@@ -100,7 +100,7 @@ simulationNodesTemplates.stock = {
     style:{
         headerColor:nodeColors.attribute,
     },
-    // category:"input",
+    category:"Simulation",
     props :[
         {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         {id:"input", expect:"data", isSquare:false, label:"Input", type:"hidden", editable:false, socket:"input", value:"output"},
@@ -119,17 +119,41 @@ simulationNodesTemplates.stock = {
     },
 }
 
+simulationNodesTemplates.variable = {
+    templateName : "variable",
+    name : "Variable",
+    style:{
+        headerColor:nodeColors.inputData,
+    },
+    category:"Simulation",
+    props :[
+        {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"variable",expect:"string", label:"Message", type:"text", editable:true, socket:"none", value:1},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            props.output.set(props.variable.get() ) 
+        },
+        onInit:(props) =>{
+        },
+    },
+}
+
+
+
 simulationNodesTemplates.process = {
     templateName : "process",
     name : "Process",
     style:{
         headerColor:nodeColors.process,
     },
-    // category:"input",
+    category:"Simulation",
     props :[
         {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         {id:"input", expect:"data", isSquare:false, label:"Input", type:"hidden", editable:false, socket:"input", value:"output"},
-        {id:"duration", expect:undefined, label:"Duration", type:"text", editable:false, socket:"none", value:5},
+        {id:"duration", expect:undefined, label:"Duration", type:"text", editable:false, socket:"input", value:5},
         {id:"outValue", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:0},
         {id:"inObjects", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:[]},
         {id:"bufferObjects", expect:undefined, label:"Quantity", type:"secret", editable:false, socket:"none", value:{}},
@@ -146,6 +170,27 @@ simulationNodesTemplates.process = {
     },
 }
 
+simulationNodesTemplates.frame = {
+    templateName : "simulation_frame",
+    name : "Frame",
+    style:{
+        headerColor:nodeColors.input,
+    },
+    category:"Simulation",
+    props :[
+        {id:"output", expect:"string", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:1},
+        {id:"outValue", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:0},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+        },
+        onInit:(props) =>{
+        },
+    },
+}
+
 
 simulationNodesTemplates.sourceEntity = {
     templateName : "source_entity",
@@ -153,7 +198,7 @@ simulationNodesTemplates.sourceEntity = {
     style:{
         headerColor:nodeColors.inputData,
     },
-    category:"input",
+    category:"Simulation",
     props :[
         {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         {id:"outputReference", expect:"string", label:"Type Reference", type:"hidden", editable:false, socket:"output", value:""},
