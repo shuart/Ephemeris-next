@@ -180,11 +180,13 @@ simulationNodesTemplates.frame = {
     props :[
         {id:"output", expect:"string", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:1},
         {id:"outValue", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:0},
+        {id:"frame", expect:undefined, label:"Value", type:"text", editable:false, socket:"none", value:1},
     ],
     methods:{
     },
     event:{
         onEvaluate:(props) =>{
+            props.output.set(props.frame.get())
         },
         onInit:(props) =>{
         },

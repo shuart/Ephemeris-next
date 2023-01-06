@@ -73,7 +73,7 @@ var setUp = function (event, data, instance) {
 }
 
 var playSimulation = function(event, data, instance){
-    data.currentSimulator.updateData( data.graph.getNodeManager().exportNodes({withAllValues:true}) )
+    data.currentSimulator.updateData( data.graph.getNodeManager() )
     data.currentSimulator.updateCallbacks( {
         onIterate:function(nodes){
             console.log(nodes);

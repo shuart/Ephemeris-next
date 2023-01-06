@@ -23,6 +23,15 @@ var create3dSimulationRender = function({
         recordedClickForMouseUp:false,
     }
 
+    var resetScene = function(){
+        for( var i = state.scene.children.length - 1; i >= 0; i--) { 
+            var obj = state.scene.children[i];
+            state.scene.remove(obj); 
+            state.items= []
+            state.mapping = {}
+       }
+    }
+
     var createItem = function(uuid){
         const geometry = new THREE.BoxGeometry( 1, 0.5, 0.5 );
         const material = new THREE.MeshBasicMaterial( { color: 0x00d6a3 } );
@@ -32,6 +41,7 @@ var create3dSimulationRender = function({
         state.mapping[uuid]=cube;
     }
     var moveItem = function(uuid, x,y,z, animate){
+        
         var item = state.mapping[uuid]
         if (animate) {
             var tween = new TWEEN.Tween(item.position)
@@ -63,7 +73,10 @@ var create3dSimulationRender = function({
     var resolveSourceNode = function(node, data, frame){
         for (let i = 0; i < node.data.outObjects.length; i++) {
             const item = node.data.outObjects[i];
-            createItem(item.uuid)
+            if (!state.mapping[item.uuid]) {
+                createItem(item.uuid)
+            }
+            
             moveItem(item.uuid, node.params.position.x*2 ,0,0-(i*1.5), true )
         }
     }
@@ -156,6 +169,7 @@ var create3dSimulationRender = function({
     }
 
     init()
+    self.resetScene = resetScene
     self.updateView = updateView
     return self
 }

@@ -28,11 +28,6 @@ var createSimulator = function(graph){
     }
     var reset =function(params) {
         simulationState = "init"
-        currentFrame = 0
-        lastFrameTime = 0
-        if (renderer3d) {
-            renderer3d.resetScene()
-        }
     }
     var startSimulation = function (data) { //kickstart the sim
         console.log("Starting simulation");
@@ -55,16 +50,8 @@ var createSimulator = function(graph){
 
     var resetSimulation = function(){
         // start by sorting node with a topological ordering
-        
-        var nodes = currentGraph.exportNodes({withAllValues:true, withNodeObject:true})
-        var sortedData = topologicalOrdering(nodes)
-        // currentSimulationData = JSON.parse(JSON.stringify(sortedData))
-        currentSimulationData = sortedData
-        var nodes = currentSimulationData.orderedNodes
-        //node data is the object used only for the simulation nodes temporary values. It's clean after each reset. EvalData is defined afterward to have access to the "normal" graph values. 
-        //Nothing should be "written" to it appart if we want to modify the node graph directly
-        for (let i = 0; i < nodes.length; i++) { nodes[i].data = JSON.parse(JSON.stringify(nodes[i].params.propsValueFromInput));nodes[i].data.type = nodes[i].templateName;  } //add simpler access to node data
-        
+        var sortedData = topologicalOrdering(currentGraph)
+        currentSimulationData = JSON.parse(JSON.stringify(sortedData))
     }
 
     var iterate = function () { //iterate every x secondes and increment frame
@@ -85,14 +72,12 @@ var createSimulator = function(graph){
     var resolveNodes = function (frame, data) {
         
         var nodes = data.orderedNodes
-        // for (let i = 0; i < nodes.length; i++) { nodes[i].data = JSON.parse(JSON.stringify(nodes[i].params.propsValueFromInput));nodes[i].data.type = nodes[i].templateName;  } //add simpler access to node data
+        for (let i = 0; i < nodes.length; i++) { nodes[i].data = nodes[i].params.propsValueFromInput;nodes[i].data.type = nodes[i].templateName;  } //add simpler access to node data
         for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
 
-            if (node && node.params.nodeObject.evaluate) { //update each node after the other with their evaluation function
-                node.params.nodeObject.evaluate()
-                var socketData = node.params.nodeObject.exportSockets()//TODO, could be return by evaluate fun
-                node.evalData = socketData.propsValue;
+            if (node) {
+                
             }
 
             if (node.templateName =="source") {

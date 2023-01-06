@@ -17,7 +17,9 @@ var resolveSourceNode =function(node, graphData){
     let parents = graphData.parentsList
     let children = graphData.adgencyList[node.params.uuid]
     let nodes = graphData.orderedNodes
-    for (let i = 0; i < node.data.qt; i++) {
+
+    var qt = node.evalData.qt ||node.data.qt
+    for (let i = 0; i < qt; i++) {
         node.data.outObjects.push({uuid:nanoid(), name:"test"})
     }
     updateNodeDisplayValue(node)
@@ -31,6 +33,9 @@ var resolveFrameNode =function(node, graphData, frame){
     let nodes = graphData.orderedNodes
     node.data.output = frame
     node.data.outValue = frame
+    node.params.nodeObject.setProp("output",frame)
+    node.params.nodeObject.setProp("outValue",frame)
+    node.params.nodeObject.setProp("frame",frame)
     // updateNodeDisplayValue(node)
 }
 
@@ -38,10 +43,10 @@ var resolveFluxNode =function(node, graphData){
     console.info("Resolve " + node.templateName + " " + node.params.uuid);
     console.info(node);
         //check parents first
-    let fluxValue = node.data.flux
     let parents = graphData.parentsList[node.params.uuid]
     let children = graphData.adgencyList[node.params.uuid]
     let nodes = graphData.orderedNodes
+    var fluxValue = node.evalData.flux ||node.data.flux
     
     parents.forEach(element => {
         var parentNode = nodes.find(n=> n.params.uuid == element)
@@ -109,11 +114,13 @@ var resolveProcessNode =function(node, graphData, currentFrame){
     let parents = graphData.parentsList
     let children = graphData.adgencyList[node.params.uuid]
     let nodes = graphData.orderedNodes
+    var duration = node.evalData.duration ||node.data.duration
+
     
     node.data.bufferObjects[currentFrame] = node.data.inObjects
     node.data.inObjects =[]
-    var objectsReadyToGetOut = node.data.bufferObjects[currentFrame - node.data.duration] || []
-    node.data.bufferObjects[currentFrame - node.data.duration] = []
+    var objectsReadyToGetOut = node.data.bufferObjects[currentFrame - duration] || []
+    node.data.bufferObjects[currentFrame - duration] = []
     node.data.outObjects = node.data.outObjects.concat(objectsReadyToGetOut)
     var out = node.data.outObjects 
     updateNodeDisplayValue(node)

@@ -57,9 +57,11 @@ var createNode= function({
 
     var exportParams = function({
         withAllValues=false,
+        withNodeObject = false,
         } = {}){
         var propsValue = {}
         var propsValueFromInput = {}
+        var nodeObject = undefined
         for (const key in interactiveProps) {
             if (Object.hasOwnProperty.call(interactiveProps, key)) {
                 const element = interactiveProps[key];
@@ -74,7 +76,23 @@ var createNode= function({
                 
             }
         }
-        return {templateName,params:{uuid,name, position, propsValue, propsValueFromInput, headerColor, imgPath, nodeLayout, userData}}
+        if (withNodeObject) {
+            nodeObject = self
+        }
+        return {templateName,params:{uuid,name, position, propsValue, propsValueFromInput, headerColor, imgPath, nodeLayout, userData, nodeObject}}
+    }
+    var exportSockets = function(){
+        var propsValue = {}
+        var propsValueFromInput = {}
+        for (const key in interactiveProps) {
+            if (Object.hasOwnProperty.call(interactiveProps, key)) {
+                const element = interactiveProps[key];
+                propsValue[key] = interactiveProps[key].get()
+                propsValueFromInput[key] = interactiveProps[key]._getFromInput()
+                
+            }
+        }
+        return {propsValue, propsValueFromInput}
     }
 
 
@@ -283,6 +301,7 @@ var createNode= function({
     //init
     init()
     self.exportParams=exportParams
+    self.exportSockets =exportSockets;
     self.setPosition=setPosition;
     self.getProp=getProp;
     self.setProp=setProp;
@@ -439,6 +458,16 @@ var createNodeManager = function ({
         return {nodes:nodesToExport, links:linkToExport}
     }
 
+    var _getRawData = function (options) {
+        var nodesToExport= []
+        var linkToExport = linksInUse.list
+        for (const key in nodeInUse) {
+            if (Object.hasOwnProperty.call(nodeInUse, key)) {
+                nodesToExport.push( nodeInUse[key])
+            }
+        }
+        return {nodes:nodesToExport, links:linkToExport}
+    }
     var useBaseTemplates = function(){
         for (const key in baseTemplates) {
             if (Object.hasOwnProperty.call(baseTemplates, key)) {
@@ -481,6 +510,8 @@ var createNodeManager = function ({
     self.useTemplate = useTemplate
     self.importGraph = importGraph
     self.exportNodes = exportNodes
+    self._getRawData = _getRawData
+    
     self.getUsedTemplates = getUsedTemplates
     self.evaluateTree = evaluateTree
     self.useBaseTemplates = useBaseTemplates
@@ -490,6 +521,7 @@ var createNodeManager = function ({
     self.removeLinks = removeLinks;
     self.addNodeTemplate = addNodeTemplate
     self.addNode = addNode
+    
     self.replaceData = replaceData
     self.setGlobalSetting = setGlobalSetting
     self.labelNodes = labelNodes
