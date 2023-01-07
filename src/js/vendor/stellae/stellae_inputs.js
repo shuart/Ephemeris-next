@@ -212,7 +212,10 @@ inputElements.createListInput = function ({
                 data.params ={}
             }
             if (customName) {
-                data.params.name = prompt("Name")
+                var newName = prompt("Name")
+                if (newName != "") {
+                    data.params.name = newName
+                }
                 callback({id:data.id, value:data.value, params:data.params})
             }else{
                 data.params.name = data.value

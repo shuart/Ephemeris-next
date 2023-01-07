@@ -117,15 +117,26 @@ var createNode= function({
         var interactivePropsObject = {}
         for (let i = 0; i < internalProps.length; i++) {
             const element = internalProps[i];
-            if (!element.valueFromInput) {
+            if (!element.valueFromInput ) {
                 element.valueFromInput = element.value //save Default and set input for when no nodes
             }
             interactivePropsObject[element.id] = {
                 get:function () {
-                    return element.valueFromLink || element.value
+                   
+                    if (element.valueFromLink != undefined) {
+                        return element.valueFromLink
+                    }else{
+                        return element.value
+                    }
+                    
                 },
                 _getFromInput:function () {
-                    return element.valueFromInput || element.value
+                    // return element.valueFromInput || element.value
+                    if (element.valueFromInput != undefined) {
+                        return element.valueFromInput
+                    }else{
+                        return element.value
+                    }
                 },
                 set:function (newValue) {
                     element.valueFromInput = newValue
@@ -136,7 +147,7 @@ var createNode= function({
                     }
                 },
                 _setFromLink:function (newValue) {
-                    if (newValue) {
+                    if (newValue != undefined) {
                         if (element.multiple) { //if socket can have multiple input
                             if (!Array.isArray(element.valueFromLink )) {//initiate array
                                 element.valueFromLink=[]

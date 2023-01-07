@@ -92,11 +92,12 @@ baseTemplates.math = {
             if (method =="add") {
                 props.output.set( parseInt( props.a.get() ) +parseInt( props.b.get() )  )   
             } else if (method =="substract") {
-                props.output.set( props.a.get() ) - parseInt( props.b.get() ) 
+                
+                props.output.set( parseInt(props.a.get() ) - parseInt( props.b.get()) ) 
             } else if (method =="multiply") {
-                props.output.set( props.a.get() ) * parseInt( props.b.get() ) 
+                props.output.set( parseInt(props.a.get() ) * parseInt( props.b.get()) ) 
             } else if (method =="divide") {
-                props.output.set( props.a.get() ) / parseInt( props.b.get() )  
+                props.output.set( parseInt(props.a.get() ) / parseInt( props.b.get()) )  
             }
             
         },

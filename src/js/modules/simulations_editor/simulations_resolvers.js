@@ -18,7 +18,7 @@ var resolveSourceNode =function(node, graphData){
     let children = graphData.adgencyList[node.params.uuid]
     let nodes = graphData.orderedNodes
 
-    var qt = node.evalData.qt ||node.data.qt
+    var qt = node.evalData.qt
     for (let i = 0; i < qt; i++) {
         node.data.outObjects.push({uuid:nanoid(), name:"test"})
     }

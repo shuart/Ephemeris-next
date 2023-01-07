@@ -199,8 +199,11 @@ var createNodeSquare  = function({
         return sprite;
     }
 
-    function createCharacterLabel( text, maxLength ) {
-        var text = text || "Missing"
+    function createCharacterLabel( textToRender, maxLength ) {
+        var text = textToRender
+        if (textToRender == undefined) {
+            text = "Missing"
+        }
         if (text.length > maxLength) {
             text = text.substring(0, maxLength-2)+"..";
         }
