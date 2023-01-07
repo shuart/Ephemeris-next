@@ -20,7 +20,7 @@ var popup =createAdler({
             title:false,
         },
         on:[
-            [".main_popup_shield_area","click", (event, data, instance)=> instance.unmount()],
+            [".main_popup_shield_area","mousedown", (event, data, instance)=> instance.unmount()],
             [".action2","click", (event, data, instance)=> instance.setData({test:"barr"}) ],
         ]
     },

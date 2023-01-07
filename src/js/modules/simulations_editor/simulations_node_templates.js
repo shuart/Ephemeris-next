@@ -4,6 +4,7 @@ import createRelationsManagement from "../common_project_management/relations_ma
 import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
 import select from "../common_ui_components/select/select.js"
 import showPopupInstancePreview from "../popup_instance_preview/popup_instance_preview.js";
+import inputTable from "../common_ui_components/inputTable/inputTable.js";
 
 var getProp = function(props,propName, data){
     var valuePassed = props[propName].get()
@@ -143,31 +144,52 @@ simulationNodesTemplates.variable = {
     },
 }
 
-var tableFunction = function(e){
-    e.node.setProp(e.prop.id, 55)
-}
+// var tableFunction = function(e){
+//     var popup = mainPopup.with({data:{narrow:false,title:"Select Items"}})
+//     popup.mount()
+//     var table = inputTable.instance({
+//         data:{
+//             // list:generateList,
+//             // selectedlist:generateSelectedList,
+//             // callback:function(event){
+//             //     //Display a new popup to choose the relation type
+//             //     currentSelectedInstance.addRelationFromSource(props.relationType.get(),event.value.uuid)
+//             //     selectInstance.do.softUpdate();
+//             // },
+//             // closeSelectedCallback:function(event){
+//             //     // alert(event.uuid)
+//             //     currentSelectedInstance.removeRelationFromSource(props.relationType.get(),event.uuid)
+//             //     selectInstance.do.softUpdate();
+//             // }
+            
+//         }
+//     })
+//     popup.append(table, "main-slot")
+//     popup.update();
+//     e.node.setProp(e.prop.id, 55)
+// }
 
-simulationNodesTemplates.table = {
-    templateName : "simulation_table",
-    name : "Table",
-    style:{
-        headerColor:nodeColors.inputData,
-    },
-    category:"Simulation",
-    props :[
-        {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
-        {id:"variable",expect:"string", label:"Message", type:"custom", editable:true, socket:"none", value:1, onClick:tableFunction},
-    ],
-    methods:{
-    },
-    event:{
-        onEvaluate:(props) =>{
-            props.output.set(props.variable.get() ) 
-        },
-        onInit:(props) =>{
-        },
-    },
-}
+// simulationNodesTemplates.table = {
+//     templateName : "simulation_table",
+//     name : "Table",
+//     style:{
+//         headerColor:nodeColors.inputData,
+//     },
+//     category:"Simulation",
+//     props :[
+//         {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+//         {id:"variable",expect:"string", label:"Message", type:"custom", editable:true, socket:"none", value:1, onClick:tableFunction},
+//     ],
+//     methods:{
+//     },
+//     event:{
+//         onEvaluate:(props) =>{
+//             props.output.set(props.variable.get() ) 
+//         },
+//         onInit:(props) =>{
+//         },
+//     },
+// }
 
 
 

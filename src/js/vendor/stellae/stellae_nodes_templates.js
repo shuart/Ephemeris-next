@@ -25,6 +25,28 @@ baseTemplates.input_number = {
     },
 }
 
+
+baseTemplates.table = {
+    templateName : "input_Table",
+    name : "Table",
+    category:"Input",
+    props :[
+        {id:"output", expect:"string", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"table",expect:"string", label:"Table", type:"text", editable:true, socket:"none", value:"1;2;3"},
+        {id:"row",expect:"string", label:"Row", type:"text", editable:true, socket:"input", value:1},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            var arrayOfValue = props.table.get().split(';')
+            props.output.set(parseInt( arrayOfValue[props.row.get()-1] ||0 ) ) 
+        },
+        onInit:(props) =>{
+        },
+    },
+}
+
 baseTemplates.passtrough = {
     templateName : "in_out",
     name : "in_out",
