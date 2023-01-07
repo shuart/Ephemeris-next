@@ -220,6 +220,35 @@ simulationNodesTemplates.process = {
     },
 }
 
+simulationNodesTemplates.workbench = {
+    templateName : "simulation_workbench",
+    name : "Workbench",
+    style:{
+        headerColor:nodeColors.process,
+    },
+    category:"Simulation",
+    props :[
+        {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"input", expect:"data", isSquare:false, label:"Input", type:"hidden", editable:false, socket:"input", value:"output"},
+        {id:"duration", expect:undefined, label:"Duration", type:"text", editable:false, socket:"input", value:5},
+        {id:"outValue", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:0},
+        {id:"inObjects", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:[]},
+        {id:"bufferObjects", expect:undefined, label:"Quantity", type:"secret", editable:false, socket:"none", value:undefined},
+        {id:"outObjects", expect:undefined, label:"Quantity", type:"secret", editable:false, socket:"none", value:[]},
+
+        {id:"layout", expect:undefined, label:"Layout", type:"text", editable:false, socket:"none", value:1},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+
+        },
+        onInit:(props) =>{
+        },
+    },
+}
+
 simulationNodesTemplates.frame = {
     templateName : "simulation_frame",
     name : "Frame",

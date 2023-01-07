@@ -1,4 +1,5 @@
 import nanoid from "../../vendor/nanoid.js";
+import createWorkbenchNodeLogic from "./simulations_resolvers_workbench.js";
 
 var updateNodeDisplayValue = function(node){
     
@@ -65,7 +66,7 @@ var resolveFluxNode =function(node, graphData){
             // }
             // console.log("reeeeeeeeeeeeeeo",parentNode.properties.value,fluxValue)
             var childrenNode = nodes.find(n=> n.params.uuid == children[0]) //TODO modify to allow multiple output
-            if (fluxValue > 0 && (childrenNode.data.type == "stock" || childrenNode.data.type == "process") ) {
+            if (fluxValue > 0 && (childrenNode.data.type == "stock" || childrenNode.data.type == "process" || childrenNode.data.type == "simulation_workbench") ) {
                 // parentNode.data.outValue -= fluxValue
                 for (let i = 0; i < fluxValue; i++) {
                     var removed = parentNode.data.outObjects.pop()
@@ -128,4 +129,39 @@ var resolveProcessNode =function(node, graphData, currentFrame){
     
 }
 
-export {resolveSourceNode,resolveFluxNode,resolveStockNode, resolveProcessNode, resolveFrameNode }
+var resolveWorkbenchNode =function(node, graphData, currentFrame){
+    console.info("Resolve " + node.templateName + " " + node.params.uuid);
+    console.info(node);
+    let parents = graphData.parentsList
+    let children = graphData.adgencyList[node.params.uuid]
+    let nodes = graphData.orderedNodes
+
+    var currentNodeBuffer = undefined
+
+    if (node.data.bufferObjects) {
+        currentNodeBuffer = node.data.bufferObjects
+    }else{
+        currentNodeBuffer = createWorkbenchNodeLogic()
+        node.data.bufferObjects = currentNodeBuffer
+    }
+    var injected = currentNodeBuffer.inject(node.data.inObjects)
+    console.log();
+    // node.data.bufferObjects[currentFrame] = node.data.inObjects
+    node.data.inObjects =[]
+
+
+    // var duration = node.evalData.duration ||node.data.duration
+
+    
+    // node.data.bufferObjects[currentFrame] = node.data.inObjects
+    // node.data.inObjects =[]
+    // var objectsReadyToGetOut = node.data.bufferObjects[currentFrame - duration] || []
+    // node.data.bufferObjects[currentFrame - duration] = []
+    // node.data.outObjects = node.data.outObjects.concat(objectsReadyToGetOut)
+    // var out = node.data.outObjects 
+    // updateNodeDisplayValue(node)
+    
+    
+}
+
+export {resolveSourceNode,resolveFluxNode,resolveStockNode, resolveProcessNode, resolveFrameNode, resolveWorkbenchNode }
