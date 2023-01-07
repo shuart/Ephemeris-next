@@ -141,15 +141,15 @@ var resolveWorkbenchNode =function(node, graphData, currentFrame){
     if (node.data.bufferObjects) {
         currentNodeBuffer = node.data.bufferObjects
     }else{
-        currentNodeBuffer = createWorkbenchNodeLogic()
+        currentNodeBuffer = createWorkbenchNodeLogic(node)
         node.data.bufferObjects = currentNodeBuffer
     }
     var injected = currentNodeBuffer.inject(node.data.inObjects)
     console.log();
     // node.data.bufferObjects[currentFrame] = node.data.inObjects
     node.data.inObjects =[]
-
-
+    var status = currentNodeBuffer.doWorkCycle()
+    console.log(status);
     // var duration = node.evalData.duration ||node.data.duration
 
     

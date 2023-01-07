@@ -1,5 +1,12 @@
-var createWorkbenchNodeLogic = function(){
+import nanoid from "../../vendor/nanoid.js"
+
+var createWorkbenchNodeLogic = function(node){
     var self = {}
+    var linkedNode = node
+    var nodeLogicId = nanoid()
+    if (linkedNode && linkedNode.params.uuid) {
+        nodeLogicId = linkedNode.params.uuid
+    }
 
     var matrix = [
         [3,2,1,3,2,1],
@@ -106,12 +113,42 @@ var createWorkbenchNodeLogic = function(){
             for (let j = 0; j < benchRow.length; j++) {
                 const bench = benchRow[j];
                 if (bench.getSlot()) {
-                    listOfItems.push({item:bench.getSlot(), bench:bench})
+                    listOfItems.push({item:bench.getSlot(), bench:bench, progress:bench.getSlot()[nodeLogicId],i,j})
                 }
             }
             
         }
         return listOfItems
+    }
+    var getAllItemsProgress = function () {
+        var listOfItems = []
+        
+        for (let i = 0; i < benchMatrix.length; i++) {
+            const benchRow = benchMatrix[i];
+            for (let j = 0; j < benchRow.length; j++) {
+                const bench = benchRow[j];
+                if (bench.getSlot()) {
+                    listOfItems.push({item:bench.getSlot(), progress:bench.getSlot()[nodeLogicId],i,j, bench:bench})
+                }
+            }
+            
+        }
+        return listOfItems
+    }
+
+    var doWorkCycle = function(){
+        var allItems = getAllItems()
+        for (let i = 0; i < allItems.length; i++) {
+            const itemInfo = allItems[i];
+            if (!itemInfo.item[nodeLogicId]>= 100) {
+                itemInfo.item[nodeLogicId] +=5
+            }
+        } 
+        return allItems
+    }
+
+    var getFinishedItems = function () {
+        
     }
 
     var inject = function(items){
@@ -121,20 +158,29 @@ var createWorkbenchNodeLogic = function(){
             var availableBench = findAvailableSpot()
             if (availableBench) {
                 availableBench.setSlot(item)
+                //tag item for getting a attribute to work on
+                if (nodeLogicId) {
+                    item[nodeLogicId] = 0
+                }
+                
             }
             injected.push({bench:availableBench,item:item })
         }
         return injected
     }
+    var getNodeLogicId = function(){return nodeLogicId; }
 
     init()
     // debugger
     console.log(benchMatrix);
     console.log(benchMapping);
     
+    self.getAllItemsProgress=getAllItemsProgress
+    self.doWorkCycle=doWorkCycle
     self.getAllItems=getAllItems
     self.inject=inject
     self.getBenchMatrix=getBenchMatrix
+    self.getNodeLogicId = getNodeLogicId
     return self
 }
 

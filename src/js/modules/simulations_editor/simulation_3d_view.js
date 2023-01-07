@@ -156,6 +156,7 @@ var create3dSimulationRender = function({
         var matrix = node.data.bufferObjects.getBenchMatrix()
         var matrixOfRealPosition=[]
         var scale = 2
+        var progressLayer = undefined
 
         var createBenchModel = function(){
             const geometry = new THREE.PlaneGeometry( 1.5, 1 );
@@ -168,8 +169,24 @@ var create3dSimulationRender = function({
             return matrixOfRealPosition
         }
 
+        var showWorkProgress = function(arrayOfProgress){ //progress,i,j
+            for( var i = progressLayer.children.length - 1; i >= 0; i--) { 
+                var obj = progressLayer.children[i];
+                progressLayer.remove(obj); 
+            }
+            for (let j = 0; j < arrayOfProgress.length; j++) {
+                const element = arrayOfProgress[j];
+                var label = createCharacterLabel(element.progress)
+                var realPos = matrixOfRealPosition[element.i][element.j]
+                label.position.set(realPos.x, realPos.y+1, realPos.z)
+                progressLayer.add(label)
+            }
+            
+        }
+
         var init=function () {
             var propGroup = new THREE.Group()
+            progressLayer = new THREE.Group()
             for (let i = 0; i < matrix.length; i++) {
                 const row = matrix[i];
                 if (!matrixOfRealPosition[i]) {
@@ -189,9 +206,12 @@ var create3dSimulationRender = function({
                 }
             }
             
+            state.scene.add(progressLayer)
             state.scene.add(propGroup)
         }
         init()
+        
+        self.showWorkProgress = showWorkProgress
         self.getMatrixOfRealPosition = getMatrixOfRealPosition
         return self
     }
@@ -205,7 +225,7 @@ var create3dSimulationRender = function({
         var currentWorkbench = node.data.bufferObjects
         var currentLayout = state.layoutMapping[node.params.uuid]
         var currentLayoutRealPosition = currentLayout.getMatrixOfRealPosition()
-        debugger
+        
         var itemsInWorkbench = currentWorkbench.getAllItems()
         for (let i = 0; i < itemsInWorkbench.length; i++) {
             const itemInfo = itemsInWorkbench[i];
@@ -213,6 +233,7 @@ var create3dSimulationRender = function({
             var itemRealPosition = currentLayoutRealPosition[itemPosition.i][itemPosition.j]
             moveItem(itemInfo.item.uuid, itemRealPosition.x ,itemRealPosition.y,itemRealPosition.z, true )
         }
+        currentLayout.showWorkProgress(itemsInWorkbench)
         console.log(itemsInWorkbench);
         // //create a queu of postions for the buffers
         // var bufferPositionOffset = []
