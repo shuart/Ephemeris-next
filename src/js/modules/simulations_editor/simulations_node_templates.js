@@ -143,6 +143,32 @@ simulationNodesTemplates.variable = {
     },
 }
 
+var tableFunction = function(e){
+    e.node.setProp(e.prop.id, 55)
+}
+
+simulationNodesTemplates.table = {
+    templateName : "simulation_table",
+    name : "Table",
+    style:{
+        headerColor:nodeColors.inputData,
+    },
+    category:"Simulation",
+    props :[
+        {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"variable",expect:"string", label:"Message", type:"custom", editable:true, socket:"none", value:1, onClick:tableFunction},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            props.output.set(props.variable.get() ) 
+        },
+        onInit:(props) =>{
+        },
+    },
+}
+
 
 
 simulationNodesTemplates.process = {

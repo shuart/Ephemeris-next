@@ -330,37 +330,48 @@ var createNodeSquare  = function({
         return socket
     }
 
-    function createPropAction(prop){
+    function createPropAction(node,prop, template){
+        
         var action = undefined
-
-        if (Array.isArray(prop.value)) {
+        if(prop.type == "custom" || prop.onClick){
+            
+            var currentTemplate = template
+            var templateProp = template.props.find(p=>p.id == prop.id)
             action = function (param) {
-                // inputElements.createFieldView({field:prop.value})
-                console.log(prop.value);
-                alert(JSON.stringify(prop.value ))
+                templateProp.onClick({prop:prop, node:nodeData})
+                param.callback()
             }
-            return action
-        }
-        if (prop.type == "text") {
-            action = function (param) {
-                var newValue = prompt("Set "+prop.label,prop.value)
-                if (newValue && newValue != "") {
-                    var propId = prop.id
-                    nodeData.setProp(propId, newValue)
-                    // dataManager.evaluateTree();
-                    if (param && param.callback) {param.callback()}
+        }else{
+            if (Array.isArray(prop.value)) {
+                action = function (param) {
+                    // inputElements.createFieldView({field:prop.value})
+                    console.log(prop.value);
+                    alert(JSON.stringify(prop.value ))
+                }
+                return action
+            }
+            if (prop.type == "text") {
+                action = function (param) {
+                    var newValue = prompt("Set "+prop.label,prop.value)
+                    if (newValue && newValue != "") {
+                        var propId = prop.id
+                        nodeData.setProp(propId, newValue)
+                        // dataManager.evaluateTree();
+                        if (param && param.callback) {param.callback()}
+                    }
+                }
+            }
+            if (prop.type == "select") {
+                action = function (param) {
+                    inputElements.createListInput({options:prop.options, callback:(event)=> {nodeData.setProp(prop.id, event.value);param.callback(); }})
                 }
             }
         }
-        if (prop.type == "select") {
-            action = function (param) {
-                inputElements.createListInput({options:prop.options, callback:(event)=> {nodeData.setProp(prop.id, event.value);param.callback(); }})
-            }
-        }
+        
         return action
     }
 
-    function createProp (node,position, prop){
+    function createProp (node,position, prop, template){
         //text
         var propGroup = new THREE.Group()
         var spritetext = createCharacterLabel(prop.label,15)
@@ -369,7 +380,7 @@ var createNodeSquare  = function({
         propGroup.add(spritetext)
         if (prop.type == "hidden") {
             spritetext.position.set(+0.5,0,0)
-        }else if (prop.type == "text" || prop.type == "select") {
+        }else if (prop.type == "text" || prop.type == "select" || prop.type == "custom") {
             spritetext.position.set(-0.5,0,0)
             var textToDisplay = prop.value
             if (Array.isArray(textToDisplay)) {
@@ -385,7 +396,7 @@ var createNodeSquare  = function({
             propGroup.add(spritetextValue)
             spritetextValue.position.set(0.5,0,0)
             layoutItems.props[spritetextValue.uuid] = {mesh:spritetextValue}
-            spritetextValue.edata = { root:node, uuid:prop.id, value:prop.value, prop:prop, nodeData: nodeData, isField:isField, action:createPropAction(prop), }
+            spritetextValue.edata = { root:node, uuid:prop.id, value:prop.value, prop:prop, nodeData: nodeData, isField:isField, action:createPropAction(node, prop, template), }
         }
         
         if(prop.socket && prop.socket != "none"){
@@ -402,11 +413,11 @@ var createNodeSquare  = function({
 
     }
 
-    function createRows (node,props){
+    function createRows (node,props, template){
         var currentPosition =0;
         for (let i = 0; i < props.length; i++) {
             if (props[i].type != "secret") {
-                var propLayout = createProp(node, currentPosition, props[i])
+                var propLayout = createProp(node, currentPosition, props[i], template)
                 currentPosition +=propsHeightMap[props[i].type]
             }
         }
@@ -430,7 +441,7 @@ var createNodeSquare  = function({
     var header = createHeader(node,name)
     createBack(node,props)
     // createSocket(node)
-    createRows (node, props)
+    createRows (node, props, template)
 
     // var spritetext = createCharacterLabel("testtest test")
     // node.add(spritetext)
