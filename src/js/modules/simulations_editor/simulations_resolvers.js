@@ -1,14 +1,33 @@
 import nanoid from "../../vendor/nanoid.js";
 import createWorkbenchNodeLogic from "./simulations_resolvers_workbench.js";
 
-var updateNodeDisplayValue = function(node){
-    
-    if ( (node.data.outValue && node.data.outObjects) || (node.data.outValue == 0 && node.data.outObjects) ) {
-        node.data.outValue = node.data.outObjects.length
+var nodeHasPlaceLeft = function (node) {
+    if (node.data.type == "simulation_workbench" && node.data.bufferObjects) {
+        return node.data.bufferObjects.getSpaceLeft()
+    }else if(node.data.type == "stock") {
+        if (node.evalData.max == "infinite") {
+            return "infinite"
+        }else{
+            return node.evalData.max - node.data.outObjects.length 
+        }
+        
     }else{
-        console.log(node);
-        alert()
+        return "infinite"
     }
+}
+
+var updateNodeDisplayValue = function(node){
+    if (node.data.type == "simulation_workbench" && node.data.bufferObjects) {
+        node.data.outValue = node.data.bufferObjects.getAllItems().length
+    }else{
+        if ( (node.data.outValue && node.data.outObjects) || (node.data.outValue == 0 && node.data.outObjects) ) {
+            node.data.outValue = node.data.outObjects.length
+        }else{
+            console.log(node);
+            alert()
+        }
+    }
+    
     
 }
 
@@ -41,6 +60,7 @@ var resolveFrameNode =function(node, graphData, frame){
 }
 
 var resolveFluxNode =function(node, graphData){
+    var fifo = true
     console.info("Resolve " + node.templateName + " " + node.params.uuid);
     console.info(node);
         //check parents first
@@ -51,7 +71,7 @@ var resolveFluxNode =function(node, graphData){
     
     parents.forEach(element => {
         var parentNode = nodes.find(n=> n.params.uuid == element)
-        if (parentNode.data.type == "stock" || parentNode.data.type == "source" || parentNode.data.type == "process") {
+        if (parentNode.data.type == "stock" || parentNode.data.type == "source" || parentNode.data.type == "process" || parentNode.data.type == "simulation_workbench") {
             //check if enough in stock
             let stockValue = parentNode.data.outValue 
             // if (parentNode.properties.delay != 0) {
@@ -65,13 +85,28 @@ var resolveFluxNode =function(node, graphData){
             //     console.log(fluxValue, parentNode.properties.value)
             // }
             // console.log("reeeeeeeeeeeeeeo",parentNode.properties.value,fluxValue)
-            var childrenNode = nodes.find(n=> n.params.uuid == children[0]) //TODO modify to allow multiple output
-            if (fluxValue > 0 && (childrenNode.data.type == "stock" || childrenNode.data.type == "process" || childrenNode.data.type == "simulation_workbench") ) {
+            var childrenNode = nodes.find(n=> n.params.uuid == children[0]) //TODO modify to allow multiple output 
+            var spaceLeftInChildren = nodeHasPlaceLeft(childrenNode)
+            var currentPossibleFlux = parseInt(fluxValue)
+            if (spaceLeftInChildren != "infinite" && parseInt(spaceLeftInChildren)<currentPossibleFlux) {
+                
+                currentPossibleFlux = parseInt(spaceLeftInChildren)
+            }
+            if (currentPossibleFlux > 0 && (childrenNode.data.type == "stock" || childrenNode.data.type == "process" || childrenNode.data.type == "simulation_workbench") ) {
                 // parentNode.data.outValue -= fluxValue
-                for (let i = 0; i < fluxValue; i++) {
-                    var removed = parentNode.data.outObjects.pop()
+                for (let i = 0; i < currentPossibleFlux; i++) {
+                    var removed = undefined
+                    if(fifo){
+                        removed = parentNode.data.outObjects.shift()
+                    }else{
+                        removed = parentNode.data.outObjects.pop()
+                    }
                     if (removed) {
                         childrenNode.data.inObjects.push(removed)
+                        if (parentNode.data.type == "simulation_workbench") { //clean also workbench
+                            
+                            parentNode.data.bufferObjects.freeItem(removed.uuid)
+                        }
                         
                     }
                 }
@@ -150,6 +185,17 @@ var resolveWorkbenchNode =function(node, graphData, currentFrame){
     node.data.inObjects =[]
     var status = currentNodeBuffer.doWorkCycle()
     console.log(status);
+    var finishedItems = currentNodeBuffer.getFinishedItems()
+    console.log(finishedItems);
+    node.data.outObjects =[]
+    for (let i = 0; i < finishedItems.length; i++) {
+        const element = finishedItems[i];
+        node.data.outObjects.push(finishedItems[i].item)
+    }
+    updateNodeDisplayValue(node)
+    
+
+    // bench is cleaned by next flux node
     // var duration = node.evalData.duration ||node.data.duration
 
     

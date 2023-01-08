@@ -88,9 +88,22 @@ var createSimulator = function(graph){
         // for (let i = 0; i < nodes.length; i++) { nodes[i].data = JSON.parse(JSON.stringify(nodes[i].params.propsValueFromInput));nodes[i].data.type = nodes[i].templateName;  } //add simpler access to node data
         for (let i = 0; i < nodes.length; i++) {
             const node = nodes[i];
+            if (node.templateName =="simulation_frame") { //update simulation frames first to avoid offset
+                resolveFrameNode(node, data, frame)
+            }
+            if (node && node.params.nodeObject.evaluate) { //update each node after the other with their evaluation function
+                node.params.nodeObject.evaluate()
+                
+                var socketData = node.params.nodeObject.exportSockets()//TODO, could be return by evaluate fun
+                node.evalData = socketData.propsValue;
+            }
+        }
+        for (let i = 0; i < nodes.length; i++) {
+            const node = nodes[i];
 
             if (node && node.params.nodeObject.evaluate) { //update each node after the other with their evaluation function
                 node.params.nodeObject.evaluate()
+                
                 var socketData = node.params.nodeObject.exportSockets()//TODO, could be return by evaluate fun
                 node.evalData = socketData.propsValue;
             }
@@ -107,9 +120,9 @@ var createSimulator = function(graph){
             if (node.templateName =="process") {
                 resolveProcessNode(node, data, frame)
             }
-            if (node.templateName =="simulation_frame") {
-                resolveFrameNode(node, data, frame)
-            }
+            // if (node.templateName =="simulation_frame") {
+            //     resolveFrameNode(node, data, frame)
+            // }
             if (node.templateName =="simulation_workbench") {
                 resolveWorkbenchNode(node, data, frame)
             }

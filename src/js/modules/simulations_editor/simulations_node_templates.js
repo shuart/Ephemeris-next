@@ -110,6 +110,7 @@ simulationNodesTemplates.stock = {
         {id:"inObjects", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:[]},
         {id:"outValue", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:0},
         {id:"outObjects", expect:undefined, label:"Quantity", type:"secret", editable:false, socket:"none", value:[]},
+        {id:"max",expect:"string", label:"Max", type:"text", editable:true, socket:"input", value:"infinite"},
     ],
     methods:{
     },
@@ -230,7 +231,7 @@ simulationNodesTemplates.workbench = {
     props :[
         {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         {id:"input", expect:"data", isSquare:false, label:"Input", type:"hidden", editable:false, socket:"input", value:"output"},
-        {id:"duration", expect:undefined, label:"Duration", type:"text", editable:false, socket:"input", value:5},
+        {id:"workPerTime", expect:undefined, label:"Work/time", type:"text", editable:false, socket:"input", value:10},
         {id:"outValue", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:0},
         {id:"inObjects", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:[]},
         {id:"bufferObjects", expect:undefined, label:"Quantity", type:"secret", editable:false, socket:"none", value:undefined},

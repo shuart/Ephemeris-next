@@ -81,6 +81,7 @@ var playSimulation = function(event, data, instance){
             
             for (let i = 0; i < nodes.length; i++) {
                 const element = nodes[i];
+                
                 labels.push({nodeId:element.params.uuid, label:element.data.outValue})
             }
             data.graph.getNodeManager().labelNodes(labels);
