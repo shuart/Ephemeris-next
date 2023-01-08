@@ -15,7 +15,12 @@ var createWorkbenchNodeLogic = function(node){
         [3,2,1,3,2,1],
     ]
     // matrix = [
-    //     [3,2,1],
+    //     [1],
+    //     [1],
+    //     [1],
+    //     [1],
+    //     [1],
+    //     [1],
     // ]
     var itemsInside =[]
     var benchMatrix =[]
@@ -30,8 +35,8 @@ var createWorkbenchNodeLogic = function(node){
                 const col = row[j];
                 var bench = createBench({i:i, j:j}, col, benchMatrix)
                 benchMapping[bench.getId()] = bench
-                if (!benchMatrix[j]) {
-                    benchMatrix[j] = []
+                if (!benchMatrix[i]) {
+                    benchMatrix[i] = []
                 }
                 benchMatrix[i][j] = bench
             }
@@ -212,6 +217,9 @@ var createWorkbenchNodeLogic = function(node){
             if (!isFinished && itemInfo.bench.isWorkable()) {
                 
                 itemInfo.item[nodeLogicId] += parseInt(node.evalData.workPerTime)
+            }
+            if (itemInfo.item[nodeLogicId] == 0) {
+                debugger
             }
         } 
         return allItems

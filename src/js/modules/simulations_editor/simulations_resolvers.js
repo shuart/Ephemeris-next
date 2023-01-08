@@ -183,6 +183,7 @@ var resolveWorkbenchNode =function(node, graphData, currentFrame){
     console.log();
     // node.data.bufferObjects[currentFrame] = node.data.inObjects
     node.data.inObjects =[]
+    debugger
     var status = currentNodeBuffer.doWorkCycle()
     console.log(status);
     var finishedItems = currentNodeBuffer.getFinishedItems()
