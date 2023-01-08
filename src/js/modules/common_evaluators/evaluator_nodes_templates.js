@@ -396,6 +396,46 @@ evaluatorTemplates.joinFields = {
         },
     },
 }
+evaluatorTemplates.joinAllProperties = {
+    templateName : "join_all_properties",
+    name : "join_all_properties",
+    props :[
+        {id:"output", expect:"data", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"field", expect:"data", label:"Source Field", type:"hidden", editable:true, socket:"input", value:false},
+        // {id:"fields_to_join",expect:"array", isSquare:true, multiple:true, label:"Fields to join", type:"hidden", editable:true, socket:"input", value:false},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            
+            var sourceField = props.field.get()
+            if (sourceField) {
+                for (let i = 0; i < sourceField.length; i++) {
+                    const currentItem = sourceField[i];
+                    var fieldsProperties = currentItem.properties
+                    for (const propName in fieldsProperties) {
+                        if (Object.hasOwnProperty.call(fieldsProperties, propName)) {
+                            const prop = fieldsProperties[propName];
+                            currentItem[propName] =prop
+                            
+                        }
+                    }
+                }
+                
+                
+                props.output.set(sourceField)
+            }
+            
+        },
+        onInit:(props) =>{
+
+        },
+    },
+}
+
+
 
 evaluatorTemplates.outputTable = {
     templateName : "output_table",
@@ -512,6 +552,7 @@ evaluatorTemplates.colParameters = {
                             clickedItem:cell.getData().uuid,
                             clickedItemUuid:cell.getData().uuid,
                             contextualItemUuid:cell.getData().uuid,
+                            clickedItemValue:cell.getValue(),
                             sourceItem:cell.getData().uuid,
                             targetItem:false,
                         }

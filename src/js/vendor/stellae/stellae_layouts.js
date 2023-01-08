@@ -333,6 +333,7 @@ var createNodeSquare  = function({
     function createPropAction(node,prop, template){
         
         var action = undefined
+        
         if(prop.type == "custom" || prop.onClick){
             
             var currentTemplate = template
@@ -349,9 +350,9 @@ var createNodeSquare  = function({
                     alert(JSON.stringify(prop.value ))
                 }
                 return action
-            }
-            if (prop.type == "text") {
+            }else if (prop.type == "text") {
                 action = function (param) {
+                    
                     var newValue = prompt("Set "+prop.label,prop.value)
                     if (newValue && newValue != "") {
                         var propId = prop.id

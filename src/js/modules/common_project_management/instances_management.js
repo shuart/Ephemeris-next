@@ -22,6 +22,7 @@ var instanceAggregate = function(aggregate, projectStore){
             propNameUuidMapping[propertyName]=key
             propUuidNameMapping[key]=propertyName
             ownProperties[propertyName] = aggregate.attributes[key]
+            ownProperties[propertyName] = {property:property, value:aggregate.attributes[key]} 
         }
     }      
     aggregate.properties = ownProperties

@@ -11,7 +11,7 @@ var setUpTable = function(event, data, instance){
     console.log(instance);
     console.log(instance.props.test.get());
     // instance.props.test.set("4564fesfsefesfef")
-
+    debugger
     if (!itemsList[0]) {
         itemsList = [
             // {id:1, name:"Oli Bob", age:"12", col:"red", dob:""},

@@ -1,46 +1,58 @@
-var getCustomFormatterForCol = function (rows, col) {
+var getCustomFormatterForCol = function (rows, col, originalColConfig) {
     
     var formatterFunction = undefined
     console.log(col);
     
     //check if is an entity instance
+    debugger
     for (let i = 0; i < rows.length; i++) {
         var rowColToCheck =rows[i][col.field]
+        
         if (rowColToCheck && rowColToCheck[0] && rowColToCheck[0].displayAs=="relation") { //iterate to find a row with something
             // if (rowColToCheck && rowColToCheck[0] && rowColToCheck[0].uuid && rowColToCheck[0].name &&  rowColToCheck[0].relation) { //iterate to find a row with something
-            formatterFunction = function(cell, formatterParams, onRendered){
-                //cell - the cell component
-                //formatterParams - parameters set for the column
-                //onRendered - function to call when the formatter has been rendered
-                var html = ""
-                var instances = cell.getValue()
-                for (let i = 0; i < instances.length; i++) {
-                    const element = instances[i];
-                    html += `<span data-id='${element.target.uuid}' class="table-tag action-tag" > ${element.target.name} </span>`
-                }
 
-                onRendered(function(params) {
+
+            formatterFunction = getCustomFormatterForRelations(rows, col, rowColToCheck[0].callback)
+
+            // formatterFunction = function(cell, formatterParams, onRendered){
+            //     //cell - the cell component
+            //     //formatterParams - parameters set for the column
+            //     //onRendered - function to call when the formatter has been rendered
+            //     var html = ""
+            //     var instances = cell.getValue()
+            //     for (let i = 0; i < instances.length; i++) {
+            //         const element = instances[i];
+            //         html += `<span data-id='${element.target.uuid}' class="table-tag action-tag" > ${element.target.name} </span>`
+            //     }
+
+            //     onRendered(function(params) {
                     
-                    var domElemOfCell = cell.getElement()
-                    var tags = domElemOfCell.querySelectorAll('.action-tag')
-                    for (let i = 0; i < tags.length; i++) {
-                        const tag = tags[i];
-                        tag.addEventListener('click', function (ev) {
-                            ev.stopPropagation();
-                            rowColToCheck[0].callback(ev.target.dataset.id)
-                        })
-                    }
-                })
+            //         var domElemOfCell = cell.getElement()
+            //         var tags = domElemOfCell.querySelectorAll('.action-tag')
+            //         for (let i = 0; i < tags.length; i++) {
+            //             const tag = tags[i];
+            //             tag.addEventListener('click', function (ev) {
+            //                 ev.stopPropagation();
+            //                 rowColToCheck[0].callback(ev.target.dataset.id)
+            //             })
+            //         }
+            //     })
                 
-                return html
-            }
+            //     return html
+            // }
+            break
+        }
+        if (rowColToCheck && rowColToCheck.property) { //iterate to find a row with something
+            
+            formatterFunction = getCustomFormatterForProperties(rows, col)
             break
         }
         
     }
     
+    originalColConfig.formatter=formatterFunction
 
-    return formatterFunction
+    return originalColConfig
 }
 
 var checkColsForCustomFormating = function(rows, cols){
@@ -52,7 +64,7 @@ var checkColsForCustomFormating = function(rows, cols){
             const col = cols[i];
             
             if (!newCols[i].formatter) {
-                newCols[i].formatter= getCustomFormatterForCol(rows, col)
+                newCols[i] = getCustomFormatterForCol(rows, col, newCols[i])
             }
             if (newCols[i].customButton) {
                 newCols[i]= getCustomButtonFormatterForCol(rows, col)
@@ -170,6 +182,73 @@ var getCustomFormatterForObject = function (rows, col) {
     return formatterIcon
 
     // return formatterFunction
+}
+
+var getCustomFormatterForRelations = function (rows, col, callback) {
+
+    var formatterFunction = function(cell, formatterParams, onRendered){
+        //cell - the cell component
+        //formatterParams - parameters set for the column
+        //onRendered - function to call when the formatter has been rendered
+        var html = ""
+        var instances = cell.getValue()
+        for (let i = 0; i < instances.length; i++) {
+            const element = instances[i];
+            html += `<span data-id='${element.target.uuid}' class="table-tag action-tag" > ${element.target.name} </span>`
+        }
+
+        onRendered(function(params) {
+            
+            var domElemOfCell = cell.getElement()
+            var tags = domElemOfCell.querySelectorAll('.action-tag')
+            for (let i = 0; i < tags.length; i++) {
+                const tag = tags[i];
+                tag.addEventListener('click', function (ev) {
+                    ev.stopPropagation();
+                    callback(ev.target.dataset.id)
+                })
+            }
+        })
+        
+        return html
+    }
+    return formatterFunction
+}
+
+var getCustomFormatterForProperties = function (rows, col) {
+
+    var formatterFunction = undefined
+    
+    formatterFunction = function(cell, formatterParams, onRendered){
+        //cell - the cell component
+        //formatterParams - parameters set for the column
+        //onRendered - function to call when the formatter has been rendered
+        var html = ""
+        var content = cell.getValue()
+        // for (let i = 0; i < instances.length; i++) {
+        //     const element = instances[i];
+        //     html += `<span data-id='${element.target.uuid}' class="table-tag action-tag" > ${element.target.name} </span>`
+        // }
+        html += `<span data-id='${content.property.uuid}' class="table-tag action-tag" > ${content.property.type} </span>`
+
+        onRendered(function(params) {
+            
+            var domElemOfCell = cell.getElement()
+            var tags = domElemOfCell.querySelectorAll('.action-tag')
+            // for (let i = 0; i < tags.length; i++) {
+            //     const tag = tags[i];
+            //     tag.addEventListener('click', function (ev) {
+            //         ev.stopPropagation();
+            //         console.log(cell.getData().uuid);
+            //         console.log(cell.getValue().uuid);
+            //         // callback(ev.target.dataset.id)
+            //     })
+            // }
+        })
+        
+        return html
+    }
+    return formatterFunction
 }
 
 export {checkColsForCustomFormating}
