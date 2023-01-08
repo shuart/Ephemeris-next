@@ -196,7 +196,7 @@ var create3dSimulationRender = function({
                     const col = row[j];
                     var label = createCharacterLabel(i+"_"+j)
                     var benchModel = createBenchModel()
-                    var z = 0 - ( ((row.length-1)*scale) -  (i*scale) )
+                    var z = 0 - ( ((matrix.length-1)*scale) -  (i*scale) )
                     var x = node.params.position.x*2 + j*scale
                     label.position.set(x,0,z)
                     benchModel.position.set(x,-0.1,z)

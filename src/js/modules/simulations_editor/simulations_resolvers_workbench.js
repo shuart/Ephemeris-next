@@ -17,7 +17,7 @@ var createWorkbenchNodeLogic = function(node){
     // matrix = [
     //     [1],
     //     [1],
-    //     [1],
+    //     [1,1],
     //     [1],
     //     [1],
     //     [1],
@@ -42,6 +42,7 @@ var createWorkbenchNodeLogic = function(node){
             }
             
         }
+        
     }
     var getBenchMatrix = function () {
         return benchMatrix
