@@ -19,6 +19,9 @@ var nodeHasPlaceLeft = function (node) {
 var updateNodeDisplayValue = function(node){
     if (node.data.type == "simulation_workbench" && node.data.bufferObjects) {
         node.data.outValue = node.data.bufferObjects.getAllItems().length
+    }else if (node.data.type == "simulation_pool" && node.data.bufferObjects) {
+        debugger
+        node.data.outValue = node.data.outObjects.length
     }else{
         if ( (node.data.outValue && node.data.outObjects) || (node.data.outValue == 0 && node.data.outObjects) ) {
             node.data.outValue = node.data.outObjects.length
@@ -67,11 +70,11 @@ var resolveFluxNode =function(node, graphData){
     let parents = graphData.parentsList[node.params.uuid]
     let children = graphData.adgencyList[node.params.uuid]
     let nodes = graphData.orderedNodes
-    var fluxValue = node.evalData.flux ||node.data.flux
+    var fluxValue = node.evalData.flux 
     
     parents.forEach(element => {
         var parentNode = nodes.find(n=> n.params.uuid == element)
-        if (parentNode.data.type == "stock" || parentNode.data.type == "source" || parentNode.data.type == "process" || parentNode.data.type == "simulation_workbench") {
+        if (parentNode.data.type == "stock" || parentNode.data.type == "source" || parentNode.data.type == "process" || parentNode.data.type == "simulation_workbench" || parentNode.data.type == "simulation_pool") {
             //check if enough in stock
             let stockValue = parentNode.data.outValue 
             // if (parentNode.properties.delay != 0) {
@@ -92,7 +95,10 @@ var resolveFluxNode =function(node, graphData){
                 
                 currentPossibleFlux = parseInt(spaceLeftInChildren)
             }
-            if (currentPossibleFlux > 0 && (childrenNode.data.type == "stock" || childrenNode.data.type == "process" || childrenNode.data.type == "simulation_workbench") ) {
+            if (currentPossibleFlux > 0 && (childrenNode.data.type == "stock" || childrenNode.data.type == "process" || childrenNode.data.type == "simulation_workbench" || childrenNode.data.type == "simulation_pool") ) {
+                // if (parentNode.data.type == "simulation_pool") {
+                //     debugger
+                // }
                 // parentNode.data.outValue -= fluxValue
                 for (let i = 0; i < currentPossibleFlux; i++) {
                     var removed = undefined
@@ -144,6 +150,37 @@ var resolveStockNode =function(node, graphData){
     
 }
 
+var resolvePoolNode =function(node, graphData){
+    console.info("Resolve " + node.templateName + " " + node.params.uuid);
+    console.info(node);
+    let parents = graphData.parentsList
+    let children = graphData.adgencyList[node.params.uuid]
+    let nodes = graphData.orderedNodes
+
+    //find pool group
+    let groupNodes = []
+    for (let i = 0; i < graphData.orderedNodes.length; i++) {
+        // const element = graphData.orderedNodes[i];
+        if (graphData.orderedNodes[i].data.type == 'simulation_pool' && graphData.orderedNodes[i].evalData.group == node.evalData.group) {
+            groupNodes.push(graphData.orderedNodes[i])
+        }
+    }
+    let masterNode = groupNodes[0]
+    if (masterNode.data.outObjects !==  node.data.outObjects) { //make all out arrays the same
+        debugger
+        for (let j = 0; j < groupNodes.length; j++) {
+            groupNodes[j].data.outObjects = masterNode.data.outObjects
+        }
+    }
+
+    for (let k = 0; k < node.data.inObjects.length; k++) {
+        node.data.outObjects.push(node.data.inObjects[k]);
+    }
+    // node.data.outObjects = node.data.outObjects.concat(node.data.inObjects)
+    node.data.inObjects =[]
+    updateNodeDisplayValue(node)
+}
+
 var resolveProcessNode =function(node, graphData, currentFrame){
     console.info("Resolve " + node.templateName + " " + node.params.uuid);
     console.info(node);
@@ -183,7 +220,7 @@ var resolveWorkbenchNode =function(node, graphData, currentFrame){
     console.log();
     // node.data.bufferObjects[currentFrame] = node.data.inObjects
     node.data.inObjects =[]
-    debugger
+    
     var status = currentNodeBuffer.doWorkCycle()
     console.log(status);
     var finishedItems = currentNodeBuffer.getFinishedItems()
@@ -211,4 +248,4 @@ var resolveWorkbenchNode =function(node, graphData, currentFrame){
     
 }
 
-export {resolveSourceNode,resolveFluxNode,resolveStockNode, resolveProcessNode, resolveFrameNode, resolveWorkbenchNode }
+export {resolveSourceNode,resolveFluxNode,resolveStockNode, resolveProcessNode, resolveFrameNode, resolveWorkbenchNode, resolvePoolNode }

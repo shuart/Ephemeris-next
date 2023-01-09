@@ -220,7 +220,7 @@ var createWorkbenchNodeLogic = function(node){
                 itemInfo.item[nodeLogicId] += parseInt(node.evalData.workPerTime)
             }
             if (itemInfo.item[nodeLogicId] == 0) {
-                debugger
+                
             }
         } 
         return allItems

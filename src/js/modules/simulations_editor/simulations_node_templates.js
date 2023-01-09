@@ -123,6 +123,33 @@ simulationNodesTemplates.stock = {
     },
 }
 
+simulationNodesTemplates.pool = {
+    templateName : "simulation_pool",
+    name : "Pool",
+    style:{
+        headerColor:nodeColors.attribute,
+    },
+    category:"Simulation",
+    props :[
+        {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"input", expect:"data", isSquare:false, label:"Input", type:"hidden", editable:false, socket:"input", value:"output"},
+        {id:"inObjects", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:[]},
+        {id:"outValue", expect:undefined, label:"Value", type:"secret", editable:false, socket:"none", value:0},
+        {id:"outObjects", expect:undefined, label:"Quantity", type:"secret", editable:false, socket:"none", value:[]},
+        {id:"max",expect:"string", label:"Max", type:"text", editable:true, socket:"input", value:"infinite"},
+        {id:"group",expect:"string", label:"Group", type:"text", editable:true, socket:"input", value:"infinite"},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+
+        },
+        onInit:(props) =>{
+        },
+    },
+}
+
 simulationNodesTemplates.variable = {
     templateName : "variable",
     name : "Variable",

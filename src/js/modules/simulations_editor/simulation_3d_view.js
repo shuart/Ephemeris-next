@@ -74,6 +74,9 @@ var create3dSimulationRender = function({
         if (evaluatedNode.templateName =="simulation_workbench") {
             resolveWorkbenchNode(evaluatedNode, nodeGraph, frame)
         }
+        if (evaluatedNode.templateName =="simulation_pool") {
+            resolvePoolNode(evaluatedNode, nodeGraph, frame)
+        }
     }
 
     var createLabelLayout = function(node){
@@ -102,6 +105,18 @@ var create3dSimulationRender = function({
         }
     }
     var resolveStockNode = function(node, data, frame){
+        //Create layout if not exist
+        if (!state.layoutMapping[node.params.uuid]) {
+            createLabelLayout(node)
+        }
+        for (let i = 0; i < node.data.outObjects.length; i++) {
+            const item = node.data.outObjects[i];
+            // createItem(item.uuid)
+            moveItem(item.uuid, node.params.position.x*2 ,0,0-(i*1.5), true )
+        }
+    }
+
+    var resolvePoolNode = function(node, data, frame){
         //Create layout if not exist
         if (!state.layoutMapping[node.params.uuid]) {
             createLabelLayout(node)
