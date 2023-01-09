@@ -4,7 +4,7 @@ var getCustomFormatterForCol = function (rows, col, originalColConfig) {
     console.log(col);
     
     //check if is an entity instance
-    debugger
+    
     for (let i = 0; i < rows.length; i++) {
         var rowColToCheck =rows[i][col.field]
         
@@ -229,22 +229,23 @@ var getCustomFormatterForProperties = function (rows, col) {
         //     const element = instances[i];
         //     html += `<span data-id='${element.target.uuid}' class="table-tag action-tag" > ${element.target.name} </span>`
         // }
-        html += `<span data-id='${content.property.uuid}' class="table-tag action-tag" > ${content.property.type} </span>`
+        
+        html += `<span data-id='${content.property.uuid}' class="" > ${content.value} </span>`
 
-        onRendered(function(params) {
+        // onRendered(function(params) {
             
-            var domElemOfCell = cell.getElement()
-            var tags = domElemOfCell.querySelectorAll('.action-tag')
-            // for (let i = 0; i < tags.length; i++) {
-            //     const tag = tags[i];
-            //     tag.addEventListener('click', function (ev) {
-            //         ev.stopPropagation();
-            //         console.log(cell.getData().uuid);
-            //         console.log(cell.getValue().uuid);
-            //         // callback(ev.target.dataset.id)
-            //     })
-            // }
-        })
+        //     var domElemOfCell = cell.getElement()
+        //     var tags = domElemOfCell.querySelectorAll('.action-tag')
+        //     // for (let i = 0; i < tags.length; i++) {
+        //     //     const tag = tags[i];
+        //     //     tag.addEventListener('click', function (ev) {
+        //     //         ev.stopPropagation();
+        //     //         console.log(cell.getData().uuid);
+        //     //         console.log(cell.getValue().uuid);
+        //     //         // callback(ev.target.dataset.id)
+        //     //     })
+        //     // }
+        // })
         
         return html
     }

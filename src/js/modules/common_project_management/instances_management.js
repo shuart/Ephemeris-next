@@ -194,11 +194,17 @@ var instanceAggregate = function(aggregate, projectStore){
     }
 
     //methods
-    aggregate.setProperty = function (propName, value) {
+    aggregate.setPropertyByName = function (propName, value) {
         var propRef = propNameUuidMapping[propName]
         if (propRef) {
-            projectStore.add("instances",{uuid:aggregate.uuid,[ propRef ]:value})
+            var newObject = {uuid:aggregate.uuid,[ "prop_"+propRef ]:value}
+            projectStore.add("instances",newObject)
         }
+    }
+    aggregate.setPropertyByUuid = function (propRef, value) {
+        
+        var newObject = {uuid:aggregate.uuid,[ "prop_"+propRef ]:value}
+        projectStore.add("instances",newObject)
     }
 
     //methods

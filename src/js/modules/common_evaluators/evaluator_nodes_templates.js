@@ -559,6 +559,30 @@ evaluatorTemplates.colParameters = {
                     }
                     props.clickAction.get()(actionData) 
                 }
+            }else{
+                cellAction =function(e, cell){ 
+                    var actionData = {
+                        input:{
+                            clickedItem:cell.getData().uuid,
+                            clickedItemUuid:cell.getData().uuid,
+                            contextualItemUuid:cell.getData().uuid,
+                            clickedItemValue:cell.getValue(),
+                            sourceItem:cell.getData().uuid,
+                            targetItem:false,
+                        }
+                    }
+                    if (cell.getValue().property.uuid) {
+                        var propUuid = cell.getValue().property.uuid
+                        var instanceUuid = cell.getData().uuid
+                        var instancesRepo = createInstancesManagement()
+                        var instance = instancesRepo.getById(instanceUuid)
+                        var newValue = prompt("Set Property")
+                        if (newValue && instance) {
+                            instance.setPropertyByUuid(propUuid,newValue)
+                        }
+                    }
+                    
+                }
             }
             props.output.set({title:props.name.get(), field:props.paramName.get(), editor:undefined, cellClick:cellAction,})     
         },
