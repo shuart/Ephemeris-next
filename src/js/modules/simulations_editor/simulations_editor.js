@@ -247,10 +247,9 @@ var simulations_editor =createAdler({
     },
     css:/*css*/`
     .chartArea{
-        width: 50%;
+        width: 30%;
         height: 30%;
         position: absolute;
-        min-height: 260.963px;
         color: black;
         bottom: 0px;
         right: 0px;
