@@ -56,6 +56,18 @@ var entityAggregate = function(aggregate, projectStore){
         }
         return incomingRelations
     }
+    aggregate.getInstances = function (param, type) {
+        var instances = []
+        var allInstances = projectStore.get("instances").toArray()
+        for (let i = 0; i < allInstances.length; i++) {
+            const element = allInstances[i];
+            if (element.type== aggregate.uuid) {
+                instances.push(element);
+            }
+            
+        }
+        return instances
+    }
     //methods
     aggregate.addProperty = function (param, type) {
         var futureId = nanoid()
