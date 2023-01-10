@@ -264,7 +264,7 @@ simulationNodesTemplates.workbench = {
         {id:"bufferObjects", expect:undefined, label:"Quantity", type:"secret", editable:false, socket:"none", value:undefined},
         {id:"outObjects", expect:undefined, label:"Quantity", type:"secret", editable:false, socket:"none", value:[]},
 
-        {id:"layout", expect:undefined, label:"Layout", type:"text", editable:false, socket:"none", value:1},
+        {id:"layout", expect:undefined, label:"Layout", type:"text", editable:false, socket:"none", value:"[[3,2,1,3,2,1],[3,2,1,3,2,1],[3,2,1,3,2,1],[3,2,1,3,2,1]]"},
     ],
     methods:{
     },

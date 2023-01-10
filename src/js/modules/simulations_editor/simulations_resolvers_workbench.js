@@ -22,6 +22,7 @@ var createWorkbenchNodeLogic = function(node){
     //     [1],
     //     [1],
     // ]
+    matrix = JSON.parse(node.data.layout)
     var itemsInside =[]
     var benchMatrix =[]
     var benchMapping={}
