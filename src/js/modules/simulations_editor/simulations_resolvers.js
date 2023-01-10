@@ -167,7 +167,7 @@ var resolvePoolNode =function(node, graphData){
     }
     let masterNode = groupNodes[0]
     if (masterNode.data.outObjects !==  node.data.outObjects) { //make all out arrays the same
-        debugger
+        
         for (let j = 0; j < groupNodes.length; j++) {
             groupNodes[j].data.outObjects = masterNode.data.outObjects
         }

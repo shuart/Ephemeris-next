@@ -84,7 +84,7 @@ var create3dSimulationRender = function({
         state.layoutMapping[node.params.uuid] = label
         state.layout.push(label)
         label.position.set(node.params.position.x*2,0, 2)
-        label.scale.set(3,2, 3)
+        label.scale.set(3,1, 3)
         state.scene.add(label);
     }
 
@@ -175,7 +175,7 @@ var create3dSimulationRender = function({
 
         var createBenchModel = function(){
             const geometry = new THREE.PlaneGeometry( 1.5, 1 );
-            const material = new THREE.MeshBasicMaterial( {color: 0xffff00, } );//side: THREE.DoubleSide
+            const material = new THREE.MeshBasicMaterial( {color: 0x1b4a48, } );//side: THREE.DoubleSide
             const plane = new THREE.Mesh( geometry, material );
             plane.rotation.x=(-3.1416/2)
             return plane ;
@@ -306,7 +306,7 @@ var create3dSimulationRender = function({
         state.helperLine = new THREE.Line( lineGeometry, lineMaterial );
         state.scene.add(state.helperLine)
         const size = 1000;
-        const divisions = 1000;
+        const divisions = 100;
         const gridHelper = new THREE.GridHelper( size, divisions );
         state.scene.add(gridHelper)
     }

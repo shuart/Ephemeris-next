@@ -12,6 +12,7 @@ import createSimulationManagement from "../common_project_management/simulation_
 import simulationNodesTemplates from "./simulations_node_templates.js";
 import createSimulator from "./simulations_simulator.js";
 import create3dSimulationRender from "./simulation_3d_view.js";
+import createChartView from "./simulation_chart_view.js";
 
 var softUpdate= function (event, data, instance) {
 
@@ -32,6 +33,7 @@ var setUp = function (event, data, instance) {
         data.render = create3dSimulationRender({
             container:renderArea,
         })
+        data.currentChart = createChartView({container:instance.query('.chartArea')})
         data.graph = createStellae({
             container:element, 
             fullSize:true,
@@ -65,14 +67,18 @@ var setUp = function (event, data, instance) {
         data.graph.getNodeManager().addNode("in_out", { nodeLayout:"group",uuid:"feefsfesfsefsdfsd", name:"group", headerColor:"#c0bfbc", imgPath:'img/iconsPNG/info.svg'})
         data.currentSimulator = createSimulator()
         data.currentSimulator.setRenderer(data.render)
+        data.currentSimulator.setChart(data.currentChart)
         // data.graph.getNodeManager().exportNodes({withAllValues:true})
 
+
+        
         
     }, 500);
 
 }
 
 var playSimulation = function(event, data, instance){
+    
     data.currentSimulator.updateData( data.graph.getNodeManager() )
     data.currentSimulator.updateCallbacks( {
         onIterate:function(nodes){
@@ -131,7 +137,7 @@ var showPreview = function (event,data,instance) {
 
 var simulations_editor =createAdler({
     content: p => /*html*/`
-    <div class="Component">
+    <div class="simulation_component">
         <nav class="navbar container" role="navigation" aria-label="main navigation">
 
             <div id="navbarBasicExample" class="navbar-menu">
@@ -195,7 +201,8 @@ var simulations_editor =createAdler({
         </nav>
         
         <div style="width:100%; height:800px; position:relative" class="graph" >GRAPH</div>
-        <div style="width:100%; height:400px; position:relative" class="renderArea" >GRAPH</div>
+        <div style="" class="renderArea" >GRAPH</div>
+        <div style="" class="chartArea" >Chart</div>
     </div>
         `,
     params:{
@@ -237,8 +244,34 @@ var simulations_editor =createAdler({
     },
     components:{
         // table_component: table_component
+    },
+    css:/*css*/`
+    .chartArea{
+        width: 50%;
+        height: 30%;
+        position: absolute;
+        min-height: 260.963px;
+        color: black;
+        bottom: 0px;
+        right: 0px;
     }
-    // css:/*css*/` `,
+    .renderArea{
+        width: 50%;
+        height: 35%;
+        position: absolute;
+        min-height: 260.963px;
+        color: black;
+        bottom: 0px;
+        left: 0px;
+        overflow: hidden;
+    }
+    .simulation_component{
+        width: 100%;
+        height: 100%;
+        position: relative;
+    }
+
+    `,
 })
 
 export default simulations_editor

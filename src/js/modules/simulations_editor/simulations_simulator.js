@@ -5,6 +5,7 @@ var createSimulator = function(graph){
     var self = {}
     var simulationState = "init"
     var renderer3d = undefined
+    var chart = undefined
     var currentFrame = 0
     var lastFrameTime = 0
     var timeBetweenFrames = 1000
@@ -12,6 +13,24 @@ var createSimulator = function(graph){
     var currentGraph = undefined
     var callbacks = {
         onIterate : (data)=>console.log(data),
+    }
+
+    var report = {}
+
+    var recordNodesValues = function (nodes) {
+        for (const key in nodes) {
+            if (Object.hasOwnProperty.call(nodes, key)) {
+                const node = nodes[key];
+                if (node.data && node.data.outValue && (node.data.type == "stock" || node.data.type == "source" || node.data.type == "process" || node.data.type == "simulation_workbench" || node.data.type == "simulation_pool") ) {
+                    if (!report[node.params.name]) {
+                        report[node.params.name] = []
+                    }
+                    report[node.params.name].push(node.data.outValue)
+                }
+                
+            }
+        }
+        
     }
 
     var play =function(params) {
@@ -48,6 +67,9 @@ var createSimulator = function(graph){
     }
     var setRenderer = function (data) {
         renderer3d = data
+    }
+    var setChart = function (data) {
+        chart = data
     }
     var updateCallbacks = function (newCallbacks) {
         callbacks = newCallbacks
@@ -134,11 +156,17 @@ var createSimulator = function(graph){
             if (renderer3d) {
                 renderer3d.updateView(data, node)
             }
+            
+        }
+        recordNodesValues(data.orderedNodes)
+        if (chart) {
+            chart.updateFromData(report)
         }
         callbacks.onIterate(data.orderedNodes, frame);
     }
     
     
+    self.setChart = setChart
     self.setRenderer = setRenderer
     self.play = play
     self.pause = pause
