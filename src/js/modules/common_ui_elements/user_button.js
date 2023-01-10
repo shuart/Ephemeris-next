@@ -25,6 +25,7 @@ var user_button =createAdler({
             position: relative;
             overflow: hidden;
             border: 1px solid var(--color);
+            border: 1px none var(--color);
             transition: color .5s;
             z-index: 1;
             font-size: 17px;

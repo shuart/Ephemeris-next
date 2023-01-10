@@ -78,7 +78,7 @@ var common_settings =createAdler({
                     value:"Workflow",
                     items:[
                         {id:"cycles", iconPath:"repeat.svg", value:"Cycles",onClick:()=> state_manager.goTo("/:/:/workflow/cycles")},
-                        {id:"simulations", iconPath:"repeat.svg", value:"Simulations",onClick:()=> state_manager.goTo("/:/:/workflow/simulations")},
+                        {id:"simulations", iconPath:"bar-chart-2.svg", value:"Simulations",onClick:()=> state_manager.goTo("/:/:/workflow/simulations")},
                     ]
                 },
                 {

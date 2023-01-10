@@ -3,7 +3,12 @@ import createAdler from "../../vendor/adler.js";
 var user_button =createAdler({
     content: p => /*html*/`
     <div class="brick">
-    <div class="card">
+    <div style="cursor:pointer;" class="card card_go_button">
+            <div class="card-image">
+                <figure class="image is-3by1">
+                    <img src="./img/projectPreviewRect.jpg" alt="Placeholder image">
+                </figure>
+            </div>
             <header class="card-header">
             <p class="card-header-title card_go_button">
                 ${p.value}

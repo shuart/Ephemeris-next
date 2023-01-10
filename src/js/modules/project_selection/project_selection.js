@@ -34,9 +34,15 @@ var setUp = function (event, data, instance) {
 
 var project_selection =createAdler({
     content: p => /*html*/`
-            <button class="action1 adlerButton">${p.currentUserName} world</button><p class="action2">${p.test2} here</p>
-            <button class="action_project_selection_add_project button">Button</button>
-            <button class="action_project_selection_add_project_from_template button">add from template</button>
+            <div class="project_selection_logo"></div>
+            <div class="has-text-centered project_selection_sub_title">
+                ${p.currentUserName}'s projects
+            </div>
+            <div class="has-text-centered">
+                <button class="action_project_selection_add_project button is-primary is-rounded">Add</button>
+                <button class="action_project_selection_add_project_from_template button is-rounded is-light">Add from template</button>
+            </div>
+            
             <div a-for="projects" adler="project_card" class="masonry">
 
             </div><!-- .masonry -->
@@ -48,7 +54,7 @@ var project_selection =createAdler({
             projects:setButtonList(),
         },
         on:[
-            [".action1","click", (event, data)=> alert("test "+ data.test)],
+            // [".action1","click", (event, data)=> alert("test "+ data.test)],
             [".action2","click", (event, data, instance)=> instance.setData({test:"barr"}) ],
             [".action_project_selection_add_project","click", (event, data, instance)=> addProject(event, data, instance) ],
             [".action_project_selection_add_project_from_template","click", (event, data, instance)=> createTemplateManager().importTemplateFromFile(  (content)=>addProjectFromTemplate(event, data, instance, content)  ) ],
@@ -66,6 +72,25 @@ var project_selection =createAdler({
             border: none;
             color: white;
             margin: 3px;
+        }
+        .project_selection_logo{
+            width: 150px;
+            margin: auto;
+            height: 150px;
+            background-image: url("./img/observatoryR.png");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        .project_selection_sub_title{
+            margin: auto;
+            width: 50%;
+            margin-top: 20px;
+            border-bottom-style: solid;
+            margin-bottom: 20px;
+            border-color: #8a8a8a29;
+            border-width: 1px;
+            font-size: 1rem;
+            color: #bfbcbc;
         }
         
     `,

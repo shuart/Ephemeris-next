@@ -58,9 +58,16 @@ var login_ui =createAdler({
                 <button class="login_action_add_user button is-primary">Sign in</button>
             </form>
 
+            <div class="has-text-centered login_title">
+                <h1 class="">Ephemeris</h1>
+            </div>
+            <div class="has-text-centered login_sub_title">
+                login
+            </div>
+
             <div a-for="users" adler="user_button" class="user_button_list"></div>
-            <div class="">
-                <button class="login_action_show_register">add User</button>
+            <div class="has-text-centered login_extra_actions">
+                <button class="button is-primary login_action_show_register">add User</button>
             </div>
         </div>
         
@@ -85,6 +92,25 @@ var login_ui =createAdler({
             background-size: contain;
             background-repeat: no-repeat;
         }
+        .login_extra_actions{
+            padding-top: 30px;
+            border-top-style: solid;
+            margin-top: 20px;
+            border-color: #8a8a8a29;
+            border-width: 1px;
+        }
+        .login_title{
+            font-size:3.1rem;
+        }
+        .login_sub_title{
+            margin-top: 20px;
+            border-bottom-style: solid;
+            margin-bottom: 20px;
+            border-color: #8a8a8a29;
+            border-width: 1px;
+            font-size: 1rem;
+            color: #bfbcbc;
+        }
         .login_main_area{
             max-width: 613px;
             width: 100%;
@@ -92,7 +118,7 @@ var login_ui =createAdler({
         }
         @media (prefers-color-scheme: dark) {
             .login_logo{
-                background-image: url("./img/login_dark.jpg");
+                background-image: url("./img/login_dark2.jpg");
             }
           }
     `,
