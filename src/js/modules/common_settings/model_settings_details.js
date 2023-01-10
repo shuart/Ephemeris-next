@@ -110,8 +110,12 @@ var setUpTable = function (event, data, instance) {
 var model_settings_component =createAdler({
     content: p => /*html*/`
         <div class="container">
-            <div class="example-table" a-id="table" a-props="test:test,onAdd" adler="table_component" >${p.modelElementType}</div>
-            <div class="relations-table" a-id="relationsTable" a-props="onAdd:onAddRelation" adler="table_component" >Relations${p.modelElementType}</div>
+            <div class="block"></div>
+            <div class="block">Properties</div>
+            <div class="example-table" a-id="table" a-props="test:test,onAdd" adler="table_component" ></div>
+            <div class="block"></div>
+            <div class="block">Relations</div>
+            <div class="relations-table" a-id="relationsTable" a-props="onAdd:onAddRelation" adler="table_component" ></div>
         </div>
         `
         ,

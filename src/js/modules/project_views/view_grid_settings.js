@@ -59,7 +59,7 @@ var renderTable= function ({
     var settingClass = ""
     if (showSettings) { 
         settingClass="adler_grid_row_settings";
-        var area = '<div class="adler_grid_row_save">save</div>'
+        var area = '<div class="adler_grid_row_save button is-primary is-small block">save</div>'
     }
     for (let i = 0; i < schema.length; i++) {
         const rowItem = schema[i];
@@ -105,7 +105,6 @@ var renderCol = function ({
         for (let i = 0; i < components.length; i++) {
             const compItem = components[i];
             console.log(compItem);
-            alert()
             area +=`<div a-slot="view_mount_point_${rowId}_${colId}_${i}" data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${i}"  class="adler_grid_comp_area" >` + renderComp(compItem) +'</div>'
         }
     }else{

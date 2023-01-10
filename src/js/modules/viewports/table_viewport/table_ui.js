@@ -81,7 +81,7 @@ var setUpTable = function (event, data, instance) {
 var component =createAdler({
     content: p => /*html*/`
     <div class="Component container">
-        <div class="action_add_entity" >TABLE</div>
+        <div class="action_add_entity button is-small" >Add</div>
         <div class="example-table" a-id="tablevp" adler="table_component" ></div>
         
     </div>

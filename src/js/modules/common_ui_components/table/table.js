@@ -94,8 +94,7 @@ var softUpdate= function (event, data, instance) {
 var table_component =createAdler({
     content: p => /*html*/`
     <div class="tableComponent"></div>
-    <div a-if="onAdd" class="action-table-add">add</div>
-    <div class="qdsqs"></div>
+    <div a-if="onAdd" class="action-table-add button is-small is-primary">add</div>
         `,
     params:{
         props:{

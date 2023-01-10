@@ -314,7 +314,7 @@ var model_settings_component =createAdler({
             </nav>
         
 
-            <div class="example-table" style="height:580px" a-id="table" a-props="test:test,callback:callback" adler="table_component" >${p.modelElementType}</div>
+            <div class="example-table" style="height:580px" a-id="table" a-props="test:test,callback:callback" adler="table_component" ></div>
         </div>
         `
         ,
