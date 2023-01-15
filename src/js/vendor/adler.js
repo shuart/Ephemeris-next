@@ -334,6 +334,10 @@ var createAdler = function({
             var component = slotMap[element.getAttribute("a-slot")]
             if(!component){
                 // console.log("missing component");
+            }else if (Array.isArray(component)) {
+                for (let i = 0; i < component.length; i++) {
+                    component[i].mount(element);
+                }
             }else{
                 component.mount(element);
             }
@@ -387,8 +391,16 @@ var createAdler = function({
         slotMap[slot] = component;
     }
     var clearSlot = function (slot) {
-        slotMap[slot].unmount()
-        slotMap[slot] = undefined;
+        if (Array.isArray(slotMap[slot])) {
+            for (let i = 0; i < slotMap[slot].length; i++) {
+                slotMap[slot][i].unmount()
+                slotMap[slot][i] = undefined;
+                
+            }
+        }else{
+            slotMap[slot].unmount()
+            slotMap[slot] = undefined;
+        }
         //wrapper.DOMElement.querySelector("[a-slot]="+slot).innerHTML=""
     }
 
@@ -409,7 +421,12 @@ var createAdler = function({
     }
     var query = function(query){
         console.log(wrapper);
-        return wrapper.DOMElement.querySelector(query)
+        if (wrapper.DOMElement.classList.contains(query.substring(1))) {
+            return wrapper.DOMElement
+        }else{
+            return wrapper.DOMElement.querySelector(query)
+        }
+        
     }
 
     var init= function(){

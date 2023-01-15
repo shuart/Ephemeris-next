@@ -27,6 +27,12 @@ var setUpTable = function(event, data, instance){
     if (typeof itemsList === 'function') {
         itemsList = data.list()
     }
+    if (data.callbackConfirm) {
+        instance.query(".action_confirm_button").style.display="block";
+        instance.query(".action_confirm_button").addEventListener("click", function () {
+            data.callbackConfirm(data)
+        })
+    }
 
     populateSelected(data, instance)
     console.log(itemsList);
@@ -105,6 +111,7 @@ var component =createAdler({
             </div>
             <div class="selectedArea"></div>
             <div class="tableArea"></div>
+            <button class="action_confirm_button button is-primary">Confirm</button>
         </div>
     </div>
         `,
@@ -123,11 +130,13 @@ var component =createAdler({
             selectedlist:[],
             callback : (event)=> alert(event.value.id),
             closeSelectedCallback: (event)=> console.log(event.value.id),
+            callbackConfirm: false,
             table:undefined,
             // onClick:()=>console.log("click")
         },
         on:[
             [".action_select_filter","keyup", filterTable ],
+            // [".action_confirm_button","click", callbackConfirm ],
         ],
         events:{
             // onBeforeMount:(event, data, instance) => setUp(event, data, instance),
@@ -164,6 +173,9 @@ var component =createAdler({
     }
     .selectedArea {
         margin:8px;
+    }
+    .action_confirm_button{
+        display:none;
     }
     `,
 })

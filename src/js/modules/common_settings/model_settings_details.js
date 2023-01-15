@@ -6,6 +6,8 @@ import table_component from "../common_ui_components/table/table.js";
 import createEntityManagement from "../common_project_management/entity_management.js";
 import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
 import select from "../common_ui_components/select/select.js"
+import createPropertyManagement from "../common_project_management/properties_management.js";
+import createDialogue from "../common_select_dialogue/common_dialogue.js";
 
 // import {Tabulator} from "../../vendor/tabulator_esm.min.js";
 
@@ -79,7 +81,13 @@ var setUpData = function (event, data, instance) {
     var element = entityRepo.getById(instance.props.get("modelElementDetails"))
     instance.props.set('onAdd', ()=>{
         var propName = prompt()
-        element.addProperty(propName,propName)
+        createDialogue({
+            
+        })
+        if (propName !="") {
+            element.addProperty(propName,propName)
+            instance.getNodes().table.setData({list:getItemsList(data,instance)})
+        }
     } )
     instance.props.set('onAddRelation', ()=>{
         // var propName = prompt()
@@ -89,6 +97,7 @@ var setUpData = function (event, data, instance) {
                 list:entityRepo.getAll(),
                 callback:function(event){
                     element.addRelation("type",event.value.uuid)
+                    instance.getNodes().table.setData({list:getItemsList(data,instance)})
                     // var currentSchema = instance.props.schema.get(); 
                     // currentSchema[ compPos[0] ].cols[ compPos[1] ].components[ compPos[2] ].settings={entityType:event.value.uuid};
                 }
@@ -101,7 +110,30 @@ var setUpData = function (event, data, instance) {
 
 var setUpTable = function (event, data, instance) {
      console.log(instance.getNodes());
-     instance.getNodes().table.setData({list:getItemsList(data,instance)})
+     var propRepo = createPropertyManagement()
+     instance.getNodes().table.setData({
+        list:getItemsList(data,instance),
+        cols: [
+            {title:"id", field:"uuid", },
+            {title:"value", field:"name", },
+            // {title:"added", field:"theTime", },
+            {title:"Type", field:"type", },
+            {customButton: {
+                value:"X", 
+                onClick:function(e, cell){
+                    if (confirm('Delete?')) {
+                        console.log(cell.getRow().getData().uuid);
+                        console.log(propRepo.getById(cell.getRow().getData().uuid)); //TODO clean all entities after delete
+                        
+                        propRepo.remove(cell.getRow().getData().uuid)
+                        instance.getNodes().table.setData({list:getItemsList(data,instance)})
+                    // instance.getNodes().table.do.softUpdate({list:getRelationList(data,instance)})
+                    }
+                    
+                } 
+            } },        ],
+
+    })
      instance.getNodes().relationsTable.setData({list:getRelationList(data,instance)})
 }
 

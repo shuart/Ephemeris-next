@@ -44,7 +44,7 @@ var getItemsList = function (event, data, instance){
         }
     }
     data.links =[]
-    debugger
+    // debugger
     if (evaluatorResult.links && evaluatorResult.links[0]) {
         for (let i = 0; i < evaluatorResult.links.length; i++) {
             const entityGroup = evaluatorResult.links[i];

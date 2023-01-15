@@ -13,9 +13,11 @@ var entityAggregate = function(aggregate, projectStore){
             //TODO check if ref is still used
             // ownProperties.push({uuid:key, value:aggregate.attributes[key]})
             var property = projectStore.get("properties").where("uuid").equals(key.substring(5))
-            var propertyName = property.name
-            // ownProperties[propertyName] = aggregate.attributes[key]
-            ownProperties[propertyName] = property
+            if (property) {
+                var propertyName = property.name
+                // ownProperties[propertyName] = aggregate.attributes[key]
+                ownProperties[propertyName] = property
+            }
         }
     }
     aggregate.properties = ownProperties

@@ -92,7 +92,12 @@ var createCluster = function(initialSchema, options){
                     return {
                         equals:function(value){
                             console.log(storageUUID);
-                            return storageUUID[storeName][value]
+                            var toReturn = storageUUID[storeName][value]
+                            if (toReturn &&  toReturn["tombstone"] != 1) {
+                                return storageUUID[storeName][value]
+                            }else{
+                                return undefined
+                            }
                         }
                     }
                 }else{ //if another key
