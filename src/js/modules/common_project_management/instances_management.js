@@ -18,11 +18,14 @@ var instanceAggregate = function(aggregate, projectStore){
             //TODO check if ref is still used
             // ownProperties.push({uuid:key, value:aggregate.attributes[key]})
             var property = projectStore.get("properties").where("uuid").equals(key.substring(5))
-            var propertyName = property.name
-            propNameUuidMapping[propertyName]=key
-            propUuidNameMapping[key]=propertyName
-            ownProperties[propertyName] = aggregate.attributes[key]
-            ownProperties[propertyName] = {property:property, value:aggregate.attributes[key]} 
+            if (property) {
+                var propertyName = property.name
+                propNameUuidMapping[propertyName]=key
+                propUuidNameMapping[key]=propertyName
+                ownProperties[propertyName] = aggregate.attributes[key]
+                ownProperties[propertyName] = {property:property, value:aggregate.attributes[key]} 
+            }
+            
         }
     }      
     aggregate.properties = ownProperties

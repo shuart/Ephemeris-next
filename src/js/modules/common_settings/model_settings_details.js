@@ -80,14 +80,31 @@ var setUpData = function (event, data, instance) {
     var entityRepo = createEntityManagement()
     var element = entityRepo.getById(instance.props.get("modelElementDetails"))
     instance.props.set('onAdd', ()=>{
-        var propName = prompt()
+        // var propName = prompt()
         createDialogue({
-            
+           fields:[
+            {type:"text", name:"text",config:{
+                    label:"Property Name",
+                    value:"Property Name",
+                    autofocus:true,
+                }
+            },
+            {type:"selection", name:"selection", config:{
+                    label:"Property Type"
+                }
+            },
+           ],
+           onConfirm:(result)=>{
+            if (result.text !="") {
+                element.addProperty(result.text,result.text)
+                instance.getNodes().table.setData({list:getItemsList(data,instance)})
+            }
+           } 
         })
-        if (propName !="") {
-            element.addProperty(propName,propName)
-            instance.getNodes().table.setData({list:getItemsList(data,instance)})
-        }
+        // if (propName !="") {
+        //     element.addProperty(propName,propName)
+        //     instance.getNodes().table.setData({list:getItemsList(data,instance)})
+        // }
     } )
     instance.props.set('onAddRelation', ()=>{
         // var propName = prompt()
