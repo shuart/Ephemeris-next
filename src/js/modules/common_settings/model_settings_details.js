@@ -90,13 +90,15 @@ var setUpData = function (event, data, instance) {
                 }
             },
             {type:"selection", name:"selection", config:{
-                    label:"Property Type"
+                    label:"Property Type",
+                    list: [{name:"Text", uuid:"text", iconPath:"align-left.svg"},{name:"Rich Text", uuid:"rich_text", iconPath:"book.svg"},{name:"Date", uuid:"date", iconPath:"calendar.svg"},{name:"Boolean", uuid:"boolean", iconPath:"toggle-right.svg"}],
+                    selected:{},
                 }
             },
            ],
            onConfirm:(result)=>{
             if (result.text !="") {
-                element.addProperty(result.text,result.text)
+                element.addProperty(result.text,result.selection[0].uuid)
                 instance.getNodes().table.setData({list:getItemsList(data,instance)})
             }
            } 
@@ -144,6 +146,7 @@ var setUpTable = function (event, data, instance) {
                         
                         propRepo.remove(cell.getRow().getData().uuid)
                         instance.getNodes().table.setData({list:getItemsList(data,instance)})
+                        var tet = propRepo.getAll()
                     // instance.getNodes().table.do.softUpdate({list:getRelationList(data,instance)})
                     }
                     

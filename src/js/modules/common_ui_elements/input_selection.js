@@ -21,10 +21,35 @@ var showPopup = function (event, data, instance) {
                     // data.value = currentList.filter(i=>selected[i.uuid]).map(i=>i.name).join(",")
                     instance.update()
                     mainPopupNarrow.unmount()
+                    var selectedList = []
+                    for (let i = 0; i < data.list.length; i++) {
+                        if (selected[data.list[i].uuid]) {
+                            selectedList.push(data.list[i])
+                        }
+                    }
+                    data.onChange({list:data.list, selected:data.selected, selectedList})
                 },
                 callback:function(event){
                     console.log(event);
-                    selected[event.value.uuid]= true
+                    if (data.multipleSelection) {
+                        selected[event.value.uuid]= true
+                    }else{ //if single selection clear the object, appart from the new selection and close popup
+                        for (const key in selected) {
+                            if (Object.hasOwnProperty.call(selected, key)) {
+                                delete selected[key]
+                            }
+                        }
+                        selected[event.value.uuid]= true
+                        var selectedList = []
+                        for (let i = 0; i < data.list.length; i++) {
+                            if (selected[data.list[i].uuid]) {
+                                selectedList.push(data.list[i])
+                            }
+                        }
+                        data.onChange({list:data.list, selected:data.selected, selectedList})
+                        instance.update()
+                        mainPopupNarrow.unmount()
+                    }
                     //Display a new popup to choose the relation type
                     // currentSelectedInstance.addRelation(props.relationType.get(),event.value.uuid)
                     selectInstance.do.softUpdate();
@@ -47,7 +72,13 @@ var fillElement = function(event, data, instance){
     console.log(instance.query(".start_select"));
     // instance.query(".start_select").innerHTML = data.list.filter(i=>data.selected[i.uuid]).map(i=>i.name).join(",")
     // var content = data.list.filter(i=>data.selected[i.uuid]).map(i=>'<span class="selectTag">'+i.name+'<span data-uuid="'+i.uuid+'" class="selectCloseTag"> | X</span></span>').join('')
-    var content = data.list.filter(i=>data.selected[i.uuid]).map(i=>'<span class="selectionareaSelectTag">'+i.name+'</span>').join('')
+    var content = data.list.filter(i=>data.selected[i.uuid]).map(i=>{
+            var iconPart =""
+            if (i.iconPath) {
+                iconPart = '<span class=""><img class="selectionareaSelectTagIcon" src="./img/icons/'+i.iconPath+'"></img></span>'
+            }
+            return'<span class="selectionareaSelectTag">'+iconPart+' '+i.name+'</span>'
+        }).join('')
     if (content !="") {
         instance.query(".start_select").innerHTML = content
     }
@@ -72,6 +103,8 @@ var input_selection =createAdler({
             label:undefined,
             list: [{name:"test", uuid:"1"},{name:"tessqdqsdsqt", uuid:"2"}],
             selected:{},
+            multipleSelection:false,
+            onChange:(e)=>console.log(e),
             onClick:showPopup
         },
         on:[
@@ -109,6 +142,11 @@ var input_selection =createAdler({
         margin-right:5px;
         font-weight: bold;
     }
+    .selectionareaSelectTagIcon{
+        filter: invert(100%);
+        height:17px;
+        margin-right:5px;
+    }
     @media (prefers-color-scheme: dark) {
         .ephSelectionarea{
             background-color: #262626;
@@ -118,6 +156,9 @@ var input_selection =createAdler({
         }
         .selectionareaSelectTag {
             color: #000000;
+        }
+        .selectionareaSelectTagIcon{
+            filter: invert(0%);
         }
         
     }

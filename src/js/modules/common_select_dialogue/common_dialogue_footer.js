@@ -19,7 +19,7 @@ var common_dialogue_footer =createAdler({
             </a>
             </p>
             <p class="control">
-            <a class="button is-light">
+            <a class="action_common_dialogue_cancel button is-light">
                 Cancel
             </a>
             </p>
@@ -30,6 +30,7 @@ var common_dialogue_footer =createAdler({
         data:{
             label:undefined,
             onConfirm :()=>console.log("confirm"),
+            onCancel :()=>console.log("cancel"),
             // onClick:()=>console.log("click"),
             // onFocusout:()=>console.log("unfocus"),
         },
@@ -40,6 +41,7 @@ var common_dialogue_footer =createAdler({
         },
         on:[
             [".action_common_dialogue_confirm","click", (event, data, instance)=> data.onConfirm(event, data, instance) ],
+            [".action_common_dialogue_cancel","click", (event, data, instance)=> data.onCancel(event, data, instance) ],
             // [".input","focusout", (event, data, instance)=> data.onFocusout(event, data, instance) ],
             // [".input","keyup", (event, data, instance)=> updateValue(event, data, instance) ],
         ]

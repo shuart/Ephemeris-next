@@ -131,6 +131,7 @@ var component =createAdler({
             callback : (event)=> alert(event.value.id),
             closeSelectedCallback: (event)=> console.log(event.value.id),
             callbackConfirm: false,
+            callbackConfirm:undefined,
             table:undefined,
             // onClick:()=>console.log("click")
         },

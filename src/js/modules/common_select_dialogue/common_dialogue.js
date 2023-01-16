@@ -11,6 +11,12 @@ var createDialoguePage = function (params) {
     for (let i = 0; i < params.fields.length; i++) {
         const field = params.fields[i];
         if (field.type=="selection") {
+            if (!field.config.onChange) { //if an action is not setup the dialogue component will do it. 
+                field.config.onChange=(data)=>{ //the text element use the focus out event to store the value in the local store
+                    
+                    params.choiceStore[field.name] = data.selectedList
+                }
+            }
             var item = input_selection.instance({
                 data:field.config
             })
@@ -36,6 +42,13 @@ var createDialoguePage = function (params) {
                 console.log(params.choiceStore);
                 if (params.onConfirm) {
                     params.onConfirm(params.choiceStore)
+                }
+                params.containerPopup.unmount()
+            },
+            onCancel:(event, data, instance)=>{
+                console.log(params.choiceStore);
+                if (params.onCancel) {
+                    params.onCancel(params.choiceStore)
                 }
                 params.containerPopup.unmount()
             },
