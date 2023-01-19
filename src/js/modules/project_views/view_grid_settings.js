@@ -8,6 +8,7 @@ import thumbs from "./view_grid_settings_select_comp.js"
 import table_viewport from "../viewports/table_viewport/table_ui.js"
 import graph_viewport from "../viewports/graph_viewport/graph_ui.js"
 import cardViewport from "../viewports/card_viewport/card_viewport.js";
+import state from "../common_state/state_manager.js";
 
 var softUpdate= function (event, data, instance) {
 
@@ -103,9 +104,10 @@ var renderCol = function ({
     var area = ''
     if (showSettings) {
         for (let i = 0; i < components.length; i++) {
-            const compItem = components[i];
+            const compItem = Object.assign({},components[i], {rowId, colId, index:i});
             console.log(compItem);
-            area +=`<div a-slot="view_mount_point_${rowId}_${colId}_${i}" data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${i}"  class="adler_grid_comp_area" >` + renderComp(compItem) +'</div>'
+            area +=renderComp(compItem)
+            // area +=`<div a-slot="view_mount_point_${rowId}_${colId}_${i}" data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${i}"  class="adler_grid_comp_area" >` + renderComp(compItem) +'</div>'
         }
     }else{
         for (let i = 0; i < components.length; i++) {
@@ -122,21 +124,56 @@ var renderCol = function ({
     return area
 }
 var renderComp = function ({
+    rowId=undefined,
+    colId = undefined,
     width = undefined,
+    index = undefined,
     height= "100%",
-    uuid = nanoid(),
+    uuid = undefined,
     componentType ="undefined",
     settings ={evaluatorUuid:undefined},
 }={}) {
     var area = componentType
+    var areaName = "No Type"
+    var areaIcon  = "airplay"
     var evaluatorUuid = settings.evaluatorUuid
     var evaluatorName = " no evaluator"
     if (evaluatorUuid) {
         var evaluatorRepo = createEvaluatorsManagement()
         evaluatorName =evaluatorRepo.getById(evaluatorUuid).name
     }
-    
-    return area + ' using ' +evaluatorName
+    if (componentType == "table") {
+        areaName = "Table";
+        areaIcon = "table"
+    }
+    if (componentType == "graph") {
+        areaName = "Graph";
+        areaIcon = "git-merge"
+    }
+    if (componentType == "instanceCard") {
+        areaName = "Title Card";
+        areaIcon = "credit-card"
+    }
+    return `
+    <div a-slot="view_mount_point_${rowId}_${colId}_${index}" data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${index}"  class="adler_grid_comp_area" >
+        
+        <div class="box">
+                <div class="media">
+                <div class="media-left">
+                    <figure class="image is-48x48">
+                    <img class="darkModeCompatibleIcons" src="./img/icons/${areaIcon}.svg" alt="Placeholder image">
+                    </figure>
+                </div>
+                <div class="media-content">
+                    <p class="is-4">${areaName} <button data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${index}" data-id="${uuid}" class="delete is-danger action-view-settings-delete-comp"></button> </p>
+                    <div class="tags has-addons">
+                        <span data-id="${evaluatorUuid}" class="tag is-link action-view-settings-goto-evaluator">Using ${evaluatorName }</span>
+                        <a  class="tag action-view-settings-edit-evaluator"><img style="height:15px" class="darkModeCompatibleIcons" src="./img/icons/edit-2.svg" alt="Placeholder image"></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>`
     
 }
 
@@ -163,6 +200,10 @@ var setUpSettingsEvent = function (event, data, instance){
 
     // alert(JSON.stringify(currentSchema))
     // instance.props.schema.set(currentSchema); instance.update();
+}
+var goToEvaluator = function(event){
+    var evaluator = event.target.dataset.id
+    state.goTo("/:/evaluators/"+evaluator)
 }
 
 var saveLayout = function(event, data, instance){
@@ -203,23 +244,32 @@ var addComp = function(event, data, instance){
     // mainPopup.mount()
     // mainPopup.append(thumbs, "main-slot")
     // mainPopup.update();
-    mainPopup.mount()
-    mainPopup.append(select.instance({
+    var narrowPopup = mainPopup.instance({data:{narrow:true}})
+    narrowPopup.mount()
+    narrowPopup.append(select.instance({
         data:{
             list:[
-                {uuid:"table", name:"Table"},
-                {uuid:"graph", name:"Graph"},
-                {uuid:"instanceCard", name:"Instance Card"},
+                {uuid:"table", name:"Table", iconPath:"table.svg",},
+                {uuid:"graph", name:"Graph", iconPath:"git-merge.svg",},
+                {uuid:"instanceCard", name:"Instance Card", iconPath:"credit-card.svg",},
 
             ],
             callback:function(result){
-                var currentSchema = instance.props.schema.get(); currentSchema[event.target.dataset.rowId].cols[event.target.dataset.colId].components.push({ settings:{}, componentType:result.value.uuid});
+                var currentSchema = instance.props.schema.get(); currentSchema[event.target.dataset.rowId].cols[event.target.dataset.colId].components.push({ uuid:nanoid(),settings:{}, componentType:result.value.uuid});
                 instance.props.schema.set(currentSchema); instance.update();
             }
         }
     }), "main-slot")
-    mainPopup.update();
+    narrowPopup.update();
     
+}
+var removeComp = function(event, data, instance){
+    if (confirm("Delete component?")) {
+        var currentSchema = instance.props.schema.get();
+    var indexOfComp = currentSchema[event.target.dataset.rowId].cols[event.target.dataset.colId].components.findIndex(c=>c.uuid ==event.target.dataset.id)
+    if (indexOfComp > -1) { currentSchema[event.target.dataset.rowId].cols[event.target.dataset.colId].components.splice(indexOfComp, 1) }
+    instance.props.schema.set(currentSchema); instance.update();
+    }
 }
 
 var setUp = function (event, data, instance) {
@@ -293,7 +343,9 @@ var component =createAdler({
             [".adler_grid_col_remove","click", removeCol ],
             [".adler_grid_comp_add","click", addComp ],
             [".adler_grid_row_save","click", saveLayout ],
-            [".adler_grid_comp_area","click", setUpSettingsEvent ],
+            [".action-view-settings-goto-evaluator","click", goToEvaluator ],
+            [".action-view-settings-edit-evaluator","click", setUpSettingsEvent ],
+            [".action-view-settings-delete-comp","click", removeComp ],
             
         ],
         events:{
@@ -319,12 +371,14 @@ var component =createAdler({
             border-style: dashed;
             border-color: #bbb;
             border-radius: 11px;
+            padding: 7px;
         }
         .adler_grid_row{
             min-height:100px;
             min-width:50px;
             display: flex; /* or inline-flex */
             margin-bottom: -3px;
+            padding: 7px;
         }
         .adler_grid_row_settings{
             border-style: dashed;
@@ -389,8 +443,7 @@ var component =createAdler({
             position: relative;
             top: 5px;
             width: 100%;
-            /* height: 37px; */
-            text-align: center;
+            min-height: 83px;
             border-radius: 9px;
             box-shadow: -1px 3px 5px 0px rgba(38, 38, 38, 0.2);
             font-size: 1.5em;
@@ -398,10 +451,10 @@ var component =createAdler({
             border-top-width: 10px;
             border-top-left-radius: 1px;
             border-top-right-radius: 1px;
-            height: 83px;
             border-top-color: #01b3ab;
         
             margin-top: 12px;
+            padding: 7px;
         }
 
         @media (prefers-color-scheme: dark) {

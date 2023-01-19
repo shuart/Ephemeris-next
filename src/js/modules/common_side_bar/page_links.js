@@ -86,7 +86,7 @@ var component =createAdler({
     css:/*css*/`
     .side-bar-page-item{
         padding-left: 5px;
-        padding-top: 10px;
+        padding-top: 8px;
         margin:0px;
         width:50px;
         height:40px;
