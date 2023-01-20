@@ -74,6 +74,10 @@ var createEvaluator = function ({
                     // result.links = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.links||undefined
                     // result.onConnect = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.onConnectAction||undefined
                 }
+                if (exportGraph.nodes.find(e=>e.templateName == "output_properties")) {
+                    result.output_properties = {}
+                    result.output_properties.instance = exportGraph.nodes.find(e=>e.templateName == "output_properties").params.propsValue.instance||undefined
+                }
                 
                 // console.log(result);
                 // alert(55)

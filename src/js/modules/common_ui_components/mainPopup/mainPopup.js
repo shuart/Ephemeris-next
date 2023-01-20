@@ -47,6 +47,8 @@ var popup =createAdler({
             padding: 19px;
             padding-top: 45px;
             z-index:999999999999999999999999999999999999;
+            max-height: 80%;
+            overflow-y: scroll;
         }
         .main_popup_menu_area_narrow {
             background-color: rgba(255, 255, 255, 1);

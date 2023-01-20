@@ -493,6 +493,30 @@ evaluatorTemplates.outputGraph = {
     },
 }
 
+evaluatorTemplates.outputProperties = {
+    templateName : "output_properties",
+    name : "output_properties",
+    style:{
+        headerColor:nodeColors.output,
+    },
+    category:"output",
+    props :[
+        // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"instance", expect:"object", multiple:false, label:"instance", type:"hidden", editable:true, socket:"input", value:false},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            // console.log(props.actions.get());
+        },
+        onInit:(props) =>{
+
+        },
+    },
+}
+
 evaluatorTemplates.outputInstanceCard = {
     templateName : "output_instance_card",
     name : "output_instance_card",
