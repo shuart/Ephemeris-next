@@ -4,6 +4,7 @@ import createAdler from "../../../vendor/adler.js";
 import createEvaluator from "../../common_evaluators/evaluators.js";
 import createStellae from "../../../vendor/stellae/stellae.js";
 import graphUiTemplates from "./graph_ui_node_templates.js";
+import createInstancesManagement from "../../common_project_management/instances_management.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -50,11 +51,16 @@ var getItemsList = function (event, data, instance){
             const entityGroup = evaluatorResult.links[i];
             for (let j = 0; j < entityGroup.length; j++) {
                 console.log(entityGroup[j]);
-                for (var prop in entityGroup[j]) { //TODO Should be optimized
-                    for (let k = 0; k < entityGroup[j][prop].length; k++) {
-                        data.links.push({uuid:entityGroup[j][prop][k].relation.uuid, from:entityGroup[j][prop][k].relation.from, from_socket:"out", to:entityGroup[j][prop][k].relation.to, to_socket:"in",})
+                if (entityGroup[j].uuid) {
+                    data.links.push({uuid:entityGroup[j].uuid, from:entityGroup[j].from, from_socket:"out", to:entityGroup[j].to, to_socket:"in",})
+                }else{ //TODO Find why it is sometimes necessary
+                    for (var prop in entityGroup[j]) { //TODO Should be optimized
+                        for (let k = 0; k < entityGroup[j][prop].length; k++) {
+                            data.links.push({uuid:entityGroup[j][prop][k].relation.uuid, from:entityGroup[j][prop][k].relation.from, from_socket:"out", to:entityGroup[j][prop][k].relation.to, to_socket:"in",})
+                        }
                     }
                 }
+                
                 
             }
             
@@ -87,6 +93,7 @@ var subscribeToDB = function (event, data, instance) {
 }
 
 var setUpTable = function (event, data, instance) {
+    var instanceRepo = createInstancesManagement()
     //  console.log(instance.getNodes());
     //  console.log(instance.props.settings.get());
      var itemsData = getItemsList(event,data, instance)
@@ -100,9 +107,12 @@ var setUpTable = function (event, data, instance) {
         data.graph = createStellae({container:element, fullSize:true,simulateForces:true, uiCallbacks:itemsData.uiCallbacks, canvasHeight:1500})
         data.graph.getNodeManager().useTemplate(graphUiTemplates)
         for (let i = 0; i < itemsData.list.length; i++) {
-            const element = itemsData.list[i];
+            var currentInstance = itemsData.list[i];
             console.log(element);
-            data.graph.getNodeManager().addNode("action_Input", { nodeLayout:"round",uuid:element.uuid, name:element.name, headerColor:element.color, imgPath:'img/iconsPNG/'+element.sourceEntity.iconPath})
+            if (currentInstance && !currentInstance.properties) {
+                currentInstance = instanceRepo.getById(currentInstance.uuid) //NEDED because instance repo cannot be loaded in the domain. TODO, find a workaround
+            }
+            data.graph.getNodeManager().addNode("action_Input", { nodeLayout:"round",uuid:currentInstance.uuid, name:currentInstance.name, headerColor:currentInstance.color, imgPath:'img/iconsPNG/'+currentInstance.sourceEntity.iconPath})
             // data.graph.getNodeManager().addNode("action_Input", { uuid:element.uuid, name:element.name})
         }
 
@@ -125,7 +135,7 @@ var setUpTable = function (event, data, instance) {
 var component =createAdler({
     content: p => /*html*/`
     <div class="Component container">
-        <div class="action_add_entity" >Graph</div>
+        <div style="display:none;" class="action_add_entity" >Graph</div>
         <div style="width:100%; height:500px;" class="graph_component"></div>
         
     </div>

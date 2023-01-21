@@ -862,6 +862,47 @@ evaluatorTemplates.actionShowMessage = {
 //     },
 // }
 
+
+
+evaluatorTemplates.findInstanceDirectRelation = {
+    templateName : "get_direct_relations",
+    name : "get_direct_relations",
+    style:{
+        headerColor:nodeColors.inputObject,
+    },
+    category:"input",
+    props :[
+        // {id:"clicked_item", label:"clicked_item", type:"hidden", editable:false, socket:"output", value:()=>"test1"},
+        // {id:"clicked_item_uuid", label:"clicked_item_uuid", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
+        
+        {id:"items",label:"Items", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
+        {id:"relations", expect:"array",label:"Relations", type:"hidden", editable:false, socket:"output", value:()=>"test2"},
+        {id:"sourceItem", expect:"object", label:"Source Item", type:"hidden", editable:false, socket:"input", value:()=>"test2"},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            var instanceRepo = createInstancesManagement()
+            var sourceItem = props.sourceItem.get()
+            if (sourceItem) {
+                
+            
+                if (sourceItem && typeof sourceItem == "string") {
+                    sourceItem = instanceRepo.getById(sourceItem) 
+                }
+                var relations = sourceItem.getRelations()
+                var related = sourceItem.getRelated()
+                props.items.set(related)  
+                props.relations.set(relations)  
+            }
+            
+        },
+        // onInit:(props) =>{
+
+        // },
+    },
+}
 evaluatorTemplates.actionEditRelation = {
     templateName : "action_edit_relation",
     name : "action_edit_relation",

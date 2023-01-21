@@ -14,7 +14,7 @@ import input_text from "../../common_ui_elements/input_text.js"
 
 var setUpTable = function (event, data, instance) {
     var itemData = getEvaluatorData(event,data, instance)
-    debugger
+    
    //  instance.getNodes().instance_card.setData({instance:itemData.instance })
     var itemData= itemData.instance
     var fields = []

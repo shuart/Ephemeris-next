@@ -3,6 +3,7 @@ import projectManagement from "./project_management.js";
 import createRelationsManagement from "./relations_management.js";
 import projectStores from "./project_data_store.js";
 import nanoid from "../../vendor/nanoid.js";
+import createEntityManagement from "./entity_management.js";
 
 var instanceAggregate = function(aggregate, projectStore){
 
@@ -57,6 +58,25 @@ var instanceAggregate = function(aggregate, projectStore){
             }
         }
         return ownRelations
+    }
+    aggregate.getRelated = function () {
+        var entityRepo = createEntityManagement()
+        var directRelations = aggregate.getRelations()
+        var targets = []
+        for (let i = 0; i < directRelations.length; i++) {
+            const element = directRelations[i];
+            if (element.from == aggregate.uuid) {
+                var currentRelationTarget = projectStore.get("instances").where("uuid").equals(element.to)
+                targets.push(currentRelationTarget);
+            }
+            if (element.to == aggregate.uuid) {
+                var currentRelationTarget = projectStore.get("instances").where("uuid").equals(element.from)
+                targets.push(currentRelationTarget);
+            }
+            
+        }
+        
+        return targets
     }
     aggregate.getPotentialRelations = function () {
         var relationsRepo = createRelationsManagement()
