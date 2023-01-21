@@ -26,8 +26,12 @@ var setUpTable = function (event, data, instance) {
                 label:propertyInfo.property.name,
                 value:propertyInfo.value,
                 autofocus:false,
+                hiddenInput:true,
                 onFocusout:(event, data, instance)=>{ 
-                    itemData.setPropertyByUuid(propertyInfo.property.uuid,data.value )
+                        if (data.value != propertyInfo.value) {
+                            itemData.setPropertyByUuid(propertyInfo.property.uuid,data.value )
+                        }
+                    
                     }
                 }
             })
@@ -168,9 +172,8 @@ var subscribeToDB = function (event, data, instance) {
 var propertiesViewport =createAdler({
     content: p => /*html*/`
     <div class="Component container">
-        dqzdqdzqdqdzq
         <div  a-slot="main-slot"  ></div>
-        <div class="action_add_entity" >ssss</div>
+        <div class="action_add_entity" ></div>
         
     </div>
         `,
