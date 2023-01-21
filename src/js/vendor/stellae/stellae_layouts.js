@@ -13,7 +13,7 @@ const shadowCanvas = document.createElement( 'canvas' );
 const hwidth = 3;
 const hheight = 0.5;
 
-const squareShape = new THREE.Shape()
+const squareShapeNoRadius = new THREE.Shape()
     .moveTo( 0, 0 )
     .lineTo( 0, hheight )
     .lineTo( hwidth, hheight )
@@ -21,6 +21,16 @@ const squareShape = new THREE.Shape()
     .lineTo( 0, 0 );
 const hwidthS = 12;
 const hheightS = 12;
+const bevel = 0.12;
+const squareShape= new THREE.Shape()
+    .moveTo( 0, hheight  )
+    .lineTo( 0, hheight*0.3 )
+    .quadraticCurveTo (  0, bevel/8,  bevel, 0  )
+    .lineTo( hwidth-bevel, 0 )
+    .quadraticCurveTo (  hwidth, bevel/8,  hwidth, hheight*0.3  )
+    .lineTo( hwidth, hheight )
+
+
 const squareShapeSocketStraight = new THREE.Shape()
     .moveTo( -hwidthS/2, -hwidthS/2 )
     .lineTo( -hwidthS/2, hheightS/2 )
@@ -272,7 +282,7 @@ var createNodeSquare  = function({
         background.layoutItemType ="header"
         background.layoutItemRoot =node
         background.scale.y = (props.filter(p=>p.type != 'secret').length+1)/2
-        background.position.set((0-hwidth/2),0-hheight/2,0.002)
+        background.position.set((0-hwidth/2),0-hheight/5,0.002)
         node.add(background)
         //createShadow
         var spriteShadow = createShadow()
