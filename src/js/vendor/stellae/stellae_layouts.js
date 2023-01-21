@@ -21,13 +21,13 @@ const squareShapeNoRadius = new THREE.Shape()
     .lineTo( 0, 0 );
 const hwidthS = 12;
 const hheightS = 12;
-const bevel = 0.12;
+const bevel = 0.15;
 const squareShape= new THREE.Shape()
     .moveTo( 0, hheight  )
-    .lineTo( 0, hheight*0.3 )
-    .quadraticCurveTo (  0, bevel/8,  bevel, 0  )
+    .lineTo( 0, hheight*0.28 )
+    .quadraticCurveTo (  0, 0.002,  bevel, 0  )
     .lineTo( hwidth-bevel, 0 )
-    .quadraticCurveTo (  hwidth, bevel/8,  hwidth, hheight*0.3  )
+    .quadraticCurveTo (  hwidth, 0.002,  hwidth, hheight*0.28  )
     .lineTo( hwidth, hheight )
 
 
