@@ -78,6 +78,11 @@ var createEvaluator = function ({
                     result.output_properties = {}
                     result.output_properties.instance = exportGraph.nodes.find(e=>e.templateName == "output_properties").params.propsValue.instance||undefined
                 }
+                if (exportGraph.nodes.find(e=>e.templateName == "output_text_editor")) {
+                    result.output_text_editor = {}
+                    result.output_text_editor.instance = exportGraph.nodes.find(e=>e.templateName == "output_text_editor").params.propsValue.instance||undefined
+                    result.output_text_editor.propertyName = exportGraph.nodes.find(e=>e.templateName == "output_text_editor").params.propsValue.propName||undefined
+                }
                 
                 // console.log(result);
                 // alert(55)

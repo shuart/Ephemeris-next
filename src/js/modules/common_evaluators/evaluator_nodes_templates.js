@@ -517,6 +517,30 @@ evaluatorTemplates.outputProperties = {
     },
 }
 
+evaluatorTemplates.outputTextEditor = {
+    templateName : "output_text_editor",
+    name : "output_text_editor",
+    style:{
+        headerColor:nodeColors.output,
+    },
+    category:"output",
+    props :[
+        // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"propName", label:"Property Name", type:"text", editable:true, socket:"input", value:false},
+        {id:"instance", expect:"object", multiple:false, label:"instance", type:"hidden", editable:true, socket:"input", value:false},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            // console.log(props.actions.get());
+        },
+        onInit:(props) =>{
+
+        },
+    },
+}
+
 evaluatorTemplates.outputInstanceCard = {
     templateName : "output_instance_card",
     name : "output_instance_card",

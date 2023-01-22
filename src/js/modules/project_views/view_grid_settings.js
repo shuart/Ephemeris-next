@@ -8,6 +8,7 @@ import thumbs from "./view_grid_settings_select_comp.js"
 import table_viewport from "../viewports/table_viewport/table_ui.js"
 import graph_viewport from "../viewports/graph_viewport/graph_ui.js"
 import cardViewport from "../viewports/card_viewport/card_viewport.js";
+import textEditorViewport from "../viewports/text_editor_viewport/text_editor_viewport.js";
 import state from "../common_state/state_manager.js";
 import propertiesViewport from "../viewports/properties_viewport/properties_viewport.js";
 
@@ -46,6 +47,12 @@ var mountModules = function (event, data, instance) {
                     },), `view_mount_point_${i}_${j}_${k}`);
                 }else if(comp.componentType == "propertiesList"){
                     instance.append(propertiesViewport.instance({
+                        props:{
+                            settings:{evaluatorId:comp.settings.evaluatorUuid, calledFromInstance:instance.props.get('calledFromInstance')},
+                        }
+                    },), `view_mount_point_${i}_${j}_${k}`);
+                }else if(comp.componentType == "textEditor"){
+                    instance.append(textEditorViewport.instance({
                         props:{
                             settings:{evaluatorId:comp.settings.evaluatorUuid, calledFromInstance:instance.props.get('calledFromInstance')},
                         }
@@ -165,6 +172,11 @@ var renderComp = function ({
         areaName = "Properties";
         areaIcon = "credit-card"
     }
+    if (componentType == "textEditor") {
+        areaName = "Text Editor";
+        areaIcon = "credit-card";
+        alert("e")
+    }
     return `
     <div a-slot="view_mount_point_${rowId}_${colId}_${index}" data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${index}"  class="adler_grid_comp_area" >
         
@@ -265,6 +277,7 @@ var addComp = function(event, data, instance){
                 {uuid:"graph", name:"Graph", iconPath:"git-merge.svg",},
                 {uuid:"instanceCard", name:"Instance Card", iconPath:"credit-card.svg",},
                 {uuid:"propertiesList", name:"Properties List", iconPath:"credit-card.svg",},
+                {uuid:"textEditor", name:"Text Editor", iconPath:"credit-card.svg",},
 
             ],
             callback:function(result){
