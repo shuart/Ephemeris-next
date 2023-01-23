@@ -15,13 +15,32 @@ var renderElement = function(p){
     return htmlElement
 }
 
+var renderRegularElement = function(p){
+    var htmlElement= document.createElement("div");
+    htmlElement.innerHTML= `<div class="side-bar-page-item" ><div class="side-bar-page-item-inside" ><img src="./img/icons/${p.iconPath}" style="filter: invert(100%);"> <span>${p.name}</span> </div> </div>`
+    htmlElement.addEventListener("click", ()=> state.goTo(p.path))
+    return htmlElement
+}
+
 var renderList = function(event,data, instance){
     var items = getItemsList()
     instance.getDOMElement().innerHTML = ''
+    addRegularIcons(instance)
     for (let i = 0; i < items.length; i++) {
         const element = items[i];
         if (element.isVisible) {
             var htmlItem = renderElement(element)
+            instance.getDOMElement().appendChild(htmlItem)
+        }
+    }
+}
+
+var addRegularIcons = function(instance) {
+    var items = [{iconPath:"grid.svg", name:"Dashboard", path:"/:/dashboard", isVisible:true}]
+    for (let i = 0; i < items.length; i++) {
+        const element = items[i];
+        if (element.isVisible) {
+            var htmlItem = renderRegularElement(element)
             instance.getDOMElement().appendChild(htmlItem)
         }
     }

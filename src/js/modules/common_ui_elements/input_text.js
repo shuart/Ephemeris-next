@@ -13,6 +13,7 @@ var fillElement = function(event, data, instance){
     }
     if (data.hiddenInput) {
         instance.query(".input").style.display ="none"
+        instance.query(".input_hidder").style.display ="block"
         instance.query(".input_hidder").addEventListener("mouseenter",function(){
             instance.query(".input_text_edit").style.display ="inline-block"
             
@@ -78,6 +79,9 @@ var input_text =createAdler({
         margin-left: 9px;
         color: #069c95;
         cursor:pointer;
+        display:none;
+    }
+    .input_hidder{
         display:none;
     }
     `,
