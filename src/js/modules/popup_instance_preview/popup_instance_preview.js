@@ -8,6 +8,7 @@ var showPopupInstancePreview = function(instanceId){
     var currentInstance = instanceRepo.getById(instanceId)
     var sourceEntity = currentInstance.sourceEntity
     var mountArea = mainPopup.with({data:{
+        title:currentInstance.name,
         closeButton:true,
         goToButton:(event, data, instance)=>{
             instance.unmount()
@@ -18,6 +19,7 @@ var showPopupInstancePreview = function(instanceId){
     mountArea.append(project_views.instance({data:{
         viewId:sourceEntity.defaultViewId, 
         calledFromInstance:instanceId,
+        title:false,
         
     }}), "main-slot")
     

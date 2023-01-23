@@ -43,8 +43,8 @@ var component =createAdler({
     <div class="Component">
         <div class="block"></div>
         <div class="container is-widescreen">
-            <h1 class="title">${p.viewName}</h1>
-            <h2 class="subtitle">${p.viewId}, called from ${p.calledFromInstance}</h2>
+            <h1 a-if="title" class="title">${p.viewName}</h1>
+            <h2 a-if="subtitle" class="subtitle">${p.viewId}, called from ${p.calledFromInstance}</h2>
         </div>
         <div a-slot="view_mount_point_grid"></div>
 
@@ -64,6 +64,7 @@ var component =createAdler({
             viewName :"View",
             calledFromInstance:undefined,
             list:[],
+            title:true,
             table:undefined,
             // onClick:()=>console.log("click")
         },

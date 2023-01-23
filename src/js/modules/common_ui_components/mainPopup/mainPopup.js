@@ -6,19 +6,19 @@ var popup =createAdler({
             <div class="main_popup_shield_area"></div>
             <div a-if="narrow" a-slot="main-slot" class="container main_popup_menu_area main_popup_menu_area_narrow">
                 <div class="main_popup_header_area" >
+                    <div a-if="title" class="main_popup_title title">${p.title}</div>
                     <div a-if="closeButton" class="delete  is-medium main_popup_close action_main_popup_close">Close</div>
                     <div a-if="goToButton" class="main_popup_go_to action_main_popup_go_to"><img class="darkModeCompatibleIcons" src="./img/icons/maximize-2.svg"></div>
-                   
+                    
                 </div>
-                <div a-if="title" class="main_popup_title title">${p.title}</div>
             </div>
             <div a-if-not="narrow" a-slot="main-slot" class="container main_popup_menu_area ">
                 <div class="main_popup_header_area" >
+                    <div a-if="title" class="main_popup_title title">${p.title}</div>
                     <div a-if="closeButton" class="delete  is-medium main_popup_close action_main_popup_close">Close</div>
                     <div a-if="goToButton" class="main_popup_go_to action_main_popup_go_to"><img class="darkModeCompatibleIcons" src="./img/icons/maximize-2.svg"></div>
-                    <div a-if="title" class="main_popup_title title">${p.title}</div>
+                    
                 </div>
-                <div a-if="title" class="main_popup_title title">${p.title}</div>
             </div>
         </div>
         `,
@@ -46,19 +46,24 @@ var popup =createAdler({
             z-index:999999999999999999999999999999999999;
         }
         .main_popup_header_area{
-            height: 0px;
+            height: 55px;
             position: sticky;
             top: 0px;
             left: 0px;
             width: 100%;
             z-index: 999999;
+            background-color: #fff;
+            
+            backdrop-filter: blur(26.1px);
         }
         .main_popup_shield_area {
             background-color: rgba(0, 0, 0, 0.8);
+            background-color: rgba(0, 0, 0, 0.3);
             width:100%;
             height:100%;
             position: absolute;
             z-index:999999999999999999999999999999999999;
+            backdrop-filter: blur(2px);
         }
         .main_popup_menu_area {
             background-color: rgba(255, 255, 255, 1);
@@ -67,7 +72,7 @@ var popup =createAdler({
             position:relative;
             border-radius: 12px;
             padding: 19px;
-            padding-top: 45px;
+            padding-top: 0px;
             z-index:999999999999999999999999999999999999;
             max-height: 80%;
             overflow-y: scroll;
@@ -80,21 +85,27 @@ var popup =createAdler({
             position:relative;
             border-radius: 12px;
             padding: 19px;
-            padding-top: 45px;
+            padding-top: 0px;
             z-index:999999999999999999999999999999999999;
+            overflow-y: scroll;
+        }
+
+        .main_popup_title{
+            top: 15px;
+            position: relative;
         }
 
         .main_popup_close {
             position: absolute;
             right: 10px;
-            top: -18px;
+            top: 18px;
         }
         .main_popup_go_to {
             /* display: block; */
             width: 25px;
             position: absolute;
             right: 50px;
-            top: -21px;
+            top: 18px;
             cursor:pointer;
         }
 
@@ -103,6 +114,9 @@ var popup =createAdler({
                 background-color: #303030;
                 background-color: #1b1b1b;
                 color:white;
+            }
+            .main_popup_header_area{
+                background-color: #1b1b1bf0;
             }
           }
     `,

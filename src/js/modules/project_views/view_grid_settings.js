@@ -72,9 +72,10 @@ var renderTable= function ({
     uuid = nanoid()
 }={}) {
     var settingClass = ""
+    var area=""
     if (showSettings) { 
         settingClass="adler_grid_row_settings";
-        var area = '<div class="adler_grid_row_save button is-primary is-small block">save</div>'
+        area = '<div class="adler_grid_row_save button is-primary is-small block">save</div>'
     }
     for (let i = 0; i < schema.length; i++) {
         const rowItem = schema[i];

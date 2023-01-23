@@ -46,6 +46,7 @@ var common_ui =createAdler({
         .cui_main_area {
             width: calc(100% - 50px);
             height: 100%;
+            overflow:hidden;
             position: absolute;
             left: 50px;
             background-color: white;
