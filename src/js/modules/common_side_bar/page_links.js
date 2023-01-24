@@ -36,7 +36,10 @@ var renderList = function(event,data, instance){
 }
 
 var addRegularIcons = function(instance) {
-    var items = [{iconPath:"grid.svg", name:"Dashboard", path:"/:/dashboard", isVisible:true}]
+    var items = [
+        {iconPath:"grid.svg", name:"Dashboard", path:"/:/dashboard", isVisible:true},
+        {iconPath:"shuffle.svg", name:"Graphs", path:"/:/graphs/home", isVisible:true},
+    ]
     for (let i = 0; i < items.length; i++) {
         const element = items[i];
         if (element.isVisible) {
