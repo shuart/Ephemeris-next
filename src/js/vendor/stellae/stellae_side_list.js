@@ -8,19 +8,20 @@ var createListView = function(container){
 
     var init = function(){
         domElement = document.createElement("div")
-        domElement.style.height= "100%" 
-        domElement.style.width= "200px" 
-        domElement.style.backgroundColor= "white" 
-        domElement.style.position= "absolute" 
-        domElement.style.opacity= "0.8" 
-        domElement.style.overflow= "auto" 
+        domElement.classList = ' stellae_inj_css_side_list'
+        // domElement.style.height= "100%" 
+        // domElement.style.width= "200px" 
+        // domElement.style.backgroundColor= "white" 
+        // domElement.style.position= "absolute" 
+        // domElement.style.opacity= "0.8" 
+        // domElement.style.overflow= "auto" 
         container.appendChild(domElement)
     }
 
 
     var createNodeLabel = function(data){
         var element = document.createElement("div")
-        element.style.padding= "6px";
+        element.classList=" stellae_inj_css_side_list_item"
         element.innerHTML= `<span style="cursor:pointer" class="stella_visibility" >${data.visible? eyeSvg: eyeClosedSvg}</span> ${data.edata.name} `
         element.querySelector(".stella_visibility").addEventListener("click", function (e) {
             data.visible = !data.visible

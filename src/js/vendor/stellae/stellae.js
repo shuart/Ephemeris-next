@@ -1,5 +1,8 @@
 import createStellaeUi from "./stellae_ui.js";
 import createNodeManager from "./stellae_nodes.js";
+import injectCssStyles from "./stellae_css_styles.js";
+
+injectCssStyles()
 
 function createStellae({
     container = document.body,
