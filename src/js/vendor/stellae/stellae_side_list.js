@@ -22,6 +22,7 @@ var createListView = function(container){
     var createNodeLabel = function(data){
         var element = document.createElement("div")
         element.classList=" stellae_inj_css_side_list_item"
+        element.dataset.value = data.edata.name
         element.innerHTML= `<span style="cursor:pointer" class="stella_visibility" >${data.visible? eyeSvg: eyeClosedSvg}</span> ${data.edata.name} `
         element.querySelector(".stella_visibility").addEventListener("click", function (e) {
             data.visible = !data.visible
@@ -30,16 +31,45 @@ var createListView = function(container){
         return element
     }
 
+    var createSearchArea = function (list) {
+        // var search = document.createElement("div")
+        var input = document.createElement("input")
+        input.type="text"
+        input.placeholder="Search.."
+        input.classList ="stellae_inj_css_side_search"
+        // search.innerHTML=`<input class="stellae_inj_css_side_search" type="text" placeholder="Search..">`
+        input.addEventListener("click", function(e) {
+            e.preventDefault()
+            input.focus()
+        })
+        input.addEventListener("keyup", function(e) {
+            e.preventDefault()
+            var items = list.children
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].dataset.value.toLowerCase().search(input.value.toLowerCase()) >= 0 || input.value=="") {
+                    items[i].style.display ="block"
+                }else{
+                    items[i].style.display ="none"
+                }
+                
+            }
+        })
+        return input
+    }
+
     var populate = function(){
         var list = document.createElement("div")
-        list.style.height= "100%" 
+        list.style.height= "calc(100% - 50px)" 
         list.style.width= "100%" 
         list.style.color= "black" 
+        list.style.overflow= "scroll" 
+        
         for (let i = 0; i < nodeList.length; i++) {
             const element = nodeList[i];
             list.appendChild( createNodeLabel(element) )
         }
         domElement.innerHTML =""
+        domElement.appendChild(createSearchArea(list))
         domElement.appendChild(list)
     }
 

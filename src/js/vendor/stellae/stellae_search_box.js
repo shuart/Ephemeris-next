@@ -30,7 +30,7 @@ var createStellaeSearchBox = function(container){
             if (currentValue !="") {
                 for (let i = 0; i < nodeList.length; i++) {
                     if (currentValue.length>1) {
-                        if (nodeList[i].edata.name.search(currentValue) >= 0) {
+                        if (nodeList[i].edata.name.toLowerCase().search(currentValue.toLowerCase()) >= 0) {
                             // nodeList[i].visible = true
                             unFadeNode(nodeList[i])
                         }else{
