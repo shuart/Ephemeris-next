@@ -5,11 +5,14 @@ var createToolbar = function(container){
     var domElement = undefined;
     var buttonList = []
     var dataManager = undefined
+    var graphState= undefined
 
-    var eyeSvg = '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>'
-    var eyeClosedSvg = '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>'
-    var groupSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><rect x="9" y="9" width="6" height="6"></rect></svg>'
-
+    var icons={
+    eyeSvg : '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>',
+    eyeClosedSvg : '<svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>',
+    groupSvg : '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><rect x="9" y="9" width="6" height="6"></rect></svg>',
+    highlightSvg :'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>',
+    }   
     var init = function(){
         domElement = document.createElement("div")
         domElement.classList = ' stellae_inj_css_toolbar'
@@ -30,9 +33,9 @@ var createToolbar = function(container){
         element.dataset.value = data.name
         // element.innerHTML= `<span style="cursor:pointer" class="stella_visibility" >${data.visible? eyeSvg: eyeClosedSvg}</span> ${data.edata.name} `
         // element.innerHTML= ` ${data.label} `
-        element.innerHTML= ` ${groupSvg} `
+        element.innerHTML= ` ${icons[data.icon]? icons[data.icon] :''} `
         element.addEventListener("click", function (e) {
-            data.callback({dataManager})
+            data.callback({dataManager, graphState})
         })
         return element
     }
@@ -82,18 +85,26 @@ var createToolbar = function(container){
     var addButtons = function(){
         
         buttonList= [
-            {label:"Group", callback:(e)=>{
+            {label:"Group", icon:"groupSvg", callback:(e)=>{
                     e.dataManager.addNode("in_out", { nodeLayout:"group",uuid:nuuid(), name:"group", headerColor:"#c0bfbc", imgPath:'img/iconsPNG/info.svg'})
                 }
             },
+            {label:"highlight",icon:"highlightSvg", callback:(e)=>{
+                e.graphState.connectionHighlighter?.toogle()
+            }
+        },
         ]
         populate()
+    }
+    var setState = function (newState) {
+        graphState = newState
     }
     var setDataManager = function (dm) {
         dataManager = dm
     }
 
     init()
+    self.setState = setState
     self.addButtons = addButtons
     self.setDataManager = setDataManager
 

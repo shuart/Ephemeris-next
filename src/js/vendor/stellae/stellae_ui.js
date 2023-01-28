@@ -57,6 +57,7 @@ export default function createStellaeUi({
         selectedToMove:[], selectedSocket:undefined, selectedHandle:undefined, lastSelectedHeader:undefined, selectedLine:undefined, linkToAdd: undefined,
         draggingNodes:false,draggingSocket:false,draggingHandle:false,draggingPreviousPosition:undefined,dragStarted:false,dragOffset:{x:0,z:0},
         recordedClickForMouseUp:false,
+        simulation:simulation, sideList:sideList, toolbar:toolbar, searchBox:searchBox, connectionHighlighter:connectionHighlighter
     }
     var dataManager = undefined
     var nodeMeshStorage ={};var nodeMeshManager ={};var lineMeshManager ={};
@@ -496,6 +497,7 @@ export default function createStellaeUi({
         dataManager = dataManagerToAttach
         if (showToolbar) {
             toolbar.setDataManager(dataManagerToAttach)
+            toolbar.setState(state)
         }
     }
 

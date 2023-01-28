@@ -6,35 +6,45 @@ var createConnectionHighlighter = function(){
     var domElement = undefined;
     var nodesList = []
     var relationsList = []
+    var active = true;
 
     var highlight = function(node){
-        //get connections
-        var connectedNodes={};
-        connectedNodes.mapping = {};
-        for (let i = 0; i < relationsList.length; i++) {
-            const relation = relationsList[i];
-            if (relation.edata.from == node.edata.uuid) {
-                connectedNodes.mapping[relation.edata.to] = node.edata.uuid
-            }
-            if (relation.edata.to == node.edata.uuid) {
-                connectedNodes.mapping[relation.edata.from] = node.edata.uuid
-            }
-            
-        }
-        
-        console.log(connectedNodes);
-
-        for (let i = 0; i < nodesList.length; i++) {
-            const element = nodesList[i];
-            if (behaveAsNormalNode(element)) {
-                if ( node == element || connectedNodes.mapping[element.edata.uuid] ) { //if element was marked as connection
-                    unFadeNode(element)
-                }else{
-                    fadeNode(element)
+        if (active) {
+            //get connections
+            var connectedNodes={};
+            connectedNodes.mapping = {};
+            for (let i = 0; i < relationsList.length; i++) {
+                const relation = relationsList[i];
+                if (relation.edata.from == node.edata.uuid) {
+                    connectedNodes.mapping[relation.edata.to] = node.edata.uuid
                 }
+                if (relation.edata.to == node.edata.uuid) {
+                    connectedNodes.mapping[relation.edata.from] = node.edata.uuid
+                }
+                
             }
             
-            
+            console.log(connectedNodes);
+
+            for (let i = 0; i < nodesList.length; i++) {
+                const element = nodesList[i];
+                if (behaveAsNormalNode(element)) {
+                    if ( node == element || connectedNodes.mapping[element.edata.uuid] ) { //if element was marked as connection
+                        unFadeNode(element)
+                    }else{
+                        fadeNode(element)
+                    }
+                }
+                
+                
+            }
+        }
+
+    }
+
+    var unfadeAll =function () {
+        for (let i = 0; i < nodesList.length; i++) {
+            unFadeNode(nodesList[i])
         }
     }
 
@@ -48,8 +58,25 @@ var createConnectionHighlighter = function(){
         relationsList= relations
         // populate()
     }
+    var setActive = function(){
+        active= true
+    }
+    var toogle = function(){
+        if (active) {
+            setInactive()
+        }else{
+            setActive()
+        }
+    }
+    var setInactive = function(){
+        unfadeAll()
+        active= false
+    }
 
     // init()
+    self.toogle = toogle
+    self.setInactive = setInactive
+    self.setActive = setActive
     self.updateNodes = updateNodes
     self.updateRelations = updateRelations
     self.highlight = highlight
