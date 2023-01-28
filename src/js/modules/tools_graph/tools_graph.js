@@ -67,6 +67,7 @@ var setUpTable = function (event, data, instance) {
             uiCallbacks : {},
             showNodeList:true,
             showSearchBox: true,
+            showToolbar:true,
             highlightConnections: true,
             addNodesFromCustomList:false,
             allowCustomNameForNodes: false,
@@ -83,6 +84,7 @@ var setUpTable = function (event, data, instance) {
             // data.graph.getNodeManager().addNode("action_Input", { uuid:element.uuid, name:element.name})
         }
         data.graph.getNodeManager().addLinks(itemsData.links)
+        // data.graph.getNodeManager().addNode("in_out", { nodeLayout:"group",uuid:"feefsfesfsefsdfsd", name:"group", headerColor:"#c0bfbc", imgPath:'img/iconsPNG/info.svg'})
     }, 100);
 
     // subscribeToDB(event, data, instance)

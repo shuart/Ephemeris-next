@@ -9,16 +9,7 @@ var createStellaeSearchBox = function(container){
 
     var init = function(){
         domElement = document.createElement("div")
-        domElement.style.height= "25px" 
-        domElement.style.width= "222px" 
-        domElement.style.backgroundColor= "#919191" 
-        domElement.style.position= "absolute" 
-        domElement.style.top= "50px" 
-        domElement.style.right= "10px"
-        domElement.style.opacity= "0.8" 
-        domElement.style.color= "black"
-        domElement.style.overflow= "hidden"
-        domElement.style.borderRadius= "10px"
+        domElement.classList +=" stellae_inj_css_search"
         domElement.innerHTML = `<input type="text" style="width:198px; border-style:none; background-color:transparent" class="stellae_search"></input> ${glass}`
         domElement.addEventListener("click", function (e) {
             // data.visible = !data.visible

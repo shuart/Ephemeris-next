@@ -4,6 +4,7 @@ import createNodeLayout from "./stellae_layouts.js";
 import inputElements from "./stellae_inputs.js"
 import createSimulation from "./stellae_d3_forces.js"
 import createListView from "./stellae_side_list.js";
+import createToolbar from "./stellae_toolbar.js";
 import createStellaeSearchBox from "./stellae_search_box.js";
 import createConnectionHighlighter from "./stellae_connection_highlighter.js";
 import createArrowLayout from "./stellae_layouts_arrow.js";
@@ -17,6 +18,7 @@ export default function createStellaeUi({
     useSimulation = false,
     uiCallbacks = {},//onConnect,
     showList = true,
+    showToolbar =false,
     showSearchBox= true,
     useConnectionHighlighter =true,
     useCustomNodeAddList = false,
@@ -28,6 +30,7 @@ export default function createStellaeUi({
 
     var simulation = undefined;
     var sideList = undefined;
+    var toolbar = undefined;
     var searchBox = undefined;
     var connectionHighlighter = undefined;
 
@@ -36,6 +39,9 @@ export default function createStellaeUi({
     }
     if (showList) {
         sideList= createListView(container)
+    }
+    if (showToolbar) {
+        toolbar= createToolbar(container) //data manager is set elsewhere
     }
     if (showSearchBox) {
         searchBox = createStellaeSearchBox(container)
@@ -488,6 +494,9 @@ export default function createStellaeUi({
     }
     var attachDataManager = function (dataManagerToAttach) {
         dataManager = dataManagerToAttach
+        if (showToolbar) {
+            toolbar.setDataManager(dataManagerToAttach)
+        }
     }
 
     var init = function () {
