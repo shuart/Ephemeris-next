@@ -263,6 +263,30 @@ var createNodeSquare  = function({
         layoutItems.header = header
         return header
     }
+    function createSelectionMarker(node, props){
+        const materialSelectionMarker = new THREE.MeshBasicMaterial( { color: 0x769ae7,side: THREE.DoubleSide  } );
+        var geometryBack = new THREE.ShapeGeometry( squareShapeBack );
+
+        var selectionMarker = new THREE.Mesh( headerGeometry, materialSelectionMarker );
+        selectionMarker.layoutItemType ="selectionMarker"
+        selectionMarker.layoutItemRoot =node
+        selectionMarker.visible = false
+        selectionMarker.scale.set(1.05,1.14,1.05)
+        selectionMarker.position.set((0-hwidth/2)-0.08,(0-hheight/2)-0.06,0.01)
+        node.add(selectionMarker)
+
+        var selectionMarker = new THREE.Mesh( geometryBack, materialSelectionMarker );
+        selectionMarker.layoutItemType ="selectionMarker"
+        selectionMarker.layoutItemRoot =node
+        selectionMarker.visible = false
+        selectionMarker.scale.set(1.05,1,1.05)
+        // selectionMarker.position.set((0-hwidth/2)-0.08,(0-hheight/2)-0.06,0.01)
+        selectionMarker.scale.y = (props.filter(p=>p.type != 'secret').length+1)/2
+        selectionMarker.position.set((0-hwidth/2)-0.08,(0-hheight/5)+0.08,0.01)
+        node.add(selectionMarker)
+
+        return selectionMarker
+    }
     function createSubHeader(node){
         const materialHeader = new THREE.MeshBasicMaterial( { color: colorShade(headerColor, -35),side: THREE.DoubleSide  } );
         
@@ -450,6 +474,7 @@ var createNodeSquare  = function({
         }
     }
     var header = createHeader(node,name)
+    createSelectionMarker(node, props)
     createBack(node,props)
     // createSocket(node)
     createRows (node, props, template)

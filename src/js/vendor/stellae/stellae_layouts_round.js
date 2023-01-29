@@ -234,6 +234,18 @@ var createNodeRound  = function({
         }
         return header
     }
+    function createSelectionMarker(node){
+        const materialSelectionMarker = new THREE.MeshBasicMaterial( { color: 0x769ae7,side: THREE.DoubleSide  } );
+        
+        var selectionMarker = new THREE.Mesh( headerGeometry, materialSelectionMarker );
+        selectionMarker.layoutItemType ="selectionMarker"
+        selectionMarker.layoutItemRoot =node
+        selectionMarker.visible = false
+        selectionMarker.scale.set(0.109,0.109,0.109)
+        selectionMarker.position.set(0,0,0.01)
+        node.add(selectionMarker)
+        return selectionMarker
+    }
 
     function createBack(node, props){
         // const materialBack = new THREE.MeshBasicMaterial( { color: 0x303030,side: THREE.DoubleSide  } );
@@ -371,6 +383,7 @@ var createNodeRound  = function({
 
     // createSocket(node)
     createRows (node, props)
+    createSelectionMarker(node)
 
     // var spritetext = createCharacterLabel("testtest test")
     // node.add(spritetext)

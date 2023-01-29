@@ -10,6 +10,7 @@ import createConnectionHighlighter from "./stellae_connection_highlighter.js";
 import createArrowLayout from "./stellae_layouts_arrow.js";
 import behaveAsNormalNode from "./stellae_utils_check_if_normal_node.js";
 import createSelectionBox from "./stellae_selection_box.js";
+import { markSelected, markUnSelected } from "./stellae_utils_select_unselect.js";
 
 
 export default function createStellaeUi({
@@ -20,6 +21,7 @@ export default function createStellaeUi({
     uiCallbacks = {},//onConnect,
     showList = true,
     showToolbar =false,
+    showSelections = true,
     showSearchBox= true,
     useConnectionHighlighter =true,
     useCustomNodeAddList = false,
@@ -286,6 +288,10 @@ export default function createStellaeUi({
                 if (useConnectionHighlighter && behaveAsNormalNode(object.layoutItemRoot) ) {
                     connectionHighlighter.highlight(object.layoutItemRoot)
                 }
+                if (showSelections && behaveAsNormalNode(object.layoutItemRoot) ) {
+                    markUnSelected(state.nodes)
+                    markSelected(object.layoutItemRoot)
+                }
                 
             }
             
@@ -456,7 +462,9 @@ export default function createStellaeUi({
             if(state.boxSelectingInProgress && selectionBox){
                 state.boxSelectingInProgress = false;
                 state.boxSelecting = false;
-                selectionBox.stopSelecting()
+                var selectedNodes = selectionBox.stopSelecting()
+                markUnSelected(state.nodes)
+                markSelected(selectedNodes)
             }
         }
         function onDblClick (){
