@@ -9,6 +9,7 @@ import createStellaeSearchBox from "./stellae_search_box.js";
 import createConnectionHighlighter from "./stellae_connection_highlighter.js";
 import createArrowLayout from "./stellae_layouts_arrow.js";
 import behaveAsNormalNode from "./stellae_utils_check_if_normal_node.js";
+import createSelectionBox from "./stellae_selection_box.js";
 
 
 export default function createStellaeUi({
@@ -22,6 +23,7 @@ export default function createStellaeUi({
     showSearchBox= true,
     useConnectionHighlighter =true,
     useCustomNodeAddList = false,
+    useSelectionBox = true,
     allowCustomNameForNodes = false,
     allowCustomNameForRelations = false,
     fixNodesWithPositions = true,
@@ -32,6 +34,7 @@ export default function createStellaeUi({
     var sideList = undefined;
     var toolbar = undefined;
     var searchBox = undefined;
+    var selectionBox = undefined;
     var connectionHighlighter = undefined;
 
     if (useSimulation) {
@@ -41,7 +44,7 @@ export default function createStellaeUi({
         sideList= createListView(container)
     }
     if (showToolbar) {
-        toolbar= createToolbar(container) //data manager is set elsewhere
+        toolbar= createToolbar(container) //data manager is binded to the toolbar elsewhere
     }
     if (showSearchBox) {
         searchBox = createStellaeSearchBox(container)
@@ -55,9 +58,12 @@ export default function createStellaeUi({
         nodes:[],links:[], mapping:undefined,
         triggers:{headers:[], sockets:{}, props:{}},
         selectedToMove:[], selectedSocket:undefined, selectedHandle:undefined, lastSelectedHeader:undefined, selectedLine:undefined, linkToAdd: undefined,
-        draggingNodes:false,draggingSocket:false,draggingHandle:false,draggingPreviousPosition:undefined,dragStarted:false,dragOffset:{x:0,z:0},
+        draggingNodes:false,boxSelecting:false, boxSelectingInProgress:false, draggingSocket:false,draggingHandle:false,draggingPreviousPosition:undefined,dragStarted:false,dragOffset:{x:0,z:0},
         recordedClickForMouseUp:false,
         simulation:simulation, sideList:sideList, toolbar:toolbar, searchBox:searchBox, connectionHighlighter:connectionHighlighter
+    }
+    if (useSelectionBox) {
+        selectionBox = createSelectionBox(state)
     }
     var dataManager = undefined
     var nodeMeshStorage ={};var nodeMeshManager ={};var lineMeshManager ={};
@@ -304,13 +310,22 @@ export default function createStellaeUi({
                 state.selectedHandle= intersectionsHandles[ 0 ].object;
                 state.draggingHandle = true;
             }
-            if(!intersections[0] && !intersectionsSockets[0] && !intersectionsHandles[0]){
+            if(!intersections[0] && !intersectionsSockets[0] && !intersectionsHandles[0]){//If nothing selected, check lines and selection box
                 state.raycaster.params.Line.threshold = 0.05;
                 const intersectionsLines = state.raycaster.intersectObjects( nodeMeshManager.getLinksMesh(), true );
                 if ( intersectionsLines.length > 0 ) { //Case hit header
                     const object = intersectionsLines[ 0 ].object;
                     console.log(object)
                     state.selectedLine = object
+                }
+                if(state.boxSelecting && selectionBox){
+                    
+                    
+                    var intersects = new THREE.Vector3();
+                    state.raycaster.setFromCamera(state.mouse, state.camera);
+                    state.raycaster.ray.intersectPlane(state.raycasterPlan, intersects);
+                    selectionBox.startSelection({x:intersects.x,z:intersects.z})
+                    state.boxSelectingInProgress = true
                 }
             }
         }
@@ -396,6 +411,13 @@ export default function createStellaeUi({
     
                 }
             }
+            if(state.boxSelectingInProgress && selectionBox){
+                state.controls.enabled = false;
+                var intersects = new THREE.Vector3();
+                state.raycaster.setFromCamera(state.mouse, state.camera);
+                state.raycaster.ray.intersectPlane(state.raycasterPlan, intersects);
+                selectionBox.moveWhileSelecting({x:intersects.x,z:intersects.z})
+            }
         }
         function onMouseUp (){
             state.draggingNodes=false;
@@ -407,6 +429,8 @@ export default function createStellaeUi({
             state.dragStarted = false;
             state.dragOffset = {x:0,z:0};
             state.controls.enabled = true;
+            
+
             //check for click up
             if (state.recordedClickForMouseUp && state.recordedClickForMouseUp.x == state.mouse.x && state.recordedClickForMouseUp.y == state.mouse.y) {
                 if (uiCallbacks.onNodeClick) {
@@ -428,6 +452,11 @@ export default function createStellaeUi({
                 }
                 dataManager.evaluateTree();
                 state.linkToAdd = undefined;
+            }
+            if(state.boxSelectingInProgress && selectionBox){
+                state.boxSelectingInProgress = false;
+                state.boxSelecting = false;
+                selectionBox.stopSelecting()
             }
         }
         function onDblClick (){
