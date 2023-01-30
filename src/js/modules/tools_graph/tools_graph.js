@@ -11,6 +11,8 @@ import project_views from "../project_views/project_views.js";
 import createEntityManagement from "../common_project_management/entity_management.js";
 import createSimulationManagement from "../common_project_management/simulation_management.js";
 import table_component from "../common_ui_components/table/table.js";
+import createGraphManagement from "../common_project_management/graph_management.js";
+import nanoid from "../../vendor/nanoid.js";
 
 // import {Tabulator} from "../../vendor/tabulator_esm.min.js";
 
@@ -38,7 +40,28 @@ var getCurrentProject = function(){
     return projectManagement.getCurrent()
 }
 
-var setUpTable = function (event, data, instance) {
+var saveGraph = function(event, data, instance){
+    var exportGraph = data.graph.getNodeManager().exportNodes()
+    if (data.instanceId =="new") {
+        var name = prompt("Save As")
+        if (name) {
+            var uuid = nanoid()
+            var repo = createGraphManagement()
+            console.log(exportGraph);
+            alert("fffff")
+            repo.add({uuid:uuid, name:name, layout:JSON.stringify(exportGraph)})
+            instance.query('.tools_graphs_name').innerHTML =name
+            data.instanceId = uuid
+        }
+    }else{
+        if (confirm("Save?") ) {
+            var repo = createGraphManagement()
+            repo.update({uuid:data.instanceId, layout:JSON.stringify(exportGraph)})
+        }
+    }
+}
+
+var createNewGraph =function(event,data, instance){
     var relationsRepo = createRelationManagement()
     var relationTypes = relationsRepo.getAll()
     var relationMapping = {}
@@ -52,6 +75,19 @@ var setUpTable = function (event, data, instance) {
     itemsData.list = instanceRepo.getAll()
     var relationsFromDb = relationInstancesRepo.getAll()
     itemsData.links = relationsFromDb.map(r=> ({uuid:r.attributes.uuid,name:relationMapping[r.attributes.type]?.name, from:r.attributes.from, from_socket:"out", to:r.attributes.to, to_socket:"in",}) )
+    for (let i = 0; i < itemsData.list.length; i++) {
+        var currentInstance = itemsData.list[i];
+        if (currentInstance && !currentInstance.properties) {
+            currentInstance = instanceRepo.getById(currentInstance.uuid) //NEDED because instance repo cannot be loaded in the domain. TODO, find a workaround
+        }
+        data.graph.getNodeManager().addNode("action_Input", { nodeLayout:"round",uuid:currentInstance.uuid, name:currentInstance.name, headerColor:currentInstance.color, imgPath:'img/iconsPNG/'+currentInstance.sourceEntity.iconPath})
+        // data.graph.getNodeManager().addNode("action_Input", { uuid:element.uuid, name:element.name})
+    }
+    data.graph.getNodeManager().addLinks(itemsData.links)
+}
+
+
+var setUpTable = function (event, data, instance) {
     // itemsData.links = []
     //  data.addAction = itemsData.actions
     //  instance.props.set("addAction",itemsData.actions )
@@ -68,25 +104,23 @@ var setUpTable = function (event, data, instance) {
             showNodeList:true,
             showSearchBox: true,
             showToolbar:true,
-            highlightConnections: true,
+            highlightConnections: false,
             addNodesFromCustomList:false,
             allowCustomNameForNodes: false,
             allowCustomNameForRelations: false,
         })
         data.graph.getNodeManager().useTemplate(graphUiTemplates)
-        for (let i = 0; i < itemsData.list.length; i++) {
-            var currentInstance = itemsData.list[i];
-            console.log(element);
-            if (currentInstance && !currentInstance.properties) {
-                currentInstance = instanceRepo.getById(currentInstance.uuid) //NEDED because instance repo cannot be loaded in the domain. TODO, find a workaround
-            }
-            data.graph.getNodeManager().addNode("action_Input", { nodeLayout:"round",uuid:currentInstance.uuid, name:currentInstance.name, headerColor:currentInstance.color, imgPath:'img/iconsPNG/'+currentInstance.sourceEntity.iconPath})
-            // data.graph.getNodeManager().addNode("action_Input", { uuid:element.uuid, name:element.name})
+
+        if (data.instanceId =="new") {
+            createNewGraph(event,data, instance)
+        }else{
+            var graphRepo = createGraphManagement()
+            var graph = graphRepo.getById(data.instanceId)
+            instance.query('.tools_graphs_name').innerHTML =graph.name
+            data.graph.getNodeManager().importGraph(JSON.parse(graph.attributes.layout))
         }
-        data.graph.getNodeManager().addLinks(itemsData.links)
         // data.graph.getNodeManager().addNode("in_out", { nodeLayout:"group",uuid:"feefsfesfsefsdfsd", name:"group", headerColor:"#c0bfbc", imgPath:'img/iconsPNG/info.svg'})
     }, 100);
-
     // subscribeToDB(event, data, instance)
 }
 
@@ -94,6 +128,10 @@ var setUpTable = function (event, data, instance) {
 var tools_graph =createAdler({
     content: p => `
         <div class="instance_view_container">
+            <div  class="container block graph_top_menu">
+                <span class="tag tools_graphs_name">New Graph</span>
+                <span class="button is-small action_tools_graphs_save_current">Save</span>
+            </div>
             <div a-slot="main-slot" class="graph_component"></div>
         </div>
         `
@@ -109,7 +147,7 @@ var tools_graph =createAdler({
         },
         on:[
             // [".action1","click", (event, data)=> alert("test "+ data.test)],
-            // [".action2","click", (event, data, instance)=> addToProject(event, data, instance) ],
+            [".action_tools_graphs_save_current","click", (event, data, instance)=> saveGraph(event, data, instance) ],
         ],
         events:{
             // onBeforeMount:(event, data, instance)=> alert("MOUNTING"),
@@ -133,6 +171,16 @@ var tools_graph =createAdler({
         width:100;
         overflow:auto;
     }
+    .graph_top_menu{
+        position:absolute;
+        height:50px;
+        width:500px;
+        overflow:auto;
+        z-index: 999;
+        margin-left: 200px;
+        padding: 9px;
+    }
+    
     
     
     `,

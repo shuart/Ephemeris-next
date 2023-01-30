@@ -91,6 +91,9 @@ textarea {
     max-width: 1024px;
     column-gap: 1.5em;
   }
+  .no_break_inside{
+    break-inside: avoid-column;
+  }
   
   /* The Masonry Brick */
   .brick {

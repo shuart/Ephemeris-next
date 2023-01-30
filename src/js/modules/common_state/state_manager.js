@@ -17,6 +17,7 @@ import cycles_editor from "../cycles_editor/cycles_editor.js";
 import simulations_editor from "../simulations_editor/simulations_editor.js";
 import instance_view from "../instance_view/instance_view.js";
 import tools_graph from "../tools_graph/tools_graph.js";
+import tools_graphs_selection from "../tools_graph/tools_graph_selector.js";
 
 
 const common_router = createRouter()
@@ -94,7 +95,15 @@ var createStateManager = function({
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
-        common_router.route("/:project/graphs/:instanceId", (event)=>
+        common_router.route("/:project/graphs/:instanceId", (event)=> //TODO why is instance id needed?
+        {
+            console.log(event);
+            setCurrentProject(event.params.project)
+            mainUiElement.append(tools_graphs_selection.instance(), "main_area_mount_point");
+            mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
+            mainUiElement.update();
+        })
+        common_router.route("/:project/graph/:instanceId", (event)=>
         {
             console.log(event);
             setCurrentProject(event.params.project)
