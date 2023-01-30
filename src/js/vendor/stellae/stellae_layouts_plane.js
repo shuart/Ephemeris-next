@@ -36,12 +36,13 @@ function createCharacterLabel( text, maxLength ) {
 const hwidth = 3;
 const hheight = 0.5;
 const geometry = new THREE.PlaneGeometry( 1, 1 );
+geometry.translate(0.5,0.5,0)
 
 var getGroupBoundaries = function(group, handle){
     var boundaries ={}
-    boundaries.left = -handle.position.x + group.position.x
+    boundaries.left = group.position.x
     boundaries.right = handle.position.x + group.position.x
-    boundaries.top = -handle.position.y + group.position.z
+    boundaries.top = group.position.z
     boundaries.bottom = handle.position.y + group.position.z
 
     return boundaries
@@ -86,14 +87,13 @@ var createGroupLayout  = function({
     const planeHandle = new THREE.Mesh( geometry, materialHandle );
     planeHandle.layoutItemType ="handle"
     planeHandle.layoutItemRoot =groupGroup
-    var initPos={x:0.5, y:0.5}
-    planeHandle.position.set(0.5,0.5,0.07)
+    // var initPos={x:0.5, y:0.5}
+    planeHandle.position.set(0.95,0.95,0.07)
     planeHandle.scale.set(0.1,0.1,1)
     planeHandle.layoutItemInteractions = {}
     planeHandle.layoutItemInteractions.onMove = function(x,z){
-        console.log(x,z);
-        planeHandle.position.set(-groupGroup.position.x+x,-groupGroup.position.z+z,0.07)
-        plane.scale.set( (-groupGroup.position.x+x)*2 ,(-groupGroup.position.z+z)*2,1)
+        planeHandle.position.set(-groupGroup.position.x+x        ,      -groupGroup.position.z+z           ,0.07)
+        plane.scale.set(        (-groupGroup.position.x+x)     ,       (-groupGroup.position.z+z)     ,1)
     }
 
     groupGroup.add( planeHandle );
