@@ -1,4 +1,5 @@
 import nuuid from "./stellae_utils_uuid.js"
+import cleanLinksVisibility from "./stellae_utils_clean_links_connections.js";
 
 var createToolbar = function(container){
     var self = {}
@@ -108,6 +109,7 @@ var createToolbar = function(container){
                     selected[i].visible = false;
                 }
                 e.graphState.sideList.addNodes(e.graphState.nodes)
+                cleanLinksVisibility(e.graphState)
                 }
             },
         ]

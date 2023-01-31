@@ -11,6 +11,7 @@ import createArrowLayout from "./stellae_layouts_arrow.js";
 import behaveAsNormalNode from "./stellae_utils_check_if_normal_node.js";
 import createSelectionBox from "./stellae_selection_box.js";
 import { markSelected, markUnSelected } from "./stellae_utils_select_unselect.js";
+import cleanLinksVisibility from "./stellae_utils_clean_links_connections.js";
 
 
 export default function createStellaeUi({
@@ -189,6 +190,7 @@ export default function createStellaeUi({
         if (useConnectionHighlighter) {
             connectionHighlighter.updateRelations(state.links)
         }
+        cleanLinksVisibility(state)//check if links should be hidden because of node visibility or settings
     }
 
     var removeLinks = function(uuid){
@@ -240,7 +242,7 @@ export default function createStellaeUi({
         for (let i = 0; i < state.nodes.length; i++) {
             const node = state.nodes[i];
             console.log(node.edata);
-            state.mapping[node.edata.uuid] = {position:node.position, sockets:{}}
+            state.mapping[node.edata.uuid] = {position:node.position, sockets:{}, uiRootObject:node}
             console.log(node.layout);
 
             for (const key in node.layout.sockets) {
@@ -542,6 +544,9 @@ export default function createStellaeUi({
         if (showToolbar) {
             toolbar.setDataManager(dataManagerToAttach)
             toolbar.setState(state)
+        }
+        if (showList) {
+            sideList.setState(state)
         }
     }
 
