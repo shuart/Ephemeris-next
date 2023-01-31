@@ -44,7 +44,9 @@ var createConnectionHighlighter = function(){
 
     var unfadeAll =function () {
         for (let i = 0; i < nodesList.length; i++) {
-            unFadeNode(nodesList[i])
+            if (behaveAsNormalNode(nodesList[i])) {
+                unFadeNode(nodesList[i])
+            }
         }
     }
 

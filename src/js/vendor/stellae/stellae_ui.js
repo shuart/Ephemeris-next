@@ -54,7 +54,16 @@ export default function createStellaeUi({
     }
     if (useConnectionHighlighter) {
         connectionHighlighter = createConnectionHighlighter()
+    }else{ //Start the higlighter anyway but turn it of directly. Needed for the toolbar option
+        useConnectionHighlighter = true
+        connectionHighlighter = createConnectionHighlighter()
+        connectionHighlighter.toogle()
     }
+    // }else if(showToolbar) { //toolbar needs to acess to the highligter, but starting off
+    //     useConnectionHighlighter =true
+    //     connectionHighlighter = createConnectionHighlighter()
+    //     connectionHighlighter.toogle()
+    // }
     var state ={
         scene:undefined,camera:undefined,renderer:undefined,mouse: new THREE.Vector2(),raycaster:new THREE.Raycaster(),raycasterPlan:undefined,
         canvas:undefined,containerDim:undefined,controls:undefined,play:true,helperLine:undefined,
