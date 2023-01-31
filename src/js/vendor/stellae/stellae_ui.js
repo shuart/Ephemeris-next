@@ -300,6 +300,11 @@ export default function createStellaeUi({
                 const object = intersectionsSockets[ 0 ].object;
                 state.selectedSocket= intersectionsSockets[ 0 ].object;
                 state.draggingSocket = true;
+                //Check for case of socket in front of group node
+                if (state.selectedToMove[0].layoutType=="group") {//when node is group
+                    state.selectedToMove=[] //cancle node action
+                    state.draggingNodes=false;
+                }
             }
             const intersectionsProps = state.raycaster.intersectObjects( nodeMeshManager.getPropsMesh(), true );
             if ( intersectionsProps.length > 0 ) { //Case hit header
