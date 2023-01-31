@@ -15,7 +15,7 @@ var createToolbar = function(container){
     highlightSvg :'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="9" y1="18" x2="15" y2="18"></line><line x1="10" y1="22" x2="14" y2="22"></line><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg>',
     boxSelectSvg :'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3a2 2 0 0 0-2 2"></path><path d="M19 3a2 2 0 0 1 2 2"></path><path d="M21 19a2 2 0 0 1-2 2"></path><path d="M5 21a2 2 0 0 1-2-2"></path><path d="M9 3h1"></path><path d="M9 21h1"></path><path d="M14 3h1"></path><path d="M14 21h1"></path><path d="M3 9v1"></path><path d="M21 9v1"></path><path d="M3 14v1"></path><path d="M21 14v1"></path></svg>',
     eyeOffSvg :'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"></path><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"></path><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"></path><line x1="2" y1="2" x2="22" y2="22"></line></svg>',
-
+    cropSvg : '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14"></path><path d="M18 22V8a2 2 0 0 0-2-2H2"></path></svg>',
 }   
     var init = function(){
         domElement = document.createElement("div")
@@ -107,6 +107,20 @@ var createToolbar = function(container){
                 console.log(selected);
                 for (let i = 0; i < selected.length; i++) {
                     selected[i].visible = false;
+                }
+                e.graphState.sideList.addNodes(e.graphState.nodes)
+                cleanLinksVisibility(e.graphState)
+                }
+            },
+            {label:"crop",icon:"cropSvg", callback:(e)=>{
+                var selected = e.graphState.selectedToMove
+                var nodes = e.graphState.nodes
+                console.log(selected);
+                for (let i = 0; i < nodes.length; i++) {
+                    nodes[i].visible = false;
+                }
+                for (let i = 0; i < selected.length; i++) { //TODO, could be done in one pass to optimize
+                    selected[i].visible = true;
                 }
                 e.graphState.sideList.addNodes(e.graphState.nodes)
                 cleanLinksVisibility(e.graphState)
