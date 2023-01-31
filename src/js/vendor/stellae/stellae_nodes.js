@@ -12,6 +12,7 @@ var createNode= function({
     // headerColor = 0x00b5ad,
     headerColor = undefined,
     position={x:0,y:0},
+    nodeAttributes={},
     templateName = undefined,
     propsValue = undefined,
     propsValueFromInput = {},
@@ -79,7 +80,7 @@ var createNode= function({
         if (withNodeObject) {
             nodeObject = self
         }
-        return {templateName,params:{uuid,name, position, propsValue, propsValueFromInput, headerColor, imgPath, nodeLayout, userData, nodeObject}}
+        return {templateName,params:{uuid,name, position, propsValue,nodeAttributes, propsValueFromInput, headerColor, imgPath, nodeLayout, userData, nodeObject}}
     }
     var exportSockets = function(){
         var propsValue = {}
@@ -245,7 +246,10 @@ var createNode= function({
     var setPosition = function (x,y) {
         position.x=x; position.y=y;
     }
-
+    var setAttribute = function (attribute,value) {
+        nodeAttributes[attribute]=value
+    }
+    
     var updateNode= function(){
 
         updateInScene()
@@ -290,14 +294,14 @@ var createNode= function({
     
     var addToScene = function (currentScene) {
         if (ui) {
-            refInScene =  currentScene.addNode({headerColor,nodeLayout, template, uuid, position, name, props:internalProps, links, nodeData:self, imgPath})
+            refInScene =  currentScene.addNode({headerColor,nodeLayout, template, uuid, position, name, props:internalProps, links, nodeData:self, imgPath, nodeAttributes})
         }
         
     }
     var updateInScene = function (){
         if (ui) {
             currentScene.removeNode(refInScene)
-            refInScene =  currentScene.addNode({headerColor,nodeLayout, template, uuid, position, name, props:internalProps, links, nodeData:self, imgPath}) 
+            refInScene =  currentScene.addNode({headerColor,nodeLayout, template, uuid, position, name, props:internalProps, links, nodeData:self, imgPath, nodeAttributes}) 
         }
         
     }
@@ -318,6 +322,7 @@ var createNode= function({
     self.setProp=setProp;
     self.getUuid=getUuid;
     self.init=init;
+    self.setAttribute=setAttribute
     self.remove = remove;
     self.evaluate = evaluate;
     self.addLabel = addLabel;

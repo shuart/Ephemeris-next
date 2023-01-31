@@ -54,11 +54,11 @@ var createGroupLayout  = function({
     name = undefined,
     position={x:0,y:0},
     uuid = nanoid(),
+    nodeAttributes={},
     nodeData = {},
     dashed = false,
     circular = false, //if is cicular, don't use arrow and update group position instead of line
     } = {}){
-
     const groupGroup = new THREE.Group();
     var layoutItems={
         header:undefined,
@@ -94,17 +94,23 @@ var createGroupLayout  = function({
     planeHandle.layoutItemInteractions.onMove = function(x,z){
         planeHandle.position.set(-groupGroup.position.x+x        ,      -groupGroup.position.z+z           ,0.07)
         plane.scale.set(        (-groupGroup.position.x+x)     ,       (-groupGroup.position.z+z)     ,1)
+        nodeData.setAttribute("handlerPosition",{x:-groupGroup.position.x+x, y:-groupGroup.position.z+z})
+    }
+
+    if (nodeAttributes?.handlerPosition) { //if handler was move, reset it
+        planeHandle.position.set(nodeAttributes.handlerPosition.x        ,      nodeAttributes.handlerPosition.y           ,0.07)
+        plane.scale.set(        nodeAttributes.handlerPosition.x    ,       nodeAttributes.handlerPosition.y      ,1)
     }
 
     groupGroup.add( planeHandle );
     layoutItems.handles["bottomRight"] = {mesh:planeHandle, positionOffset:{x:0,y:0,z:0}}
     
-    // //create label
+    //create label
     // if (name) {
     //     var spritetext = createCharacterLabel(name)
-    //     lineGroup.add(spritetext)
+    //     groupGroup.add(spritetext)
     //     spritetext.position.set(0,0,-0.01)
-    //     lineGroup.labelItem = spritetext 
+    //     groupGroup.labelItem = spritetext 
     // }
     // if (circular) {
     //     lineGroup.isCircular = true
@@ -140,6 +146,9 @@ var createGroupLayout  = function({
         console.log(groupGroup.position.z);
         lastPosition.x=groupGroup.position.x
         lastPosition.z=groupGroup.position.z
+        // groupGroup.edata.nodeData.setPosition(x,z)
+        console.log(nodeData);
+        
         // planeHandle.position.set(-groupGroup.position.x+x,-groupGroup.position.z+z,0.07)
         // plane.scale.set( (-groupGroup.position.x+x)*2 ,(-groupGroup.position.z+z)*2,1)
     }
@@ -158,14 +167,15 @@ var createGroupLayout  = function({
         console.log(groupGroup.position.z);
         lastPosition.x=groupGroup.position.x
         lastPosition.z=groupGroup.position.z
+        
         // planeHandle.position.set(-groupGroup.position.x+x,-groupGroup.position.z+z,0.07)
         // plane.scale.set( (-groupGroup.position.x+x)*2 ,(-groupGroup.position.z+z)*2,1)
     }
-
+    groupGroup.position.set(position.x,0, position.y)
     return groupGroup
 }
 
-var createGroup =function (scene, params) {
+var createGroup =function ( params) {
     
     if (params && params.from == params.to) { //check if some arrowe are circular
         params.circular = true
