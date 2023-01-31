@@ -108,7 +108,7 @@ const colorShade = (color, amt) => {
 var createNodeRound  = function({
     color = "#000000",
     headerColor = 0x00b5ad,
-    
+    nodeAttributes={},
     imgPath = undefined,
     name = "Node",
     position={x:0,y:0},
@@ -395,6 +395,9 @@ var createNodeRound  = function({
     node.rotation.x =3.1416/2
     node.position.set(position.x,0.1,position.y)
     node.layout =layoutItems
+    if (nodeAttributes?.visible != undefined) { //if an attribute was saved, apply it
+        node.visible = nodeAttributes.visible
+    }
     return node
 }
 

@@ -26,6 +26,7 @@ var createListView = function(container){
         element.innerHTML= `<span style="cursor:pointer" class="stella_visibility" >${data.visible? eyeSvg: eyeClosedSvg}</span> ${data.edata.name} `
         element.querySelector(".stella_visibility").addEventListener("click", function (e) {
             data.visible = !data.visible
+            data.edata.nodeData.setAttribute("visible", data.visible) //register the status for save
             data.visible? element.querySelector(".stella_visibility").innerHTML=eyeSvg : element.querySelector(".stella_visibility").innerHTML= eyeClosedSvg
         })
         return element

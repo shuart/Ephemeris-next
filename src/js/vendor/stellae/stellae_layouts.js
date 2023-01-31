@@ -163,6 +163,7 @@ var createNodeSquare  = function({
     position={x:0,y:0},
     uuid = nanoid(),
     nodeData = {},
+    nodeAttributes={},
     template = undefined,
     props =[
         {id:nanoid(), label:"demo", type:"text", editable:true, socket:"output", value:"Default"},
@@ -485,7 +486,9 @@ var createNodeSquare  = function({
     // // spritetext.scale.set(0.2,0.2,0.2)
 
     
-
+    if (nodeAttributes?.visible != undefined) { //if an attribute was saved, apply it
+        node.visible = nodeAttributes.visible
+    }
     node.rotation.x =3.1416/2
     node.position.set(position.x,0.1,position.y)
     node.layout =layoutItems
