@@ -301,7 +301,7 @@ export default function createStellaeUi({
                 state.selectedSocket= intersectionsSockets[ 0 ].object;
                 state.draggingSocket = true;
                 //Check for case of socket in front of group node
-                if (state.selectedToMove[0].layoutType=="group") {//when node is group
+                if (state.selectedToMove[0]?.layoutType=="group") {//when node is group
                     state.selectedToMove=[] //cancle node action
                     state.draggingNodes=false;
                 }
@@ -468,6 +468,8 @@ export default function createStellaeUi({
                 state.boxSelectingInProgress = false;
                 state.boxSelecting = false;
                 var selectedNodes = selectionBox.stopSelecting()
+                state.selectedToMove = selectedNodes
+                console.log(state.selectedToMove);
                 markUnSelected(state.nodes)
                 markSelected(selectedNodes)
             }
@@ -509,9 +511,9 @@ export default function createStellaeUi({
                 // state.selectedToMove[0].position.set(intersects.x, 0.1, intersects.z);
             // alert(intersects.x)
         }
-        container.addEventListener( 'mousedown', onClick );
-        container.addEventListener( 'mousemove', onMove );
-        container.addEventListener( 'mouseup', onMouseUp );
+        state.canvas.addEventListener( 'mousedown', onClick );
+        state.canvas.addEventListener( 'mousemove', onMove );
+        state.canvas.addEventListener( 'mouseup', onMouseUp );
         state.canvas.addEventListener('dblclick', onDblClick, false);
     }
 
