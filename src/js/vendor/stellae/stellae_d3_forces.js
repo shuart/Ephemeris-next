@@ -176,6 +176,20 @@ var createSimulation = function (params) {
             }
         }
     }
+    var unfixNodes = function (nodesIds) {
+        for (let k = 0; k < nodesIds.length; k++) {
+            const nodeId = nodesIds[k];
+            for (let i = 0; i < simulationNodes.length; i++) {
+                const element = simulationNodes[i];
+                if (element.uuid == nodeId) {
+                    element.fx = undefined
+                    element.fy = undefined
+                }
+            }
+            
+        }
+        
+    }
 
     var dragNode = function (uuid, x,y) {
         if (uuid != currentDraggedNode) {
@@ -193,6 +207,7 @@ var createSimulation = function (params) {
     }
     
     self.fixNodes = fixNodes
+    self.unfixNodes = unfixNodes
     self.dragNode = dragNode
     self.addNodes = addNodes
     self.startSimulation= startSimulation

@@ -553,6 +553,7 @@ export default function createStellaeUi({
         if (showToolbar) {
             toolbar.setDataManager(dataManagerToAttach)
             toolbar.setState(state)
+            toolbar.bindSimulation(simulation)
         }
         if (showList) {
             sideList.setState(state)
