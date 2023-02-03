@@ -560,6 +560,34 @@ export default function createStellaeUi({
         }
     }
 
+    var renderToDataURL=function ({
+    height=undefined,
+    width= undefined,    
+    }={}) {
+        var currentHeight = undefined;var currentWidth = undefined;
+        if (height || width) {
+            currentHeight = state.renderer.domElement.height
+            currentWidth = state.renderer.domElement.width
+            var newHeight = undefined;var newWidth = undefined;
+            var ratio = currentWidth/currentHeight
+            if (height) {newHeight = height; newWidth = ratio*height;}
+            if (width) {newWidth = width; newHeight = width/ratio;}
+            // state.camera.aspect = width / height;
+            state.camera.updateProjectionMatrix();
+            state.renderer.setSize(  newWidth, newHeight );
+        }
+        state.renderer.render( state.scene, state.camera, null, false );
+        const dataURL = state.renderer.domElement.toDataURL( 'image/png' );
+            // var img = new Image();// img.src = imgData;
+        if (height || width) {
+            state.camera.updateProjectionMatrix();
+            state.renderer.setSize(  currentWidth, currentHeight );
+        }
+        return dataURL
+    }
+
+    
+
     var init = function () {
         createScene()
         interactions()
@@ -572,5 +600,6 @@ export default function createStellaeUi({
     self.removeLinks = removeLinks;
     self.addNode = addNode;
     self.labelNode = labelNode;
+    self.renderToDataURL = renderToDataURL;
     return self
 }

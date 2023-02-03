@@ -516,6 +516,14 @@ var createNodeManager = function ({
         globalSettings[propName] = value
     }
 
+    var getScreenshot= function (params) {
+        if (ui) {
+            return ui.renderToDataURL(params)
+        }
+    }
+
+
+
     var init= function () {
         if (ui) {
             ui.attachDataManager(self)
@@ -541,6 +549,7 @@ var createNodeManager = function ({
     self.replaceData = replaceData
     self.setGlobalSetting = setGlobalSetting
     self.labelNodes = labelNodes
+    self.getScreenshot = getScreenshot
     
     return self
 }

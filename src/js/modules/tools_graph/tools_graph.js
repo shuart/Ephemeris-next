@@ -3,6 +3,7 @@ import userManagement from "../common_user_management/user_management.js";
 import createAdler from "../../vendor/adler.js";
 import createStellae from "../../vendor/stellae/stellae.js";
 import projectStores from "../common_project_management/project_data_store.js";
+import imageStore from "../common_image_store/common_image_store.js";
 
 import createRelationManagement from "../common_project_management/relations_management.js";
 import createInstancesManagement from "../common_project_management/instances_management.js";
@@ -41,15 +42,22 @@ var getCurrentProject = function(){
 }
 
 var saveGraph = function(event, data, instance){
+    var render = data.graph.getNodeManager().getScreenshot({height:200})
+    
+    // var img = new Image();
+    //         img.src = render;
+    // document.body.appendChild(img)
+    
+    console.log(render);
     var exportGraph = data.graph.getNodeManager().exportNodes()
     if (data.instanceId =="new") {
         var name = prompt("Save As")
         if (name) {
+            var imageId = imageStore.set(render)
             var uuid = nanoid()
             var repo = createGraphManagement()
             console.log(exportGraph);
-            alert("fffff")
-            repo.add({uuid:uuid, name:name, layout:JSON.stringify(exportGraph)})
+            repo.add({uuid:uuid, name:name, previewImage:imageId,  layout:JSON.stringify(exportGraph)})
             instance.query('.tools_graphs_name').innerHTML =name
             data.instanceId = uuid
         }
@@ -57,6 +65,9 @@ var saveGraph = function(event, data, instance){
         if (confirm("Save?") ) {
             var repo = createGraphManagement()
             repo.update({uuid:data.instanceId, layout:JSON.stringify(exportGraph)})
+            if (data.graphPreviewId) {
+                imageStore.set({uuid:data.graphPreviewId, dataUri:render})
+            }
         }
     }
 }
@@ -117,6 +128,7 @@ var setUpTable = function (event, data, instance) {
             var graphRepo = createGraphManagement()
             var graph = graphRepo.getById(data.instanceId)
             instance.query('.tools_graphs_name').innerHTML =graph.name
+            data.graphPreviewId = graph.attributes.previewImage
             data.graph.getNodeManager().importGraph(JSON.parse(graph.attributes.layout))
         }
         // data.graph.getNodeManager().addNode("in_out", { nodeLayout:"group",uuid:"feefsfesfsefsdfsd", name:"group", headerColor:"#c0bfbc", imgPath:'img/iconsPNG/info.svg'})
@@ -143,6 +155,7 @@ var tools_graph =createAdler({
             currentProject:"push",
             currentItems:undefined,
             seen:true,
+            graphPreviewId : undefined,
             list:[{test:"un"}, {test:"deux"}, {test:"trois"} ]
         },
         on:[

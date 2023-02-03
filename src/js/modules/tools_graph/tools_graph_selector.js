@@ -4,6 +4,7 @@ import projectManagement from "../common_project_management/project_management.j
 import project_card from "../common_ui_elements/project_card.js";
 import state from "../common_state/state_manager.js";
 import { createTemplateManager } from "../common_import_export/common_import_export.js";
+import imageStore from "../common_image_store/common_image_store.js";
 
 import createGraphManagement from "../common_project_management/graph_management.js";
 
@@ -59,8 +60,12 @@ var setUp = function (event, data, instance) {
     graphArea.innerHTML=""
     for (let i = 0; i < graphs.length; i++) {
         const element = graphs[i];
-        graphArea.appendChild( renderItemPreview({uuid:element.uuid, name:element.name, instance}) )
-        
+        graphArea.appendChild( renderItemPreview({uuid:element.uuid, name:element.name,previewImage:element.attributes.previewImage, instance}) )
+        if (element.attributes.previewImage) {
+            imageStore.get(element.attributes.previewImage,function(result){
+                instance.query("."+element.attributes.previewImage).src=result.dataUri
+            })
+        }
     }
 
 
@@ -70,6 +75,7 @@ var renderItemPreview = function({
     name="No Name",
     uuid=undefined,
     instance=undefined,
+    previewImage=undefined,
 
     }={}){
     var card = document.createElement("div")
@@ -77,7 +83,7 @@ var renderItemPreview = function({
     var html = /*html*/`
         <div class="card-image">
             <figure class="image is-4by3">
-            <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image">
+            <img class="${previewImage}" src="./img/placeholders/img.gif" alt="Placeholder image">
             </figure>
         </div>
         <div class="card-content">
@@ -94,6 +100,7 @@ var renderItemPreview = function({
             <a href="#">#css</a> <a href="#">#responsive</a>
             <br>
             <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
+            
             </div>
             
         </div>
