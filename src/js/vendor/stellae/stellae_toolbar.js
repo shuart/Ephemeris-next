@@ -111,6 +111,7 @@ var createToolbar = function(container){
                 console.log(selected);
                 for (let i = 0; i < selected.length; i++) {
                     selected[i].visible = false;
+                    selected[i].edata.nodeData.setAttribute("visible", selected[i].visible) //register the status for save TODO move in utils
                 }
                 e.graphState.sideList.addNodes(e.graphState.nodes)
                 cleanLinksVisibility(e.graphState)

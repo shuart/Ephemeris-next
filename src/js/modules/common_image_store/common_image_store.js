@@ -14,7 +14,7 @@ var createImageStore =function(){
     }
 
     var set =function(data){
-        var id = nanoid()
+        var id = "i"+nanoid()
         if (!data.uuid) { //provide data uuid or update the current one
             var imageObject = {uuid:id, dataUri:data}
             setImageToIdb(imageObject)

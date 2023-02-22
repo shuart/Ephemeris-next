@@ -13,6 +13,7 @@ import simulationNodesTemplates from "./simulations_node_templates.js";
 import createSimulator from "./simulations_simulator.js";
 import create3dSimulationRender from "./simulation_3d_view.js";
 import createChartView from "./simulation_chart_view.js";
+import imageStore from "../common_image_store/common_image_store.js";
 
 var softUpdate= function (event, data, instance) {
 
@@ -61,6 +62,10 @@ var setUp = function (event, data, instance) {
             currentNodeLayout = JSON.parse(currentGraph.attributes.nodeLayout)
             data.graph.getNodeManager().importGraph(JSON.parse(currentGraph.attributes.nodeLayout))
         }
+        if (currentGraph.attributes.previewImage) {
+            data.graphPreviewId = currentGraph.attributes.previewImage
+        }
+        
 
         
 
@@ -120,8 +125,17 @@ var saveNetwork = function (event, data, instance) {
     var entities = repoEntities.getAll()
     var relations = repoRelations.getAll()
 
+    var render = data.graph.getNodeManager().getScreenshot({height:200})
+    if (data.graphPreviewId) {
+        imageStore.set({uuid:data.graphPreviewId, dataUri:render})
+        repoSims.update({uuid:instance.props.get("simId"), nodeLayout:JSON.stringify(exportGraph)})
+    }else{
+        var imageId = imageStore.set(render)
+        repoSims.update({uuid:instance.props.get("simId"), previewImage:imageId, nodeLayout:JSON.stringify(exportGraph)})
+    }
 
-    repoSims.update({uuid:instance.props.get("simId"), nodeLayout:JSON.stringify(exportGraph)})
+
+    
 
 }
 

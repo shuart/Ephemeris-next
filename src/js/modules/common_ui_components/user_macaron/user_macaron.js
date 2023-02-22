@@ -40,7 +40,8 @@ var component =createAdler({
             user:"Hello",
             onClick:()=>signOutUser(),
             onClickSettings:()=>state_manager.goTo("/:/settings/model/entities"),
-            onClickSimulations:()=>state_manager.goTo("/:/settings/workflow/simulations"),
+            // onClickSimulations:()=>state_manager.goTo("/:/settings/workflow/simulations"),
+            onClickSimulations:()=>state_manager.goTo("/:/simulations/home"),
         },
         on:[
             [".user-macaron-pic","click", (event, data, instance)=> data.onClick(event, data, instance) ],
