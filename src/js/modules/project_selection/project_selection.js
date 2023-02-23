@@ -10,7 +10,8 @@ var getCurrentUser = function () {
 }
 
 var addProject = function (event, data, instance) {
-    projectManagement.add({name:prompt("project")})
+    var currentUserId = getCurrentUser()?.id
+    projectManagement.add({name:prompt("project"), createdBy:currentUserId})
     instance.setData({projects:setButtonList()});
 }
 var addProjectFromTemplate = function (event, data, instance, template) {
@@ -25,7 +26,14 @@ var setProjectAndGoTo = function (id) {
 }
 
 var setButtonList = ()=>{
-    return projectManagement.getAll().map((i)=> {return {value:i.name, onClick:(event, data, instance)=> setProjectAndGoTo(i.id)} } )
+    var currentUserId = getCurrentUser()?.id
+    return projectManagement.getAll().filter(function(p){
+        if (p.createdBy && p.createdBy != currentUserId) {
+            return false
+        }else  {
+            return true
+        }
+    }).map((i)=> {return {value:i.name, onClick:(event, data, instance)=> setProjectAndGoTo(i.id)} } )
 }
 var setUp = function (event, data, instance) {
     instance.setData({currentUserName:getCurrentUser().name}, false);

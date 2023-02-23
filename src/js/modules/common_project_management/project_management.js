@@ -17,9 +17,10 @@ var createProjectManagement = function(){
         name=undefined,
         email=undefined,
         password=undefined,
+        createdBy=undefined,
     }={}){
         console.log(name);
-        db.add("projects", { name:name})
+        db.add("projects", { name:name, createdBy:createdBy})
     }
     var removeCurrentProject = function(id){
         var currentProject = db.get("projects").where("id").equals(current)
