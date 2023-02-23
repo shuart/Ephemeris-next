@@ -52,6 +52,9 @@ var createProjectManagement = function(){
     var getCurrent= function(id){
         return db.get("projects").where("id").equals(current)
     }
+    var getById= function(id){
+        return db.get("projects").where("id").equals(id)
+    }
 
     var getProjectStore= function(id, type){
         return createProjectStoreGenericFront(id, type)
@@ -98,6 +101,7 @@ var createProjectManagement = function(){
     self.addFromTemplate = addFromTemplate;
     self.add = add;
     self.getAll= getAll
+    self.getById= getById
     return self
 
 }

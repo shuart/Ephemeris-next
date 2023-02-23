@@ -45,6 +45,20 @@ var redirectIfNoUser = function(req,res,next){
     } 
 }
 
+var redirectIfUserHasNoAcess = function (req,res, next) {
+    var currentUser = userManagement.getCurrentUser()
+    if (res.route[0] =="login" || res.route[0] =="") {
+        next()
+    }else{
+        var currentProject = projectManagement.getById(res.route[0])
+        if (currentProject && currentProject.createdBy && currentProject.createdBy != currentUser.id) {
+            common_router.goTo("/")
+        }else{
+            next()
+        }
+    }  
+}
+
 var createStateManager = function({
     mainUiElement=undefined,
 }={}){
@@ -178,7 +192,7 @@ var createStateManager = function({
             mainUiElement.update();
         })
 
-        common_router.use("/",logger,redirectIfNoUser )
+        common_router.use("/",logger,redirectIfNoUser, redirectIfUserHasNoAcess )
         common_router.listen()
     }
 
