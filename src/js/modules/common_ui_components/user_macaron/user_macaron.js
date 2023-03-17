@@ -7,15 +7,22 @@ var getCurrentUser = function () {
 }
 
 var signOutUser = function () {
-    return userManagement.signOutUser()
+    userManagement.signOutUser()
+    state_manager.goTo("/")
 }
 
 var setUpData = function(event, data, instance){
-    data.user = getCurrentUser()
+    data.user = getCurrentUser() || "no user"
 }
 
 var softUpdate= function (event, data, instance) {
 
+}
+var showUserMenu= function (event, data, instance) {
+    instance.query(".user-macaron-menu").style.display='block'
+}
+var hideUserMenu= function (event, data, instance) {
+    instance.query(".user-macaron-menu").style.display='none'
 }
 
 var component =createAdler({
@@ -25,6 +32,11 @@ var component =createAdler({
         <div class="user-macaron-simulations"><img src="./img/icons/bar-chart-2.svg" style="filter: invert(100%);"></div>
         <div class="user-macaron-settings"><img src="./img/icons/settings.svg" style="filter: invert(100%);"></div>
         <div class="user-macaron-pic">${p.user.name}</div>
+        <div class="user-macaron-menu">
+            <div class="user-macaron-menu-item action-macaron-logout">
+                Log-out
+            </div>
+        </div>
     </div>
         `,
     params:{
@@ -44,9 +56,11 @@ var component =createAdler({
             onClickSimulations:()=>state_manager.goTo("/:/simulations/home"),
         },
         on:[
-            [".user-macaron-pic","click", (event, data, instance)=> data.onClick(event, data, instance) ],
+            [".action-macaron-logout","click", (event, data, instance)=> data.onClick(event, data, instance) ],
             [".user-macaron-settings","click", (event, data, instance)=> data.onClickSettings(event, data, instance) ],
             [".user-macaron-simulations","click", (event, data, instance)=> data.onClickSimulations(event, data, instance) ],
+            [".user-macaron-pic","click", (event, data, instance)=> showUserMenu(event, data, instance) ],
+            [".user-macaron-menu","mouseleave", (event, data, instance)=> hideUserMenu(event, data, instance) ],
         ],
         events:{
             onBeforeMount:(event, data, instance) => setUpData(event, data, instance),
@@ -99,6 +113,23 @@ var component =createAdler({
             cursor: pointer;
             bottom: 8px;
             left: 2px;
+        }
+        .user-macaron-menu{
+            display:none;
+            width: 200px;
+            height: 200px;
+            position: absolute;
+            background: #000000d9;
+            left: 47px;
+            bottom: 7px;
+        }
+        .user-macaron-menu-item{
+            color:white;
+            height: 42px;
+            padding: 9px;
+        }
+        .user-macaron-menu-item:hover{
+            background: #444646;
         }
     `,
 })
