@@ -71,6 +71,7 @@ var createStateManager = function({
         common_router.route("/", (event)=>
         {
             // console.log(event);
+            projectManagement.setCurrent(undefined)
             mainUiElement.append(project_selection.instance(), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
