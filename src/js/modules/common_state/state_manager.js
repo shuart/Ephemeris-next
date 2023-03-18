@@ -72,6 +72,7 @@ var createStateManager = function({
         {
             // console.log(event);
             mainUiElement.append(project_selection.instance(), "main_area_mount_point");
+            mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
         common_router.route("/login", (event)=>

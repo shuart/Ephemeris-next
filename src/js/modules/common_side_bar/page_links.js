@@ -23,16 +23,24 @@ var renderRegularElement = function(p){
 }
 
 var renderList = function(event,data, instance){
-    var items = getItemsList()
-    instance.getDOMElement().innerHTML = ''
-    addRegularIcons(instance)
-    for (let i = 0; i < items.length; i++) {
-        const element = items[i];
-        if (element.isVisible) {
-            var htmlItem = renderElement(element)
-            instance.getDOMElement().appendChild(htmlItem)
+    instance.query(".sidebar-top-icons").innerHTML = ''
+    instance.query(".sidebar-bottom-icons").innerHTML = ''
+    if (projectManagement.getCurrent()) {
+        var items = getItemsList()
+        // instance.getDOMElement().innerHTML = ''
+        
+        addRegularIcons(instance)
+        addBottomRegulatIcons(instance)
+        for (let i = 0; i < items.length; i++) {
+            const element = items[i];
+            if (element.isVisible) {
+                var htmlItem = renderElement(element)
+                // instance.getDOMElement().appendChild(htmlItem)
+                instance.query(".sidebar-top-icons").appendChild(htmlItem)
+            }
         }
     }
+    
 }
 
 var addRegularIcons = function(instance) {
@@ -44,7 +52,24 @@ var addRegularIcons = function(instance) {
         const element = items[i];
         if (element.isVisible) {
             var htmlItem = renderRegularElement(element)
-            instance.getDOMElement().appendChild(htmlItem)
+            // instance.getDOMElement().appendChild(htmlItem)
+            instance.query(".sidebar-top-icons").appendChild(htmlItem)
+        }
+    }
+}
+
+var addBottomRegulatIcons = function(instance) {
+    var items = [
+        {iconPath:"clipboard.svg", name:"Verification", path:"/:/dashboard", isVisible:true},
+        {iconPath:"bar-chart-2.svg", name:"Simulations", path:"/:/simulations/home", isVisible:true},
+        {iconPath:"settings.svg", name:"Settings", path:"/:/settings/model/entities", isVisible:true},
+    ]
+    for (let i = 0; i < items.length; i++) {
+        const element = items[i];
+        if (element.isVisible) {
+            var htmlItem = renderRegularElement(element)
+            // instance.getDOMElement().appendChild(htmlItem)
+            instance.query(".sidebar-bottom-icons").appendChild(htmlItem)
         }
     }
 }
@@ -76,6 +101,8 @@ var subscribeToDB = function (event, data, instance) {
 var component =createAdler({
     content: p => /*html*/`
     <div class="component">
+        <div class="sidebar-top-icons"></div>
+        <div class="sidebar-bottom-icons"></div>
     </div>
         `,
     params:{
@@ -106,6 +133,17 @@ var component =createAdler({
         },
     },
     css:/*css*/`
+    .sidebar-top-icons{
+        height:25px;
+        width:25px;
+
+    }
+    .sidebar-bottom-icons{
+        position:absolute;
+        bottom:70px;
+        width:25px;
+
+    }
     .side-bar-page-item{
         padding-left: 5px;
         padding-top: 8px;

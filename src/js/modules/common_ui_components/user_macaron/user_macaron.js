@@ -25,12 +25,11 @@ var hideUserMenu= function (event, data, instance) {
     instance.query(".user-macaron-menu").style.display='none'
 }
 
+{/* <div class="user-macaron-verifications"><img src="./img/icons/clipboard.svg" style="filter: invert(100%);"></div> */}
+
 var component =createAdler({
     content: p => /*html*/`
     <div class="user-macaron">
-        <div class="user-macaron-verifications"><img src="./img/icons/clipboard.svg" style="filter: invert(100%);"></div>
-        <div class="user-macaron-simulations"><img src="./img/icons/bar-chart-2.svg" style="filter: invert(100%);"></div>
-        <div class="user-macaron-settings"><img src="./img/icons/settings.svg" style="filter: invert(100%);"></div>
         <div class="user-macaron-pic">${p.user.name}</div>
         <div class="user-macaron-menu">
             <div class="user-macaron-menu-item action-macaron-logout">
@@ -51,14 +50,14 @@ var component =createAdler({
         data:{
             user:"Hello",
             onClick:()=>signOutUser(),
-            onClickSettings:()=>state_manager.goTo("/:/settings/model/entities"),
-            // onClickSimulations:()=>state_manager.goTo("/:/settings/workflow/simulations"),
-            onClickSimulations:()=>state_manager.goTo("/:/simulations/home"),
+            // onClickSettings:()=>state_manager.goTo("/:/settings/model/entities"),
+            // // onClickSimulations:()=>state_manager.goTo("/:/settings/workflow/simulations"),
+            // onClickSimulations:()=>state_manager.goTo("/:/simulations/home"),
         },
         on:[
             [".action-macaron-logout","click", (event, data, instance)=> data.onClick(event, data, instance) ],
-            [".user-macaron-settings","click", (event, data, instance)=> data.onClickSettings(event, data, instance) ],
-            [".user-macaron-simulations","click", (event, data, instance)=> data.onClickSimulations(event, data, instance) ],
+            // [".user-macaron-settings","click", (event, data, instance)=> data.onClickSettings(event, data, instance) ],
+            // [".user-macaron-simulations","click", (event, data, instance)=> data.onClickSimulations(event, data, instance) ],
             [".user-macaron-pic","click", (event, data, instance)=> showUserMenu(event, data, instance) ],
             [".user-macaron-menu","mouseleave", (event, data, instance)=> hideUserMenu(event, data, instance) ],
         ],
@@ -74,7 +73,7 @@ var component =createAdler({
     css:/*css*/`
         .user-macaron{
             width: 42px;
-            height: 84px;
+            height: 70px;
             position: relative;
             left: 3px;
             bottom: 5px;

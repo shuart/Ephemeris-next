@@ -65,8 +65,8 @@ var component =createAdler({
         bottom: 0px;
     }
     .side-bar-page-area{
-        position: absolute;
-        top: 60px;
+
+        padding-top: 60px;
     }
     `,
     components:{
