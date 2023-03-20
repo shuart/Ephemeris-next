@@ -15,6 +15,7 @@ import create3dSimulationRender from "./simulation_3d_view.js";
 import createChartView from "./simulation_chart_view.js";
 import imageStore from "../common_image_store/common_image_store.js";
 import state from "../common_state/state_manager.js";
+import { createSimulationTemplateManager } from "./simulation_import_export.js";
 
 var softUpdate= function (event, data, instance) {
 
@@ -166,6 +167,13 @@ var saveNetworkAs = function (event, data, instance) {
     
 }
 
+var exportNetwork = function (event, data, instance) {
+    var exportManager = createSimulationTemplateManager()
+    var exportGraph = data.graph.getNodeManager().exportNodes()
+    var nodeLayout = JSON.stringify(exportGraph)
+    exportManager.exportTemplate(nodeLayout)
+}
+
 // var showPreview = function (event,data,instance) {
 //     mainPopup.mount()
 //     mainPopup.append(table_viewport.instance({
@@ -200,7 +208,7 @@ var simulations_editor =createAdler({
                         Save As
                     </a>
                     <hr class="navbar-divider">
-                    <a class="navbar-item">
+                    <a class="navbar-item action_simulation_export">
                         Export
                     </a>
                     </div>
@@ -252,6 +260,7 @@ var simulations_editor =createAdler({
             [".action_simulation_play","click", playSimulation  ],
             [".action_simulation_pause","click", pauseSimulation  ],
             [".action_simulation_reset","click", resetSimulation  ],
+            [".action_simulation_export","click", exportNetwork  ],
             
         ],
         events:{

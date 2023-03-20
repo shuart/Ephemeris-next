@@ -9,6 +9,7 @@ import imageStore from "../common_image_store/common_image_store.js";
 import createGraphManagement from "../common_project_management/graph_management.js";
 import createSimulationManagement from "../common_project_management/simulation_management.js";
 import { EventDispatcher } from "../../vendor/three.module.js";
+import { createSimulationTemplateManager } from "./simulation_import_export.js";
 
 // var getCurrentUser = function () {
 //     return userManagement.getCurrentUser()
@@ -18,10 +19,20 @@ import { EventDispatcher } from "../../vendor/three.module.js";
 //     projectManagement.add({name:prompt("project")})
 //     instance.setData({projects:setButtonList()});
 // }
-// var addProjectFromTemplate = function (event, data, instance, template) {
-//     projectManagement.addFromTemplate({name:prompt("project"), template:template})
-//     instance.setData({projects:setButtonList()});
-// }
+var addSimulationFromTemplate = function (event, data, instance, template) {
+    alert (template)
+    var repoSims = createSimulationManagement()
+    var name = prompt("New Item Name")
+    var description = prompt("Description")
+    if(name && description){
+        // repoSims.update({uuid:instance.props.get("simId"), previewImage:imageId, nodeLayout:JSON.stringify(exportGraph)})//Check how to get a preview image id
+        repoSims.update({name:name, desc:description, nodeLayout:template})
+        instance.update()
+    }
+    
+    // projectManagement.addFromTemplate({name:prompt("project"), template:template})
+    // instance.setData({projects:setButtonList()});
+}
 
 var newItem = function (event, data, instance) {
     // state.goTo("/:/graph/new")
@@ -151,7 +162,7 @@ var simulation_selector =createAdler({
             </div>
             <div class="has-text-centered">
                 <button class="action_tools_graphs_selection_add button is-primary is-rounded">Add</button>
-                <button class="action_project_selection_add_project_from_template button is-rounded is-light">Add from template</button>
+                <button class="action_simulation_selection_add_from_template button is-rounded is-light">Add from template</button>
             </div>
             
             <div class="graph_selection_select_area masonry">
@@ -169,7 +180,7 @@ var simulation_selector =createAdler({
             // [".action2","click", (event, data, instance)=> instance.setData({test:"barr"}) ],
             [".action_tools_graphs_selection_add","click", (event, data, instance)=> newItem(event, data, instance) ],
             [".action_tools_graphs_selection_go","click", (event, data, instance)=> goToGraph(event, data, instance) ],
-            // [".action_project_selection_add_project_from_template","click", (event, data, instance)=> createTemplateManager().importTemplateFromFile(  (content)=>addProjectFromTemplate(event, data, instance, content)  ) ],
+            [".action_simulation_selection_add_from_template","click", (event, data, instance)=> createSimulationTemplateManager().importTemplateFromFile(  (content)=>addSimulationFromTemplate(event, data, instance, content)  ) ],
             
         ],
         events:{
