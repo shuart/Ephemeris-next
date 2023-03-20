@@ -8,6 +8,7 @@ import imageStore from "../common_image_store/common_image_store.js";
 
 import createGraphManagement from "../common_project_management/graph_management.js";
 import createSimulationManagement from "../common_project_management/simulation_management.js";
+import { EventDispatcher } from "../../vendor/three.module.js";
 
 // var getCurrentUser = function () {
 //     return userManagement.getCurrentUser()
@@ -24,10 +25,11 @@ import createSimulationManagement from "../common_project_management/simulation_
 
 var newItem = function (event, data, instance) {
     // state.goTo("/:/graph/new")
-    var name = prompt("New Item")
-    if(name){
+    var name = prompt("New Item Name")
+    var description = prompt("Description")
+    if(name && description){
         var repo = createSimulationManagement()
-        repo.add({name:name})
+        repo.add({name:name, desc:description})
         instance.update()
     }
 }
@@ -42,6 +44,20 @@ var deleteGraph= function (event,instance) {
         event.preventDefault()
         repo.remove(event.target.dataset.id) 
         instance.update()
+    }
+    
+}
+
+var editCardInfo= function (event,instance) {
+    if (confirm("edit?") ) {
+        event.preventDefault()
+        var name = prompt("New Item Name")
+        var description = prompt("Description")
+        if(name && description){
+            var repo = createSimulationManagement()
+            repo.add({uuid:event.target.dataset.id, name:name, desc:description})
+            instance.update()
+        }
     }
     
 }
@@ -67,7 +83,7 @@ var setUp = function (event, data, instance) {
     graphArea.innerHTML=""
     for (let i = 0; i < graphs.length; i++) {
         const element = graphs[i];
-        graphArea.appendChild( renderItemPreview({uuid:element.uuid, name:element.name,previewImage:element.attributes.previewImage, instance}) )
+        graphArea.appendChild( renderItemPreview({uuid:element.uuid, name:element.name,previewImage:element.attributes.previewImage, description:element.attributes.desc, instance}) )
         if (element.attributes.previewImage) {
             imageStore.get(element.attributes.previewImage,function(result){
                 instance.query("."+element.attributes.previewImage).src=result.dataUri
@@ -80,6 +96,7 @@ var setUp = function (event, data, instance) {
 
 var renderItemPreview = function({
     name="No Name",
+    description="",
     uuid=undefined,
     instance=undefined,
     previewImage=undefined,
@@ -97,14 +114,12 @@ var renderItemPreview = function({
             <div class="media">
                 <div class="media-content">
                     <p class="title is-4">${name}</p>
-                    <p class="subtitle is-6">@johnsmith</p>
+                    <p class="subtitle is-6">Simulation</p>
                 </div>
             </div>
 
             <div class="content">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-            Phasellus nec iaculis mauris. <a>@bulmaio</a>.
-            <a href="#">#css</a> <a href="#">#responsive</a>
+                ${description}
             <br>
             <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
             
@@ -114,12 +129,16 @@ var renderItemPreview = function({
         <footer class="card-footer">
                 <a  data-id="${uuid}" class="action_tools_graphs_selection_go card-footer-item">Open</a>
                 <a data-id="${uuid}" class="action_tools_graphs_selection_remove card-footer-item">Delete</a>
+                <a data-id="${uuid}" class="action_tools_graphs_selection_edit card-footer-item">Edit</a>
         </footer>
     `
     card.innerHTML = html
     card.querySelector(".action_tools_graphs_selection_go").addEventListener("click",goToItem)
     card.querySelector(".action_tools_graphs_selection_remove").addEventListener("click",function (event) {
         deleteGraph(event, instance)
+    })
+    card.querySelector(".action_tools_graphs_selection_edit").addEventListener("click",function (event) {
+        editCardInfo(event, instance)
     })
     return card
 }
