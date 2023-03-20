@@ -14,6 +14,7 @@ import createSimulator from "./simulations_simulator.js";
 import create3dSimulationRender from "./simulation_3d_view.js";
 import createChartView from "./simulation_chart_view.js";
 import imageStore from "../common_image_store/common_image_store.js";
+import state from "../common_state/state_manager.js";
 
 var softUpdate= function (event, data, instance) {
 
@@ -133,10 +134,36 @@ var saveNetwork = function (event, data, instance) {
         var imageId = imageStore.set(render)
         repoSims.update({uuid:instance.props.get("simId"), previewImage:imageId, nodeLayout:JSON.stringify(exportGraph)})
     }
+}
 
+var saveNetworkAs = function (event, data, instance) {
+    var exportGraph = data.graph.getNodeManager().exportNodes()
+    console.log(exportGraph);
 
+    var repoEntities = createEntityManagement()
+    var repoRelations = createRelationManagement()
+    var repoProperties = createPropertyManagement()
+    var repoSims = createSimulationManagement()
+    var properties = repoProperties.getAll()
+
+    var entities = repoEntities.getAll()
+    var relations = repoRelations.getAll()
+
+    var render = data.graph.getNodeManager().getScreenshot({height:200})
+
+    var newId = nanoid()
+    var newName = prompt("Save As?")
+    if (newName) {
+        if (data.graphPreviewId) {
+            imageStore.set({uuid:data.graphPreviewId, dataUri:render})
+            repoSims.update({uuid:newId, name:newName, nodeLayout:JSON.stringify(exportGraph)})
+        }else{
+            var imageId = imageStore.set(render)
+            repoSims.update({uuid:newId, name:newName, previewImage:imageId, nodeLayout:JSON.stringify(exportGraph)})
+        }
+        state.goTo("/:/simulation/"+newId)
+    }
     
-
 }
 
 // var showPreview = function (event,data,instance) {
@@ -169,7 +196,7 @@ var simulations_editor =createAdler({
                     </a>
 
                     <div class="navbar-dropdown">
-                    <a class="navbar-item">
+                    <a class="navbar-item action_settings_save_network_as">
                         Save As
                     </a>
                     <hr class="navbar-divider">
@@ -220,10 +247,12 @@ var simulations_editor =createAdler({
         },
         on:[
             [".action_settings_save_network","click", saveNetwork ],
+            [".action_settings_save_network_as","click", saveNetworkAs ],
             // [".action_settings_show_preview","click", showPreview ],
             [".action_simulation_play","click", playSimulation  ],
             [".action_simulation_pause","click", pauseSimulation  ],
             [".action_simulation_reset","click", resetSimulation  ],
+            
         ],
         events:{
             // onBeforeMount:(event, data, instance) => setUp(event, data, instance),
