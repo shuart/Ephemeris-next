@@ -139,15 +139,15 @@ var saveNetwork = function (event, data, instance) {
 
 }
 
-var showPreview = function (event,data,instance) {
-    mainPopup.mount()
-    mainPopup.append(table_viewport.instance({
-        props:{
-            settings:{evaluatorId:instance.props.get("evaluatorId")},
-        }
-    }), "main-slot")
-    mainPopup.update();
-}
+// var showPreview = function (event,data,instance) {
+//     mainPopup.mount()
+//     mainPopup.append(table_viewport.instance({
+//         props:{
+//             settings:{evaluatorId:instance.props.get("evaluatorId")},
+//         }
+//     }), "main-slot")
+//     mainPopup.update();
+// }
 
 var simulations_editor =createAdler({
     content: p => /*html*/`
@@ -156,21 +156,8 @@ var simulations_editor =createAdler({
 
             <div id="navbarBasicExample" class="navbar-menu">
                 <div class="navbar-start">
-                <a class="navbar-item action_settings_add_entity">
-                    Add
-                </a>
-
                 <a class="navbar-item action_settings_save_network">
                     Save
-                </a>
-                <a class="navbar-item action_settings_show_preview">
-                    preview
-                </a>
-                <a class="navbar-item action_simulation_play">
-                    play
-                </a>
-                <a class="navbar-item action_simulation_pause">
-                    pause
                 </a>
                 <a class="navbar-item action_simulation_reset">
                     reset
@@ -183,17 +170,11 @@ var simulations_editor =createAdler({
 
                     <div class="navbar-dropdown">
                     <a class="navbar-item">
-                        About
-                    </a>
-                    <a class="navbar-item">
-                        Jobs
-                    </a>
-                    <a class="navbar-item">
-                        Contact
+                        Save As
                     </a>
                     <hr class="navbar-divider">
                     <a class="navbar-item">
-                        Report an issue
+                        Export
                     </a>
                     </div>
                 </div>
@@ -202,11 +183,11 @@ var simulations_editor =createAdler({
                 <div class="navbar-end">
                 <div class="navbar-item">
                     <div class="buttons">
-                    <a class="button is-primary">
-                        <strong>Sign up</strong>
+                    <a class="button is-primary action_simulation_play">
+                        <strong>play</strong>
                     </a>
-                    <a class="button is-light">
-                        Log in
+                    <a class="button is-light action_simulation_pause">
+                    pause
                     </a>
                     </div>
                 </div>
@@ -239,7 +220,7 @@ var simulations_editor =createAdler({
         },
         on:[
             [".action_settings_save_network","click", saveNetwork ],
-            [".action_settings_show_preview","click", showPreview ],
+            // [".action_settings_show_preview","click", showPreview ],
             [".action_simulation_play","click", playSimulation  ],
             [".action_simulation_pause","click", pauseSimulation  ],
             [".action_simulation_reset","click", resetSimulation  ],
