@@ -143,7 +143,7 @@ export default function createStellaeUi({
         //create a line to draw connection
         const lineMaterial = new THREE.LineBasicMaterial( {
             color: 0xa5abb6,
-            linewidth: 16,
+            linewidth: 5,
         } );
         const linePoints = [];
         linePoints.push( new THREE.Vector3( - 1, -1, -0.15 ) );
@@ -322,7 +322,10 @@ export default function createStellaeUi({
                 const object = intersectionsProps[ 0 ].object;
 
                 console.log(intersectionsProps[ 0 ].object.edata);
-                intersectionsProps[ 0 ].object.edata.action({callback:dataManager.evaluateTree})
+                setTimeout(() => { //need timeout in chrome to avoid unwanted drag
+                    intersectionsProps[ 0 ].object.edata.action({callback:dataManager.evaluateTree})
+                }, 150);
+                
 
 
             }
