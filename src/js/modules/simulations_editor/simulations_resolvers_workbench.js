@@ -59,21 +59,41 @@ var createWorkbenchNodeLogic = function(node){
             
         }
         var isWorkable = function(){
-            if (linePriority == 1) {
-                return true
-            } else {
+            if (isNaN(linePriority[0]) && linePriority[0] ) {//check if first character of a letter
                 var noOtherPriority = true
-                for (let k = 1; k < linePriority; k++) {
-                    // const element = array[i];
-                    // var lenghtOfRow = benchArea[position.i]
-                    var sideBench = benchArea[position.i][position.j+k] //you need to add to go right
-                    if (sideBench && sideBench.getSlot() && sideBench.getSlot()[nodeLogicId]< 100) {
+                var currentPositionCheck = 0
+                while (benchArea[position.i][currentPositionCheck]) {
+                    console.log(benchArea[position.i][currentPositionCheck]);
+                    var benchToCheck = benchArea[position.i][currentPositionCheck] //you need to add to go right
+                    var otherBenchLetter = benchToCheck.getLinePriority()[0]
+                    var otherBenchPriority = benchToCheck.getLinePriority().substring(1)
+                    if (otherBenchLetter == linePriority[0] && linePriority.substring(1) > otherBenchPriority && benchToCheck && benchToCheck.getSlot() && benchToCheck.getSlot()[nodeLogicId]< 100) { //node logic id is the properties set on the item by the bench
+
                         noOtherPriority = false
                         return noOtherPriority
                     }
+                    currentPositionCheck++
                 }
                 return noOtherPriority
+                
+            } else { //if priority is direction based, check sides
+                if (linePriority == 1) {
+                    return true
+                } else {
+                    var noOtherPriority = true
+                    for (let k = 1; k < linePriority; k++) {//TODO Why a loop??
+                        // const element = array[i];
+                        // var lenghtOfRow = benchArea[position.i]
+                        var sideBench = benchArea[position.i][position.j+k] //you need to add to go right
+                        if (sideBench && sideBench.getSlot() && sideBench.getSlot()[nodeLogicId]< 100) { //node logic id is the properties set on the item by the bench
+                            noOtherPriority = false
+                            return noOtherPriority
+                        }
+                    }
+                    return noOtherPriority
+                } 
             }
+            
         }
         var canExit = function(){
             var exitFree = true
@@ -130,6 +150,9 @@ var createWorkbenchNodeLogic = function(node){
         var getPosition = function(){
             return position
         }
+        var getLinePriority = function () {
+            return linePriority
+        }
         init()
         
         self.canExit = canExit
@@ -137,6 +160,7 @@ var createWorkbenchNodeLogic = function(node){
         self.isWorkable = isWorkable
         self.exitSlot = exitSlot
         self.getPosition = getPosition
+        self.getLinePriority = getLinePriority
         self.setSlot = setSlot
         self.getSlot = getSlot
         self.getId = getId
