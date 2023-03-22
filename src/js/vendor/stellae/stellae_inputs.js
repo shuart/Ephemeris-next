@@ -288,7 +288,7 @@ inputElements.createListInput = function ({
                 var li = listDisplayed[i]
                 if(searchValue == ""){
                     li.style.display = 'block';
-                }else if (li.innerText.search(searchValue)<0) {
+                }else if (li.innerText.toLowerCase().search(searchValue.toLowerCase())<0) {
                     li.style.display = 'none';
                 }else{
                     li.style.display = 'block';
