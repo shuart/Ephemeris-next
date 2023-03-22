@@ -12,6 +12,7 @@ function topologicalOrdering(data) {
         order:order,
         adgencyList:adgencyList,
         parentsList:parentsList,
+        originalData:data,
     }
     
     

@@ -1,5 +1,5 @@
 import topologicalOrdering from "./simulations_topologicalOrdering.js"
-import { resolveSourceNode,resolveFluxNode, resolveStockNode, resolveProcessNode, resolveFrameNode, resolveWorkbenchNode, resolvePoolNode } from "./simulations_resolvers.js"
+import { resolveSourceNode,resolveFluxNode, resolveStockNode, resolveProcessNode, resolveFrameNode, resolveWorkbenchNode, resolvePoolNode, resolveJunctionNode } from "./simulations_resolvers.js"
 
 var createSimulator = function(graph){
     var self = {}
@@ -141,6 +141,9 @@ var createSimulator = function(graph){
             }
             if (node.templateName =="process") {
                 resolveProcessNode(node, data, frame)
+            }
+            if (node.templateName =="junction") {
+                resolveJunctionNode(node, data, frame)
             }
             // if (node.templateName =="simulation_frame") {
             //     resolveFrameNode(node, data, frame)

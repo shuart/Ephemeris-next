@@ -137,6 +137,77 @@ var resolveFluxNode =function(node, graphData){
         
 }
 
+var resolveJunctionNode =function(node, graphData){
+    var fifo = true
+    console.info("Resolve " + node.templateName + " " + node.params.uuid);
+    console.info(node);
+        //check parents first
+    let currentNodeUuid = node.params.uuid
+    let parents = graphData.parentsList[node.params.uuid]
+    let children = graphData.adgencyList[node.params.uuid]
+    let nodes = graphData.orderedNodes
+    var fluxValue = node.evalData.flux 
+    
+    parents.forEach(element => {
+        var parentNode = nodes.find(n=> n.params.uuid == element)
+        if (parentNode.data.type == "stock" || parentNode.data.type == "source" || parentNode.data.type == "process" || parentNode.data.type == "simulation_workbench" || parentNode.data.type == "simulation_pool") {
+            //check if enough in stock
+            let stockValue = parentNode.data.outValue 
+
+            var childrenNodesUuid = []
+            debugger
+            for (let i = 0; i < graphData.originalData.links.length; i++) {
+                const link = graphData.originalData.links[i];
+                if (link.from == currentNodeUuid) {
+                    if( link.from_socket =="output"){ childrenNodesUuid[0] =link.to }
+                    if( link.from_socket =="output2"){ childrenNodesUuid[1] =link.to }
+                }
+                
+            }
+
+            var childrenNode = nodes.find(n=> n.params.uuid == childrenNodesUuid[0]) //TODO modify to allow multiple output 
+            var spaceLeftInChildren = nodeHasPlaceLeft(childrenNode)
+            var currentPossibleFlux = parseInt(fluxValue)
+            //check if children is full then switch to second
+            
+            
+
+            if (spaceLeftInChildren != "infinite" && parseInt(spaceLeftInChildren)<=0 && childrenNodesUuid[1]) {
+                
+                childrenNode = nodes.find(n=> n.params.uuid == childrenNodesUuid[1]) //TODO modify to allow multiple output 
+                spaceLeftInChildren = nodeHasPlaceLeft(childrenNode)
+            }
+
+            if (spaceLeftInChildren != "infinite" && parseInt(spaceLeftInChildren)<currentPossibleFlux) {
+                
+                currentPossibleFlux = parseInt(spaceLeftInChildren)
+            }
+            
+            if (currentPossibleFlux > 0 && (childrenNode.data.type == "stock" || childrenNode.data.type == "process" || childrenNode.data.type == "simulation_workbench" || childrenNode.data.type == "simulation_pool") ) {
+                for (let i = 0; i < currentPossibleFlux; i++) {
+                    var removed = undefined
+                    if(fifo){
+                        removed = parentNode.data.outObjects.shift()
+                    }else{
+                        removed = parentNode.data.outObjects.pop()
+                    }
+                    if (removed) {
+                        childrenNode.data.inObjects.push(removed)
+                        if (parentNode.data.type == "simulation_workbench") { //clean also workbench
+                            
+                            parentNode.data.bufferObjects.freeItem(removed.uuid)
+                        }
+                        
+                    }
+                }
+                updateNodeDisplayValue(childrenNode)
+                updateNodeDisplayValue(parentNode)
+                
+            }
+        }
+    });
+}
+
 var resolveStockNode =function(node, graphData){
     console.info("Resolve " + node.templateName + " " + node.params.uuid);
     console.info(node);
@@ -248,4 +319,4 @@ var resolveWorkbenchNode =function(node, graphData, currentFrame){
     
 }
 
-export {resolveSourceNode,resolveFluxNode,resolveStockNode, resolveProcessNode, resolveFrameNode, resolveWorkbenchNode, resolvePoolNode }
+export {resolveSourceNode,resolveFluxNode,resolveStockNode, resolveProcessNode, resolveFrameNode, resolveWorkbenchNode, resolvePoolNode, resolveJunctionNode }

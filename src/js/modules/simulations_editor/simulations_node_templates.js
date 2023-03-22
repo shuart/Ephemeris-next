@@ -97,6 +97,39 @@ simulationNodesTemplates.flux = {
     },
 }
 
+simulationNodesTemplates.junction = {
+    templateName : "junction",
+    name : "Junction",
+    style:{
+        headerColor:nodeColors.flux,
+    },
+    category:"Simulation",
+    props :[
+        {id:"output", expect:"data", isSquare:false, label:"First output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"output2", expect:"data", isSquare:false, label:"Second output", type:"hidden", editable:false, socket:"output", value:"output2"},
+        {id:"input", expect:"data", isSquare:false, label:"Input", type:"hidden", editable:false, socket:"input", value:"output"},
+        {id:"flux", expect:"string", label:"Quantity", type:"text", editable:false, socket:"input", value:5},
+
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+
+        },
+        onInit:(props) =>{
+            // var entityRepo = createEntityManagement()
+            // console.log(entityRepo.getAll());
+            // // alert()
+            // props.method.setOptions(entityRepo.getAll().map(function (e) {
+            //     return {id:e.uuid, value:e.name}
+            // }))
+            
+            
+        },
+    },
+}
+
 simulationNodesTemplates.stock = {
     templateName : "stock",
     name : "Stock",
