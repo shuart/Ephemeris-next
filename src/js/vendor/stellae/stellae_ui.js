@@ -342,6 +342,17 @@ export default function createStellaeUi({
                     const object = intersectionsLines[ 0 ].object;
                     console.log(object)
                     state.selectedLine = object
+                    if (event.button == 2) {
+                        console.log(state.selectedLine);
+                        if (confirm("Delete Line?")) {
+                            console.log(state.links);
+                            if (state.selectedLine.layoutItemRoot) {
+                                dataManager.removeLinks(state.selectedLine.layoutItemRoot.edata.uuid)
+                            }else{
+                                dataManager.removeLinks(state.selectedLine.parent.layoutItemRoot.edata.uuid)//TODO sometimes have to go to parent, should avoid
+                            }
+                        }
+                    }
                 }
                 if(state.boxSelecting && selectionBox){
                     
@@ -357,19 +368,20 @@ export default function createStellaeUi({
         function onMove(event){
             state.mouse.x = ( (event.clientX-state.containerDim.x) / state.containerDim.width ) * 2 - 1;
             state.mouse.y = - ( (event.clientY-state.containerDim.y) / state.containerDim.height ) * 2 + 1;
-            if (state.selectedLine) {
-                console.log(state.selectedLine);
-                if (confirm("Delete Line?")) {
+            // if (state.selectedLine) {
+            //     event.preventDefault()
+            //     console.log(state.selectedLine);
+            //     if (confirm("Delete Line?")) {
                     
-                    console.log(state.links);
-                    if (state.selectedLine.layoutItemRoot) {
-                        dataManager.removeLinks(state.selectedLine.layoutItemRoot.edata.uuid)
-                    }else{
-                        dataManager.removeLinks(state.selectedLine.parent.layoutItemRoot.edata.uuid)//TODO sometimes have to go to parent, should avoid
-                    }
+            //         console.log(state.links);
+            //         if (state.selectedLine.layoutItemRoot) {
+            //             dataManager.removeLinks(state.selectedLine.layoutItemRoot.edata.uuid)
+            //         }else{
+            //             dataManager.removeLinks(state.selectedLine.parent.layoutItemRoot.edata.uuid)//TODO sometimes have to go to parent, should avoid
+            //         }
                     
-                }
-            }
+            //     }
+            // }
             if (state.draggingNodes) {
                 
                 state.controls.enabled = false;
