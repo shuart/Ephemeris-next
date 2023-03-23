@@ -12,6 +12,7 @@ import behaveAsNormalNode from "./stellae_utils_check_if_normal_node.js";
 import createSelectionBox from "./stellae_selection_box.js";
 import { markSelected, markUnSelected } from "./stellae_utils_select_unselect.js";
 import cleanLinksVisibility from "./stellae_utils_clean_links_connections.js";
+import { createLinksRCM, createNodeRCM } from "./stellae_right_click_menu.js";
 
 
 export default function createStellaeUi({
@@ -285,14 +286,9 @@ export default function createStellaeUi({
                 state.lastSelectedHeader = object.layoutItemRoot;
                 state.draggingNodes=true;
                 if (event.button == 2) {
-                    
-                    console.log(object.layoutItemRoot);
-                    if (confirm("Delete node?")) {
-                        dataManager.removeNode(state.lastSelectedHeader.edata.uuid)
-                    }
+                    createNodeRCM(object, dataManager, state)
                 }else{
                     state.recordedClickForMouseUp = {x:state.mouse.x, y:state.mouse.y}
-                    
                 }
 
                 //TODO move in other function
@@ -303,7 +299,6 @@ export default function createStellaeUi({
                     markUnSelected(state.nodes)
                     markSelected(object.layoutItemRoot)
                 }
-                
             }
             
             const intersectionsSockets = state.raycaster.intersectObjects( nodeMeshManager.getSocketsMesh(), true );
@@ -343,20 +338,10 @@ export default function createStellaeUi({
                     console.log(object)
                     state.selectedLine = object
                     if (event.button == 2) {
-                        console.log(state.selectedLine);
-                        if (confirm("Delete Line?")) {
-                            console.log(state.links);
-                            if (state.selectedLine.layoutItemRoot) {
-                                dataManager.removeLinks(state.selectedLine.layoutItemRoot.edata.uuid)
-                            }else{
-                                dataManager.removeLinks(state.selectedLine.parent.layoutItemRoot.edata.uuid)//TODO sometimes have to go to parent, should avoid
-                            }
-                        }
+                        createLinksRCM(object, dataManager, state)
                     }
                 }
                 if(state.boxSelecting && selectionBox){
-                    
-                    
                     var intersects = new THREE.Vector3();
                     state.raycaster.setFromCamera(state.mouse, state.camera);
                     state.raycaster.ray.intersectPlane(state.raycasterPlan, intersects);
@@ -524,6 +509,7 @@ export default function createStellaeUi({
                 selectionList = usedTemplatesList
             }
             inputElements.createListInput({
+                inputTitle:"Add Nodes",
                 options :selectionList,
                 customName : allowCustomNameForNodes,
                 callback:function (event) {

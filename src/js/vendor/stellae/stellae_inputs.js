@@ -83,6 +83,15 @@ function addCSS(cssText){
             margin: 5px;
             cursor:pointer;
         }
+
+        .stellae_input_title{
+            margin: auto;
+            margin-left: auto;
+            margin-left: 55px;
+            font-size: 22px;
+            position:absolute;
+        }
+
         .stellae_input_back{
             background-color: #3b3b3b;
             height: 30px;
@@ -136,6 +145,8 @@ function addCSS(cssText){
 inputElements.createListInput = function ({
     container=document.body,
     mutlipleSelect=false,
+    inputTitle=undefined,
+    showSearch=true,
     customName = false,
     options =[
         {id:"1", value:"Default", params:{}},
@@ -236,12 +247,25 @@ inputElements.createListInput = function ({
 
         domElement.innerHTML=`
             <div class=stellae_input_close>x</div>
+            <div class=stellae_input_title></div>
             <div class=stellae_input_field>
                 <input class=stellae_input_field_input></input>
             </div>
             <div class=stellae_input_list></div>
 
         `
+
+        //hide search if needed
+        if (!showSearch) {
+            domElement.querySelector('.stellae_input_field').style.display ="none"
+        }
+
+        //Set Title
+        if (!inputTitle) {
+            domElement.querySelector('.stellae_input_title').style.display ="none"
+        }else{
+            domElement.querySelector('.stellae_input_title').innerText = inputTitle
+        }
 
         //create Back Button if needed
         var backElement= document.createElement('div')
