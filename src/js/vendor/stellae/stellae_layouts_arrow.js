@@ -33,7 +33,7 @@ var updatePositions = function(link, startPosition, endPosition, startPositionOf
         //update arrow position
         // link.arrowOrigin.set(attributes.position.array[0],attributes.position.array[1],attributes.position.array[2] )
         if (link.labelItem) {
-            link.labelItem.position.set((pos0+pos3)/2,(pos1+pos4)/2,(pos2+pos5)/2 )
+            link.labelItem.position.set((pos0+pos3)/2,((pos1+pos4)/2)+0.2,((pos2+pos5)/2)-0.1 )
         }
 
         link.arrowOrigin.set((pos0+pos3)/2,(pos1+pos4)/2,(pos2+pos5)/2 )
@@ -111,6 +111,7 @@ var createLineArrow  = function({
     // lineGroup.edata = line.edata
     //add arrow
     const arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
+    arrowHelper.setLength(0.01, 0.25, 0.10)
     arrowHelper.layoutItemRoot= lineGroup
     lineGroup.arrowOrigin = arrowHelper.position
     lineGroup.arrowItem = arrowHelper 
