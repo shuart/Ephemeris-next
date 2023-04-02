@@ -146,7 +146,7 @@ var project_dashboard =createAdler({
         ],
         events:{
             // onBeforeMount:(event, data, instance)=> alert("MOUNTING"),
-            // onBeforeMount:(event, data, instance) => setUpData(event, data, instance),
+            onBeforeMount:(event, data, instance) => setUpData(event, data, instance),
             onMount:(event, data, instance) => setUpDashboard(event, data, instance),
         },
     },
