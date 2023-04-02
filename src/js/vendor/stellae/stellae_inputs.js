@@ -45,6 +45,9 @@ function addCSS(cssText){
             border-bottom: 1px solid #ededed;
             cursor:pointer;
         }
+        .stellae_input_list_items:hover{
+            background-color: #80808017;
+        }
         .stellae_input_field_input{
             background-color: transparent;
             border-style: none;
