@@ -1,6 +1,7 @@
 import createAdler from "../../../vendor/adler.js";
 import userManagement from "../../common_user_management/user_management.js";
 import state_manager from "../../common_state/state_manager.js";
+import { nameToGradient } from "../../../vendor/coloredNames.js";
 
 var getCurrentUser = function () {
     return userManagement.getCurrentUser()
@@ -23,6 +24,15 @@ var showUserMenu= function (event, data, instance) {
 }
 var hideUserMenu= function (event, data, instance) {
     instance.query(".user-macaron-menu").style.display='none'
+}
+
+var showUserIcon = function (event, data, instance) {
+    instance.query(".user-macaron-pic").style.background = nameToGradient(data.user.name)
+    instance.query(".user-macaron-pic").style.paddingLeft= '14px';
+    instance.query(".user-macaron-pic").style.fontSize= '28px';
+    instance.query(".user-macaron-pic").style.color= 'white';
+    instance.query(".user-macaron-pic").innerText = data.user.name[0]
+    // instance.query(".user-macaron-pic").style.backgroundColor = nameToGradient(data.user.name)
 }
 
 {/* <div class="user-macaron-verifications"><img src="./img/icons/clipboard.svg" style="filter: invert(100%);"></div> */}
@@ -63,7 +73,7 @@ var component =createAdler({
         ],
         events:{
             onBeforeMount:(event, data, instance) => setUpData(event, data, instance),
-            // onMount:(event, data, instance) => setUpTable(event, data, instance),
+            onMount:(event, data, instance) => showUserIcon(event, data, instance),
             
         },
         methods:{
