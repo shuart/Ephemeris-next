@@ -57,14 +57,14 @@ var saveGraph = function(event, data, instance){
             var uuid = nanoid()
             var repo = createGraphManagement()
             console.log(exportGraph);
-            repo.add({uuid:uuid, name:name, previewImage:imageId,  layout:JSON.stringify(exportGraph)})
+            repo.add({uuid:uuid, name:name, previewImage:imageId, lastSaved:Date.now(), layout:JSON.stringify(exportGraph)})
             instance.query('.tools_graphs_name').innerHTML =name
             data.instanceId = uuid
         }
     }else{
         if (confirm("Save?") ) {
             var repo = createGraphManagement()
-            repo.update({uuid:data.instanceId, layout:JSON.stringify(exportGraph)})
+            repo.update({uuid:data.instanceId,lastSaved:Date.now(), layout:JSON.stringify(exportGraph)})
             if (data.graphPreviewId) {
                 imageStore.set({uuid:data.graphPreviewId, dataUri:render})
             }

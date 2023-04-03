@@ -40,7 +40,7 @@ var newItem = function (event, data, instance) {
     var description = prompt("Description")
     if(name && description){
         var repo = createSimulationManagement()
-        repo.add({name:name, desc:description})
+        repo.add({name:name, lastSaved:Date.now(), desc:description})
         instance.update()
     }
 }

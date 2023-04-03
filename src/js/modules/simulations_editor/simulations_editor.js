@@ -130,10 +130,10 @@ var saveNetwork = function (event, data, instance) {
     var render = data.graph.getNodeManager().getScreenshot({height:200})
     if (data.graphPreviewId) {
         imageStore.set({uuid:data.graphPreviewId, dataUri:render})
-        repoSims.update({uuid:instance.props.get("simId"), nodeLayout:JSON.stringify(exportGraph)})
+        repoSims.update({uuid:instance.props.get("simId"), lastSaved:Date.now(),  nodeLayout:JSON.stringify(exportGraph)})
     }else{
         var imageId = imageStore.set(render)
-        repoSims.update({uuid:instance.props.get("simId"), previewImage:imageId, nodeLayout:JSON.stringify(exportGraph)})
+        repoSims.update({uuid:instance.props.get("simId"), previewImage:imageId,lastSaved:Date.now(), nodeLayout:JSON.stringify(exportGraph)})
     }
 }
 

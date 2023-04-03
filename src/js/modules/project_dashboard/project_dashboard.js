@@ -5,6 +5,9 @@ import createAdler from "../../vendor/adler.js";
 import createEntityManagement from "../common_project_management/entity_management.js";
 import createSimulationManagement from "../common_project_management/simulation_management.js";
 import table_component from "../common_ui_components/table/table.js";
+import createGraphManagement from "../common_project_management/graph_management.js";
+import imageStore from "../common_image_store/common_image_store.js";
+import state from "../common_state/state_manager.js";
 
 // import {Tabulator} from "../../vendor/tabulator_esm.min.js";
 
@@ -62,6 +65,30 @@ var createItemLayout = function (image, name, color, qt, link) {
     </div>`
 }
 
+var createGraphLayout = function (uuid, image, name, link) {
+    return `
+        <div style="position:absolute;" class="tags is-small has-addons">
+            <span class="tag is-primary">${name}</span>
+            <span data-id="${uuid}" class="dashboardGoToGraph tag is-dark">Go to</span>
+        </div>
+        <figure class="image is-4by3 dashboard_last_graph_item">
+            <img style="height:auto;" data-id="${uuid}" class="${image}" src="./img/placeholders/img.gif">
+        </figure>
+        `
+}
+
+var createSimulationLayout = function (uuid, image, name, link) {
+    return `
+        <div style="position:absolute;" class="tags is-small has-addons dashboard_last_sim_tag">
+            <span class="tag is-primary">${name}</span>
+            <span data-id="${uuid}" class="dashboardGoToGraph tag is-dark">Go to</span>
+        </div>
+        <figure class="image dashboard_last_sim_item">
+            <img style="height:auto;" data-id="${uuid}" class="${image}" src="./img/placeholders/img.gif">
+        </figure>
+        `
+}
+
 
 var setUpDashboard = function (event, data, instance) {
     setUpData(event, data, instance)
@@ -71,6 +98,41 @@ var setUpDashboard = function (event, data, instance) {
     
     entities.forEach(e=>{
         summaryArea.innerHTML += createItemLayout(e.attributes.iconPath, e.name, e.attributes.color, e.getInstances().length)
+    })
+
+    var graphRepo = createGraphManagement()
+    var graphs = graphRepo.getAll()
+    var graphArea= instance.query('.dasboard_last_graph')
+
+    graphs =graphs.sort((i,j)=> j.attributes.lastSaved - i.attributes.lastSaved)
+    graphs.slice(0, 1).forEach(e=>{
+        graphArea.innerHTML += createGraphLayout(e.uuid, e.attributes.previewImage, e.name)
+        if (e.attributes.previewImage) {
+            imageStore.get(e.attributes.previewImage,function(result){
+                instance.query("."+e.attributes.previewImage).src=result.dataUri
+                instance.query("."+e.attributes.previewImage).addEventListener("click", function (event) {
+                    event.preventDefault()
+                    state.goTo("/:/graph/"+event.target.dataset.id)
+                })
+            })
+        }
+    })
+
+    var simRepo = createSimulationManagement()
+    var sims = simRepo.getAll()
+    var simsArea= instance.query('.dasboard_last_sim')
+    sims =sims.sort((i,j)=> j.attributes.lastSaved - i.attributes.lastSaved)
+    sims.slice(0, 1).forEach(e=>{
+        simsArea.innerHTML += createSimulationLayout(e.uuid, e.attributes.previewImage, e.name)
+        if (e.attributes.previewImage) {
+            imageStore.get(e.attributes.previewImage,function(result){
+                instance.query("."+e.attributes.previewImage).src=result.dataUri
+                instance.query("."+e.attributes.previewImage).addEventListener("click", function (event) {
+                    event.preventDefault()
+                    state.goTo("/:/simulation/"+event.target.dataset.id)
+                })
+            })
+        }
     })
     
 }
@@ -98,12 +160,10 @@ var project_dashboard =createAdler({
                             </article>
                         </div>
                         <div class="tile is-parent">
-                            <article class="tile is-child notification box">
+                            <article class="tile is-child notification box dasboard_last_graph">
                             <p class="title">Graph</p>
                             <p class="subtitle">Current Graph</p>
-                            <figure class="image is-4by3">
-                                <img src="./img/icons/git-branch.svg">
-                            </figure>
+                            
                             </article>
                         </div>
                     </div>
@@ -111,7 +171,7 @@ var project_dashboard =createAdler({
                     <article class="tile is-child notification box">
                         <p class="title">Last simulation</p>
                         <p class="subtitle">Jump back</p>
-                        <div class="content">
+                        <div class="content dasboard_last_sim">
                             
                         </div>
                     </article>
@@ -173,7 +233,25 @@ var project_dashboard =createAdler({
             font-size: 1rem;
             color: #bfbcbc;
         }
-        
+
+        .dashboard_last_sim_item{
+            height: 96px;
+            overflow:hidden;
+            width: 200px;
+            position: absolute;
+            right: 0px;
+            top: 0px;
+            cursor:pointer;
+        }
+        .dashboard_last_sim_tag{
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            cursor:pointer;
+        }
+        .dashboard_last_graph_item{
+            cursor:pointer;
+        }
     `,
 })
 
