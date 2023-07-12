@@ -1,4 +1,4 @@
-import createAdler from "../../vendor/adler.js";
+import createAdler from "../../vendor/adlerLegacy.js";
 import state from "../common_state/state_manager.js";
 import userManagement from "../common_user_management/user_management.js";
 import user_button from "../common_ui_elements/user_button.js";

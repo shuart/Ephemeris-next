@@ -1,4 +1,4 @@
-import createAdler from "../../vendor/adler.js";
+import createAdler from "../../vendor/adlerLegacy.js";
 import createStellae from "../../vendor/stellae/stellae.js";
 import createEvaluatorsManagement from "../common_project_management/evaluators_management.js";
 import evaluatorTemplates from "./evaluator_nodes_templates.js";

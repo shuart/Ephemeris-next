@@ -1,4 +1,4 @@
-import createAdler from "../../../vendor/adler.js";
+import createAdler from "../../../vendor/adlerLegacy.js";
 import table_component from "../../common_ui_components/table/table.js";
 import projectManagement from "../../common_project_management/project_management.js";
 import createEvaluator from "../../common_evaluators/evaluators.js";

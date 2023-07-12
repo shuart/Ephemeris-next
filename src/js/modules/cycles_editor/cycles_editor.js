@@ -1,4 +1,4 @@
-import createAdler from "../../vendor/adler.js";
+import createAdler from "../../vendor/adlerLegacy.js";
 import createStellae from "../../vendor/stellae/stellae.js";
 import createEntityManagement from "../common_project_management/entity_management.js";
 import createRelationManagement from "../common_project_management/relations_management.js";

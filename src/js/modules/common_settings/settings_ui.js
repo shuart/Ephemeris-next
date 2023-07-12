@@ -1,6 +1,6 @@
 import projectManagement from "../common_project_management/project_management.js";
 import userManagement from "../common_user_management/user_management.js";
-import createAdler from "../../vendor/adler.js";
+import createAdler from "../../vendor/adlerLegacy.js";
 import state_manager from "../common_state/state_manager.js"
 
 import settings_component from "./model_settings.js";

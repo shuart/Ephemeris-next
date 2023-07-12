@@ -1,4 +1,4 @@
-import createAdler from "../../vendor/adler.js";
+import createAdler from "../../vendor/adlerLegacy.js";
 import mainPopup from "../../modules/common_ui_components/mainPopup/mainPopup.js"
 import select from "../../modules/common_ui_components/select/select.js"
 

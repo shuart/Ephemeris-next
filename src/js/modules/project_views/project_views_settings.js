@@ -1,4 +1,4 @@
-import createAdler from "../../vendor/adler.js";
+import createAdler from "../../vendor/adlerLegacy.js";
 import table_viewport from "../viewports/table_viewport/table_ui.js"
 import graph from "../common_graph/graph.js"
 import viewGridSettings from "./view_grid_settings.js"

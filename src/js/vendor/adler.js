@@ -1,456 +1,315 @@
-var createAdler = function({
-    container = document.body,
-    type = "root",
-    parent= undefined,
-    params = {},
-    content ="",
-    components={},
-    css="",
-    nodeMap={},
-    slotMap={},
-    } = {}){
-    var self={}
-    var wrapper = undefined;
-    var renderList = [];
-    var currentComponents = undefined;
-    var checkDataAttributes = true;
-    var instanceDomElement = undefined;
+var subscriberStore =[];
+var currentListener = undefined;
+var currentComponent = undefined;
+
+function createSignal(initialValue, reactivity) {
+    var self = {}
+	let value = initialValue;
+	// a set of callback functions, from createEffect
+	const subscribers = new Set();
+    const SignalObjectHandler = {
+        get: (target, key) => {
+            if(typeof target[key] === "object" && target[key] !== null) {
+            return new Proxy(target[key], SignalObjectHandler)
+            }
     
-    console.log(params);
-    
-    var createWrapper = function(){
-        wrapper = {}
-        wrapper.DOMElement=document.createElement("div")
-        return wrapper
-    }
-
-    function addCSS(cssText){
-        var style = document.createElement('style');
-        style.innerHTML = cssText;
-        document.head.appendChild(style);
-    }
-
-    var renderContent= function (params,paramIndex) {
-        let localWrapper = createWrapper()
-        if(typeof content === 'function'){//case content is a function
-            localWrapper.DOMElement.innerHTML = content(getParamsData(params,paramIndex))
-        }
-        if (localWrapper.DOMElement.childElementCount == 1) {//if template has a single root, no need for an extra div wrapper
-            localWrapper.DOMElement = localWrapper.DOMElement.firstElementChild; 
-        }
-        return localWrapper
-    }
-
-    var setContent = function(newContent) {
-        content = newContent
-    }
-
-    var setUpEvents = function (localWrapper,params, paramIndex){
-        console.log(self);
-        var setEventListener = function(localWrapper, action){
-            // let target = localWrapper.DOMElement.querySelector(action[0])
-            const targets = localWrapper.DOMElement.querySelectorAll(action[0]);
-
-            targets.forEach((target) => {
-                function callback(event) {
-                    action[2](event, getParamsData(params,paramIndex), self);//inject params into event
+            return target[key]
+        },
+        set: (target, prop, value) => {
+            target[prop] = value
+            console.log("A change was made in a deep object!")
+            subscribers.forEach((fn) => {
+                if (fn[1].isConnected) {
+                    fn[0](fn[1])
                 }
-                target.addEventListener(action[1],callback);
             });
+            return true
+        }
+    }
 
-            if (action[0] && localWrapper.DOMElement.classList.contains(action[0].slice(1))) {
-                function callback(event) {
-                    action[2](event, getParamsData(params,paramIndex), self);//inject params into event
-                }
-                localWrapper.DOMElement.addEventListener(action[1],callback);
+	const read = () => {
+		if (currentListener !== undefined && currentComponent !== undefined) {
+			// before returning, track the current listener
+			subscribers.add([currentListener, currentComponent]);
+		}
+        if (typeof value === "object" && reactivity =="deep") {
+            return new Proxy(value, SignalObjectHandler)
+        }
+		return value;
+	};
+	const write = (newValue) => {
+		value = newValue;
+        console.log(subscribers);
+		// after setting the value, run any subscriber, aka effect, functions
+		subscribers.forEach((fn) => {
+            if (fn[1].isConnected) {
+                fn[0](fn[1])
             }
+        });
+	};
 
-
-            // // console.log(action[0],localWrapper.DOMElement)
-            // if (!target && action[0] && localWrapper.DOMElement.classList.contains(action[0].slice(1))) {
-            //     target = localWrapper.DOMElement
-            // }
-            // if (target) {
-            //     function callback(event) {
-            //         action[2](event, getParamsData(params,paramIndex), self);//inject params into event
-            //     }
-            //     target.addEventListener(action[1],callback);
-            // }else{
-            //     console.log("missing event target")
-            // }
-        }
-        if (params && params.on) {
-            // console.log(params)
-            if ( Array.isArray(params.on[0]) ) {
-                for (let index = 0; index < params.on.length; index++) {
-                    const action = params.on[index];
-                    setEventListener(localWrapper, action);
-                }
-            }else{
-                const action = params.on;
-                setEventListener(localWrapper, action);
-            } 
-        }
+    const _replaceValue = function (newValue) {
+        value = newValue;
+    }
+    const _getValue = function (newValue) {
+        return value
     }
 
-    function getParamsData(params,paramIndex) { //get the current params even if in a 'for' case
-        let newData = params.data || {}
-        if (params.for && (paramIndex || paramIndex==0 )) {
-            newData = Object.assign({},newData, params.for[paramIndex] )
-        }
-        return newData
-    }
+    const isSignal =()=> true;
 
-    var appendToDom = function(mountTargetElement){
-        setUpReplacementComponents(params)
-        setUpProps(params)
-        doLifeCycleEvents("onBeforeMount")//Lifecyle event
-        wrapper = renderContent(params);
-        setUpEvents(wrapper,params);
-        applyLogic(wrapper,params);
-        mountComponents(wrapper,params);
-        mountSlots(wrapper,params);
-        if (mountTargetElement && mountTargetElement=="replace") {
-            
-            // console.log(params, mountTargetElement);
-            if(instanceDomElement){//if is mounting on body
-                instanceDomElement.parentNode.replaceChild(wrapper.DOMElement, instanceDomElement);
-                instanceDomElement =  wrapper.DOMElement;
-            }else{
-                container.appendChild(wrapper.DOMElement);
-            }
-            
-        }else if(mountTargetElement){
-            mountTargetElement.appendChild(wrapper.DOMElement);
-            instanceDomElement =  wrapper.DOMElement
-        }else{
-            container.appendChild(wrapper.DOMElement);
-            instanceDomElement =  wrapper.DOMElement
-        }
-        console.log(params);
-        attachMethods(wrapper,params);
-        console.log(self);
-        // setUpEvents(wrapper,params);
-        doLifeCycleEvents("onMount")//Lifecyle event
-        return wrapper.DOMElement
-    }
-
-    var doLifeCycleEvents= function(eventName){
-        // console.log(params.events, eventName);
-        if (eventName =="onBeforeMount" &&  params.events && params.events["onBeforeMount"]) {
-            params.events["onBeforeMount"]({lifecycleEvent:eventName}, params.data, self)
-        }
-        if (eventName =="onMount" &&  params.events && params.events["onMount"]) {
-            console.log(wrapper);
-            params.events["onMount"]({lifecycleEvent:eventName}, params.data, self)
-        }
-    }
-
-    var attachMethods = function (wrapper,params) {
-        console.log(params);
-        if (params.methods) {
-            self.do={}
-            for (const key in params.methods){
-                var newFunc = function (args) {
-                    params.methods[key]({method:key, args:args, data:params.data, instance:self}, params.data, self,params)
-                }
-                self.do[key]=newFunc
-            }
-        }
-        console.log(self);
-    }
-
-    var createProp = function (value) {
-        var prop = {};
-        var value = value; var listeners = [];
-        var get = ()=> value;
-        var set = function (newValue) {
-            value=newValue;
-            for (let i = 0; i < listeners.length; i++) {
-                listeners[i].callback({},listeners[i].data, listeners[i].instance)
-                
-            }
-        }
-        var addListener = (listener,data, callback)=>listeners.push({listener:listener,data:data, callback:callback})
-        prop.get = get; prop.set = set;prop.addListener = addListener; prop.type = "adler-props";
-        return prop
-    }
-
-    var setUpReplacementComponents = function(params){
-        if (!params.replaceComponents) { //avoid undefined cases
-            params.replaceComponents = {}
-        }
-    }
-
-    var setUpProps = function (params) {
-        self.props={}
-        self.props.set = (propName, newValue)=> self.props[propName].set(newValue)
-        self.props.get = (propName)=> {
-            if (self.props[propName]) {
-                return self.props[propName].get()
-            }else{
-                return undefined
-            }
-        }
-        console.log(params);
-        if (params.props) {
-            for (const key in params.props){
-                console.log(params.props[key]);
-                // console.log(params.props[key].type != "adler-props");
-                if (!params.props[key]) {
-                    self.props[key] = createProp(params.props[key])
-                }else if(params.props[key] && params.props[key].type != "adler-props") {
-                    self.props[key] = createProp(params.props[key])
-                    console.log(self);
-                }else if (params.props[key] && params.props[key].type == "adler-props"){
-                    self.props[key] = params.props[key]
-                }
-                if (self.props[key] && params.listen && params.listen[key]) {
-                    self.props[key].addListener(params.data, self, params.listen[key]) 
-                }
-            }
-        }
-    }
-    var passProps= function (params,attributeValue) {
-        var pairs= attributeValue.split(",")
-        console.log(pairs);
-        var newValues = {}
-        for (let i = 0; i < pairs.length; i++) {
-            // console.log(pairs[i]);
-            if (pairs[i].search(":")>=0) {
-                const pair = pairs[i].split(":");
-                // console.log(self.props);
-                // console.log(self.props[ pair[1] ]);
-                if (self.props[ pair[1] ]) {
-                    newValues[ pair[0] ]=self.props[ pair[1] ]
-                }
-            }else{
-                if (self.props[ pairs[i] ]) { //pass props automaticaly when source and target names are same
-                    newValues[ pairs[i] ]=self.props[ pairs[i] ]
-                }
-            }
-            
-        }
-        return newValues
-    }
-
-    var instance = function(extra){
-        var newPramas = Object.assign({}, params);
-        if(extra && extra.data){ newPramas.data = Object.assign({}, newPramas.data, extra.data) };
-        if(extra && extra.on){ newPramas.on = Object.assign({},newPramas.on, extra.on) };
-        if(extra && extra.nodeMap){ newPramas.nodeMap = Object.assign({},newPramas.nodeMap, extra.nodeMap) };
-        if(extra && extra.events){ newPramas.events = Object.assign({},newPramas.events, extra.events) };
-        if(extra && extra.methods){ newPramas.methods = Object.assign({},newPramas.methods, extra.methods) };
-        if(extra && extra.props){ newPramas.props = Object.assign({},newPramas.props, extra.props) };
-        if(extra && extra.listen){ newPramas.listen = Object.assign({},newPramas.listen, extra.listen) };
-        if(extra && extra.replaceComponents){ newPramas.replaceComponents = Object.assign({},newPramas.replaceComponents, extra.replaceComponents) };
-        return createAdler({content: content, params:newPramas, components:components});
-    }
-
-    var mount = function(mountTarget){
-        if(mountTarget && typeof mountTarget =="string"){
-            appendToDom(document.querySelector(mountTarget))
-        }else if(mountTarget){
-            appendToDom(mountTarget)
-        }else{
-            appendToDom()
-        }
-    }
-    var applyLogic = function(wrapper,params){
-        var foundComponents = wrapper.DOMElement.querySelectorAll("[a-if]")
-        for (let i = 0; i < foundComponents.length; i++) {
-            const element = foundComponents[i];
-            
-            var checkIfCond = params.data[element.getAttribute("a-if")] || self.props.get(element.getAttribute("a-if"))
-            if( !checkIfCond){
-                element.remove();
-            } 
-        }
-        foundComponents = wrapper.DOMElement.querySelectorAll("[a-if-not]")
-        for (let i = 0; i < foundComponents.length; i++) {
-            const element = foundComponents[i];
-            
-            var checkIfCond = params.data[element.getAttribute("a-if-not")] || self.props.get(element.getAttribute("a-if-not"))
-            if( checkIfCond){
-                element.remove();
-            } 
-        }
-    }
-    var registerInNodeMap = function(id, instance){
-        nodeMap[id]=instance;
-    }
-    var mountComponents = function(wrapper,params){
-        
-        var foundComponents = wrapper.DOMElement.querySelectorAll("[adler]")
-        for (let i = 0; i < foundComponents.length; i++) {
-            const element = foundComponents[i];
-            var templateComponent = params.replaceComponents[element.getAttribute("adler")] || components[element.getAttribute("adler")] //check overideComponent
-            if(!templateComponent){
-                // console.log(components);
-                // console.log("missing component");
-            }else{
-                var newData = {data:{}, nodeMap:nodeMap}
-                if (element.getAttribute("a-sync")) {//Check if some values must be synced
-                    //newData=newData || {data:{}}
-                    newData.data = getSyncedData(element.getAttribute("a-sync"))
-                }
-                if (element.getAttribute("a-props")) {//Check if some values must be synced
-                    //newData=newData || {data:{}}
-                    newData.props = passProps(params, element.getAttribute("a-props"))
-                    console.log(newData);
-                }
-                if (element.getAttribute("a-id")) {//Check if component is unique
-                    //newData=newData || {data:{}}
-                    newData.data = Object.assign(newData.data, getUniqueComponentData(element.getAttribute("a-id")) ) //add custom data attribute in new data
-                }
-                if(checkDataAttributes){//check if data attributes overides the template values
-                    //newData=newData || {data:{}}
-                    newData.data = Object.assign(newData.data, updateDataFromAttributes(templateComponent.getData(), element) ) //add custom data attribute in new data
-                }
-                //Mount one or multiple times
-                if (element.getAttribute("a-for")) {
-                    var listArray = params.data[element.getAttribute("a-for")];
-                    //newData=newData || {data:{}};
-                    for (let i = 0; i < listArray.length; i++) {
-                        const currentDataInArray = listArray[i];
-                        newData.data = Object.assign(newData.data, currentDataInArray ); //add custom data attribute in new data
-                        var instance = templateComponent.instance(newData); //Instance with new synced data
-                        if (element.getAttribute("a-id")) registerInNodeMap(element.getAttribute("a-id"),instance);
-                        instance.mount(element);
-                    }
-                }else{
-                    var instance = templateComponent.instance(newData); //Instance with new synced data
-                    if (element.getAttribute("a-id")) registerInNodeMap(element.getAttribute("a-id"),instance);
-                    instance.mount(element);
-                }
-            }
-        }
-    }
-
-    var mountSlots = function(wrapper,params){
-        var foundSlots = wrapper.DOMElement.querySelectorAll("[a-slot]")
-        for (let i = 0; i < foundSlots.length; i++) {
-            const element = foundSlots[i];
-            var component = slotMap[element.getAttribute("a-slot")]
-            if(!component){
-                // console.log("missing component");
-            }else if (Array.isArray(component)) {
-                for (let i = 0; i < component.length; i++) {
-                    component[i].mount(element);
-                }
-            }else{
-                component.mount(element);
-            }
-        }
-    }
-
-    var getSyncedData = function(attributeValue){
-        var pairs= attributeValue.split(",")
-        var newValues = {}
-        for (let i = 0; i < pairs.length; i++) {
-            const pair = pairs[i].split(":");
-            newValues[ pair[0] ]=params.data[ pair[1] ]
-            
-        }
-        return newValues
-    }
-    var getUniqueComponentData = function(id){
-        var newValues = {}
-        if (nodeMap[id]) {
-            newValues = nodeMap[id].getData()
-        }
-        return newValues
-    }
-    var updateDataFromAttributes = function (data, element) {
-        var newData = {}
-        for (const key in data){
-            if(element.dataset[key]) newData[key] = element.dataset[key];
-        }
-        return newData
-    }
-
-    var getData = function(){
-        return params.data
-    }
-    var getNodes = function(){
-        return Object.assign({}, nodeMap, slotMap)
-    }
-
-    var setData = function(newData, updateNeeded){
-        if(updateNeeded == undefined) updateNeeded=true;
-        // console.log("update data");
-        params.data = Object.assign(params.data,newData )
-        if (updateNeeded) {
-            update()
-        }
-    }
-    var replaceComponents = function (newComps) {
-        params.replaceComponents = Object.assign(params.replaceComponents,newComps )
-    }
-    var append = function (component,slot) {
-        slotMap[slot] = component;
-    }
-    var clearSlot = function (slot) {
-        if (Array.isArray(slotMap[slot])) {
-            for (let i = 0; i < slotMap[slot].length; i++) {
-                slotMap[slot][i].unmount()
-                slotMap[slot][i] = undefined;
-                
-            }
-        }else{
-            slotMap[slot].unmount()
-            slotMap[slot] = undefined;
-        }
-        //wrapper.DOMElement.querySelector("[a-slot]="+slot).innerHTML=""
-    }
-
-    var update = function(){
-        //remove()
-        appendToDom("replace")
-    }
-
-    var remove = function(){
-        wrapper.DOMElement.remove()
-    }
-    var unmount = function(){
-        remove()
-    }
-
-    var getDOMElement = function(){
-        return wrapper.DOMElement
-    }
-    var query = function(query){
-        console.log(wrapper);
-        if (wrapper.DOMElement.classList.contains(query.substring(1))) {
-            return wrapper.DOMElement
-        }else{
-            return wrapper.DOMElement.querySelector(query)
-        }
-        
-    }
-
-    var init= function(){
-        //init template elements (like css etc)
-        if (css) {addCSS(css)};
-    }
-
-    init()
-
-    self.setContent = setContent;
-    self.replaceComponents = replaceComponents;
-    self.query = query;
-    self.getDOMElement = getDOMElement
-    self.unmount = unmount;
-    self.clearSlot = clearSlot;
-    self.update = update;
-    self.append = append;
-    self.getNodes = getNodes;
-    self.getData = getData;
-    self.instance = instance;
-    self.with = instance;
-    self.setData = setData;
-    self.mount = mount;
-    return self
+    self.set = write
+    self.get = read
+    self._replaceValue = _replaceValue
+    self._getValue = _getValue
+    self.isSignal = isSignal
+	return self;
 }
 
-export default createAdler;
+function createEffect(callback, component) {
+	currentListener = callback;
+	currentComponent = component;
+    console.log(component);
+	callback(component);
+	currentListener = undefined;
+	currentComponent = undefined;
+}
+
+var createAdler = function ({
+    tag = 'new-element',
+    props={
+        test:5,
+        test2:8,
+    },
+    attributes=[
+        "test",
+    ],
+    onRender=(self) => console.log("on connect",self),
+    onBeforeRender=(self) => console.log("on before render",self),
+    lifeCycle = [
+        ["connected", (self)=> console.log(self)]
+    ],
+    events = [
+        ["click", 'p', (event, self)=> console.log(self)]
+    ],
+    effects=[
+        (d)=> console.log("i am an effect at", d.test),
+    ],
+    html = ()=>/*html*/`<p>Hello World</p>`,
+    css=/*css*/`:host {color: deeppink;}`,
+    cssfiles=[],
+    debugLog= false,
+    reactivity = "deep",
+}={}) {
+    var self = {}
+    var componentTag = tag
+    var eventToDisconnect =[]
+    var currentHtml = html
+    var currentCss = css
+
+    var iterateLifeCycle = function (items, category, componentClass) {
+        for (let i = 0; i  < items.length; i++) {
+            const event = items[i];
+            if (event[0] == category) {
+                event[1](componentClass)
+            }
+        }
+    }
+    var iterateEvents = function (items, componentClass) {
+        for (let i = 0; i  < items.length; i++) {
+            const event = items[i];
+            var eventCallback = function (ev) {
+                event[2](ev,componentClass)
+            }
+            const target = componentClass.shadowRoot.querySelector(event[1]);
+            if (target) {
+                // componentClass.ownerDocument.addEventListener(event[0], eventCallback)
+                target.addEventListener(event[0], eventCallback)
+                eventToDisconnect.push(event[0], target, eventCallback)
+            }
+            
+        }
+    }
+    var disconnectEvents = function (componentClass) {
+        for (let i = 0; i  < eventToDisconnect.length; i++) {
+            const event = eventToDisconnect[i];
+            // componentClass.ownerDocument.removeEventListener(eventToDisconnect[0], eventToDisconnect[2])
+            eventToDisconnect[1].removeEventListener(eventToDisconnect[0], eventToDisconnect[2])
+        }
+    }
+    var setProps = function (component, holderData, signalList) {
+        for (const key in props) {
+            if (props.hasOwnProperty(key)) {
+                // holderData[key] = props[key]
+                holderData[key] = createSignal(props[key], reactivity)
+                Object.defineProperty(component, key, { //add getters and setters https://stackoverflow.com/questions/68769030/js-define-getter-for-every-property-of-a-class
+                    get() {
+                        if (debugLog) {console.log(`(Getting "${key}")`); }
+                        
+                        // return holderData.get(this)[key];
+                        return holderData[key].get();
+                    },
+                    set(value) {
+                        if (debugLog) {console.trace(`(Setting "${key}" to "${value}")`); }
+                        
+                        holderData[key].set(value);
+                        // holderData.get(this)[key] = value;
+                    }
+                }); 
+                console.log(`${key}: ${props[key]}`);
+            }
+        }
+    }
+    var transferProps = function (component) {
+        for (let i = 0; i < component.attributes.length; i++) {
+            const att = component.attributes[i];
+            for (const key in props) {
+                if (props.hasOwnProperty(key)) {
+                    const prop = props[key];
+                    if (att.nodeName == ":"+key) {
+                        var rootEl = component.getRootNode().host
+                        if (rootEl.isAdler && rootEl._getSignal(att.nodeValue)) {
+                            component._getSignal(key)._replaceValue(rootEl._getSignal(att.nodeValue)._getValue()) //silently replace signal value
+                        }
+                    }
+                    if (att.nodeName == "::"+key) { //unstable, more testing needed TODO
+                        var rootEl = component.getRootNode().host
+                        if (rootEl.isAdler && rootEl._getSignal(att.nodeValue)) {
+                            component._bindSignal(key, rootEl._getSignal(att.nodeValue))
+                        }
+                    }
+                }
+            }
+            
+        }
+    }
+    var setEffects = function (component) {
+        for (let i = 0; i < effects.length; i++) {
+            const effect = effects[i];
+            createEffect(effect, component);
+        }
+    }
+    var utilsToDomElement = function (html) {
+        var element = document.createElement("div")
+        element.innerHTML = html
+        return element
+    }
+    var utilsToTemplate = function (htmlFunction) {
+        return function(p){
+            var element = document.createElement("div")
+            element.innerHTML = htmlFunction(p)
+            return element
+        }
+    }
+    var createWebcomponent = function () {
+        const stylesheet = new CSSStyleSheet()
+        stylesheet.replaceSync(css)
+
+        class newComponent extends HTMLElement {
+
+            #holderData ={}
+            shadowRoot = this.attachShadow({ mode: "open" })
+            //ADLER METHODS
+            useEffect = function (callback) {
+                createEffect(callback, this)
+            }
+            query = function (selector) {
+                return this.shadowRoot.querySelector(selector)
+            }
+            toDom = utilsToDomElement
+            tpl = utilsToTemplate
+
+            _getSignal =function(propName){
+                return this.#holderData[propName]
+            }
+            _bindSignal =function(propName, signal){
+                this.#holderData[propName] = signal
+            }
+            isAdler = true
+            
+            //END ADLER METHODS
+
+            constructor() {
+                super();
+                
+                setProps(this, this.#holderData, )
+                
+                console.log("component created", this);
+            }
+            
+            static get observedAttributes() {
+                return attributes;
+            }
+
+            beforeRender = function () {
+                transferProps(this)//transfer binded props
+                onBeforeRender(this)
+            }
+
+            renderElement = function () {
+                setEffects(this)
+                
+                this.shadowRoot.adoptedStyleSheets = [stylesheet].concat(cssfiles) //Add local css or external stylesheets
+                this.shadowRoot.innerHTML = currentHtml();
+                iterateLifeCycle(lifeCycle, 'connected', this)
+                onRender(this)
+                iterateEvents(events, this )// Add event listeners when connected
+            }
+            update = function () {
+                setEffects(this)
+                this.shadowRoot.innerHTML = currentHtml();
+                iterateLifeCycle(lifeCycle, 'connected', this)
+                onRender(this)
+                iterateEvents(events, this )// Add event listeners when connected
+            }
+
+            connectedCallback() {
+                this.beforeRender()
+                this.renderElement()
+            }
+
+            disconnectedCallback() {
+                disconnectEvents(this)// Remove the registered event listeners when disconnected
+                iterateLifeCycle(lifeCycle, 'disconnected', this)
+            }
+
+            attributeChangedCallback(name, oldValue, newValue) {  
+                console.log("attributesChange");
+                console.log(name,oldValue,newValue);
+                if (oldValue == newValue) {return}
+                this[name] = newValue //use the setters and getters to record change in local state
+            }
+
+        } 
+        console.log("register "+ componentTag);
+        customElements.define( componentTag, newComponent );
+    }
+    
+    var createComponenentElement = function () {
+        var instance = document.createElement(componentTag)
+        return instance
+    }
+
+    var instance = function () {
+        var element =  createComponenentElement()
+        return element
+    }
+
+    var mount = function (target) {
+        var targetElement = document.body
+        if (target) {
+            targetElement = document.querySelector(target)
+        }
+        var element =  createComponenentElement()
+        targetElement.appendChild(element)
+    }
+
+    var init = function () {
+        createWebcomponent()
+    }
+    init()
+
+    self.mount = mount
+    self.instance = instance
+    return self
+}
+export{createAdler}

@@ -1,4 +1,4 @@
-import createAdler from "../../vendor/adler.js";
+import createAdler from "../../vendor/adlerLegacy.js";
 import user_macaron from "../common_ui_components/user_macaron/user_macaron.js";
 import common_side_bar from "./page_links.js";
 import state from "../common_state/state_manager.js";

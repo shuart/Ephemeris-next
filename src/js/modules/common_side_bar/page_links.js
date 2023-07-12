@@ -1,4 +1,4 @@
-import createAdler from "../../vendor/adler.js";
+import createAdler from "../../vendor/adlerLegacy.js";
 import projectManagement from "../common_project_management/project_management.js";
 import state from "../common_state/state_manager.js";
 

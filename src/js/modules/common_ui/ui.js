@@ -1,4 +1,4 @@
-import createAdler from "../../vendor/adler.js";
+import createAdler from "../../vendor/adlerLegacy.js";
 import login_ui from "../login/login_ui.js";
 
 var common_ui =createAdler({

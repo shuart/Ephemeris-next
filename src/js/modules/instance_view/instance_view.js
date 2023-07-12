@@ -1,6 +1,6 @@
 import projectManagement from "../common_project_management/project_management.js";
 import userManagement from "../common_user_management/user_management.js";
-import createAdler from "../../vendor/adler.js";
+import createAdler from "../../vendor/adlerLegacy.js";
 
 import createInstancesManagement from "../common_project_management/instances_management.js";
 import project_views from "../project_views/project_views.js";

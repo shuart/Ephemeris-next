@@ -1,4 +1,4 @@
-import createAdler from "../../../vendor/adler.js";
+import createAdler from "../../../vendor/adlerLegacy.js";
 import {TabulatorFull as Tabulator} from "../../../vendor/tabulator_esm.min.js";
 import {checkColsForCustomFormating} from "./table_custom_formaters.js"
 

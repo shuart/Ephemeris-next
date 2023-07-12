@@ -1,6 +1,6 @@
 import projectManagement from "../common_project_management/project_management.js";
 import userManagement from "../common_user_management/user_management.js";
-import createAdler from "../../vendor/adler.js";
+import createAdler from "../../vendor/adlerLegacy.js";
 import createStellae from "../../vendor/stellae/stellae.js";
 import projectStores from "../common_project_management/project_data_store.js";
 import imageStore from "../common_image_store/common_image_store.js";

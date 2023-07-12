@@ -1,4 +1,4 @@
-import createAdler from "../../vendor/adler.js";
+import createAdler from "../../vendor/adlerLegacy.js";
 import userManagement from "../common_user_management/user_management.js";
 import projectManagement from "../common_project_management/project_management.js";
 import project_card from "../common_ui_elements/project_card.js";

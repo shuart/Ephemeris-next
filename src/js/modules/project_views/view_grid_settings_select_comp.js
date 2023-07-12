@@ -1,4 +1,4 @@
-import createAdler from "../../vendor/adler.js";
+import createAdler from "../../vendor/adlerLegacy.js";
 import thumbs from "../common_ui_components/select_thumbnails_view/select_thumbnails_view.js"
 
 
