@@ -3,6 +3,7 @@ import userManagement from "../../common_user_management/user_management.js";
 import state_manager from "../../common_state/state_manager.js";
 
 import createTexteArea from "../textEditor.js/textEditor.js";
+import { textWriter } from "../textEditor.js/writer.js";
 
 // var getCurrentUser = function () {
 //     return userManagement.getCurrentUser()
@@ -20,6 +21,8 @@ var setUp = function(event, data, instance){
         customClass:"textarea",
     })
     instance.query(".ProseMirror").classList += " ephtextarea"
+    var editor = textWriter.instance()
+    instance.query(".textEditorArea").appendChild(editor)
 }
 
 // var softUpdate= function (event, data, instance) {
@@ -57,6 +60,7 @@ var instanceCard =createAdler({
                 <br>
                 <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
                 <div class="textEditorDesc"></div>
+                <div class="textEditorArea"></div>
             </div>
             </div>
         </div>

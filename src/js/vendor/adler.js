@@ -284,13 +284,13 @@ var createAdler = function ({
         customElements.define( componentTag, newComponent );
     }
     
-    var createComponenentElement = function () {
+    var createComponentElement = function () {
         var instance = document.createElement(componentTag)
         return instance
     }
 
     var instance = function () {
-        var element =  createComponenentElement()
+        var element =  createComponentElement()
         return element
     }
 
@@ -299,8 +299,9 @@ var createAdler = function ({
         if (target) {
             targetElement = document.querySelector(target)
         }
-        var element =  createComponenentElement()
+        var element =  createComponentElement()
         targetElement.appendChild(element)
+        return element
     }
 
     var init = function () {

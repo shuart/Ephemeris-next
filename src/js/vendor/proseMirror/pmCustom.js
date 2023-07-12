@@ -14571,7 +14571,11 @@ function $4e76ad1d525e6107$export$283bd57e93429c29(opts) {
     var defaultOpts = {
         mentionTrigger: "@",
         hashtagTrigger: "#",
-        functionOnClick: (event)=>console.log(event),
+        functionOnClick: {
+            "arrow": (e, view)=>console.log(e),
+            "hashtag": (e, view)=>console.log(e),
+            "at": (e, view)=>console.log(e)
+        },
         allowSpace: true,
         getSuggestions: (type, text, cb)=>{
             cb([]);
@@ -14666,6 +14670,7 @@ function $4e76ad1d525e6107$export$283bd57e93429c29(opts) {
             email: item.email
         };
         else if (state.type === "tag") attrs = {
+            id: item.id,
             tag: item.tag
         };
         else attrs = {
@@ -14738,7 +14743,25 @@ function $4e76ad1d525e6107$export$283bd57e93429c29(opts) {
             },
             handleClick (view, _, event) {
                 if (/prosemirror-mention-node/.test(event.target.className)) {
-                    opts.functionOnClick(event, view);
+                    opts.functionOnClick["at"](event, view);
+                    // let {from, to} = event.target.problem
+                    // view.dispatch(
+                    //   view.state.tr
+                    //     .setSelection(TextSelection.create(view.state.doc, from, to))
+                    //     .scrollIntoView())
+                    return true;
+                }
+                if (/prosemirror-tag-node/.test(event.target.className)) {
+                    opts.functionOnClick["hashtag"](event, view);
+                    // let {from, to} = event.target.problem
+                    // view.dispatch(
+                    //   view.state.tr
+                    //     .setSelection(TextSelection.create(view.state.doc, from, to))
+                    //     .scrollIntoView())
+                    return true;
+                }
+                if (/prosemirror-arrow-node/.test(event.target.className)) {
+                    opts.functionOnClick["arrow"](event, view);
                     // let {from, to} = event.target.problem
                     // view.dispatch(
                     //   view.state.tr
@@ -14832,6 +14855,7 @@ const $0923459b3052f6ec$export$c5923750b3608ed7 = {
     inline: true,
     atom: true,
     attrs: {
+        id: "",
         tag: ""
     },
     selectable: false,
@@ -14840,6 +14864,7 @@ const $0923459b3052f6ec$export$c5923750b3608ed7 = {
         return [
             "span",
             {
+                "data-tag-id": node.attrs.id,
                 "data-tag": node.attrs.tag,
                 class: "prosemirror-tag-node"
             },
@@ -14849,11 +14874,13 @@ const $0923459b3052f6ec$export$c5923750b3608ed7 = {
     parseDOM: [
         {
             // match tag with following CSS Selector
-            tag: "span[data-tag]",
+            tag: "span[data-tag][data-tag-id]",
             getAttrs: (dom)=>{
                 var tag = dom.getAttribute("data-tag");
+                var id = dom.getAttribute("data-tag-id");
                 return {
-                    tag: tag
+                    tag: tag,
+                    id: id
                 };
             }
         }
@@ -14874,9 +14901,9 @@ const $0923459b3052f6ec$export$a60ac68fb46161c9 = {
         return [
             "span",
             {
-                "data-mention-id": node.attrs.id,
-                "data-mention-tag": node.attrs.tag,
-                class: "prosemirror-mention-node"
+                "data-arrow-id": node.attrs.id,
+                "data-arrow-tag": node.attrs.tag,
+                class: "prosemirror-arrow-node"
             },
             node.attrs.tag || node.attrs.text
         ];
@@ -14884,11 +14911,11 @@ const $0923459b3052f6ec$export$a60ac68fb46161c9 = {
     parseDOM: [
         {
             // match tag with following CSS Selector
-            tag: "span[data-mention-id][data-mention-tag]",
+            tag: "span[data-arrow-id][data-arrow-tag]",
             getAttrs: (dom)=>{
-                var id = dom.getAttribute("data-mention-id");
-                var tag = dom.getAttribute("data-mention-tag");
-                var text = dom.getAttribute("data-mention-tag");
+                var id = dom.getAttribute("data-arrow-id");
+                var tag = dom.getAttribute("data-arrow-tag");
+                var text = dom.getAttribute("data-arrow-tag");
                 return {
                     id: id,
                     tag: tag
@@ -14925,25 +14952,49 @@ function $c6f350a5636f5ef9$export$de6371a67e6f66ab(nodes) {
 //  nodes: addListNodes(schema.spec.nodes, "paragraph block*", "block"),
 //  marks: schema.spec.marks
 //})
-var $d832f2ef8a5ce6ac$var$createEditor = function(element) {
+var $d832f2ef8a5ce6ac$var$createEditor = function({ tagsCallbacks: tagsCallbacks = {
+    "arrow": (e, view)=>console.log(e),
+    "hashtag": (e, view)=>console.log(e),
+    "at": (e, view)=>console.log(e)
+} , tags: tags = {
+    "arrow": [
+        {
+            id: 1,
+            tag: "-> abc"
+        },
+        {
+            id: 2,
+            tag: "-> 123"
+        }
+    ],
+    "hashtag": [
+        {
+            id: 1,
+            tag: "abc"
+        },
+        {
+            id: 2,
+            tag: "123"
+        }
+    ],
+    "at": [
+        {
+            name: "John Doe",
+            id: "101",
+            email: "joe@abc.com"
+        },
+        {
+            name: "Joe Lewis",
+            id: "102",
+            email: "lewis@abc.com"
+        }
+    ]
+}  } = {}) {
     var self = {};
     var editorElement = undefined;
     var tagsArrays = {
-        "arrow": [
-            {
-                id: 1,
-                tag: "-> WikiLeaks"
-            },
-            {
-                id: 2,
-                tag: "-> NetNeutrality"
-            },
-            {
-                id: 3,
-                tag: "-> NetNeutrality"
-            }
-        ],
-        "hashtag": [
+        "arrow": tags["arrow"] || [],
+        "hashtag": tags["hashtag"] || [
             {
                 tag: "WikiLeaks"
             },
@@ -14954,7 +15005,7 @@ var $d832f2ef8a5ce6ac$var$createEditor = function(element) {
                 tag: "NetNeutrality"
             }
         ],
-        "at": [
+        "at": tags["at"] || [
             {
                 name: "John Doe",
                 id: "101",
@@ -15087,11 +15138,7 @@ var $d832f2ef8a5ce6ac$var$createEditor = function(element) {
         return ret;
     }
     var mentionPlugin = (0, $4e76ad1d525e6107$export$283bd57e93429c29)({
-        functionOnClick: (event, view)=>{
-            console.log(view);
-            findInNode(view.state.doc, view.state.doc, "test");
-        //console.log("teest")
-        },
+        functionOnClick: tagsCallbacks,
         getSuggestions: (type, text, done)=>{
             console.log(text);
             setTimeout(()=>{
@@ -15113,9 +15160,11 @@ var $d832f2ef8a5ce6ac$var$createEditor = function(element) {
     plugins.unshift(mentionPlugin); // push it before keymap plugin to override keydown handlers
     //mention
     var addEditor = function(element) {
+        var currentDoc = (0, $59526ec4d3b41406$export$1059c6e7d2ce5669).fromSchema(mySchema).parse("");
+        if (document.querySelector("#content")) currentDoc = (0, $59526ec4d3b41406$export$1059c6e7d2ce5669).fromSchema(mySchema).parse(document.querySelector("#content"));
         window.view = new (0, $f18febfa986513b3$export$eece2fccabbb77c5)(element, {
             state: (0, $fc1204d3bb8e8da9$export$afa855cbfaff27f2).create({
-                doc: (0, $59526ec4d3b41406$export$1059c6e7d2ce5669).fromSchema(mySchema).parse(document.querySelector("#content")),
+                doc: currentDoc,
                 plugins: plugins
             })
         });
@@ -15131,6 +15180,7 @@ var $d832f2ef8a5ce6ac$var$createEditor = function(element) {
     var getFullText = function() {
         return editorElement.state.doc.textBetween(0, editorElement.state.doc.nodeSize - 2, "\n", "\n");
     };
+    self.findInNode = findInNode;
     self.getFullText = getFullText;
     self.addEditor = addEditor;
     self.setTags = setTags;
