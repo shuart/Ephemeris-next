@@ -15,12 +15,6 @@ import { textWriter } from "../textEditor.js/writer.js";
 
 var setUp = function(event, data, instance){
     // data.user = getCurrentUser()
-    var textContainer = instance.query(".textEditorDesc")
-    data.editor = createTexteArea({
-        container:textContainer,
-        customClass:"textarea",
-    })
-    instance.query(".ProseMirror").classList += " ephtextarea"
     var editor = textWriter.instance()
     instance.query(".textEditorArea").appendChild(editor)
 }

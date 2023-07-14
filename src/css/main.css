@@ -103,6 +103,25 @@ textarea {
   .inherit_height{
     height: inherit;
   }
+
+
+
+  /* Popups */
+  .suggestion-item-container{
+    background-color: #82828257;
+    backdrop-filter: blur(10px);
+    padding: 10px;
+    border-radius: 7px;
+  }
+  .suggestion-item-active{
+    background-color: rgb(77, 189, 197);
+    color: black;
+  }
+  .suggestion-item{
+    padding: 4px;
+    border-radius: 3px;
+    cursor: pointer;
+  }
   
   /* Masonry on large screens */
   @media only screen and (min-width: 1024px) {
