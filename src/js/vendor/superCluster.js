@@ -157,6 +157,9 @@ var createCluster = function(initialSchema, options){
                     currentSchema = currentPersistence.currentSchema; currentUUIDS = currentPersistence.currentUUIDS; storageIndexes = currentPersistence.storageIndexes; storageUUID = newIndexedStorage ;storage = currentPersistence.storage;storageCrdt=currentPersistence.storageCrdt
                 }
                 updatePersitenceSchema(currentSchema,initialSchema)
+                if (options.autoclean) { //clean the crdt in persitence
+                    cleanOldMessages()
+                }
             }
         }
     }
@@ -321,6 +324,41 @@ var createCluster = function(initialSchema, options){
         });
       
         return existingMessages;
+    }
+
+    function cleanOldMessages(cleanBefore) {
+
+        let before = cleanBefore || Date.now()
+
+        let cleanedMessages =[]
+        let keptSignature ={}
+      
+        let sortedMessages = [...storageCrdt].sort((m1, m2) => {
+          if (m1.timestamp < m2.timestamp) {
+            return 1;
+          } else if (m1.timestamp > m2.timestamp) {
+            return -1;
+          }
+          return 0;
+        });
+
+        //go through sorted messages and add them  in the cleanedMessages, if not already in keptSignature or if is a thombstone
+
+        sortedMessages.forEach(msg =>{
+                var signature = msg.dataset + msg.row +msg.column
+                if (msg.timestamp >= before) {
+                    cleanedMessages.push(msg)
+                } else if( !keptSignature[signature] ){
+                    keptSignature[signature] = msg
+                    cleanedMessages.push(msg)
+                } else if (msg.column == 'tombstone'){
+                    cleanedMessages.push(msg)
+                }
+            }
+
+        )
+      
+        storageCrdt = cleanedMessages
     }
 
     //SYNC
