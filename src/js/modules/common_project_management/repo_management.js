@@ -43,9 +43,36 @@ var createRepoManagement = function (projectId, rootType, aggregateMethods, cust
     var remove = function (uuid) {
         return projectStore.remove(rootType, uuid)
     }
-    var update = function (data) {
-        return projectStore.add(rootType, data)
+    var update = function (data, props) { 
+        if (!props) {//allow data to contains the uuid and the props
+            return projectStore.add(rootType, data)
+        }else{
+            props.uuid = data
+            if (projectStore.get(rootType).where("uuid").equals(data)) {
+                return projectStore.add(rootType, props)
+            }else{
+                console.warn("item not found in repo")
+            }
+            
+        }
+        
     }
+    var setName = function (uuid, value) { 
+            var props ={uuid:uuid, name:value}
+            if (projectStore.get(rootType).where("uuid").equals(uuid)) {
+                return projectStore.add(rootType, props)
+            }else{
+                console.warn("item not found in repo")
+            }
+    }
+    var setDescription = function (uuid, value) { 
+        var props ={uuid:uuid, desc:value}
+        if (projectStore.get(rootType).where("uuid").equals(uuid)) {
+            return projectStore.add(rootType, props)
+        }else{
+            console.warn("item not found in repo")
+        }
+}
 
 
     self.getAll = getAll;
@@ -53,6 +80,8 @@ var createRepoManagement = function (projectId, rootType, aggregateMethods, cust
     self.add = add;
     self.remove = remove;
     self.update = update;
+    self.setName = setName;
+    self.setDescription = setDescription;
     return self;
 }
 

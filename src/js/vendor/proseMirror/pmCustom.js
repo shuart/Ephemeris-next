@@ -14952,7 +14952,7 @@ function $c6f350a5636f5ef9$export$de6371a67e6f66ab(nodes) {
 //  nodes: addListNodes(schema.spec.nodes, "paragraph block*", "block"),
 //  marks: schema.spec.marks
 //})
-var $d832f2ef8a5ce6ac$var$createEditor = function({ tagsCallbacks: tagsCallbacks = {
+var $d832f2ef8a5ce6ac$var$createEditor = function({ initialJson: initialJson , initialDomValue: initialDomValue = "" , tagsCallbacks: tagsCallbacks = {
     "arrow": (e, view)=>console.log(e),
     "hashtag": (e, view)=>console.log(e),
     "at": (e, view)=>console.log(e)
@@ -15160,7 +15160,9 @@ var $d832f2ef8a5ce6ac$var$createEditor = function({ tagsCallbacks: tagsCallbacks
     plugins.unshift(mentionPlugin); // push it before keymap plugin to override keydown handlers
     //mention
     var addEditor = function(element) {
-        var currentDoc = (0, $59526ec4d3b41406$export$1059c6e7d2ce5669).fromSchema(mySchema).parse("");
+        var currentDoc = (0, $59526ec4d3b41406$export$1059c6e7d2ce5669).fromSchema(mySchema).parse(initialDomValue);
+        console.log(initialJson);
+        if (initialJson) currentDoc = mySchema.nodeFromJSON(initialJson);
         if (document.querySelector("#content")) currentDoc = (0, $59526ec4d3b41406$export$1059c6e7d2ce5669).fromSchema(mySchema).parse(document.querySelector("#content"));
         window.view = new (0, $f18febfa986513b3$export$eece2fccabbb77c5)(element, {
             state: (0, $fc1204d3bb8e8da9$export$afa855cbfaff27f2).create({

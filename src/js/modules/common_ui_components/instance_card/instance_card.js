@@ -4,6 +4,7 @@ import state_manager from "../../common_state/state_manager.js";
 
 import createTexteArea from "../textEditor.js/textEditor.js";
 import { textWriter } from "../textEditor.js/writer.js";
+import createInstancesManagement from "../../common_project_management/instances_management.js";
 
 // var getCurrentUser = function () {
 //     return userManagement.getCurrentUser()
@@ -13,10 +14,28 @@ import { textWriter } from "../textEditor.js/writer.js";
 //     return userManagement.signOutUser()
 // }
 
+var changeDescription = function (event, data, instance, json) {
+    var instanceManagement = createInstancesManagement()
+    console.log(data);
+    
+    instanceManagement.setDescription(data.instance.uuid, JSON.stringify(json))
+    var currentInstance = instanceManagement.getById(data.instance.uuid)
+    console.log(currentInstance);
+}
+
 var setUp = function(event, data, instance){
-    // data.user = getCurrentUser()
-    var editor = textWriter.instance()
-    instance.query(".textEditorArea").appendChild(editor)
+    setTimeout(function () {
+       // data.user = getCurrentUser()
+        var instanceManagement = createInstancesManagement()
+        var currentInstance = instanceManagement.getById(data.instance.uuid)
+        var editor = textWriter.instance()
+        editor.saveCallback =(json, editor)=>{
+            changeDescription(event, data, instance, json)
+        }
+        editor.defaultValue = currentInstance.attributes.desc
+        instance.query(".textEditorArea").appendChild(editor) 
+    }, 500)
+    
 }
 
 // var softUpdate= function (event, data, instance) {
