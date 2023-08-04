@@ -24,8 +24,7 @@ var changeDescription = function (event, data, instance, json) {
 }
 
 var setUp = function(event, data, instance){
-    setTimeout(function () {
-       // data.user = getCurrentUser()
+    if (data.instance.uuid) {
         var instanceManagement = createInstancesManagement()
         var currentInstance = instanceManagement.getById(data.instance.uuid)
         var editor = textWriter.instance()
@@ -34,8 +33,7 @@ var setUp = function(event, data, instance){
         }
         editor.defaultValue = currentInstance.attributes.desc
         instance.query(".textEditorArea").appendChild(editor) 
-    }, 500)
-    
+    }
 }
 
 // var softUpdate= function (event, data, instance) {
