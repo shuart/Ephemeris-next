@@ -26,10 +26,16 @@ function setUp(event, data, instance){
     var projectId = projectManagement.getCurrent().id
     var view = projectManagement.getProjectStore(projectId,"views").getById(data.viewId)
     data.viewName = view.name
-    instance.append(viewGridSettings.instance({props:{currentPageId:data.viewId,calledFromInstance:data.calledFromInstance, schema:loadLayout(data.viewId)}}), "view_mount_point_grid");
-    // instance.append(graph.instance(), "view_mount_point0");
-    // instance.append(table_viewport.instance(), "view_mount_point1");
-    // alert("append")
+
+    var viewGrid = viewGridSettings.instance()
+    viewGrid.currentPageId= data.viewId
+    viewGrid.calledFromInstance= data.calledFromInstance
+    viewGrid.schema= loadLayout(data.viewId)
+    viewGrid.showSettings= data.settings
+    // console.log(loadLayout(data.viewId));
+    // console.log(viewGrid.schema);
+    instance.query(".view_mount_point_grid").append(viewGrid)
+
 }
 
 function addEntity(event, data, instance){
@@ -46,7 +52,7 @@ var component =createAdler({
             <h1 a-if="title" class="title">${p.viewName}</h1>
             <h2 a-if="subtitle" class="subtitle">${p.viewId}, called from ${p.calledFromInstance}</h2>
         </div>
-        <div a-slot="view_mount_point_grid"></div>
+        <div class="view_mount_point_grid" a-slot="view_mount_point_grid"></div>
 
     </div>
         `,
@@ -63,6 +69,7 @@ var component =createAdler({
             viewId:"Hello",
             viewName :"View",
             calledFromInstance:undefined,
+            settings:false,
             list:[],
             title:true,
             table:undefined,
@@ -74,7 +81,7 @@ var component =createAdler({
         ],
         events:{
             // onBeforeMount:(event, data, instance) => alert("eeee"),
-            onBeforeMount:(event, data, instance) => setUp(event, data, instance),
+            onMount:(event, data, instance) => setUp(event, data, instance),
             
         },
         methods:{
