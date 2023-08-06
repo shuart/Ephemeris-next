@@ -5,7 +5,7 @@ var common_ui =createAdler({
     content: p => /*html*/`
         <div class="cui_lateral_area"></div>
         <div class="cui_main_area">
-            <div a-slot="main_area_mount_point" class="inherit_height"></div>
+            <div a-slot="main_area_mount_point" class="inherit_height main_area_mount_point"></div>
             <div adler="user_button" class="user_button_list"></div>
         </div>
         <div class="cui_toolbar_area_back">
@@ -53,6 +53,11 @@ var common_ui =createAdler({
             border-top-left-radius:13px;
             border-bottom-left-radius:13px;
             z-index: 1;
+        }
+        .main_area_mount_point{
+            height: 100%;
+            position: absolute;
+            width: 100%;
         }
 
         @media (prefers-color-scheme: dark) {

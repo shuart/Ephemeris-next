@@ -42,6 +42,8 @@ var renderPlaceholder = function ({
     index = undefined,
     height= "100%",
     parent=undefined,
+    hsize = 2,
+    vsize= 2,
     uuid = undefined,
     deleteCallback = (e)=>console.log("no action"),
     componentType ="undefined",
@@ -82,16 +84,26 @@ var renderPlaceholder = function ({
     var domElement = document.createElement("div")
     domElement.id = "comp"+index
     domElement.style.gridArea = "span 2/span 2"
+    domElement.style.height = "100%"
     domElement.classList ='dragging_placeholder'
 
     domElement.dataset.uuid = uuid
     domElement.dataset.componentType = componentType
     domElement.dataset.evaluatorUuid = evaluatorUuid
+    domElement.dataset.vsize = vsize
+    domElement.dataset.hsize = hsize
 
     domElement.innerHTML =`
-    <div id="${index}" a-slot="view_mount_point_${rowId}_${colId}_${index}" data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${index}"  class="adler_grid_comp_area inside" >
-        
-        <div class="box">
+    <div id="${index}" style="height:100%;" a-slot="view_mount_point_${rowId}_${colId}_${index}" data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${index}"  class="adler_grid_comp_area inside" >
+        <div class="scale_h">
+            <div class="minus_h">-</div>
+            <div class="plus_h">+</div>
+        </div>
+        <div class="scale_v">
+            <div class="plus_v">+</div>
+            <div class="minus_v">-</div>
+        </div>
+        <div class="box" style="height:100%;">
                 <div class="media">
                 <div class="media-left">
                     <figure class="image is-48x48">
@@ -118,6 +130,27 @@ var renderPlaceholder = function ({
         setUpSettingsEvent(event,domElement, deleteCallback )
         
     } )
+    domElement.querySelector(".plus_h").addEventListener("click",function (event) {
+        hsize++
+        domElement.style.gridArea = `span ${vsize}/span ${hsize}`
+        domElement.dataset.hsize = hsize
+    } )
+    domElement.querySelector(".minus_h").addEventListener("click",function (event) {
+        hsize--
+        domElement.style.gridArea = `span ${vsize}/span ${hsize}`
+        domElement.dataset.hsize = hsize
+    } )
+    domElement.querySelector(".plus_v").addEventListener("click",function (event) {
+        vsize++
+        domElement.style.gridArea = `span ${vsize}/span ${hsize}`
+        domElement.dataset.vsize = vsize
+    } )
+    domElement.querySelector(".minus_v").addEventListener("click",function (event) {
+        vsize--
+        domElement.style.gridArea = `span ${vsize}/span ${hsize}`
+        domElement.dataset.vsize = vsize
+    } )
+    domElement.style.gridArea = `span ${vsize}/span ${hsize}`
     return domElement
     
 }

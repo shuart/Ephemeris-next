@@ -42,12 +42,12 @@ function setUp(event, data, instance){
 
 var component =createAdler({
     content: p => /*html*/`
-    <div class="Component">
+    <div class="Component" style="height:100%;">
         <div class="block"></div>
-        <div class="container is-widescreen">
+        <div class="container is-widescreen" style="height:90%;">
             <h1 class="title">${p.viewName}</h1>
             <h2 class="subtitle">settings of ${p.viewId}</h2>
-            <div class="view_mount_point_grid" a-slot="view_mount_point_grid"></div>
+            <div class="view_mount_point_grid" a-slot="view_mount_point_grid" style="height: calc(100% - 90px);"></div>
         </div>
         
     </div>

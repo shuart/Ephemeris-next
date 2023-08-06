@@ -133,7 +133,9 @@ var renderItems = function (self) {
         if (view) {
             var domElement = document.createElement("div")
             // domElement.id = "comp"+index
-            domElement.style.gridArea = "span 2/span 2"
+            var vsize = comp.vsize || 2
+            var hsize = comp.hsize || 2
+            domElement.style.gridArea =  `span ${vsize}/span ${hsize}`
             view.mount(domElement)
             // view.mount(self.query('.viewGridArea'))
             self.query('.viewGridArea').append(domElement)
@@ -255,7 +257,7 @@ var gridView = createAdler({
         <link rel="stylesheet" href="css/main.css">
 
 
-        <div class="area">
+        <div class="area container is-widescreen">
             <button class="button action_grid_add">add</button>
           <div class="button action-grid-save">Save</div>
           <div class="block"></div>
@@ -268,15 +270,54 @@ var gridView = createAdler({
         
     },
     css:`
+    .area{
+        height: 100%;
+    }
     .viewGridArea {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         grid-template-rows: repeat(4, 1fr);
         gap: 10px;
+        height: 100%;
     }
     .ghost {
         opacity:0.75;
         transform: rotate(-1deg) scale(0.9);
+    }
+    .scale_h {
+        position: absolute;
+        top: 20px;
+        right:10px;
+    }
+    .scale_h div {
+        background-color: #09938d;
+        display: inline-block;
+        width: 20px;
+        height: 24px;
+        text-align: center;
+        text-anchor: middle;
+        color:white;
+        border-radius: 7px;
+        cursor:pointer;
+    }
+    .scale_v {
+        position: absolute;
+        bottom: 0px;
+        right:10px;
+    }
+    .scale_h div {
+        background-color: #09938d;
+        display: inline-block;
+        width: 20px;
+        height: 24px;
+        text-align: center;
+        text-anchor: middle;
+        color:white;
+        border-radius: 7px;
+        cursor:pointer;
+    }
+    .adler_grid_comp_area{
+        position:relative;
     }
     `,
 })

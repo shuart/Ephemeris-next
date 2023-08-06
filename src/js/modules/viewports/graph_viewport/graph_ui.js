@@ -134,9 +134,9 @@ var setUpTable = function (event, data, instance) {
 
 var component =createAdler({
     content: p => /*html*/`
-    <div class="Component container" style="width:100%">
+    <div class="Component" style="width:100%; height:100%; min-height:150px;">
         <div style="display:none;" class="action_add_entity" >Graph</div>
-        <div style="width:100%; height:500px;" class="graph_component"></div>
+        <div style="width:100%; height:100%;" class="graph_component"></div>
         
     </div>
         `,
