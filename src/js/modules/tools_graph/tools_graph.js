@@ -4,6 +4,8 @@ import createAdler from "../../vendor/adlerLegacy.js";
 import createStellae from "../../vendor/stellae/stellae.js";
 import projectStores from "../common_project_management/project_data_store.js";
 import imageStore from "../common_image_store/common_image_store.js";
+import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
+import select from "../common_ui_components/select/select.js"
 
 import createRelationManagement from "../common_project_management/relations_management.js";
 import createInstancesManagement from "../common_project_management/instances_management.js";
@@ -14,6 +16,7 @@ import createSimulationManagement from "../common_project_management/simulation_
 import table_component from "../common_ui_components/table/table.js";
 import createGraphManagement from "../common_project_management/graph_management.js";
 import nanoid from "../../vendor/nanoid.js";
+import showPopupInstancePreview from "../popup_instance_preview/popup_instance_preview.js";
 
 // import {Tabulator} from "../../vendor/tabulator_esm.min.js";
 
@@ -72,6 +75,48 @@ var saveGraph = function(event, data, instance){
     }
 }
 
+var showConnectOptions = function (sourceItemId, targetItemId, graph) {
+    var instanceRepo = createInstancesManagement()
+    var currentSelectedInstance = instanceRepo.getById(sourceItemId)
+    var targetItem = instanceRepo.getById(targetItemId)
+    var mainPopupNarrow = mainPopup.with({data:{narrow:true,title:"Select Items"}})
+    console.log(targetItem,currentSelectedInstance)
+    mainPopupNarrow.mount()
+    mainPopupNarrow.append(select.instance({
+        data:{
+            list:currentSelectedInstance.getPotentialRelationsWithInstance(targetItem.uuid),
+            callback:function(eventInCallback){ //TODO add callback
+                currentSelectedInstance.addRelation(eventInCallback.value.uuid,targetItem.uuid)
+                console.log(currentSelectedInstance.uuid, targetItem.uuid);
+                graph.getNodeManager().addLinks([{name:eventInCallback.value.name, from:currentSelectedInstance.uuid, from_socket:"out", to:targetItem.uuid, to_socket:"in"}])
+                mainPopupNarrow.unmount()
+                
+            }
+        }
+    }), "main-slot")
+    mainPopupNarrow.update();
+}
+
+var customNewNodeList = function(data){
+    var entityRepo = createEntityManagement()
+    var allEntities = entityRepo.getAll()
+    var addList  =[]
+    for (let i = 0; i < allEntities.length; i++) {
+        const entity = allEntities[i];
+        addList.push({id:"action_Input", value:entity.name, params:{ nodeLayout:"round",uuid:nanoid(), userData:{type:entity.name, entityUuid:entity.uuid}, name:entity.name, headerColor:entity.attributes.color, imgPath:'img/iconsPNG/'+entity.attributes.iconPath}})
+    }
+    console.log(allEntities);
+    return addList
+}
+
+var addNodeCallback = function (data) {
+    console.log(data);
+    var params = data.input.params;
+    var instancesRepo = createInstancesManagement()
+    instancesRepo.add({uuid:params.uuid,name:params.name,theTime:Date.now(), type:params.userData.entityUuid})
+}
+
+
 var createNewGraph =function(event,data, instance){
     var relationsRepo = createRelationManagement()
     var relationTypes = relationsRepo.getAll()
@@ -111,13 +156,17 @@ var setUpTable = function (event, data, instance) {
             simulateForces:true, 
             // uiCallbacks:itemsData.uiCallbacks, 
             canvasHeight:1500,
-            uiCallbacks : {},
+            uiCallbacks : {
+                onConnect:(e)=>showConnectOptions(e.input.sourceItem, e.input.targetItem, data.graph),
+                onNodeClick:(e)=>showPopupInstancePreview(e.input.targetItem),
+                onNodeAdd:(e)=>addNodeCallback(e),
+            },
             showNodeList:true,
             showSearchBox: true,
             showToolbar:true,
             highlightConnections: false,
-            addNodesFromCustomList:false,
-            allowCustomNameForNodes: false,
+            addNodesFromCustomList:customNewNodeList,
+            allowCustomNameForNodes: true,
             allowCustomNameForRelations: false,
         })
         data.graph.getNodeManager().useTemplate(graphUiTemplates)

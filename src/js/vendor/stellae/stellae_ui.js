@@ -518,6 +518,9 @@ export default function createStellaeUi({
                     }
                     // console.log(usedTemplates[event.id], {name:event.value,  position:{x:intersects.x,y:intersects.z}});
                     dataManager.addNode(event.id, event.params)
+                    if (uiCallbacks.onNodeAdd) {
+                        uiCallbacks.onNodeAdd({dataManager, state, input:{params:event.params}})
+                    }
                 },
             })
                 // state.selectedToMove[0].position.set(intersects.x, 0.1, intersects.z);

@@ -90,7 +90,7 @@ var instanceAggregate = function(aggregate, projectStore){
                     availableList.push(element)
                 }
             }
-            for (let j = 0; j < element.fromList.length; j++) {
+            for (let j = 0; j < element.toList.length; j++) {
                 if (element.toList[j].uuid == aggregate.attributes.type) {
                     availableList.push(element)
                 }
