@@ -28,7 +28,8 @@ var setUpTable = function(event, data, instance){
             {title:"added", field:"theTime", },
         ];
     }
-
+    console.log(colsList);
+    console.log(itemsList);
     //check if cols need custom formatters
     checkColsForCustomFormating(itemsList,colsList)
 

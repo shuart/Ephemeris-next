@@ -3,6 +3,7 @@ import table_component from "../../common_ui_components/table/table.js";
 import projectManagement from "../../common_project_management/project_management.js";
 import createEvaluator from "../../common_evaluators/evaluators.js";
 import showPopupInstancePreview from "../../popup_instance_preview/popup_instance_preview.js";
+import { joinRelationsWithEntities } from "../helper_functionsViewport/helper_function_viewport.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -45,6 +46,33 @@ var getItemsList = function (event, data, instance){
     data.cols =evaluator.evaluate().cols
     data.actions =evaluator.evaluate().actions
     console.log(data);
+
+    // joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))
+    
+    //clean Objects TODO segregate in custom attributes object
+    var newList = []
+    for (let i = 0; i < data.list.length; i++) {
+        const item = data.list[i];
+        var newItem = {uuid: item.uuid, name:item.name, color:item.color}
+        newList.push(newItem)
+        for (let j = 0; j < data.cols.length; j++) {
+            const col = data.cols[j];
+            if (col.field) {
+                if (item.attributes[col.field]) {
+                    newItem[col.field] = item.attributes[col.field]
+                }
+                if (item.properties[col.field]) {
+                    newItem[col.field] = item.properties[col.field].value
+                }
+                
+            }
+            
+        }
+        
+    }
+    data.list =newList
+    joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))
+    
     
 
     

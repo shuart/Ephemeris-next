@@ -281,7 +281,7 @@ evaluatorTemplates.extractRelations = {
                 var entityRepo = createEntityManagement()
                 var entity = entityRepo.getById(props.a.get()[0].attributes.type)
                 var inOrOut = props.inOrOut.getOptionId()
-                if (inOrOut = "incoming" ) {
+                if (inOrOut == "incoming" ) {
                     if (entity.getIncomingRelations()) {
                         currentRelationsToConsider = entity.getIncomingRelations()
                         props.method.setOptions(entity.getIncomingRelations().map(function (e) {
@@ -289,6 +289,7 @@ evaluatorTemplates.extractRelations = {
                         }))
                     }
                 }else{
+                    console.log(entity.getOutgoingRelations());
                     if (entity.getOutgoingRelations()) {
                         currentRelationsToConsider = entity.getOutgoingRelations()
                         props.method.setOptions(entity.getOutgoingRelations().map(function (e) {
@@ -324,8 +325,7 @@ evaluatorTemplates.extractRelations = {
                             
                             
                         }
-                        console.log(targetsOfRelation);
-                        // alert("fesfe")
+                        console.log(relatedRelation);
                         return {[props.method.get()]:relatedRelation}
                     }))
                     props.id.set(props.method.getOptionId())
@@ -377,7 +377,8 @@ evaluatorTemplates.joinFields = {
             var fieldsToJoin = props.fields_to_join.get()
             if (sourceField && fieldsToJoin) {
                 var fieldsQt = fieldsToJoin.length
-                
+                console.log(sourceField);
+                // alert("f")
                 for (let i = 0; i < sourceField.length; i++) {
                     const sourceFieldElement = sourceField[i];
                     var newFieldElement = Object.assign({},sourceFieldElement)

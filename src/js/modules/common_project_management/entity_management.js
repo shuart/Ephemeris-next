@@ -40,7 +40,7 @@ var entityAggregate = function(aggregate, projectStore){
         for (let i = 0; i < currentRelations.length; i++) {
             const element = currentRelations[i];
             if (element["from_"+aggregate.uuid]) {
-                ownRelations.push(element);
+                outgoingRelations.push(element);
             }
             
         }

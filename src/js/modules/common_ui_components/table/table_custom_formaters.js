@@ -2,13 +2,13 @@ var getCustomFormatterForCol = function (rows, col, originalColConfig) {
     
     var formatterFunction = undefined
     console.log(col);
-    
     //check if is an entity instance
-    
+    // alert("fesf")
     for (let i = 0; i < rows.length; i++) {
         var rowColToCheck =rows[i][col.field]
         
         if (rowColToCheck && rowColToCheck[0] && rowColToCheck[0].displayAs=="relation") { //iterate to find a row with something
+        // if (rowColToCheck && rowColToCheck[0] && rowColToCheck[0].displayAs=="relation") { //iterate to find a row with something
             // if (rowColToCheck && rowColToCheck[0] && rowColToCheck[0].uuid && rowColToCheck[0].name &&  rowColToCheck[0].relation) { //iterate to find a row with something
 
 
