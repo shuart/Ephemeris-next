@@ -1,13 +1,17 @@
-import { createAdler } from "../../../vendor/adler.js";
+import createAdler from "../../../vendor/adlerLegacy.js";
 import {TabulatorFull as Tabulator} from "../../../vendor/tabulator_esm.min.js";
 import {checkColsForCustomFormating} from "./table_custom_formaters.js"
 
-var setUpTable = function(self){
-    var itemsList = self.list
-    var colsList = self.cols
-    var currentHeight = self.height
+var setUpTable = function(event, data, instance){
+    var itemsList = data.list
+    var colsList = data.cols
+    var currentHeight = data.height
+    // var itemsList = []
     console.log(itemsList);
-
+    console.log(instance);
+    console.log(instance.props.test.get());
+    // instance.props.test.set("4564fesfsefesfef")
+    
     if (!itemsList[0]) {
         itemsList = [
             // {id:1, name:"Oli Bob", age:"12", col:"red", dob:""},
@@ -17,8 +21,6 @@ var setUpTable = function(self){
             // {id:5, name:"Margret Marmajuke", age:"16", col:"yellow", dob:"31/01/1999"},
         ];
     }
-
-    
     if (!colsList || !colsList[0]) {
         colsList = [
             {title:"id", field:"uuid", },
@@ -32,7 +34,7 @@ var setUpTable = function(self){
     checkColsForCustomFormating(itemsList,colsList)
 
     //get corret height:
-    var instanceElem = self.query(".tableComponent")
+    var instanceElem = instance.query("div")
     var tableHeight = 205
     if (currentHeight<0) {
         tableHeight = window.innerHeight + currentHeight
@@ -61,7 +63,7 @@ var setUpTable = function(self){
 	 	// // {title:"Date Of Birth", field:"dob", sorter:"date", hozAlign:"center"},
         // ],
    });
-   self.tablepr = table //to avoid using a proxy
+   instance.setData({table:table},false)
    console.log(table.rowManager)
 //    table.on("rowMouseOut", function(e, row){
 //     console.log('efssssssss');
@@ -84,52 +86,48 @@ var setUpTable = function(self){
 
 }
 
-var softUpdate= function (self) {
+var softUpdate= function (event, data, instance) {
     console.log("data.table--------------------");
-    console.log(self.table);
-    console.log(self.list);
-    self.tablepr.replaceData(self.list) //load data array
+    console.log(data.table);
+    data.table.replaceData(data.list) //load data array
 }
 
 var table_component =createAdler({
-    tag:'eph-table-view',
-    props:{
-        test:15,
-        dataList:[],
-        height: "auto",
-        // onAdd: alert,
-        callback:(event)=>alert(event.name),
-        value:"Hello",
-        height: "auto",
-        list:[],
-        cols:[],
-        table:undefined,
-    },
-    attributes:[
-    ],
-    watch:[
-        // ["list", softUpdate]
-    ],
-    methods:[
-        ["updateTable", (self)=>softUpdate(self)]
-    ],
-    events : [
-        // ["click", ".action-table-add", addComp],
-        // [".action-table-add","click", (event, data, instance)=> instance.props.get("onAdd")() ],
-    ],
-    onRender:(self) =>{
-        setUpTable(self)
-        
-    },
-    html: p => /*html*/`
-    <link rel="stylesheet" href="css/vendor/tabulator_semanticui.min.css">
-    <link rel="stylesheet" href="css/vendor/tabulator_semanticui_dark.min.css">
-    <link rel="stylesheet" href="css/main.css">
-
-
+    content: p => /*html*/`
     <div class="tableComponent"></div>
     <div a-if="onAdd" class="action-table-add button is-small is-primary">add</div>
         `,
+    params:{
+        props:{
+            test:15,
+            dataList:[],
+            height: "auto",
+            // onAdd: alert,
+            callback:(event)=>alert(event.name),
+        },
+        listen:{
+            test:function (event, data, instance) {
+                //alert("test")
+            }
+        },
+        data:{
+            value:"Hello",
+            height: "auto",
+            list:[],
+            cols:[],
+            table:undefined,
+            // onClick:()=>console.log("click")
+        },
+        on:[
+            [".action-table-add","click", (event, data, instance)=> instance.props.get("onAdd")() ],
+        ],
+        events:{
+            onMount:(event, data, instance) => setUpTable(event, data, instance),
+        },
+        methods:{
+            softUpdate:(event, data, instance)=>softUpdate(event, data, instance),
+        },
+    },
     css:/*css*/`
     .table-tag{
         background-color:#069c95;

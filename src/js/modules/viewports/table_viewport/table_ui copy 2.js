@@ -8,13 +8,8 @@ import { joinRelationsWithEntities } from "../helper_functionsViewport/helper_fu
 
 var softUpdate= function (event, data, instance) {
     var itemsData = getItemsList(event,data, instance)
-    var currentTable = instance.query(".current-table")
-    console.log(instance.query(".current-table"));
-    currentTable.list = itemsData.list
-    // currentTable.cols = itemsData.cols
-    currentTable.updateTable()
-    // instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols}, false)
-    // instance.getNodes().tablevp.do.softUpdate()
+    instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols}, false)
+    instance.getNodes().tablevp.do.softUpdate()
 }
 
 var addItem = function (event, data, instance) {
@@ -79,7 +74,7 @@ var getItemsList = function (event, data, instance){
     joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))
     
     
-    console.log(data);
+
     
     return data
 }
@@ -108,24 +103,15 @@ var setUpTable = function (event, data, instance) {
     //  console.log(data.addAction);
     // //  alert()
 
-    setTimeout(function () {
-        var mountPlace = instance.query(".example-table")
-        console.log(mountPlace);
-        var tablevp = table_component.instance()
-        tablevp.classList="current-table"
-        tablevp.list = itemsData.list
-        tablevp.cols = itemsData.cols
-        mountPlace.append(tablevp)
-        subscribeToDB(event, data, instance)
-
-    })
+    var mountPlace = instance.query(".example-table")
+    console.log(mountPlace);
+    table_component.mount(mountPlace)
+    var tablevp = table_component.instance()
 
 
     //  instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols })
-     
+     subscribeToDB(event, data, instance)
 }
-
-
 
 var component =createAdler({
     content: p => /*html*/`

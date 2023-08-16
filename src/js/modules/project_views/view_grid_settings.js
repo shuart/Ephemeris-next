@@ -251,9 +251,6 @@ var gridView = createAdler({
         <link rel="stylesheet" href="css/bulma.min.css">
         <link rel="stylesheet" href="css/bulma.dark.css">
 
-        <link rel="stylesheet" href="css/vendor/tabulator_semanticui.min.css">
-        <link rel="stylesheet" href="css/vendor/tabulator_semanticui_dark.min.css">
-
         <link rel="stylesheet" href="css/main.css">
 
 

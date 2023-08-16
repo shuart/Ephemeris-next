@@ -54,11 +54,15 @@ function createSignal(initialValue, reactivity) {
     const _getValue = function (newValue) {
         return value
     }
+    const _addSubscription = function (newCallback, component) {
+        subscribers.add([newCallback, component]);
+    }
 
     const isSignal =()=> true;
 
     self.set = write
     self.get = read
+    self._addSubscription = _addSubscription
     self._replaceValue = _replaceValue
     self._getValue = _getValue
     self.isSignal = isSignal
@@ -82,6 +86,12 @@ var createAdler = function ({
     },
     attributes=[
         "test",
+    ],
+    watch=[
+        ["test", (self)=> console.log(self)]
+    ],
+    methods=[
+        ["testMethod", (self)=> console.log(self)]
     ],
     onRender=(self) => console.log("on connect",self),
     onBeforeRender=(self) => console.log("on before render",self),
@@ -159,6 +169,26 @@ var createAdler = function ({
             }
         }
     }
+    var setWatch = function (component, holderData, signalList){
+        for (let i = 0; i < watch.length; i++) {
+            const watchElement = watch[i];
+            if (holderData[watchElement[0]]) {
+                holderData[watchElement[0]]._addSubscription(watchElement[1],component) //add newcallback with component
+            }
+        }
+    }
+    var setMethods = function (component) {
+        for (let i = 0; i < methods.length; i++) {
+            const method = methods[i];
+            var invoker = function () {
+                method[1](component)
+            }
+            component[method[0]] = invoker
+            // if (holderData[watchElement[0]]) {
+            //     holderData[watchElement[0]]._addSubscription(watchElement[1],component) //add newcallback with component
+            // }
+        }
+    }
     var transferProps = function (component) {
         for (let i = 0; i < component.attributes.length; i++) {
             const att = component.attributes[i];
@@ -232,7 +262,8 @@ var createAdler = function ({
                 super();
                 
                 setProps(this, this.#holderData, )
-                
+                // setWatch(this, this.#holderData, ) //todo add a before render watch, but it's causing issues
+                setMethods(this)
                 console.log("component created", this);
             }
             
@@ -253,6 +284,7 @@ var createAdler = function ({
                 iterateLifeCycle(lifeCycle, 'connected', this)
                 onRender(this)
                 iterateEvents(events, this )// Add event listeners when connected
+                setWatch(this, this.#holderData, )// Add watch  when connected
             }
             update = function () {
                 setEffects(this)
@@ -260,6 +292,7 @@ var createAdler = function ({
                 iterateLifeCycle(lifeCycle, 'connected', this)
                 onRender(this)
                 iterateEvents(events, this )// Add event listeners when connected
+                setWatch(this, this.#holderData, )// Add watch  when connected
             }
 
             connectedCallback() {
@@ -296,8 +329,10 @@ var createAdler = function ({
 
     var mount = function (target) {
         var targetElement = document.body
-        if (target) {
+        if (target && typeof target === 'string') {
             targetElement = document.querySelector(target)
+        }else if(target && (target instanceof Element || target instanceof HTMLDocument) ){
+            targetElement = target
         }
         var element =  createComponentElement()
         targetElement.appendChild(element)
