@@ -99,7 +99,9 @@ var setUpData = function (event, data, instance) {
            onConfirm:(result)=>{
             if (result.text !="") {
                 element.addProperty(result.text,result.selection[0].uuid)
-                instance.getNodes().table.setData({list:getItemsList(data,instance)})
+                // instance.getNodes().table.setData({list:getItemsList(data,instance)})
+                instance.query(".current-table").list = getItemsList(data,instance)
+                instance.query(".current-table").updateData()
             }
            } 
         })
@@ -116,9 +118,11 @@ var setUpData = function (event, data, instance) {
                 list:entityRepo.getAll(),
                 callback:function(event){
                     element.addRelation("type",event.value.uuid)
-                    instance.getNodes().table.setData({list:getItemsList(data,instance)})
-                    // var currentSchema = instance.props.schema.get(); 
-                    // currentSchema[ compPos[0] ].cols[ compPos[1] ].components[ compPos[2] ].settings={entityType:event.value.uuid};
+                    instance.query(".current-table-relations").list = getRelationList(data,instance)
+                    instance.query(".current-table-relations").updateData()
+                    // instance.getNodes().table.setData({list:getItemsList(data,instance)})
+                    // // var currentSchema = instance.props.schema.get(); 
+                    // // currentSchema[ compPos[0] ].cols[ compPos[1] ].components[ compPos[2] ].settings={entityType:event.value.uuid};
                 }
             }
         }), "main-slot")
@@ -130,7 +134,8 @@ var setUpData = function (event, data, instance) {
 var setUpTable = function (event, data, instance) {
      console.log(instance.getNodes());
      var propRepo = createPropertyManagement()
-     instance.getNodes().table.setData({
+     var mainData = {
+        onAdd : instance.props.onAdd.get(),
         list:getItemsList(data,instance),
         cols: [
             {title:"id", field:"uuid", },
@@ -145,7 +150,8 @@ var setUpTable = function (event, data, instance) {
                         console.log(propRepo.getById(cell.getRow().getData().uuid)); //TODO clean all entities after delete
                         
                         propRepo.remove(cell.getRow().getData().uuid)
-                        instance.getNodes().table.setData({list:getItemsList(data,instance)})
+                        instance.query(".current-table").list = getItemsList(data,instance)
+                        instance.query(".current-table").updateData()
                         var tet = propRepo.getAll()
                     // instance.getNodes().table.do.softUpdate({list:getRelationList(data,instance)})
                     }
@@ -153,8 +159,26 @@ var setUpTable = function (event, data, instance) {
                 } 
             } },        ],
 
+    }
+    setTimeout(function () {
+        var mountPlace = instance.query(".setting-detail-table")
+        var tablevp = table_component.instance()
+        tablevp.classList="current-table"
+        tablevp.list = mainData.list
+        tablevp.cols = mainData.cols
+        tablevp.onAdd = mainData.onAdd
+        mountPlace.append(tablevp)
     })
-     instance.getNodes().relationsTable.setData({list:getRelationList(data,instance)})
+    setTimeout(function () {
+        var mountPlace = instance.query(".relations-table")
+        var tablevp = table_component.instance()
+        tablevp.classList="current-table-relations"
+        tablevp.list = getRelationList(data,instance)
+        tablevp.onAdd = instance.props.onAddRelation.get()
+        mountPlace.append(tablevp)
+        // subscribeToDB(event, data, instance)
+    })
+    //  instance.getNodes().relationsTable.setData({list:getRelationList(data,instance)})
 }
 
 
@@ -164,7 +188,7 @@ var model_settings_component =createAdler({
         <div class="container">
             <div class="block"></div>
             <div class="block">Properties</div>
-            <div class="example-table" a-id="table" a-props="test:test,onAdd" adler="table_component" ></div>
+            <div class="setting-detail-table" a-id="table" a-props="test:test,onAdd" adler="table_component" ></div>
             <div class="block"></div>
             <div class="block">Relations</div>
             <div class="relations-table" a-id="relationsTable" a-props="onAdd:onAddRelation" adler="table_component" ></div>
@@ -202,7 +226,7 @@ var model_settings_component =createAdler({
         },
     },
     components:{
-        table_component: table_component
+        // table_component: table_component
     }
 })
 

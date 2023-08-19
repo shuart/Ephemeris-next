@@ -59,6 +59,10 @@ var getItemsList = function (event, data, instance){
     
     //clean Objects TODO segregate in custom attributes object
     var newList = []
+    //If not attributes are used, juste populate with basic ones
+    if (!data.cols) {
+        data.cols=[{name:"name", field:'name'}]
+    }
     for (let i = 0; i < data.list.length; i++) {
         const item = data.list[i];
         var newItem = {uuid: item.uuid, name:item.name, color:item.color}

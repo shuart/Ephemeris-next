@@ -97,7 +97,7 @@ var table_component =createAdler({
         test:15,
         dataList:[],
         height: "auto",
-        // onAdd: alert,
+        onAdd: ()=>alert("fefes"),
         callback:(event)=>alert(event.name),
         value:"Hello",
         height: "auto",
@@ -111,10 +111,11 @@ var table_component =createAdler({
         // ["list", softUpdate]
     ],
     methods:[
-        ["updateTable", (self)=>softUpdate(self)]
+        ["updateTable", (self)=>softUpdate(self)],
+        ["updateData", (self)=>softUpdate(self)]
     ],
     events : [
-        // ["click", ".action-table-add", addComp],
+        ["click", ".action-table-add", (ev,self)=>self.onAdd()],
         // [".action-table-add","click", (event, data, instance)=> instance.props.get("onAdd")() ],
     ],
     onRender:(self) =>{

@@ -27,7 +27,7 @@ var addEntityToProject = function(event, data, instance){
     var name= prompt("Name")
     if (name) {
         projectManagement.getProjectStore(projectId,data.modelElementType).add({name:name ,theTime:Date.now()})
-        instance.getNodes().table.do.softUpdate()
+        // instance.getNodes().table.do.softUpdate()
     }
     // instance.update()
 }
@@ -234,10 +234,22 @@ var setUpData = function (event, data, instance) {
 }
 
 var setUpTable = function (event, data, instance) {
-     console.log(instance.getNodes());
+    //  console.log(instance.getNodes());
      var tableData = getItemsList(data, instance)
-     instance.getNodes().table.setData({list:tableData.list, cols:tableData.cols, height:-180})
-     subscribeToDB(event, data, instance)
+    //  instance.getNodes().table.setData({list:tableData.list, cols:tableData.cols, height:-180})
+    //  subscribeToDB(event, data, instance)
+     setTimeout(function () {
+        var mountPlace = instance.query(".setting-model-table")
+        console.log(mountPlace);
+        var tablevp = table_component.instance()
+        tablevp.classList="current-table"
+        tablevp.list = tableData.list
+        tablevp.cols = tableData.cols
+        tablevp.height = -180
+        mountPlace.append(tablevp)
+        subscribeToDB(event, data, instance)
+
+    })
 }
 
 var subscribeToDB = function (event, data, instance) {
@@ -255,8 +267,13 @@ var subscribeToDB = function (event, data, instance) {
 
 var softUpdate= function (event, data, instance) {
     var itemsData = getItemsList(data, instance)
-    instance.getNodes().table.setData({list:itemsData.list, cols:itemsData.cols, height:-180}, false)
-    instance.getNodes().table.do.softUpdate()
+    // instance.getNodes().table.setData({list:itemsData.list, cols:itemsData.cols, height:-180}, false)
+    // instance.getNodes().table.do.softUpdate()
+    var itemsData = getItemsList(event, instance)
+    var currentTable = instance.query(".current-table")
+    console.log(instance.query(".current-table"));
+    currentTable.list = itemsData.list
+    currentTable.updateTable()
 }
 
 
@@ -315,7 +332,7 @@ var model_settings_component =createAdler({
             </nav>
         
 
-            <div class="example-table" style="height:580px" a-id="table" a-props="test:test,callback:callback" adler="table_component" ></div>
+            <div class="setting-model-table" style="height:580px" a-id="table" a-props="test:test,callback:callback" adler="table_component" ></div>
         </div>
         `
         ,
@@ -349,7 +366,7 @@ var model_settings_component =createAdler({
         },
     },
     components:{
-        table_component: table_component
+        // table_component: table_component
     }
 })
 
