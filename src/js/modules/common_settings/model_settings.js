@@ -51,7 +51,7 @@ var getItemsList = function (data, instance){
         listData.cols = [
             // {title:"id", field:"uuid", },
             
-            {customIcon:true, field:"iconPath", callback:(e,cell)=>{ 
+            {customIcon:true, field:"iconPath",defaultPath:"box.svg", callback:(e,cell)=>{ 
                 iconSelect({
                     callback:e=>{projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, iconPath:e.value.name})}
                     })  
@@ -72,36 +72,41 @@ var getItemsList = function (data, instance){
             }},
         ];
     } else if (instance.props.modelElementType.get() == "cycles") {
-        listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
+        listData.list = projectManagement.getProjectStore(projectId,instance.props.modelElementType.get()).getAll()
         listData.cols = [
             // {title:"id", field:"uuid", },
             {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) }, ///evaluators/:evaluatorId 
         ];
     } else if (instance.props.modelElementType.get() == "simulations") { //TODO move to own page
-        listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
+        listData.list = projectManagement.getProjectStore(projectId,instance.props.modelElementType.get()).getAll()
         listData.cols = [
             // {title:"id", field:"uuid", },
             {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) }, ///evaluators/:evaluatorId 
         ];
     } else if (instance.props.modelElementType.get() == "evaluators") {
-        listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
+        listData.list = projectManagement.getProjectStore(projectId,instance.props.modelElementType.get()).getAll()
         listData.cols = [
             // {title:"id", field:"uuid", },
             {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) }, ///evaluators/:evaluatorId 
         ];
     } else if (instance.props.modelElementType.get() == "views") {
-        listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
+        listData.list = projectManagement.getProjectStore(projectId,instance.props.modelElementType.get()).getAll()
         listData.cols = [
             // {title:"id", field:"uuid", },
-            {customIcon:true, field:"iconPath", },
+            {customIcon:true, field:"iconPath", defaultPath:"monitor.svg",callback:(e,cell)=>{ 
+                iconSelect({
+                    callback:e=>{console.log(cell.getData()); console.log(e);projectManagement.getProjectStore(projectId,instance.props.modelElementType.get()).add({uuid:cell.getRow().getData().uuid, iconPath:e.value.name})}
+                    })  
+                }  
+            },
             {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) },  //"/:project/settings/views/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
             // {formatter:e=>"x", width:40, hozAlign:"center", cellClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).remove(cell.getRow().getData().uuid)}},
-            {customButton: {value:"Icon", onClick:function(e, cell){
-                iconSelect({
-                    callback:e=>{console.log(cell.getData()); console.log(e);projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, iconPath:e.value.name})}
-                    })  
-                } } 
-            },
+            // {customButton: {value:"Icon", onClick:function(e, cell){
+            //     iconSelect({
+            //         callback:e=>{console.log(cell.getData()); console.log(e);projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, iconPath:e.value.name})}
+            //         })  
+            //     } } 
+            // },
             
             {customSwitch: {onClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, isVisible:e.value.checked})}}, field:"isVisible"  },
             {customButton: {value:"X", onClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).remove(cell.getRow().getData().uuid)} } },
