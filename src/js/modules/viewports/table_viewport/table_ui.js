@@ -63,6 +63,8 @@ var getItemsList = function (event, data, instance){
     if (!data.cols) {
         data.cols=[{name:"name", field:'name'}]
     }
+    console.log(data);
+    // alert("ddd")
     for (let i = 0; i < data.list.length; i++) {
         const item = data.list[i];
         var newItem = {uuid: item.uuid, name:item.name, color:item.color}
