@@ -27,7 +27,7 @@ var getItemsList = function (event, data, instance){
     var data = {}
     var evaluator = createEvaluator({originInstance:instance.props.get('settings').calledFromInstance, type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
     console.log(evaluator);
-    var evaluatorResult = evaluator.evaluate()
+    var evaluatorResult = evaluator.evaluate().output_graph
     if (!evaluatorResult) {
         return {list:[{name:"undefined LIST"}], cols:[]}
     }
@@ -66,10 +66,10 @@ var getItemsList = function (event, data, instance){
             
         }
     }
-    data.actions =evaluator.evaluate().actions
+    data.actions =evaluatorResult.actions
     data.uiCallbacks={
-        onConnect: evaluator.evaluate().onConnect,
-        onNodeClick:evaluator.evaluate().onNodeClick
+        onConnect: evaluatorResult.onConnect,
+        onNodeClick:evaluatorResult.onNodeClick
     } 
     
 

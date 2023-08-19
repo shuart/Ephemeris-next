@@ -27,7 +27,7 @@ var getEvaluatorData = function (event, data, instance){
     if (!evaluator.evaluate()) {
         return {instance:{}}
     }
-    data.instance =evaluator.evaluate().instance_card.instance 
+    data.instance =evaluator.evaluate().output_instance_card.instance 
     // data.cols =evaluator.evaluate().cols
     // data.actions =evaluator.evaluate().actions
     if (typeof data.instance == "string") {

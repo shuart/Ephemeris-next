@@ -56,39 +56,47 @@ var createEvaluator = function ({
                 // console.log(exportGraph);
                 // alert(54)
 
-                if (exportGraph.nodes.find(e=>e.templateName == "output_table")) {
-                    result.list = exportGraph.nodes.find(e=>e.templateName == "output_table").params.propsValue.rows
-                    result.cols = exportGraph.nodes.find(e=>e.templateName == "output_table").params.propsValue.cols||undefined
-                    result.actions = exportGraph.nodes.find(e=>e.templateName == "output_table").params.propsValue.actions||undefined
+                var outputNodes = exportGraph.nodes.filter(e=>e.category == "output")
+                console.log(outputNodes);
+                for (let i = 0; i < outputNodes.length; i++) {
+                    const node = outputNodes[i];
+                    var output = result[node.templateName] ={}
+                    var props = node.params.propsValue
+                    output.instances = props.instances||undefined
+                    output.instance = props.instance||undefined
+                    output.relations = props.relations||undefined
+                    
+                    output.attributes = props.attributes||undefined
+                    output.actions = props.actions||undefined
+                    output.onConnect = props.onConnectAction||undefined
+                    output.onInstanceClick = props.onInstanceClickAction||undefined
+                    //to deprecate
+                    output.list = props.rows||undefined
+                    output.cols = props.cols||undefined
+                    output.actions = props.actions||undefined
+                    //
+                    output.nodes = props.nodes||undefined
+                    output.links = props.links||undefined
+                    
+                    output.onNodeClick = props.onNodeClickAction||undefined
+                    output.actions = props.actions||undefined
+                    output.propertyName = props.propertyName||undefined
+                    
                 }
-                if (exportGraph.nodes.find(e=>e.templateName == "output_graph")) {
-                    result.nodes = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.nodes||undefined
-                    result.links = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.links||undefined
-                    result.onConnect = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.onConnectAction||undefined
-                    result.onNodeClick = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.onNodeClickAction||undefined  
 
-                }
-                if (exportGraph.nodes.find(e=>e.templateName == "output_instance_card")) {
-                    result.instance_card = {}
-                    result.instance_card.instance = exportGraph.nodes.find(e=>e.templateName == "output_instance_card").params.propsValue.instance||undefined
-                    // result.links = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.links||undefined
-                    // result.onConnect = exportGraph.nodes.find(e=>e.templateName == "output_graph").params.propsValue.onConnectAction||undefined
-                }
-                if (exportGraph.nodes.find(e=>e.templateName == "output_properties")) {
-                    result.output_properties = {}
-                    result.output_properties.instance = exportGraph.nodes.find(e=>e.templateName == "output_properties").params.propsValue.instance||undefined
-                }
-                if (exportGraph.nodes.find(e=>e.templateName == "output_text_editor")) {
-                    result.output_text_editor = {}
-                    result.output_text_editor.instance = exportGraph.nodes.find(e=>e.templateName == "output_text_editor").params.propsValue.instance||undefined
-                    result.output_text_editor.propertyName = exportGraph.nodes.find(e=>e.templateName == "output_text_editor").params.propsValue.propName||undefined
-                }
-                
-                // console.log(result);
-                // alert(55)
+                // if (exportGraph.nodes.find(e=>e.templateName == "output_properties")) {
+                //     result.output_properties = {}
+                //     result.output_properties.instance = exportGraph.nodes.find(e=>e.templateName == "output_properties").params.propsValue.instance||undefined
+                // }
+                // if (exportGraph.nodes.find(e=>e.templateName == "output_text_editor")) {
+                //     result.output_text_editor = {}
+                //     result.output_text_editor.instance = exportGraph.nodes.find(e=>e.templateName == "output_text_editor").params.propsValue.instance||undefined
+                //     result.output_text_editor.propertyName = exportGraph.nodes.find(e=>e.templateName == "output_text_editor").params.propsValue.propName||undefined
+                // }
                 return result;
             }
             return result;
+
         }
         
     }

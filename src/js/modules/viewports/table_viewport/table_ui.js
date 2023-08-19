@@ -47,9 +47,12 @@ var getItemsList = function (event, data, instance){
     if (!evaluator.evaluate()) {
         return {list:[{name:"undefined LIST"}], cols:[]}
     }
-    data.list =evaluator.evaluate().list
-    data.cols =evaluator.evaluate().cols
-    data.actions =evaluator.evaluate().actions
+    var evaluationResult = evaluator.evaluate().output_table
+    console.log(evaluator.evaluate());
+
+    data.list =evaluationResult.list
+    data.cols =evaluationResult.cols
+    data.actions =evaluationResult.actions
     console.log(data);
 
     // joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))

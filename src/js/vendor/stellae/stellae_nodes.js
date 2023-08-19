@@ -80,7 +80,7 @@ var createNode= function({
         if (withNodeObject) {
             nodeObject = self
         }
-        return {templateName,params:{uuid,name, position, propsValue,nodeAttributes, propsValueFromInput, headerColor, imgPath, nodeLayout, userData, nodeObject}}
+        return {templateName, category:template?.category, params:{uuid,name, position, propsValue,nodeAttributes, propsValueFromInput, headerColor, imgPath, nodeLayout, userData, nodeObject}}
     }
     var exportSockets = function(){
         var propsValue = {}
