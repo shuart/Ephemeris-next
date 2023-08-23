@@ -6,7 +6,6 @@ import showPopupInstancePreview from "../../popup_instance_preview/popup_instanc
 import instanceCard from "../../common_ui_components/instance_card/instance_card.js";
 import createInstancesManagement from "../../common_project_management/instances_management.js";
 import createTexteArea from "../../common_ui_components/textEditor.js/textEditor.js";
-import { textArea } from "../../common_ui_components/textEditor.js/textArea.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -59,42 +58,39 @@ var subscribeToDB = function (event, data, instance) {
 
 
 var setUpTable = function (event, data, instance) {
-    // var itemData = getEvaluatorData(event,data, instance)
-    // var textContainer = instance.query(".textEditorDesc")
-    // var textProperty= itemData.instance.properties[itemData.propertyName]
-    // if ( !textProperty) {
-    //     // alert("Property is not compatible with")
-    //     instance.query(".title").innerText = "Property does not exist"
-    //     return 
-    // }
-    // var textContent = textProperty.value
-    // if ( textProperty.property.type != "rich_text") {
-    //     // alert("Property is not compatible with")
-    //     instance.query(".title").innerText = "Property type is not compatible with text editor"
-    //     return 
-    // }
-    // if (textContent ) {
-    //     textContent = JSON.parse(textContent)
-    // }
-    // if (!textContent || !textContent.type) {
-    //     textContent = "Add Text"
-    // }
-    // data.editor = createTexteArea({
-    //     container:textContainer,
-    //     customClass:"textarea",
-    //     content:textContent,
-    //     changeCallback:(text)=>{
-    //         console.log(text)
-    //         itemData.instance.setPropertyByUuid(textProperty.property.uuid, JSON.stringify( text) )
-    //     },
-    // })
-    // instance.query(".ProseMirror").classList += " ephtextEditor"
-    // instance.query(".title").innerText = itemData.propertyName
-    // //  instance.getNodes().instance_card.setData({instance:itemData.instance })
-    // //  subscribeToDB(event, data, instance)
-    var editor = textArea.instance()
-    instance.query(".textEditorDesc").append(editor)
-    console.log(editor);
+    var itemData = getEvaluatorData(event,data, instance)
+    var textContainer = instance.query(".textEditorDesc")
+    var textProperty= itemData.instance.properties[itemData.propertyName]
+    if ( !textProperty) {
+        // alert("Property is not compatible with")
+        instance.query(".title").innerText = "Property does not exist"
+        return 
+    }
+    var textContent = textProperty.value
+    if ( textProperty.property.type != "rich_text") {
+        // alert("Property is not compatible with")
+        instance.query(".title").innerText = "Property type is not compatible with text editor"
+        return 
+    }
+    if (textContent ) {
+        textContent = JSON.parse(textContent)
+    }
+    if (!textContent || !textContent.type) {
+        textContent = "Add Text"
+    }
+    data.editor = createTexteArea({
+        container:textContainer,
+        customClass:"textarea",
+        content:textContent,
+        changeCallback:(text)=>{
+            console.log(text)
+            itemData.instance.setPropertyByUuid(textProperty.property.uuid, JSON.stringify( text) )
+        },
+    })
+    instance.query(".ProseMirror").classList += " ephtextEditor"
+    instance.query(".title").innerText = itemData.propertyName
+    //  instance.getNodes().instance_card.setData({instance:itemData.instance })
+    //  subscribeToDB(event, data, instance)
 }
 
 var textEditorViewport =createAdler({
@@ -142,7 +138,29 @@ var textEditorViewport =createAdler({
     components:{
         instance_card: instanceCard,
     },
-    // css:/*css*/``,
+    css:/*css*/`
+    .ephtextEditor{
+        background-color: #f9f9f9;
+        border-color: #363636;
+        color: #000;
+        box-shadow: inset 0 1px 2px rgba(232, 232, 232, 0.24);
+        padding: 15px;
+        min-height:200px;
+    }
+    .ephtextEditor:focus{
+        outline: none;
+        
+    }
+    @media (prefers-color-scheme: dark) {
+        .ephtextEditor{
+            background-color: #262626;
+            border-color: #363636;
+            color: #dbdbdb;
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.1);
+        }
+        
+    }
+    `,
 })
 
 export default textEditorViewport
