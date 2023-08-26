@@ -172,7 +172,7 @@ var textEditorViewport =createAdler({
     content: p => /*html*/`
     <div class="Component container">
     <div class="title" ></div>
-        <div class="textEditorDesc" > text</div>
+        <div class="textEditorDesc" >  .</div>
         
     </div>
         `,

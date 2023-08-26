@@ -2,6 +2,7 @@ import * as pmModule from './pmCore.js'
 import { getMentionsNodes, getMentionsPlugin, getDefaultMentionPlugin } from './mention/mention.js';
 import { createSideView } from './sideView/sideView.js';
 import { createTitle } from './docTitle/docTitle.js';
+import { createTopBar } from './topbar.js';
 var pm = pmModule.pmCore
 console.log(pm);
 
@@ -34,6 +35,7 @@ var createEditor = function ({
     var mySchema = undefined
     var sideView = undefined
     var docTitle = undefined
+    var topBar = undefined
     var addEditor = function () {
 
         
@@ -97,18 +99,31 @@ var createEditor = function ({
         editor.updateState(newState);
     }
 
+    var addTopBar = function () {
+        topBar = createTopBar({
+            mountAt:domWrapper
+        })   
+    }
+
     //SideView
     var addSideView = function () {
         sideView = createSideView({
             mountAt:domWrapper,
             entries:otherEntries,
             onEntryClick:(doc)=>setDocument(doc),
-        })   
+        })
+        var sideViewButton = document.createElement("div")
+        sideViewButton.innerHTML="explorer"
+        sideViewButton.classList="prosemirror-top-bar-item"
+        topBar.getDomElement().append(sideViewButton)
+        sideViewButton.addEventListener("click", function () {
+            sideView.toggleVisibility()
+        }) 
     }
 
     var addDocTitle = function () {
         docTitle = createTitle({
-            mountAt:domWrapper,
+            mountAt:topBar.getDomElement(),
             // title:"testdoc",
             // onEntryClick:(doc)=>setDocument(doc),
         })   
@@ -117,7 +132,8 @@ var createEditor = function ({
     var addSaveButton = function () {
         var saveButton = document.createElement("div")
         saveButton.innerHTML="save"
-        domWrapper.append(saveButton)
+        saveButton.classList="prosemirror-top-bar-item"
+        topBar.getDomElement().append(saveButton)
         saveButton.addEventListener("click", function () {
             onSave(getJson(), editor, currentDocument)
         })
@@ -135,10 +151,12 @@ var createEditor = function ({
     }
 
     var init = function () {
-        addSaveButton()
-        addDocTitle()
+        addTopBar()
+        
         addEditor()
         addSideView()
+        addSaveButton()
+        addDocTitle()
         if (currentDocument) setDocument(currentDocument);
         
     }

@@ -8,11 +8,12 @@ export var createTitle = function ({
 
     var setDom = function() {
         domElement= document.createElement("div")
+        domElement.classList='prosemirror-top-bar-filename'
     }
 
 
     var update = function (newTitle) {
-        domElement.innerHTML=newTitle
+        domElement.innerHTML=newTitle || ""
     }
 
 
