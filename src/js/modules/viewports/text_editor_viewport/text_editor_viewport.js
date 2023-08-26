@@ -112,6 +112,37 @@ var setUpTable = function (event, data, instance) {
         
         
     }
+    editor.onSetDocument=(doc, editor, updateDoc)=>{
+        console.log(doc, editor, updateDoc);
+        
+        if (doc.id ) {
+            var instancesRepo = createInstancesManagement()
+            var instance = instancesRepo.getById(doc.id)
+
+            if (instance && instance.properties[itemData.attribute] && instance.properties[itemData.attribute].value) {
+                var newJson = JSON.parse(instance.properties[itemData.attribute].value)
+                if (newJson.doc) {
+                    updateDoc(newJson)
+                }else{
+                    console.warn("content is not compatible", newJson);
+                    var jsonInit = {"doc": {"type": "doc","content": [{"type": "paragraph", "content": [] }]}}
+                    updateDoc(jsonInit)
+                }
+                
+                // console.log(instance);
+                // alert("ee") 
+            }else{
+                console.warn("no data found in", instance);
+                var jsonInit = {"doc": {"type": "doc","content": [{"type": "paragraph", "content": [] }]}}
+                updateDoc(jsonInit)
+            }
+            // instance.setPropertyByName(itemData.attribute,JSON.stringify(json))
+            // console.log(instancesRepo.getById(currentDoc.id));
+        }
+        
+        
+    }
+    
     editor.otherInstances= itemData.instances.map(i=>({name:i.name, id:i.uuid}))
     console.log(editor.otherEntries);
 

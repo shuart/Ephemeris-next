@@ -18,6 +18,7 @@ var textArea = createAdler({
         onSave:(json,editor)=>{
           console.log(json,'txt');
         },
+        onSetDocument:undefined,
         defaultValue:undefined,
         otherInstances:[],
         mentionsDefs: [
@@ -59,6 +60,7 @@ var textArea = createAdler({
 
         var editor = createEditor({
           onSave:self.onSave,
+          onSetDocument:self.onSetDocument,
           mentionsDefinitions : self.mentionsDefs,
           mentionsOptions : self.mentionsOptions,
           mentionsCallback : self.mentionsCallback,

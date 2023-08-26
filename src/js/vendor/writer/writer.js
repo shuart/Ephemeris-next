@@ -25,7 +25,7 @@ var createEditor = function ({
     documentsList = [],
     otherEntries =[],
     onSave = (json,editor, currentDocument)=> console.log(json,editor, currentDocument),
-    onSetDocument = (json,editor, currentDocument)=> console.log(json,editor, currentDocument),
+    onSetDocument = (doc, editor, updateDoc)=> console.log(doc, editor, updateDoc),
 }={}) {
     var self = {}
     var domWrapper = document.createElement('div')
@@ -76,27 +76,7 @@ var createEditor = function ({
         // //add editor
         // var value = "<p>*some sentence* whatever.</p>";
         // var dom = (new DOMParser).parseFromString(value, "text/html");
-        var jsonInit = {
-            "doc": {
-              "type": "doc",
-              "content": [
-                {
-                  "type": "paragraph",
-                  "content": [
-                    {
-                      "type": "text",
-                      "text": "dqzdqzd"
-                    }
-                  ]
-                }
-              ]
-            },
-            "selection": {
-              "type": "text",
-              "anchor": 8,
-              "head": 8
-            }
-          }
+        var jsonInit = {"doc": {"type": "doc","content": [{"type": "paragraph", "content": [] }]}}
         editor = new EditorView(domWrapper, {
             state: EditorState.create({
                 // doc: DOMParser.fromSchema(mySchema).parse("Hello"),
@@ -109,30 +89,9 @@ var createEditor = function ({
 
 
 
-    var updateDoc= function (params) {
-        var jsonInit = {
-            "doc": {
-              "type": "doc",
-              "content": [
-                {
-                  "type": "paragraph",
-                  "content": [
-                    {
-                      "type": "text",
-                      "text": "dqzdqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzd"
-                    }
-                  ]
-                }
-              ]
-            },
-            "selection": {
-              "type": "text",
-              "anchor": 8,
-              "head": 8
-            }
-          }
+    var updateDoc= function (json) {
         var newState= EditorState.create({
-            doc: mySchema.nodeFromJSON(jsonInit.doc),
+            doc: mySchema.nodeFromJSON(json.doc),
             plugins: plugins
         })
         editor.updateState(newState);
@@ -168,7 +127,6 @@ var createEditor = function ({
     var setDocument = function (doc) {
         currentDocument = doc
         if(docTitle) docTitle.update(doc.name);
-        updateDoc()
         onSetDocument(doc, editor, updateDoc)
     }
 
