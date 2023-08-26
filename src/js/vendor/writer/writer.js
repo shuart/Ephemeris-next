@@ -12,14 +12,13 @@ var addListNodes = pm.schemaList.addListNodes
 var exampleSetup = pm.exampleSetup.exampleSetup
 
 
-var mentionsDefs= [
-    {name:"hastag", key:"#", attributes:["id", "tag"], attributeToDisplay:'tag'},
-    {name:"mention", key:"@", attributes:["name", "id","email"], attributeToDisplay:'name'},
-    {name:"arrow", key:"->", attributes:["id","tag"], attributeToDisplay:'tag'},
-]
+
 
 var createEditor = function ({
     mountAt=document.body,
+    mentionsDefinitions = undefined,
+    mentionsOptions = {},
+    mentionsCallback = {},
 }={}) {
     var self = {}
     var domWrapper = document.createElement('div')
@@ -38,33 +37,30 @@ var createEditor = function ({
         // Mix the nodes from prosemirror-schema-list into the basic schema to
         // create a schema with list support.
         //set up mentions
-        var addMentionsNodes = getMentionsNodes(mentionsDefs)
 
+        var baseNodes = addListNodes(schema.spec.nodes, "paragraph block*", "block")
 
-
-        //Mention
-        var tagsCallbacks={
-            "arrow": (e,view)=> console.log(e),
-            "hashtag": (e,view)=> console.log(e),
-            "mention": (e,view)=> console.log(e),
-          }
-        var tags ={
-            "arrow": [{id:1,tag: '-> abc'}, {id:2,tag: '-> 123'},],
-            "hashtag": [{id:1,tag: 'abc'}, {id:2,tag: '123'}, ],
-            "mention": [{name: 'John Doe', id: '101', email: 'joe@abc.com'}, {name: 'Joe Lewis', id: '102', email: 'lewis@abc.com'}],
+        //add custom base nodes
+        if (mentionsDefinitions) {
+            var addMentionsNodes = getMentionsNodes(mentionsDefinitions)
+            baseNodes = addMentionsNodes(  addListNodes(schema.spec.nodes, "paragraph block*", "block")    )
         }
-
-
-        var mentionPlugin = getDefaultMentionPlugin(mentionsDefs,tags,tagsCallbacks)
-
+        
+        //define schema
         const mySchema = new Schema({
-        nodes: addMentionsNodes(  addListNodes(schema.spec.nodes, "paragraph block*", "block")    ),
+        nodes: baseNodes,
         marks: schema.spec.marks
         })
 
         var plugins = exampleSetup({schema: mySchema})
-        plugins.unshift(mentionPlugin); // push it before keymap plugin to override keydown handlers
 
+        //add custom plugins
+        if (mentionsDefinitions) {
+            var mentionPlugin = getDefaultMentionPlugin(mentionsDefinitions,mentionsOptions,mentionsCallback)
+            plugins.unshift(mentionPlugin); // push it before keymap plugin to override keydown handlers
+        }
+        
+        //add editor
         editor = new EditorView(domWrapper, {
             state: EditorState.create({
                 doc: DOMParser.fromSchema(mySchema).parse(''),

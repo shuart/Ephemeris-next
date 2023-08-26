@@ -4,13 +4,11 @@ import { createEditor } from "../../../vendor/writer/writer.js";
 // import createEditor from "../../../vendor/proseMirror/pmCustom.js"
 import showPopupInstancePreview from "../../popup_instance_preview/popup_instance_preview.js";
 
-var setCurrentTags = function (writer) {
+var setCurrentTags = function () {
   var instancesRepo = createInstancesManagement()
   var instances = instancesRepo.getAll()
 
-  var list = instances.map(i=>({id:i.uuid, tag:i.name}))
-
-  writer.setTags("hashtag",list)
+  return instances.map(i=>({id:i.uuid, tag:i.name}))
 }
 
 
@@ -38,7 +36,32 @@ var textArea = createAdler({
         
     `,
     onRender:(self) =>{
-        var editor = createEditor()
+
+       var mentionsDefs= [
+          {name:"hashtag", key:"#", attributes:["id", "tag"], attributeToDisplay:'tag'},
+          {name:"mention", key:"@", attributes:["name", "id","email"], attributeToDisplay:'name'},
+          {name:"arrow", key:"->", attributes:["id","tag"], attributeToDisplay:'tag'},
+        ]
+        //Mention
+        var mentionsCallback={
+            "arrow": (e,view)=> console.log(e),
+            "hashtag": (e,view)=> {
+              console.log(e);
+              showPopupInstancePreview(e.originalTarget.dataset.hashtagId);
+            },
+            "mention": (e,view)=> console.log(e),
+            }
+        var mentionsOptions ={
+            "arrow": [{id:1,tag: '-> abc'}, {id:2,tag: '-> 123'},],
+            "hashtag": setCurrentTags(),
+            "mention": [{name: 'John Doe', id: '101', email: 'joe@abc.com'}, {name: 'Joe Lewis', id: '102', email: 'lewis@abc.com'}],
+        }
+
+        var editor = createEditor({
+          mentionsDefinitions : mentionsDefs,
+          mentionsOptions : mentionsOptions,
+          mentionsCallback : mentionsCallback,
+        })
         editor.mountAt(self.query(".writerArea"))
         // var jsonContent = undefined
         // if (self.defaultValue) {
@@ -89,6 +112,16 @@ var textArea = createAdler({
         
       }
       
+    }
+
+    .prosemirror-hashtag-node {
+      color: rgb(0, 209, 178);
+      font-weight: bold;
+      cursor: pointer;
+      background-color: rgba(147, 147, 147, 0.17);
+      border-radius: 5px;
+      padding-left: 5px;
+      padding-right: 5px;
     }
 
 

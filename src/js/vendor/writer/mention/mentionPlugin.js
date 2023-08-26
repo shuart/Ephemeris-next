@@ -9,27 +9,21 @@ var DecorationSet = pm.view.DecorationSet
 
 /**
  *
- * @param {String} mentionTrigger
- * @param {String} hashtagTrigger
+ * @param {String} definitions
  * @param {bool} allowSpace
- * @returns {Object}
+ * @returns {List}
  */
-export function getRegexp(mentionTrigger, hashtagTrigger, allowSpace) {
-  var mention = allowSpace
-    ? new RegExp("(^|\\s)" + mentionTrigger + "([\\w-\\+]+\\s?[\\w-\\+]*)$")
-    : new RegExp("(^|\\s)" + mentionTrigger + "([\\w-\\+]+)$");
-  
-  var arrow = new RegExp("(^|\\s)" + "->" + "([\\w-\\+]+\\s?[\\w-\\+]*)$")
+export function getRegexp(defs, allowSpace) {
+  var regexList = []
+  for (let i = 0; i < defs.length; i++) {
+    const def = defs[i];
+    var rgx = allowSpace
+    ? new RegExp("(^|\\s)" + def.key + "([\\w-\\+]+\\s?[\\w-\\+]*)$")
+    : new RegExp("(^|\\s)" + def.key + "([\\w-\\+]+)$");
+    regexList.push({type:def.name, regexp:rgx})
+  }
 
-
-  // hashtags should never allow spaces. I mean, what's the point of allowing spaces in hashtags?
-  var tag = new RegExp("(^|\\s)" + hashtagTrigger + "([\\w-]+)$");
-
-  return {
-    mention: mention,
-    tag: tag,
-    arrow: arrow,
-  };
+  return regexList;
 }
 
 /**
@@ -45,27 +39,35 @@ export function getMatch($position, opts) {
   const text = $position.doc.textBetween(parastart, $position.pos, "\n", "\0");
 
   var regex = getRegexp(
-    opts.mentionTrigger,
-    opts.hashtagTrigger,
+    opts.defs,
     opts.allowSpace
   );
 
   // only one of the below matches will be true.
-  var mentionMatch = text.match(regex.mention);
-  var tagMatch = text.match(regex.tag);
-  var arrowMatch = text.match(regex.arrow);
+  var match = undefined;
+  var type =undefined;
+  for (let i = 0; i < regex.length; i++) {
+    const rgx = regex[i];
+    if (text.match(rgx.regexp)) {
+      match = text.match(rgx.regexp)
+      type = rgx.type
+    }
+  }
+  // var mentionMatch = text.match(regex.mention);
+  // var tagMatch = text.match(regex.tag);
+  // var arrowMatch = text.match(regex.arrow);
 
-  var match = mentionMatch || tagMatch || arrowMatch;
+  // var match = mentionMatch || tagMatch || arrowMatch;
 
   // set type of match
-  var type;
-  if (mentionMatch) {
-    type = "mention";
-  } else if (tagMatch) {
-    type = "tagggg";
-  }else if (arrowMatch) {
-    type = "arrow";
-  }
+  // var type;
+  // if (mentionMatch) {
+  //   type = "mention";
+  // } else if (tagMatch) {
+  //   type = "tagggg";
+  // }else if (arrowMatch) {
+  //   type = "arrow";
+  // }
 
   // if match found, return match with useful information.
   if (match) {
