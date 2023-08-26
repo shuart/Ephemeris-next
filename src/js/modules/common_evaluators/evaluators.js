@@ -62,10 +62,12 @@ var createEvaluator = function ({
                     const node = outputNodes[i];
                     var output = result[node.templateName] ={}
                     var props = node.params.propsValue
+                    output.all = props
                     output.instances = props.instances||undefined
                     output.instance = props.instance||undefined
                     output.relations = props.relations||undefined
                     
+                    output.attribute = props.attribute||undefined
                     output.attributes = props.attributes||undefined
                     output.actions = props.actions||undefined
                     output.onConnect = props.onConnectAction||undefined
@@ -93,8 +95,10 @@ var createEvaluator = function ({
                 //     result.output_text_editor.instance = exportGraph.nodes.find(e=>e.templateName == "output_text_editor").params.propsValue.instance||undefined
                 //     result.output_text_editor.propertyName = exportGraph.nodes.find(e=>e.templateName == "output_text_editor").params.propsValue.propName||undefined
                 // }
+                console.log(result);
                 return result;
             }
+            
             return result;
 
         }

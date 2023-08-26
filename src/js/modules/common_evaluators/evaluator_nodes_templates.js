@@ -4,6 +4,7 @@ import createRelationsManagement from "../common_project_management/relations_ma
 import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
 import select from "../common_ui_components/select/select.js"
 import showPopupInstancePreview from "../popup_instance_preview/popup_instance_preview.js";
+import createAttributeManagement from "../common_project_management/attributes_management.js";
 
 var getProp = function(props,propName, data){
     var valuePassed = props[propName].get()
@@ -239,6 +240,70 @@ evaluatorTemplates.extractProperty = {
             //     return {id:e.uuid, value:e.name}
             // }))
             
+            
+        },
+    },
+}
+
+evaluatorTemplates.extractProperty = {
+    templateName : "attribute",
+    name : "Attribute",
+    props :[
+        {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        // {id:"id", label:"prop id", type:"hidden", editable:false, socket:"output", value:false},
+        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"method", label:"Attribute", type:"select", options:[
+            {id:"Greater_Than", value:"..."},
+            {id:"Greater_Than_Or_Equal", value:"Greater Than or Equal"},
+            {id:"Less_Than", value:"Less Than"},
+            {id:"Less_Than_Or_Equal", value:"Less Than or Equal"},
+            {id:"Equal", value:"Equal"},
+        ],editable:true, socket:"none", value:"....."},
+        // {id:"a", label:"Field", type:"text", editable:true, socket:"input", value:"0"},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            // var entityRepo = createEntityManagement()
+            // console.log(entityRepo.getAll());
+            
+            // props.method.setOptions(props.a.get().map(function (e) {
+            //         var currentKey = e.parameters.keys
+            //         return {id:e.uuid, value:e.name}
+            // }))
+
+            // if (props.a.get()[0] && props.a.get()[0].properties) {
+            //     props.method.setOptions(Object.keys(props.a.get()[0].properties).map(function (e) {
+            //         return {id:e, value:e}
+            //     }))
+            //     // props.output.set("undefined")
+            //     if (props.method.get()) {
+            //         props.output.set(props.a.get().map(function (e) {
+            //             console.log(e.properties);
+            //             return {[props.method.get()]:e.properties[props.method.get()]}
+            //         }))
+            //         props.id.set(props.method.getOptionId())
+            //     }
+            // }else{
+            //     props.output.set("undefined")
+            // }
+
+            var value = props.method.get()
+            if (value != ".....") {
+                props.output.set(value)
+            }else{
+                props.output.set("undefined")
+            }
+            
+            
+        },
+        onInit:(props) =>{
+            var attributeRepo = createAttributeManagement()
+            console.log(attributeRepo.getAll());
+            props.method.setOptions(attributeRepo.getAll().map(function (e) {
+                return {id:e.uuid, value:e.name}
+            })) 
             
         },
     },
@@ -527,8 +592,9 @@ evaluatorTemplates.outputTextEditor = {
     category:"output",
     props :[
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
-        {id:"propName", label:"Property Name", type:"text", editable:true, socket:"input", value:false},
+        {id:"attribute", label:"Attribute", type:"text", editable:true, socket:"input", value:false},
         {id:"instance", expect:"object", multiple:false, label:"instance", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"instances", expect:"array", multiple:false, label:"other instances", type:"hidden", editable:true, socket:"input", value:false},
     ],
     methods:{
     },

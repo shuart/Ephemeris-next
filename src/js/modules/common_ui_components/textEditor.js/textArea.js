@@ -15,10 +15,29 @@ var setCurrentTags = function () {
 var textArea = createAdler({
     tag:'text-area',
     props:{
-        saveCallback:(json,editor)=>{
-          console.log(json);
+        onSave:(json,editor)=>{
+          console.log(json,'txt');
         },
         defaultValue:undefined,
+        otherInstances:[],
+        mentionsDefs: [
+          // {name:"hashtag", key:"#", attributes:["id", "tag"], attributeToDisplay:'tag'},
+          // {name:"mention", key:"@", attributes:["name", "id","email"], attributeToDisplay:'name'},
+          // {name:"arrow", key:"->", attributes:["id","tag"], attributeToDisplay:'tag'},
+        ],
+        mentionsCallback:{
+          // "arrow": (e,view)=> console.log(e),
+          // "hashtag": (e,view)=> {
+          //   console.log(e);
+          //   showPopupInstancePreview(e.originalTarget.dataset.hashtagId);
+          // },
+          // "mention": (e,view)=> console.log(e),
+        },
+        mentionsOptions :{
+          // "arrow": [{id:1,tag: '-> abc'}, {id:2,tag: '-> 123'},],
+          // "hashtag": setCurrentTags(),
+          // "mention": [{name: 'John Doe', id: '101', email: 'joe@abc.com'}, {name: 'Joe Lewis', id: '102', email: 'lewis@abc.com'}],
+        },
         to_print:"foo",
         to_print_reac:"bar",
     },
@@ -37,30 +56,13 @@ var textArea = createAdler({
     `,
     onRender:(self) =>{
 
-       var mentionsDefs= [
-          {name:"hashtag", key:"#", attributes:["id", "tag"], attributeToDisplay:'tag'},
-          {name:"mention", key:"@", attributes:["name", "id","email"], attributeToDisplay:'name'},
-          {name:"arrow", key:"->", attributes:["id","tag"], attributeToDisplay:'tag'},
-        ]
-        //Mention
-        var mentionsCallback={
-            "arrow": (e,view)=> console.log(e),
-            "hashtag": (e,view)=> {
-              console.log(e);
-              showPopupInstancePreview(e.originalTarget.dataset.hashtagId);
-            },
-            "mention": (e,view)=> console.log(e),
-            }
-        var mentionsOptions ={
-            "arrow": [{id:1,tag: '-> abc'}, {id:2,tag: '-> 123'},],
-            "hashtag": setCurrentTags(),
-            "mention": [{name: 'John Doe', id: '101', email: 'joe@abc.com'}, {name: 'Joe Lewis', id: '102', email: 'lewis@abc.com'}],
-        }
 
         var editor = createEditor({
-          mentionsDefinitions : mentionsDefs,
-          mentionsOptions : mentionsOptions,
-          mentionsCallback : mentionsCallback,
+          onSave:self.onSave,
+          mentionsDefinitions : self.mentionsDefs,
+          mentionsOptions : self.mentionsOptions,
+          mentionsCallback : self.mentionsCallback,
+          otherEntries : self.otherInstances,
         })
         editor.mountAt(self.query(".writerArea"))
         // var jsonContent = undefined

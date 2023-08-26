@@ -1,5 +1,6 @@
 export var createSideView = function ({
     mountAt = undefined,
+    entries = [{name:"test"}, {name:"test2"},{name:"test22"}],
     onEntryClick = (e)=> console.log(e)
 }={}) {
     var self ={}
@@ -26,7 +27,6 @@ export var createSideView = function ({
 
     var updateEntries = function () {
         domElement.innerHTML=''
-        var entries = [{name:"test"}, {name:"test2"},{name:"test22"}]
         for (let i = 0; i < entries.length; i++) {
             addEntry(entries[i])
         }

@@ -23,11 +23,15 @@ var createEditor = function ({
     mentionsCallback = {},
     currentDocument = undefined,
     documentsList = [],
+    otherEntries =[],
     onSave = (json,editor, currentDocument)=> console.log(json,editor, currentDocument),
+    onSetDocument = (json,editor, currentDocument)=> console.log(json,editor, currentDocument),
 }={}) {
     var self = {}
     var domWrapper = document.createElement('div')
     var editor = undefined
+    var plugins = undefined
+    var mySchema = undefined
     var sideView = undefined
     var docTitle = undefined
     var addEditor = function () {
@@ -55,12 +59,12 @@ var createEditor = function ({
         }
         
         //define schema
-        const mySchema = new Schema({
+        mySchema = new Schema({
         nodes: baseNodes,
         marks: schema.spec.marks
         })
 
-        var plugins = exampleSetup({schema: mySchema})
+        plugins = exampleSetup({schema: mySchema})
 
         //add custom plugins
         if (mentionsDefinitions) {
@@ -68,20 +72,77 @@ var createEditor = function ({
             plugins.unshift(mentionPlugin); // push it before keymap plugin to override keydown handlers
         }
         
-        //add editor
+        
+        // //add editor
+        // var value = "<p>*some sentence* whatever.</p>";
+        // var dom = (new DOMParser).parseFromString(value, "text/html");
+        var jsonInit = {
+            "doc": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "dqzdqzd"
+                    }
+                  ]
+                }
+              ]
+            },
+            "selection": {
+              "type": "text",
+              "anchor": 8,
+              "head": 8
+            }
+          }
         editor = new EditorView(domWrapper, {
             state: EditorState.create({
-                doc: DOMParser.fromSchema(mySchema).parse(''),
+                // doc: DOMParser.fromSchema(mySchema).parse("Hello"),
+                doc: mySchema.nodeFromJSON(jsonInit.doc),
                 plugins: plugins
             })
         })
         
     }
 
+
+
+    var updateDoc= function (params) {
+        var jsonInit = {
+            "doc": {
+              "type": "doc",
+              "content": [
+                {
+                  "type": "paragraph",
+                  "content": [
+                    {
+                      "type": "text",
+                      "text": "dqzdqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqzd"
+                    }
+                  ]
+                }
+              ]
+            },
+            "selection": {
+              "type": "text",
+              "anchor": 8,
+              "head": 8
+            }
+          }
+        var newState= EditorState.create({
+            doc: mySchema.nodeFromJSON(jsonInit.doc),
+            plugins: plugins
+        })
+        editor.updateState(newState);
+    }
+
     //SideView
     var addSideView = function () {
         sideView = createSideView({
             mountAt:domWrapper,
+            entries:otherEntries,
             onEntryClick:(doc)=>setDocument(doc),
         })   
     }
@@ -107,6 +168,8 @@ var createEditor = function ({
     var setDocument = function (doc) {
         currentDocument = doc
         if(docTitle) docTitle.update(doc.name);
+        updateDoc()
+        onSetDocument(doc, editor, updateDoc)
     }
 
     var mountAt = function(domElement){

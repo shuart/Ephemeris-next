@@ -220,8 +220,11 @@ var instanceAggregate = function(aggregate, projectStore){
     aggregate.setPropertyByName = function (propName, value) {
         var propRef = propNameUuidMapping[propName]
         if (propRef) {
-            var newObject = {uuid:aggregate.uuid,[ "prop_"+propRef ]:value}
+            // var newObject = {uuid:aggregate.uuid,[ "prop_"+propRef ]:value}
+            var newObject = {uuid:aggregate.uuid,[ propRef ]:value} //TODO check why 'prop' is not needed
             projectStore.add("instances",newObject)
+        }else{
+            console.warn("No property named "+ propRef);
         }
     }
     aggregate.setPropertyByUuid = function (propRef, value) {
