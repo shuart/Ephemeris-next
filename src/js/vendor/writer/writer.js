@@ -3,6 +3,7 @@ import { getMentionsNodes, getMentionsPlugin, getDefaultMentionPlugin } from './
 import { createSideView } from './sideView/sideView.js';
 import { createTitle } from './docTitle/docTitle.js';
 import { createTopBar } from './topbar.js';
+import { createHighlighter } from './highlighter/highlighter.js';
 var pm = pmModule.pmCore
 console.log(pm);
 
@@ -24,6 +25,7 @@ var createEditor = function ({
     mentionsCallback = {},
     currentDocument = undefined,
     documentsList = [],
+    isEditable = true,
     otherEntries =[],
     onSave = (json,editor, currentDocument)=> console.log(json,editor, currentDocument),
     onSetDocument = (doc, editor, updateDoc)=> console.log(doc, editor, updateDoc),
@@ -36,6 +38,7 @@ var createEditor = function ({
     var sideView = undefined
     var docTitle = undefined
     var topBar = undefined
+    var modes ={editable:true}
     var addEditor = function () {
 
         
@@ -69,6 +72,10 @@ var createEditor = function ({
         plugins = exampleSetup({schema: mySchema})
 
         //add custom plugins
+        if (true) {
+            var highlighter = createHighlighter()
+            plugins = plugins.concat(highlighter)
+        }
         if (mentionsDefinitions) {
             var mentionPlugin = getDefaultMentionPlugin(mentionsDefinitions,mentionsOptions,mentionsCallback)
             plugins.unshift(mentionPlugin); // push it before keymap plugin to override keydown handlers
@@ -84,10 +91,17 @@ var createEditor = function ({
                 // doc: DOMParser.fromSchema(mySchema).parse("Hello"),
                 doc: mySchema.nodeFromJSON(jsonInit.doc),
                 plugins: plugins
-            })
+            }),
+            editable() { //set editable status
+                return modes.editable;
+            },
         })
         
     }
+
+    // setTimeout(function () {
+    //     modes.editable = false
+    // },5000)
 
 
 
@@ -113,7 +127,7 @@ var createEditor = function ({
             onEntryClick:(doc)=>setDocument(doc),
         })
         var sideViewButton = document.createElement("div")
-        sideViewButton.innerHTML="explorer"
+        sideViewButton.innerHTML="Explorer"
         sideViewButton.classList="prosemirror-top-bar-item"
         topBar.getDomElement().append(sideViewButton)
         sideViewButton.addEventListener("click", function () {
@@ -131,7 +145,7 @@ var createEditor = function ({
 
     var addSaveButton = function () {
         var saveButton = document.createElement("div")
-        saveButton.innerHTML="save"
+        saveButton.innerHTML="Save"
         saveButton.classList="prosemirror-top-bar-item"
         topBar.getDomElement().append(saveButton)
         saveButton.addEventListener("click", function () {
@@ -146,17 +160,30 @@ var createEditor = function ({
         onSetDocument(doc, editor, updateDoc)
     }
 
+    var toggleMenu = function () {
+        domWrapper.querySelector('.ProseMirror-menubar')
+        if (domWrapper.style.display !="none") { 
+            domWrapper.style.display ="none"
+        }else{
+            domWrapper.style.display ="block"
+        }
+    }
+
     var mountAt = function(domElement){
         domElement.append(domWrapper)
     }
 
     var init = function () {
-        addTopBar()
+        modes.editable = isEditable
+        if (modes.editable) {addTopBar()}
         
         addEditor()
-        addSideView()
-        addSaveButton()
-        addDocTitle()
+        if (modes.editable) {
+            addSideView()
+            addSaveButton()
+            addDocTitle()
+        }
+        if (!modes.editable) {toggleMenu()}
         if (currentDocument) setDocument(currentDocument);
         
     }
