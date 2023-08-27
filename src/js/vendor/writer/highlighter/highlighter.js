@@ -7,6 +7,8 @@ var TextSelection = pm.state.TextSelection
 var Decoration = pm.view.Decoration
 var DecorationSet = pm.view.DecorationSet
 
+
+//INK
 var toLint = [
   {regexExp:/=== .* ===/ig, classSuffix:"knot", style:"font-size:bold; color:#11a88c;"},
   {regexExp:/\*/ig, classSuffix:"choice", style:"font-size:bold; color:#11a88c;"}, 
@@ -14,22 +16,24 @@ var toLint = [
 ]
 
 //FOUNTAIN
-var previousLineIsEmpty =function (doc, node, topIndex, index) {
-    console.log(doc);
-    console.log(topIndex);
-    console.log(doc.maybeChild(topIndex));
+var previousLineIsEmpty =function (doc, node, topIndex, index, notableLines) {
     if (doc.maybeChild(topIndex-1) && doc.maybeChild(topIndex-1).textContent =="") {
-        console.log("is true");
         return true
     }
     return false
 }
-var toLint = [
+var previousLineIsDialogueOrCharacter =function (doc, node, topIndex, index, notableLines) {
+    if (notableLines[topIndex-1] && (notableLines[topIndex-1]=="character" || notableLines[topIndex-1]=="dialogue")) {
+        return true
+    }
+    return false
+}
+var toLint2 = [
     {classSuffix:"scene", regexExp:/INT\. .*/g, style:"font-size:bold; color:#11a88c;"},
     {classSuffix:"scene", regexExp:/EXT\. .*/g, style:"font-size:bold; color:#11a88c;"},
-    {classSuffix:"character", regexExp:/=== .* ===/ig, conditions:[previousLineIsEmpty], style:"font-size:bold; color:#11a88c;"},
-    // {classSuffix:"knot", regexExp:/=== .* ===/ig, style:"font-size:bold; color:#11a88c;"},
-    // {classSuffix:"knot", regexExp:/=== .* ===/ig, style:"font-size:bold; color:#11a88c;"},
+    // {classSuffix:"knot", regexExp:/=== .* ===/ig, conditions:[previousLineIsEmpty], style:"font-size:bold; color:#11a88c;"},
+    {classSuffix:"character", regexExp:/^[A-Z][A-Z][A-Z]*$/gm, conditions:[previousLineIsEmpty],style:"font-size:bold; color:#11a88c; display:block; margin:auto; text-align: center; " },
+    {classSuffix:"dialogue", regexExp:false, conditions:[previousLineIsDialogueOrCharacter], style:"display:block; margin:auto; text-align: center; width:80%;"},
     // {classSuffix:"knot", regexExp:/=== .* ===/ig, style:"font-size:bold; color:#11a88c;"},
     // {classSuffix:"knot", regexExp:/=== .* ===/ig, style:"font-size:bold; color:#11a88c;"},
     // {classSuffix:"knot", regexExp:/=== .* ===/ig, style:"font-size:bold; color:#11a88c;"},
@@ -40,6 +44,7 @@ var toLint = [
 var createHighlighter = function(){
 
   function lintDeco(doc) {
+
     let decos = []
     lint(doc).forEach(prob => {
       decos.push(Decoration.inline(prob.from, prob.to, {class: "prose_highlight_"+prob.rule.classSuffix, style:prob.rule.style}),
@@ -71,13 +76,11 @@ var createHighlighter = function(){
     function record(msg, from, to,rule, fix) {
       result.push({msg, from, to, rule, fix})
     }
-
+    let notableLines ={}
+    
     // For each node in the document
-    console.log("nodelistfeach");
     doc.forEach((node, offset, topIndex) => {
         node.descendants((node, pos, parent, index) => {
-            console.log(index);
-            console.log(node);
           if (node.isText) {
             // Scan text nodes for suspicious patterns
             let m
@@ -88,27 +91,28 @@ var createHighlighter = function(){
                 if (toLint[i].conditions) { //check for extra conditions
                     for (let j = 0; j < toLint[i].conditions.length && conditionsPassed; j++) {
                         const cond = toLint[i].conditions[j];
-                        console.log(cond(doc,node, topIndex, index));
-                        conditionsPassed = cond(node, topIndex, index)
-                        console.log(conditionsPassed);
+                        conditionsPassed = cond(doc, node, topIndex, index, notableLines)
                     }  
                 }
-                console.log("liniting",rule,conditionsPassed );
-                if (conditionsPassed) { //do the regex verif
-                    console.log("liniting",rule );
+                if (conditionsPassed && toLint[i].regexExp) { //do the regex verif
                     while (m = toLint[i].regexExp.exec(node.text)){
+                      console.log(notableLines);
                         record(`${toLint[i].classSuffix} '${m[0]}'`, offset+1 +pos + m.index, offset+1+ pos + m.index + m[0].length, toLint[i])
+                        notableLines[topIndex]= toLint[i].classSuffix //record for current exe
                     }
-                }
+                }else if (conditionsPassed ) { 
+                  console.log("fefesf");
+                  record(`${toLint[i].classSuffix} '${node.text}'`, offset+1 +pos, offset+1+ pos + node.text.length, toLint[i])
+                  notableLines[topIndex]= toLint[i].classSuffix //record for current exe
+              }
                 
                 
             }
           }
         })
-        console.log(topIndex);
-        console.log(node);
+
     })
-    console.log("nodelist");
+
 
     // doc.descendants((node, pos, parent, index) => {
     //     console.log(index);
