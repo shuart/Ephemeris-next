@@ -1,11 +1,15 @@
 import * as pmModule from '../pmCore.js'
 var pm = pmModule.pmCore
 
+
+console.log(pm);
+
 var Plugin = pm.state.Plugin
 var PluginKey = pm.state.PluginKey
 var TextSelection = pm.state.TextSelection
 var Decoration = pm.view.Decoration
 var DecorationSet = pm.view.DecorationSet
+var findWrapping = pm.tranform.findWrapping
 
 
 //INK
@@ -28,7 +32,7 @@ var previousLineIsDialogueOrCharacter =function (doc, node, topIndex, index, not
     }
     return false
 }
-var toLint2 = [
+var toLint = [
     {classSuffix:"scene", regexExp:/INT\. .*/g, style:"font-size:bold; color:#11a88c;"},
     {classSuffix:"scene", regexExp:/EXT\. .*/g, style:"font-size:bold; color:#11a88c;"},
     // {classSuffix:"knot", regexExp:/=== .* ===/ig, conditions:[previousLineIsEmpty], style:"font-size:bold; color:#11a88c;"},
@@ -40,16 +44,95 @@ var toLint2 = [
     // {classSuffix:"knot", regexExp:/=== .* ===/ig, style:"font-size:bold; color:#11a88c;"},
     // {classSuffix:"knot", regexExp:/=== .* ===/ig, style:"font-size:bold; color:#11a88c;"},
   ]
-  // var experimentWhithNodes= function(tr){
-  //   console.log(tr);
-  // }
-var createHighlighter = function(){
+  var experimentWhithNodes= function(tr, schema){
+    console.log(tr);
+    const $position = tr.selection.$from;
+    console.log($position);
+    // Get a range around the selected blocks
+    let range = tr.selection.$from.blockRange(tr.selection.$to)
+    console.log(range);
+    // // See if it is possible to wrap that range in a note group
+    console.log(schema);
+    let wrapping = findWrapping(range, schema.nodes.blockquote)
+    console.log(wrapping);
+    // // If not, the command doesn't apply
+    if (!wrapping) return false
+    // Otherwise, dispatch a transaction, using the `wrap` method to
+    // create the step that does the actual wrapping.
+    // if (dispatch) dispatch(state.tr.wrap(range, wrapping).scrollIntoView())
+    return true
+  }
+  var experimentWhithNodesB= function(view, from, to, text, schema){
+    console.log(view);
+    console.log(text);
+    const $position = view.state.selection.$from;
+    console.log($position);
+    // Get a range around the selected blocks
+    let range = view.state.selection.$from.blockRange(view.state.selection.$to)
+    console.log(range);
+    // // See if it is possible to wrap that range in a note group
+    console.log(schema);
+    let wrapping = findWrapping(range, schema.nodes.blockquote)
+    console.log(wrapping);
+    // // If not, the command doesn't apply
+    
+    var textToCheck = view.state.selection.$head.parent.textContent
+    
+    var regexExp = /IOT\. .*/g
+    let m
+    // while (m = regexExp.exec(textToCheck)){
+    //   console.log(m);
+    //   alert("refesf")
+        
+    // }
+    
+    console.log("matching");
+    console.log(range);
+    console.log(range.parent);
+    console.log(textToCheck);
+    console.log(/INT\. .*/.test(textToCheck));
+    console.log(regexExp.exec(textToCheck));
+    console.log(regexExp.test(textToCheck));
+    console.log( view.state.doc.resolve($position.before(1)));
+    if (!wrapping) return false
+    if (regexExp.test(textToCheck) && range.parent.type.name !="blockquote") {
+      console.log("FOUND");
+      console.log("FOUND");
+      let wrapping = findWrapping(range, schema.nodes.blockquote)
+      console.log(range);
+      console.log(wrapping);
+      // setTimeout(function () {
+      //   view.dispatch(view.state.tr.wrap(range, wrapping))
+      //   // if (view.dispatch) view.dispatch(view.state.tr.wrap(range, wrapping).scrollIntoView())
+      // },0)
+      if (view.dispatch) view.dispatch(view.state.tr.wrap(range, wrapping))
+      // Subtract one so that it falls within the current node
+      // const endPos = view.state.selection.$to.after() - 1;
+      const endPos = view.state.selection.$to.after()-1;
+      const selection = new TextSelection(view.state.doc.resolve(endPos));
+      let transaction = view.state.tr.setSelection(selection);
+      view.dispatch(transaction);
+      // view.dispatch(view.state.tr.setSelection(TextSelection.create(view.state.doc, $position+1)));
+    }
+    // Otherwise, dispatch a transaction, using the `wrap` method to
+    // create the step that does the actual wrapping.
+    // console.log(view.state.doc.textBetween(parastart, $position.pos, "\n", "\0") );
+    console.log(view.state.selection.$head.parent.textContent);
+    console.log(view.state.selection.$head.parent.parent);
+    // if (view.dispatch) view.dispatch(view.state.tr.wrap(range, wrapping).scrollIntoView())
+    return true
+  }
+var createTagger = function({
+  schema=undefined,
+}={}){
   
   function lintDeco(doc) {
     // var doc = tr.doc
     // experimentWhitNodes(tr)
 
     let decos = []
+    var tagged = lint(doc)
+    console.log(tagged);
     lint(doc).forEach(prob => {
       decos.push(Decoration.inline(prob.from, prob.to, {class: "prose_highlight_"+prob.rule.classSuffix, style:prob.rule.style}),
                  Decoration.widget(prob.from, lintIcon(prob)))
@@ -65,14 +148,6 @@ var createHighlighter = function(){
     return icon
   }
 
-//   const knots = /=== .* ===/ig
-
-//   // Words you probably shouldn't use
-//   const badWords = /\b(obviously|clearly|evidently|simply)\b/ig
-//   // Matches punctuation with a space before it
-//   const badPunc = / ([,\.!?:]) ?/g
-//   // Matches punctuation with a space before it
-//   const goToLinks = /->/ig
 
   function lint(doc) {
     let result = [], lastHeadLevel = null
@@ -118,71 +193,13 @@ var createHighlighter = function(){
     })
 
 
-    // doc.descendants((node, pos, parent, index) => {
-    //     console.log(index);
-    //     console.log(node);
-    //   if (node.isText) {
-    //     // Scan text nodes for suspicious patterns
-    //     let m
-        
-    //     for (let i = 0; i < toLint.length; i++) {
-    //       while (m = toLint[i].regexExp.exec(node.text)){
-    //         record(`${toLint[i].classSuffix} '${m[0]}'`, pos + m.index, pos + m.index + m[0].length, toLint[i])
-    //       }
-    //     }
-        
-
-          
-    //   //   while (m = goToLinks.exec(node.text))
-    //   //     record(`GoTo '${m[0]}'`,
-    //   //            pos + m.index, pos + m.index + m[0].length)
-    //   //   while (m = badWords.exec(node.text))
-    //   //     record(`Try not to say '${m[0]}'`,
-    //   //            pos + m.index, pos + m.index + m[0].length)
-    //   //   while (m = badPunc.exec(node.text))
-    //   //     record("Suspicious spacing around punctuation",
-    //   //            pos + m.index, pos + m.index + m[0].length,
-    //   //            fixPunc(m[1] + " "))
-    //   // } else if (node.type.name == "heading") {
-    //     // Check whether heading levels fit under the current level
-    //   //   let level = node.attrs.level
-    //   //   if (lastHeadLevel != null && level > lastHeadLevel + 1)
-    //   //     record(`Heading too small (${level} under ${lastHeadLevel})`,
-    //   //            pos + 1, pos + 1 + node.content.size,
-    //   //            fixHeader(lastHeadLevel + 1))
-    //   //   lastHeadLevel = level
-    //   // } else if (node.type.name == "image" && !node.attrs.alt) {
-    //     // Ensure images have alt text
-    //   //   record("Image without alt text", pos, pos + 1, addAlt)
-    //   }
-    // })
-
     return result
   }
 
-  function fixPunc(replacement) {
-    return function({state, dispatch}) {
-      dispatch(state.tr.replaceWith(this.from, this.to,
-                                    state.schema.text(replacement)))
-    }
-  }
 
-  function fixHeader(level) {
-    return function({state, dispatch}) {
-      dispatch(state.tr.setNodeMarkup(this.from - 1, null, {level}))
-    }
-  }
-
-  function addAlt({state, dispatch}) {
-    let alt = prompt("Alt text", "")
-    if (alt) {
-      let attrs = Object.assign({}, state.doc.nodeAt(this.from).attrs, {alt})
-      dispatch(state.tr.setNodeMarkup(this.from, null, attrs))
-    }
-  }
 
   function scan(tr) {
-    // experimentWhithNodes(tr);
+    // experimentWhithNodes(tr, schema);
     lintDeco(tr.doc)
     return lintDeco(tr.doc)
   }
@@ -194,7 +211,27 @@ var createHighlighter = function(){
       init(_, {doc}) { return lintDeco(doc) },
       apply(tr, old) { return tr.docChanged ? scan(tr) : old }
     },
+    // props: {
+    //   handleTextInput(view, from, to, text) {
+    //     return run(view, from, to, text, rules, plugin)
+    //   },
+    //   handleDOMEvents: {
+    //     compositionend: (view) => {
+    //       setTimeout(() => {
+    //         let {$cursor} = view.state.selection as TextSelection
+    //         if ($cursor) run(view, $cursor.pos, $cursor.pos, "", rules, plugin)
+    //       })
+    //     }
+    //   }
+    // },
+
+    // isInputRules: true,
     props: {
+      handleTextInput(view, from, to, text) {
+        // return run(view, from, to, text, rules, plugin)
+        console.log("fsfesf");
+        experimentWhithNodesB(view, from, to, text, schema)
+      },
       decorations(state) { return this.getState(state) },
       handleClick(view, _, event) {
         if (/lint-icon/.test(event.target.className)) {
@@ -225,4 +262,4 @@ var createHighlighter = function(){
 
 
 
-export {createHighlighter}
+export {createTagger}

@@ -4,6 +4,7 @@ import { createSideView } from './sideView/sideView.js';
 import { createTitle } from './docTitle/docTitle.js';
 import { createTopBar } from './topbar.js';
 import { createHighlighter } from './highlighter/highlighter.js';
+import { createTagger } from './highlighter/tagger.js';
 var pm = pmModule.pmCore
 console.log(pm);
 
@@ -75,6 +76,10 @@ var createEditor = function ({
         if (true) {
             var highlighter = createHighlighter()
             plugins = plugins.concat(highlighter)
+        }
+        if (true) {
+            var tagger = createTagger({schema: mySchema})
+            plugins = plugins.concat(tagger)
         }
         if (mentionsDefinitions) {
             var mentionPlugin = getDefaultMentionPlugin(mentionsDefinitions,mentionsOptions,mentionsCallback)
