@@ -40,6 +40,7 @@ var createEditor = function ({
     var docTitle = undefined
     var topBar = undefined
     var modes ={editable:true}
+    var writerState = {editor:undefined}
     var addEditor = function () {
 
         
@@ -78,7 +79,7 @@ var createEditor = function ({
             plugins = plugins.concat(highlighter)
         }
         if (true) {
-            var tagger = createTagger({schema: mySchema})
+            var tagger = createTagger({schema: mySchema, commonState:writerState})
             plugins = plugins.concat(tagger)
         }
         if (mentionsDefinitions) {
@@ -101,7 +102,7 @@ var createEditor = function ({
                 return modes.editable;
             },
         })
-        
+        writerState.editor = editor
     }
 
     // setTimeout(function () {

@@ -62,7 +62,7 @@ var toLint = [
     // if (dispatch) dispatch(state.tr.wrap(range, wrapping).scrollIntoView())
     return true
   }
-  var experimentWhithNodesB= function(view, from, to, text, schema){
+  var experimentWhithNodesB= function(view, from, to, text, schema, commonState){
     console.log(view);
     console.log(text);
     const $position = view.state.selection.$from;
@@ -105,13 +105,28 @@ var toLint = [
       //   view.dispatch(view.state.tr.wrap(range, wrapping))
       //   // if (view.dispatch) view.dispatch(view.state.tr.wrap(range, wrapping).scrollIntoView())
       // },0)
+      var tr2 = view.state.tr.insertText(text, from, to)
+      // var tr1 = view.dispatch(view.state.tr.wrap(range, wrapping))
+      // view.dispatch(tr2)
+      // view.dispatch(tr1.setMeta(plugin, {transform: tr, from, to, text}))
       if (view.dispatch) view.dispatch(view.state.tr.wrap(range, wrapping))
+      view.dispatch(commonState.editor.state.tr.insertText(text, from+1, to+1))
+      var newState = commonState.editor.state
+      const endPos = newState.selection.$from;
+      console.log(endPos);
+      // alert("d")
+      const selection = new TextSelection(newState.doc.resolve(endPos));
+      let transaction = newState.tr.setSelection(selection);
+      // view.dispatch(transaction);
+
+    //   console.log(commonState);
+    // alert("fesf")
       // Subtract one so that it falls within the current node
       // const endPos = view.state.selection.$to.after() - 1;
-      const endPos = view.state.selection.$to.after()-1;
-      const selection = new TextSelection(view.state.doc.resolve(endPos));
-      let transaction = view.state.tr.setSelection(selection);
-      view.dispatch(transaction);
+      // const endPos = view.state.selection.$to.after()-1;
+      // const selection = new TextSelection(view.state.doc.resolve(endPos));
+      // let transaction = view.state.tr.setSelection(selection);
+      // view.dispatch(transaction);
       // view.dispatch(view.state.tr.setSelection(TextSelection.create(view.state.doc, $position+1)));
     }
     // Otherwise, dispatch a transaction, using the `wrap` method to
@@ -120,10 +135,11 @@ var toLint = [
     console.log(view.state.selection.$head.parent.textContent);
     console.log(view.state.selection.$head.parent.parent);
     // if (view.dispatch) view.dispatch(view.state.tr.wrap(range, wrapping).scrollIntoView())
-    return true
+    return false
   }
 var createTagger = function({
   schema=undefined,
+  commonState = {}
 }={}){
   
   function lintDeco(doc) {
@@ -206,11 +222,11 @@ var createTagger = function({
 
 
   return new Plugin({
-    key: new PluginKey("highlighter"),
-    state: {
-      init(_, {doc}) { return lintDeco(doc) },
-      apply(tr, old) { return tr.docChanged ? scan(tr) : old }
-    },
+    key: new PluginKey("tagger"),
+    // state: {
+    //   init(_, {doc}) { return lintDeco(doc) },
+    //   apply(tr, old) { return tr.docChanged ? scan(tr) : old }
+    // },
     // props: {
     //   handleTextInput(view, from, to, text) {
     //     return run(view, from, to, text, rules, plugin)
@@ -230,7 +246,7 @@ var createTagger = function({
       handleTextInput(view, from, to, text) {
         // return run(view, from, to, text, rules, plugin)
         console.log("fsfesf");
-        experimentWhithNodesB(view, from, to, text, schema)
+        return experimentWhithNodesB(view, from, to, text, schema, commonState)
       },
       decorations(state) { return this.getState(state) },
       handleClick(view, _, event) {
