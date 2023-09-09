@@ -94,6 +94,7 @@ var toLint = [
     console.log(regexExp.exec(textToCheck));
     console.log(regexExp.test(textToCheck));
     console.log( view.state.doc.resolve($position.before(1)));
+    alert ("fesfs")
     if (!wrapping) return false
     if (regexExp.test(textToCheck) && range.parent.type.name !="blockquote") {
       console.log("FOUND");
@@ -115,8 +116,8 @@ var toLint = [
       const endPos = newState.selection.$from;
       console.log(endPos);
       // alert("d")
-      const selection = new TextSelection(newState.doc.resolve(endPos));
-      let transaction = newState.tr.setSelection(selection);
+      // const selection = new TextSelection(newState.doc.resolve(endPos));
+      // let transaction = newState.tr.setSelection(selection);
       // view.dispatch(transaction);
 
     //   console.log(commonState);
@@ -128,6 +129,7 @@ var toLint = [
       // let transaction = view.state.tr.setSelection(selection);
       // view.dispatch(transaction);
       // view.dispatch(view.state.tr.setSelection(TextSelection.create(view.state.doc, $position+1)));
+      return true
     }
     // Otherwise, dispatch a transaction, using the `wrap` method to
     // create the step that does the actual wrapping.
@@ -231,18 +233,24 @@ var createTagger = function({
     //   handleTextInput(view, from, to, text) {
     //     return run(view, from, to, text, rules, plugin)
     //   },
-    //   handleDOMEvents: {
-    //     compositionend: (view) => {
-    //       setTimeout(() => {
-    //         let {$cursor} = view.state.selection as TextSelection
-    //         if ($cursor) run(view, $cursor.pos, $cursor.pos, "", rules, plugin)
-    //       })
-    //     }
-    //   }
+      
     // },
 
     // isInputRules: true,
     props: {
+      // handleDOMEvents: {
+      //   compositionend: (view) => {
+      //     alert("e")
+      //     // setTimeout(() => {
+      //     //   // let {$cursor} = view.state.selection as TextSelection
+      //     //   // if ($cursor) run(view, $cursor.pos, $cursor.pos, "", rules, plugin)
+      //     // })
+      //   }
+      // },
+      handlePaste(view, event, slice){
+        console.log(slice);
+        alert("fesfe")
+      },
       handleTextInput(view, from, to, text) {
         // return run(view, from, to, text, rules, plugin)
         console.log("fsfesf");

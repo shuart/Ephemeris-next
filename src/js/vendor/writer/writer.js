@@ -78,7 +78,7 @@ var createEditor = function ({
             var highlighter = createHighlighter()
             plugins = plugins.concat(highlighter)
         }
-        if (true) {
+        if (false) {
             var tagger = createTagger({schema: mySchema, commonState:writerState})
             plugins = plugins.concat(tagger)
         }
