@@ -1,3 +1,5 @@
+import { createIDBStore } from "./superClusterIdb.js";
+
 var createCluster = function(initialSchema, options){
     var self = {};
     var useCrdt = false;
@@ -6,8 +8,11 @@ var createCluster = function(initialSchema, options){
     var storageIndexes={}
     var storageUUID={}
     var storageCrdt =[]
+    var storageIsReady = undefined
     var storage = {}
     var subscribers = []
+    var idbBufferStorage = []
+    var idbStorage = undefined
     var _syncEnabled =false
     let nanoid=(t=21)=>crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?"-":"_"),"");
 
@@ -134,6 +139,17 @@ var createCluster = function(initialSchema, options){
     var persist = function(){
         if (options.persistence) {
             var currentPersistence = localStorage.setItem('supercluster-'+options.persistence,packForLocalStorage() );
+            if (true) { //use idb for crdt
+                // var currentPersistence = localStorage.setItem('supercluster-'+options.persistence,packForLocalStorage() );
+                // alert(storageCrdt[storageCrdt.length-1].row)
+                while (idbBufferStorage.length > 0) { //TODO buffer should be emptied even when idb is not used
+                    idbStorage.add(idbBufferStorage.shift()) //clear the current idb buffer
+                    //TODO use addBulk
+                    // idbStorage.add(storageCrdt[storageCrdt.length-1])
+                }
+                
+                
+            }
         }
     }
 
@@ -149,12 +165,29 @@ var createCluster = function(initialSchema, options){
             if (options.crdt) { useCrdt = true; }
             if (options.syncTo) { _syncEnabled = options.syncTo; }
             if (options.persistence) {
+                
                 var currentPersistence = localStorage.getItem('supercluster-'+options.persistence);
                 if (currentPersistence){
                     console.log(currentPersistence);
                     var currentPersistence = JSON.parse(currentPersistence)
                     var newIndexedStorage = rebuildIndexes(currentPersistence.currentUUIDS, currentPersistence.storage)
                     currentSchema = currentPersistence.currentSchema; currentUUIDS = currentPersistence.currentUUIDS; storageIndexes = currentPersistence.storageIndexes; storageUUID = newIndexedStorage ;storage = currentPersistence.storage;storageCrdt=currentPersistence.storageCrdt
+                    if (useCrdt && currentPersistence.storageCrdt) { //TODO, remove after migration to idb
+                        storageIsReady =  new Promise(async (resolve, reject) => { //if idb is used wrap everything in a promise
+
+                            if (!idbStorage) { //setup IDB storage
+                                idbStorage = await  createIDBStore(options.persistence)
+                                // storageIsReady = Promise.all([idbStorage])
+                            }
+                            console.log(idbStorage);
+                            idbStorage.clear()
+                            var test = await idbStorage.addBulk(currentPersistence.storageCrdt)
+                            // var all = await idbStorage.getAll()
+                            resolve(true)
+                
+                        });
+                        
+                    }
                 }
                 updatePersitenceSchema(currentSchema,initialSchema)
                 if (options.autoclean) { //clean the crdt in persitence
@@ -165,7 +198,9 @@ var createCluster = function(initialSchema, options){
     }
 
     var exportLocalStorage = function(){
-        return localStorage.getItem('supercluster-'+options.persistence);
+        var ls =  localStorage.getItem('supercluster-'+options.persistence);
+        // var crdt = idbStorage.
+        var db = {ls:ls}
     }
 
     var updatePersitenceSchema = function(currentSchema, initialSchema){
@@ -268,6 +303,7 @@ var createCluster = function(initialSchema, options){
             //   Timestamp.parse(msg.timestamp)
             // );
             storageCrdt.push(msg);
+            idbBufferStorage.push(msg);
           }
         });
       
@@ -444,12 +480,16 @@ var createCluster = function(initialSchema, options){
     function subscribeToChange(id, callback) {
         subscribers.push({id, callback})
     }
+    function isStorageReady() {
+        return storageIsReady
+    }
 
 
     //OUTPUT & INIT
 
     init()
 
+    self.isStorageReady=isStorageReady
     self.exportLocalStorage=exportLocalStorage
     self.addStores=addStores;
     self.add=add;

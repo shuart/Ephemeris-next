@@ -25,7 +25,7 @@ const common_router = createRouter()
 
 var lastUrlBeforeRedirect = undefined
 var setCurrentProject = function (id) {
-    projectManagement.setCurrent(id)
+    return projectManagement.setCurrent(id)
 }
 
 var logger = function(req,res,next){
@@ -88,10 +88,10 @@ var createStateManager = function({
             // mainUiElement.append(project_dashboard.instance(), "main_area_mount_point");
             // mainUiElement.update();
         })
-        common_router.route("/:project/dashboard", (event)=>
+        common_router.route("/:project/dashboard", async (event)=>
         {
             console.log(event);
-            setCurrentProject(event.params.project)
+            await setCurrentProject(event.params.project)
             mainUiElement.append(project_dashboard.instance(), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();

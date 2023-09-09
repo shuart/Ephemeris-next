@@ -45,9 +45,12 @@ var createProjectManagement = function(){
         db.add("projects", { name:name, id:newUuid})
     }
 
-    var setCurrent= function(id){
+    var setCurrent= async function(id){
         console.log("set "+ id +" as current project");
         current=id
+        var store = await projectStores.mountProjectStore(id)
+        return store
+        
     }
     var getCurrent= function(id){
         return db.get("projects").where("id").equals(current)

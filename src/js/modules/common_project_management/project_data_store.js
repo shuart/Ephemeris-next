@@ -43,7 +43,14 @@ var createProjectStore = function(){
         console.trace(projectId)
         console.log(projectId);
         mountedDBs[projectId] = projectDB
-        return projectDB
+
+        var status =new Promise((resolve, reject)=>{ //create a promise to confirm the status
+            projectDB.isStorageReady().then(()=>{
+                resolve(projectDB)
+            })
+        })
+        
+        return status
     }
 
     var getProjectDB = function(projectId){ //Check if the project is in memory and mount it if needed
