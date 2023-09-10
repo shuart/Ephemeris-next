@@ -1,7 +1,7 @@
 import createdb from "../../vendor/superCluster.js";
 import projectStores from "./project_data_store.js";
 import nanoid from "../../vendor/nanoid.js";
-import { importToPersistence } from "../../vendor/superClusterIO.js";
+import { importToPersistence, removePersistence } from "../../vendor/superClusterIO.js";
 
 var createProjectManagement = function(){
     var self={}
@@ -28,7 +28,8 @@ var createProjectManagement = function(){
         var deleteProject = confirm("Are you sure to delete project "+currentProject.name+ " with UUID "+currentProject.id)
         if (deleteProject) {
             db.remove("projects", currentProject.id)
-            localStorage.removeItem('supercluster-'+currentProject.id)
+            // localStorage.removeItem('supercluster-'+currentProject.id)
+            removePersistence(currentProject.id)
         }
     }
 

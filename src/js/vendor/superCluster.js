@@ -164,6 +164,13 @@ var createCluster = function(initialSchema, options){
         }
         if(options){
             if (options.crdt) { useCrdt = true; }
+            if (useCrdt) {
+                storageIsReady =  new Promise(async (resolve, reject) => { //if idb is used wrap everything in a promise
+                    if (!idbStorage) { idbStorage = await  createIDBStore(options.persistence)}//setup IDB storage
+                    storageCrdt =  await idbStorage.getAll()
+                    resolve(true)
+                });
+            }
             if (options.syncTo) { _syncEnabled = options.syncTo; }
             if (options.persistence) {
                 
@@ -189,13 +196,7 @@ var createCluster = function(initialSchema, options){
                     //         resolve(true)
                     //     });
                     // }else 
-                    if (useCrdt) {
-                        storageIsReady =  new Promise(async (resolve, reject) => { //if idb is used wrap everything in a promise
-                            if (!idbStorage) { idbStorage = await  createIDBStore(options.persistence)}//setup IDB storage
-                            storageCrdt =  await idbStorage.getAll()
-                            resolve(true)
-                        });
-                    }
+                    
                 }
                 updatePersitenceSchema(currentSchema,initialSchema)
                 if (options.autoclean) { //clean the crdt in persitence

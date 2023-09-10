@@ -55,4 +55,25 @@ async function importToPersistence(template, dbname) {
 
 }
 
-export {importToPersistence}
+async function removePersistence(dbname) {
+    var ls = localStorage.getItem('supercluster-'+dbname)
+    if (ls) {
+        localStorage.removeItem('supercluster-'+dbname)
+    }
+    const DBDeleteRequest = window.indexedDB.deleteDatabase("supercluster-crdt-"+dbname);
+
+    DBDeleteRequest.onerror = (event) => {
+    console.error("Error deleting database.");
+    };
+
+    DBDeleteRequest.onsuccess = (event) => {
+    console.log("Database deleted successfully");
+
+    console.log(event.result); // should be undefined
+    };
+
+
+    return true
+}
+
+export {importToPersistence, removePersistence}
