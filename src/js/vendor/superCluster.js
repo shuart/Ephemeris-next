@@ -133,13 +133,14 @@ var createCluster = function(initialSchema, options){
 
     var packForLocalStorage = function(){
         var pack = {};
-        pack = {currentSchema:currentSchema , currentUUIDS:currentUUIDS, storageIndexes:storageIndexes, storageUUID:storageUUID, storage:storage,storageCrdt:storageCrdt};
+        // pack = {currentSchema:currentSchema , currentUUIDS:currentUUIDS, storageIndexes:storageIndexes, storageUUID:storageUUID, storage:storage,storageCrdt:storageCrdt};
+        pack = {currentSchema:currentSchema , currentUUIDS:currentUUIDS, storageIndexes:storageIndexes, storageUUID:storageUUID, storage:storage,storageCrdt:undefined};
         return JSON.stringify(pack)
     }
     var persist = function(){
         if (options.persistence) {
             var currentPersistence = localStorage.setItem('supercluster-'+options.persistence,packForLocalStorage() );
-            if (true) { //use idb for crdt
+            if (useCrdt) { //use idb for crdt
                 // var currentPersistence = localStorage.setItem('supercluster-'+options.persistence,packForLocalStorage() );
                 // alert(storageCrdt[storageCrdt.length-1].row)
                 while (idbBufferStorage.length > 0) { //TODO buffer should be emptied even when idb is not used
@@ -171,22 +172,27 @@ var createCluster = function(initialSchema, options){
                     console.log(currentPersistence);
                     var currentPersistence = JSON.parse(currentPersistence)
                     var newIndexedStorage = rebuildIndexes(currentPersistence.currentUUIDS, currentPersistence.storage)
-                    currentSchema = currentPersistence.currentSchema; currentUUIDS = currentPersistence.currentUUIDS; storageIndexes = currentPersistence.storageIndexes; storageUUID = newIndexedStorage ;storage = currentPersistence.storage;storageCrdt=currentPersistence.storageCrdt
-                    if (useCrdt && currentPersistence.storageCrdt) { //TODO, remove after migration to idb
+                    // currentSchema = currentPersistence.currentSchema; currentUUIDS = currentPersistence.currentUUIDS; storageIndexes = currentPersistence.storageIndexes; storageUUID = newIndexedStorage ;storage = currentPersistence.storage;storageCrdt=currentPersistence.storageCrdt
+                    currentSchema = currentPersistence.currentSchema; currentUUIDS = currentPersistence.currentUUIDS; storageIndexes = currentPersistence.storageIndexes; storageUUID = newIndexedStorage ;storage = currentPersistence.storage;
+                    var migration = false
+                    if (migration && useCrdt && currentPersistence.storageCrdt && currentPersistence.storageCrdt[0]) { //TODO, remove after migration to idb
                         storageIsReady =  new Promise(async (resolve, reject) => { //if idb is used wrap everything in a promise
-
                             if (!idbStorage) { //setup IDB storage
                                 idbStorage = await  createIDBStore(options.persistence)
                                 // storageIsReady = Promise.all([idbStorage])
                             }
                             console.log(idbStorage);
                             idbStorage.clear()
-                            var test = await idbStorage.addBulk(currentPersistence.storageCrdt)
-                            // var all = await idbStorage.getAll()
+                            await idbStorage.addBulk(currentPersistence.storageCrdt)
+                            storageCrdt =  await idbStorage.getAll()
                             resolve(true)
-                
                         });
-                        
+                    }else if (useCrdt) {
+                        storageIsReady =  new Promise(async (resolve, reject) => { //if idb is used wrap everything in a promise
+                            if (!idbStorage) { idbStorage = await  createIDBStore(options.persistence)}//setup IDB storage
+                            storageCrdt =  await idbStorage.getAll()
+                            resolve(true)
+                        });
                     }
                 }
                 updatePersitenceSchema(currentSchema,initialSchema)

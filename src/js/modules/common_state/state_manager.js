@@ -96,75 +96,75 @@ var createStateManager = function({
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
-        common_router.route("/:project/evaluators/:evaluatorId", (event)=>
+        common_router.route("/:project/evaluators/:evaluatorId", async (event)=>
         {
             console.log(event);
-            setCurrentProject(event.params.project)
+            await setCurrentProject(event.params.project)
             mainUiElement.append(evaluator_node_ui.instance({props:{evaluatorId:event.params.evaluatorId}}), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
-        common_router.route("/:project/instances/:instanceId", (event)=>
+        common_router.route("/:project/instances/:instanceId", async (event)=>
         {
             console.log(event);
-            setCurrentProject(event.params.project)
+            await setCurrentProject(event.params.project)
             mainUiElement.append(instance_view.instance({data:{instanceId:event.params.instanceId}}), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
-        common_router.route("/:project/graphs/:instanceId", (event)=> //TODO why is instance id needed?
+        common_router.route("/:project/graphs/:instanceId", async (event)=> //TODO why is instance id needed?
         {
             console.log(event);
-            setCurrentProject(event.params.project)
+            await setCurrentProject(event.params.project)
             mainUiElement.append(tools_graphs_selection.instance(), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
-        common_router.route("/:project/graph/:instanceId", (event)=>
+        common_router.route("/:project/graph/:instanceId", async (event)=>
         {
             console.log(event);
-            setCurrentProject(event.params.project)
+            await setCurrentProject(event.params.project)
             mainUiElement.append(tools_graph.instance({data:{instanceId:event.params.instanceId}}), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
-        common_router.route("/:project/cycles/:cycles", (event)=>
+        common_router.route("/:project/cycles/:cycles", async (event)=>
         {
             console.log(event);
-            setCurrentProject(event.params.project)
+            await setCurrentProject(event.params.project)
             mainUiElement.append(cycles_editor.instance({props:{cycleId:event.params.cycles}}), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
         
-        common_router.route("/:project/simulations/:simulation", (event)=> //TODO why is instance id needed?
+        common_router.route("/:project/simulations/:simulation", async (event)=> //TODO why is instance id needed?
         {
             console.log(event);
-            setCurrentProject(event.params.project)
+            await setCurrentProject(event.params.project)
             mainUiElement.append(simulation_selector.instance(), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
-        common_router.route("/:project/simulation/:simulation", (event)=>
+        common_router.route("/:project/simulation/:simulation", async (event)=>
         {
             console.log(event);
-            setCurrentProject(event.params.project)
+            await setCurrentProject(event.params.project)
             mainUiElement.append(simulations_editor.instance({props:{simId:event.params.simulation}}), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
-        common_router.route("/:project/views/:viewId", (event)=>
+        common_router.route("/:project/views/:viewId", async (event)=>
         {
             console.log(event);
-            setCurrentProject(event.params.project)
+            await setCurrentProject(event.params.project)
             mainUiElement.append(project_views.instance({data:{viewId:event.params.viewId}}), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
-        common_router.route("/:project/settings/views/:viewId", (event)=>
+        common_router.route("/:project/settings/views/:viewId", async (event)=>
         {
             console.log(event);
-            setCurrentProject(event.params.project)
+            await setCurrentProject(event.params.project)
             mainUiElement.append(project_views_settings.instance({data:{viewId:event.params.viewId}}), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
@@ -177,18 +177,18 @@ var createStateManager = function({
         //     mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
         //     mainUiElement.update();
         // })
-        common_router.route("/:project/settings/:section/:entity", (event)=>
+        common_router.route("/:project/settings/:section/:entity", async (event)=>
         {
             console.log(event);
-            setCurrentProject(event.params.project)
+            await setCurrentProject(event.params.project)
             mainUiElement.append(settings_ui.instance({props:{modelElementType:event.params.entity, activeSideMenuLink:event.params.entity}}), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
         })
-        common_router.route("/:project/settings/details/:entity/:entityId", (event)=>
+        common_router.route("/:project/settings/details/:entity/:entityId", async (event)=>
         {
             console.log(event);
-            setCurrentProject(event.params.project)
+            await setCurrentProject(event.params.project)
             mainUiElement.append(settings_ui.instance({props:{modelElementType:event.params.entity,modelElementDetails:event.params.entityId, activeSideMenuLink:event.params.entity}}), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
