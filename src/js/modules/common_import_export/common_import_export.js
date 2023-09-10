@@ -3,14 +3,15 @@ import projectStores from "../common_project_management/project_data_store.js"
 
 function createTemplateManager(){
     var self = {}
-    function exportTemplate(){
+    async function exportTemplate(){
         var projectId = projectManagement.getCurrent().id
         // projectManagement.getProjectStore(projectId,data.modelElementType)
         var store = projectStores.getProjectDB(projectId)
-        alert(store.exportLocalStorage())
-
+        
+        var localStorageItem = await store.exportLocalStorage() 
+        alert(localStorageItem)
         const link = document.createElement("a");
-        const file = new Blob([store.exportLocalStorage()], { type: 'text/plain' });
+        const file = new Blob([localStorageItem], { type: 'text/plain' });
         link.href = URL.createObjectURL(file);
         link.download = "ephemeris.txt";
         link.click();

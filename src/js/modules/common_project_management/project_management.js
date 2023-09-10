@@ -1,6 +1,7 @@
 import createdb from "../../vendor/superCluster.js";
 import projectStores from "./project_data_store.js";
 import nanoid from "../../vendor/nanoid.js";
+import { importToPersistence } from "../../vendor/superClusterIO.js";
 
 var createProjectManagement = function(){
     var self={}
@@ -41,7 +42,8 @@ var createProjectManagement = function(){
         console.log(name);
         var newUuid = nanoid()
         alert(newUuid)
-        localStorage.setItem('supercluster-'+newUuid, template)
+        importToPersistence(template,newUuid)
+        // localStorage.setItem('supercluster-'+newUuid, template)
         db.add("projects", { name:name, id:newUuid})
     }
 

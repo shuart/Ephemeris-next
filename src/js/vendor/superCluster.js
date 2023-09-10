@@ -134,7 +134,7 @@ var createCluster = function(initialSchema, options){
     var packForLocalStorage = function(){
         var pack = {};
         // pack = {currentSchema:currentSchema , currentUUIDS:currentUUIDS, storageIndexes:storageIndexes, storageUUID:storageUUID, storage:storage,storageCrdt:storageCrdt};
-        pack = {currentSchema:currentSchema , currentUUIDS:currentUUIDS, storageIndexes:storageIndexes, storageUUID:storageUUID, storage:storage,storageCrdt:undefined};
+        pack = {currentSchema:currentSchema , currentUUIDS:currentUUIDS, storageIndexes:storageIndexes, storageUUID:undefined, storage:storage,storageCrdt:undefined};
         return JSON.stringify(pack)
     }
     var persist = function(){
@@ -173,21 +173,23 @@ var createCluster = function(initialSchema, options){
                     var currentPersistence = JSON.parse(currentPersistence)
                     var newIndexedStorage = rebuildIndexes(currentPersistence.currentUUIDS, currentPersistence.storage)
                     // currentSchema = currentPersistence.currentSchema; currentUUIDS = currentPersistence.currentUUIDS; storageIndexes = currentPersistence.storageIndexes; storageUUID = newIndexedStorage ;storage = currentPersistence.storage;storageCrdt=currentPersistence.storageCrdt
-                    currentSchema = currentPersistence.currentSchema; currentUUIDS = currentPersistence.currentUUIDS; storageIndexes = currentPersistence.storageIndexes; storageUUID = newIndexedStorage ;storage = currentPersistence.storage;
-                    var migration = false
-                    if (migration && useCrdt && currentPersistence.storageCrdt && currentPersistence.storageCrdt[0]) { //TODO, remove after migration to idb
-                        storageIsReady =  new Promise(async (resolve, reject) => { //if idb is used wrap everything in a promise
-                            if (!idbStorage) { //setup IDB storage
-                                idbStorage = await  createIDBStore(options.persistence)
-                                // storageIsReady = Promise.all([idbStorage])
-                            }
-                            console.log(idbStorage);
-                            idbStorage.clear()
-                            await idbStorage.addBulk(currentPersistence.storageCrdt)
-                            storageCrdt =  await idbStorage.getAll()
-                            resolve(true)
-                        });
-                    }else if (useCrdt) {
+                    currentSchema = currentPersistence.currentSchema; currentUUIDS = currentPersistence.currentUUIDS; storageIndexes = currentPersistence.storageIndexes; storage = currentPersistence.storage;
+                    storageUUID = newIndexedStorage ;
+                    // var migration = false
+                    // if (migration && useCrdt && currentPersistence.storageCrdt && currentPersistence.storageCrdt[0]) { //TODO, remove after migration to idb
+                    //     storageIsReady =  new Promise(async (resolve, reject) => { //if idb is used wrap everything in a promise
+                    //         if (!idbStorage) { //setup IDB storage
+                    //             idbStorage = await  createIDBStore(options.persistence)
+                    //             // storageIsReady = Promise.all([idbStorage])
+                    //         }
+                    //         console.log(idbStorage);
+                    //         idbStorage.clear()
+                    //         await idbStorage.addBulk(currentPersistence.storageCrdt)
+                    //         storageCrdt =  await idbStorage.getAll()
+                    //         resolve(true)
+                    //     });
+                    // }else 
+                    if (useCrdt) {
                         storageIsReady =  new Promise(async (resolve, reject) => { //if idb is used wrap everything in a promise
                             if (!idbStorage) { idbStorage = await  createIDBStore(options.persistence)}//setup IDB storage
                             storageCrdt =  await idbStorage.getAll()
@@ -203,10 +205,19 @@ var createCluster = function(initialSchema, options){
         }
     }
 
-    var exportLocalStorage = function(){
-        var ls =  localStorage.getItem('supercluster-'+options.persistence);
-        // var crdt = idbStorage.
-        var db = {ls:ls}
+    var exportLocalStorage = async function(){
+        // var ls =  localStorage.getItem('supercluster-'+options.persistence);
+        var ls = {currentSchema:currentSchema , currentUUIDS:currentUUIDS, storageIndexes:storageIndexes, storageUUID:undefined, storage:storage,storageCrdt:undefined};
+        var crdt = undefined
+        if (useCrdt) {
+            crdt = await idbStorage.getAll()
+            crdt = compactCrdts(crdt)
+        }
+        return JSON.stringify({ls, crdt})
+    }
+
+    var importToLocalStorage = async function (template, uuid) {
+        //TODO transfer to an helper function
     }
 
     var updatePersitenceSchema = function(currentSchema, initialSchema){
@@ -232,12 +243,12 @@ var createCluster = function(initialSchema, options){
         var storeWithIndexes = {}
         for (const store in storageFromPersistence) {
             if (Object.hasOwnProperty.call(storageFromPersistence, store)) {
-                const currentStore = storageFromPersistence[store];
+                const currentStore = storageFromPersistence[store]; //get the operating storage
                 storeWithIndexes[store] = {}
-                var currentMainIndex = currentUUIDS[store]
+                var currentMainIndex = currentUUIDS[store] //get the main key of the current store
                 for (let i = 0; i < currentStore.length; i++) {
                     const element = currentStore[i];
-                    storeWithIndexes[store][ element[currentMainIndex] ] = element
+                    storeWithIndexes[store][ element[currentMainIndex] ] = element //map the id to the object
                 }
             }
         }
@@ -368,10 +379,8 @@ var createCluster = function(initialSchema, options){
         return existingMessages;
     }
 
-    function cleanOldMessages(cleanBefore) {
-
+    function compactCrdts(storageCrdt, cleanBefore) {
         let before = cleanBefore || Date.now()
-
         let cleanedMessages =[]
         let keptSignature ={}
       
@@ -383,9 +392,7 @@ var createCluster = function(initialSchema, options){
           }
           return 0;
         });
-
         //go through sorted messages and add them  in the cleanedMessages, if not already in keptSignature or if is a thombstone
-
         sortedMessages.forEach(msg =>{
                 var signature = msg.dataset + msg.row +msg.column
                 if (msg.timestamp >= before) {
@@ -399,8 +406,11 @@ var createCluster = function(initialSchema, options){
             }
 
         )
-      
-        storageCrdt = cleanedMessages
+        return cleanedMessages
+    }
+
+    function cleanOldMessages(storageCrdt, cleanBefore) {
+        storageCrdt = compactCrdts()
     }
 
     //SYNC
