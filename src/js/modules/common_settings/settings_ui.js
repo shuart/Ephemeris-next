@@ -88,7 +88,7 @@ var common_settings =createAdler({
                         {id:"entities", iconPath:"box.svg", value:"Entities",onClick:()=> state_manager.goTo("/:/:/model/entities")},
                         // {id:"relations", value:"Relations",onClick:()=> state_manager.goTo({mode:"replace", url:"model/relations"})},
                         {id:"relations", iconPath:"share-2.svg", value:"Relations",onClick:()=> state_manager.goTo("/:/:/model/relations")},
-                        {id:"attributes", iconPath:"share-2.svg", value:"Attributes",onClick:()=> state_manager.goTo("/:/:/model/attributes")},
+                        {id:"attributes", iconPath:"book.svg", value:"Attributes",onClick:()=> state_manager.goTo("/:/:/model/attributes")},
                     ]
                 },
                 {
