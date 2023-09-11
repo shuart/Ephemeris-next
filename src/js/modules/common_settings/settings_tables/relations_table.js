@@ -6,7 +6,7 @@ import createEntityManagement from "../../common_project_management/entity_manag
 import projectManagement from "../../common_project_management/project_management.js";
 import { showEntitiesSelector } from "../../common_selectors/entities_selector.js";
 
-
+import state_manager from "../../common_state/state_manager.js"
 
 
 var changeAssignedItems = function (relationId,direction, toAdd, toRemove) {
@@ -59,6 +59,7 @@ export function createRelationsSettingsTable (projectId) {
                 selected : cell.getData()["fromList"].map(d=>d.uuid),
                 onChange: (e,f)=> changeAssignedItems(cell.getData().uuid,"source", f.added, f.removed )
             }),
+            callback :(id)=>state_manager.goTo("/:/settings/details/entities/"+id)
         },
         // {title:"From", field:"fromList", customObjects:true, cellClick:function(e, cell){
         //     var entityRepo = createEntityManagement()
@@ -77,7 +78,9 @@ export function createRelationsSettingsTable (projectId) {
                 selected : cell.getData()["toList"].map(d=>d.uuid),
                 onChange: (e,f)=> changeAssignedItems(cell.getData().uuid,"target", f.added, f.removed )
             }),
+            callback :(id)=>state_manager.goTo("/:/settings/details/entities/"+id)
         },
+        {customButton: {value:"X", onClick:function(e, cell){if(confirm("Delete?"))projectManagement.getProjectStore(projectId,"relations").remove(cell.getRow().getData().uuid)} } },
         // {title:"To", field:"toList", customObjects:true, cellClick:function(e, cell){
         //     var entityRepo = createEntityManagement()
         //     mainPopup.mount()

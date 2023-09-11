@@ -29,6 +29,9 @@ var addEntityToProject = function(event, data, instance){
     console.log(projectId)
     var name= prompt("Name")
     if (name) {
+        if (data.modelElementType == "attributes") {
+            data.modelElementType = "properties"
+        }
         projectManagement.getProjectStore(projectId,data.modelElementType).add({name:name ,theTime:Date.now()})
         // instance.getNodes().table.do.softUpdate()
     }

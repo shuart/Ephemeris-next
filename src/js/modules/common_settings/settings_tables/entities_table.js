@@ -42,6 +42,7 @@ export function createEntitiesSettingsTable (projectId, data) {
                 }), "main-slot")
                 mainPopup.update();
             }},
+            {customButton: {value:"X", onClick:function(e, cell){ if(confirm("Delete?"))projectManagement.getProjectStore(projectId,"entities").remove(cell.getRow().getData().uuid) } } },
         ];
     return {list, cols}
 }
