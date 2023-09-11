@@ -11,6 +11,8 @@ import table_component from "../common_ui_components/table/table.js";
 import createEntityManagement from "../common_project_management/entity_management.js";
 import { createSimpleSummaryPageForEntities } from "../common_quick_settings/common_quick_settings.js";
 import { createAttributeSettingsTable } from "./settings_tables/attributes_table.js";
+import { createRelationsSettingsTable } from "./settings_tables/relations_table.js";
+import { createEntitiesSettingsTable } from "./settings_tables/entities_table.js";
 // import createViewManagement from "../common_project_management/view_management.js";
 
 // import {Tabulator} from "../../vendor/tabulator_esm.min.js";
@@ -38,40 +40,48 @@ var getItemsList = function (data, instance){
     var listData ={ list:undefined, cols:undefined}
 
     if (instance.props.modelElementType.get() == "entities") {
-        // listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
-        var entityRepo = createEntityManagement()
-        listData.list = entityRepo.getAll()
-        //Create extra fields
-        for (let i = 0; i < listData.list.length; i++) {
-            const element = listData.list[i];
-            element.defaultView = element.getDefaultView()
-            element.color = element.attributes.color
-            element.iconPath = element.attributes.iconPath
-        } 
         
-        listData.cols = [
-            // {title:"id", field:"uuid", },
+        var tableSettings = createEntitiesSettingsTable(projectId, data)
+        listData.list = tableSettings.list
+        listData.cols = tableSettings.cols
+
+
+
+
+        // // listData.list = projectManagement.getProjectStore(projectId,data.modelElementType).getAll()
+        // var entityRepo = createEntityManagement()
+        // listData.list = entityRepo.getAll()
+        // //Create extra fields
+        // for (let i = 0; i < listData.list.length; i++) {
+        //     const element = listData.list[i];
+        //     element.defaultView = element.getDefaultView()
+        //     element.color = element.attributes.color
+        //     element.iconPath = element.attributes.iconPath
+        // } 
+        
+        // listData.cols = [
+        //     // {title:"id", field:"uuid", },
             
-            {customIcon:true, field:"iconPath",defaultPath:"box.svg", callback:(e,cell)=>{ 
-                iconSelect({
-                    callback:e=>{projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, iconPath:e.value.name})}
-                    })  
-                }  
-            },
-            {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/details/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid), }, //"/:project/settings/details/:entity/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
-            {customColor:true, field:"color", callback:(e,cell)=>{ projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, color:e.value.color}) }},
-            {customObject:true, title:"default view", field:"defaultView", callback:(e,cell)=>{  }, cellClick:function(e, cell){
-                var viewRepo = projectManagement.getProjectStore(projectId,"views").getAll()
-                mainPopup.mount()
-                mainPopup.append(select.instance({
-                    data:{
-                        list:viewRepo,
-                        callback:function(event){ cell.getData().setDefaultViewId(event.value.uuid) }
-                    }
-                }), "main-slot")
-                mainPopup.update();
-            }},
-        ];
+        //     {customIcon:true, field:"iconPath",defaultPath:"box.svg", callback:(e,cell)=>{ 
+        //         iconSelect({
+        //             callback:e=>{projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, iconPath:e.value.name})}
+        //             })  
+        //         }  
+        //     },
+        //     {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/details/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid), }, //"/:project/settings/details/:entity/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
+        //     {customColor:true, field:"color", callback:(e,cell)=>{ projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, color:e.value.color}) }},
+        //     {customObject:true, title:"default view", field:"defaultView", callback:(e,cell)=>{  }, cellClick:function(e, cell){
+        //         var viewRepo = projectManagement.getProjectStore(projectId,"views").getAll()
+        //         mainPopup.mount()
+        //         mainPopup.append(select.instance({
+        //             data:{
+        //                 list:viewRepo,
+        //                 callback:function(event){ cell.getData().setDefaultViewId(event.value.uuid) }
+        //             }
+        //         }), "main-slot")
+        //         mainPopup.update();
+        //     }},
+        // ];
     } else if (instance.props.modelElementType.get() == "cycles") {
         listData.list = projectManagement.getProjectStore(projectId,instance.props.modelElementType.get()).getAll()
         listData.cols = [
@@ -140,48 +150,52 @@ var getItemsList = function (data, instance){
             
         // ];
     } else if (instance.props.modelElementType.get() == "relations")  {
-        var relationManagement = createRelationManagement()
-        listData.list = relationManagement.getAll()
-        listData.list.forEach(element => {
-            console.log(element);
-            if (element.fromList) {
+        var tableSettings = createRelationsSettingsTable(projectId);
+        listData.list = tableSettings.list
+        listData.cols = tableSettings.cols
+
+        // var relationManagement = createRelationManagement()
+        // listData.list = relationManagement.getAll()
+        // listData.list.forEach(element => {
+        //     console.log(element);
+        //     if (element.fromList) {
                 
-                element.fromList = element.fromList.map(i=>i.name).join(',')
-                console.log(element.fromList);
-            }
-            if (element.toList) {
+        //         element.fromList = element.fromList.map(i=>i.name).join(',')
+        //         console.log(element.fromList);
+        //     }
+        //     if (element.toList) {
                 
-                element.toList = element.toList.map(i=>i.name).join(',')
-                console.log(element.toList);
-            }
+        //         element.toList = element.toList.map(i=>i.name).join(',')
+        //         console.log(element.toList);
+        //     }
             
-        });
+        // });
         
-        listData.cols = [
-            {title:"Name", field:"name", },
-            {title:"From", field:"fromList", cellClick:function(e, cell){
-                var entityRepo = createEntityManagement()
-                mainPopup.mount()
-                mainPopup.append(select.instance({
-                    data:{
-                        list:entityRepo.getAll(),
-                        callback:function(event){ cell.getData().addSource(event.value.uuid) }
-                    }
-                }), "main-slot")
-                mainPopup.update();
-            }, },
-            {title:"To", field:"toList", cellClick:function(e, cell){
-                var entityRepo = createEntityManagement()
-                mainPopup.mount()
-                mainPopup.append(select.instance({
-                    data:{
-                        list:entityRepo.getAll(),
-                        callback:function(event){ cell.getData().addTarget(event.value.uuid) }
-                    }
-                }), "main-slot")
-                mainPopup.update();
-            },},
-        ];
+        // listData.cols = [
+        //     {title:"Name", field:"name", },
+        //     {title:"From", field:"fromList", cellClick:function(e, cell){
+        //         var entityRepo = createEntityManagement()
+        //         mainPopup.mount()
+        //         mainPopup.append(select.instance({
+        //             data:{
+        //                 list:entityRepo.getAll(),
+        //                 callback:function(event){ cell.getData().addSource(event.value.uuid) }
+        //             }
+        //         }), "main-slot")
+        //         mainPopup.update();
+        //     }, },
+        //     {title:"To", field:"toList", cellClick:function(e, cell){
+        //         var entityRepo = createEntityManagement()
+        //         mainPopup.mount()
+        //         mainPopup.append(select.instance({
+        //             data:{
+        //                 list:entityRepo.getAll(),
+        //                 callback:function(event){ cell.getData().addTarget(event.value.uuid) }
+        //             }
+        //         }), "main-slot")
+        //         mainPopup.update();
+        //     },},
+        // ];
     }
 
     // if (data.modelElementType != "relations") {
