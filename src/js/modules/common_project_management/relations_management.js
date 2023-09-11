@@ -80,6 +80,20 @@ var relationAggregate = function(aggregate, projectStore){
         var currentRelationTarget = projectStore.get("entities").where("uuid").equals(targetId)
         projectStore.add("relations",{uuid:aggregate.uuid,["from_"+currentRelationTarget.uuid]:true })
     }
+    aggregate.removeTarget = function (targetId) {
+        var currentRelationTarget = projectStore.get("entities").where("uuid").equals(targetId)
+        if (aggregate.attributes["to_"+currentRelationTarget.uuid]) {
+            projectStore.add("relations",{uuid:aggregate.uuid,["to_"+currentRelationTarget.uuid]:false })
+        }
+        
+    }
+    aggregate.removeSource = function (targetId) {
+        var currentRelationTarget = projectStore.get("entities").where("uuid").equals(targetId)
+
+        if (aggregate.attributes["from_"+currentRelationTarget.uuid]) {
+            projectStore.add("relations",{uuid:aggregate.uuid,["from_"+currentRelationTarget.uuid]:false })
+        }
+    }
 
     return aggregate
 }
