@@ -13,6 +13,10 @@ var createRepoManagement = function (projectId, rootType, aggregateMethods, cust
         var aggregate = {uuid:root.uuid, name:root.name}//copy main attributes
         aggregate.attributes = root //reference to other attributes
         aggregate = aggregateMethods(aggregate, projectStore)
+        //common methods
+        aggregate.setName = function (newName) {
+            projectStore.add(rootType,{uuid:aggregate.uuid,name:newName })
+        }
         return aggregate
     }
 

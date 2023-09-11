@@ -58,7 +58,13 @@ export function createAttributeSettingsTable (projectId) {
                 })  
             }  
         },
-        {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) },  //"/:project/settings/views/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
+        {title:"Name", field:"name", cellClick:(e,cell)=>{
+                var newName = prompt("Set Name") 
+                if (newName) {
+                    cell.getData().setName(newName)
+                }
+            } 
+        }, 
         {title:"Assigned To", customObjects:true, field:"assignedTo", 
             cellClick:(e,cell)=>showEntitiesSelector({
                 selected : cell.getData()["assignedTo"].map(d=>d.uuid),

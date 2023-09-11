@@ -53,7 +53,13 @@ export function createRelationsSettingsTable (projectId) {
     // });
     
     var cols = [
-        {title:"Name", field:"name", },
+        {title:"Name", field:"name", cellClick:(e,cell)=>{
+                var newName = prompt("Set Name") 
+                if (newName) {
+                    cell.getData().setName(newName)
+                }
+            } 
+        }, 
         {title:"From", field:"fromList", customObjects:true,
             cellClick:(e,cell)=>showEntitiesSelector({
                 selected : cell.getData()["fromList"].map(d=>d.uuid),
