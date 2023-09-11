@@ -11,24 +11,24 @@ export function createRelationsSettingsTable (projectId) {
 
     var relationManagement = createRelationManagement()
     var list = relationManagement.getAll()
-    list.forEach(element => {
-        console.log(element);
-        if (element.fromList) {
+    // list.forEach(element => {
+    //     console.log(element);
+    //     if (element.fromList) {
             
-            element.fromList = element.fromList.map(i=>i.name).join(',')
-            console.log(element.fromList);
-        }
-        if (element.toList) {
+    //         // element.fromList = element.fromList.map(i=>i.name).join(',')
+    //         console.log(element.fromList);
+    //     }
+    //     if (element.toList) {
             
-            element.toList = element.toList.map(i=>i.name).join(',')
-            console.log(element.toList);
-        }
+    //         // element.toList = element.toList.map(i=>i.name).join(',')
+    //         console.log(element.toList);
+    //     }
         
-    });
+    // });
     
     var cols = [
         {title:"Name", field:"name", },
-        {title:"From", field:"fromList", cellClick:function(e, cell){
+        {title:"From", field:"fromList", customObjects:true, cellClick:function(e, cell){
             var entityRepo = createEntityManagement()
             mainPopup.mount()
             mainPopup.append(select.instance({
@@ -39,7 +39,7 @@ export function createRelationsSettingsTable (projectId) {
             }), "main-slot")
             mainPopup.update();
         }, },
-        {title:"To", field:"toList", cellClick:function(e, cell){
+        {title:"To", field:"toList", customObjects:true, cellClick:function(e, cell){
             var entityRepo = createEntityManagement()
             mainPopup.mount()
             mainPopup.append(select.instance({

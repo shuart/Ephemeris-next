@@ -81,6 +81,9 @@ var checkColsForCustomFormating = function(rows, cols){
             if (newCols[i].customObject) {
                 newCols[i]= getCustomFormatterForObject(rows, col)
             }
+            if (newCols[i].customObjects) {
+                newCols[i]= getCustomFormatterForObjects(rows, col)
+            }
         }
     }
 }
@@ -183,6 +186,50 @@ var getCustomFormatterForObject = function (rows, col) {
     return formatterIcon
 
     // return formatterFunction
+}
+
+var getCustomFormatterForObjects = function (rows, col) {
+    
+    var formatterFunction = function(cell, formatterParams, onRendered){
+        //cell - the cell component
+        //formatterParams - parameters set for the column
+        //onRendered - function to call when the formatter has been rendered
+        var html = ""
+        var items = cell.getData()[col.field]
+        if (items == undefined) {
+            items = []
+        }
+        if (!Array.isArray(items)) {
+            items = [items]
+        }
+        for (let i = 0; i < items.length; i++) {
+            const element = items[i];
+            var colorField = ""
+            if (element.attributes.color || element.color) {
+                colorField = "background-color:"+(element.attributes.color || element.color )+";"
+            }
+            console.log(element);
+            html += `<span style="${colorField}" data-id='${element.uuid}' class="table-tag action-tag" > ${element.name} </span>`
+        }
+
+        onRendered(function(params) {
+            
+            var domElemOfCell = cell.getElement()
+            var tags = domElemOfCell.querySelectorAll('.action-tag')
+            for (let i = 0; i < tags.length; i++) {
+                const tag = tags[i];
+                tag.addEventListener('click', function (ev) {
+                    ev.stopPropagation();
+                    col.callback(ev.target.dataset.id)
+                })
+            }
+        })
+        
+        return html
+    }
+
+    var rowDef = {formatter:formatterFunction, width:col.width, title:col.title, cellClick:col.cellClick};
+    return rowDef
 }
 
 var getCustomFormatterForRelations = function (rows, col, callback) {

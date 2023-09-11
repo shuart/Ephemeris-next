@@ -4,6 +4,8 @@ import select from "../../common_ui_components/select/select.js"
 import iconSelect from "../../common_ui_components/icon_picker/iconPicker.js"
 import createEntityManagement from "../../common_project_management/entity_management.js";
 import projectManagement from "../../common_project_management/project_management.js";
+import state_manager from "../../common_state/state_manager.js"
+
 
 export function createEntitiesSettingsTable (projectId, data) {
 
@@ -27,7 +29,7 @@ export function createEntitiesSettingsTable (projectId, data) {
                     })  
                 }  
             },
-            {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/details/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid), }, //"/:project/settings/details/:entity/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
+            {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/settings/details/"+data.modelElementType+"/"+cell.getData().uuid), }, //"/:project/settings/details/:entity/:entityId" state_manager.goTo({mode:"replace", url:"interface/views"}
             {customColor:true, field:"color", callback:(e,cell)=>{ projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, color:e.value.color}) }},
             {customObject:true, title:"default view", field:"defaultView", callback:(e,cell)=>{  }, cellClick:function(e, cell){
                 var viewRepo = projectManagement.getProjectStore(projectId,"views").getAll()
