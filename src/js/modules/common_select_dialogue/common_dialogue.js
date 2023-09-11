@@ -5,12 +5,23 @@ import input_selection from "../common_ui_elements/input_selection.js"
 import input_text from "../common_ui_elements/input_text.js"
 import common_dialogue_footer from "./common_dialogue_footer.js"
 
+var selectedArrayToObject = function (selectedArray) {
+    var obj = {}
+    for (let i = 0; i < selectedArray.length; i++) {
+        obj[ selectedArray[i].uuid || selectedArray[i]  ] =true; //works if an object or an id
+    }
+    return obj
+}
 
 var createDialoguePage = function (params) {
     var fieldsToAdd = []
     for (let i = 0; i < params.fields.length; i++) {
         const field = params.fields[i];
         if (field.type=="selection") {
+            if (Array.isArray(field.config.selected) ) {
+                field.config.selected = selectedArrayToObject(field.config.selected) //if selected is a list transform it to an object as required by input select
+                // params.choiceStore[field.name] = field.config.selected
+            }
             if (!field.config.onChange) { //if an action is not setup the dialogue component will do it. 
                 field.config.onChange=(data)=>{ //the text element use the focus out event to store the value in the local store
                     
@@ -20,6 +31,7 @@ var createDialoguePage = function (params) {
             var item = input_selection.instance({
                 data:field.config
             })
+            params.choiceStore[field.name] = field.config.selected
             fieldsToAdd.push(item) 
         }else if(field.type=="text"){ ////TEXT ELEMENT////
             if (!field.config.onFocusout) { //if an action is not setup the dialogue component will do it. 

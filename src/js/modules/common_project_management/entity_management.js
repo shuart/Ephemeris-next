@@ -78,6 +78,17 @@ var entityAggregate = function(aggregate, projectStore){
         projectStore.add("entities",{uuid:aggregate.uuid,[refId]:true})
     }
 
+    aggregate.assignProperty = function (propertyId) { //TODO check if prop exisit
+        if (!aggregate.attributes['prop_'+propertyId]) {
+            projectStore.add("entities",{uuid:aggregate.uuid,['prop_'+propertyId]:true})
+        }
+    }
+    aggregate.unassignProperty = function (propertyId) { //TODO check if prop exisit
+        if (aggregate.attributes['prop_'+propertyId]) {
+            projectStore.add("entities",{uuid:aggregate.uuid,['prop_'+propertyId]:false})
+        }
+    }
+
     //methods
     aggregate.addRelation = function (type, targetId) {
         var currentRelationTarget = projectStore.get("entities").where("uuid").equals(targetId)
