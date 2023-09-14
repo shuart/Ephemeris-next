@@ -202,6 +202,9 @@ var getCustomFormatterForObjects = function (rows, col) {
         if (!Array.isArray(items)) {
             items = [items]
         }
+        if (items[0] === undefined) {
+            items = []  
+        }
         for (let i = 0; i < items.length; i++) {
             const element = items[i];
             var colorField = ""

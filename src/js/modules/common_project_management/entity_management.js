@@ -102,6 +102,14 @@ var entityAggregate = function(aggregate, projectStore){
         var view = projectStore.get("views").where("uuid").equals(aggregate.attributes.defaultViewId) 
         return view
     }
+    aggregate.getParent = function () {
+        var selfRepo = createEntityManagement()
+        var parent = selfRepo.getById(aggregate.attributes.parentId)
+        return parent
+    }
+    aggregate.setParent = function (targetId) {
+        projectStore.add("entities",{uuid:aggregate.uuid, parentId:targetId})
+    }
 
     return aggregate
 }

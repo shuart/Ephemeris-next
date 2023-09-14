@@ -44,6 +44,14 @@ var setUpTable = function(self){
     //     tableHeight = window.innerHeight
         
     // }
+
+    var options = {}
+
+    if (itemsList[0] && itemsList[0]._children) {
+        options.dataTree = true
+        options.dataTreeStartExpanded=true
+        options.dataTreeElementColumn="name"
+    }
     
 
     var tableAra = instanceElem
@@ -53,6 +61,9 @@ var setUpTable = function(self){
         data:itemsList, //assign data to table
         layout:"fitColumns", //fit columns to width of table (optional)
         columns:colsList,
+        dataTree:options.dataTree,
+        dataTreeStartExpanded:options.dataTreeStartExpanded,
+        dataTreeElementColumn:options.dataTreeElementColumn,
         // [ //Define Table Columns
             
         // //     {title:"Name", field:"name", width:150},
@@ -179,6 +190,11 @@ var table_component =createAdler({
     .tbl_toggle__input:checked ~ .tbl_toggle__fill::after {
         transform: translateX(var(--height));
     }
+
+    .tabulator-row .tabulator-cell .tabulator-data-tree-control {
+        border-radius:10px;
+        background-color:transparent
+    }
     
     @media (prefers-color-scheme: dark) {
         .table-tag{
@@ -190,7 +206,18 @@ var table_component =createAdler({
         .tbl_toggle__fill {
             background: #000000;
         }
-        
+        .tabulator-row .tabulator-cell .tabulator-data-tree-control {
+            border: 1px solid #e1e1e1;
+        }
+        .tabulator-row .tabulator-cell .tabulator-data-tree-control .tabulator-data-tree-control-collapse::after {
+            background: #9d9d9d;
+        }
+        .tabulator-row .tabulator-cell .tabulator-data-tree-control .tabulator-data-tree-control-expand {
+            background: #a4a4a4;
+        }
+        .tabulator-row .tabulator-cell .tabulator-data-tree-control .tabulator-data-tree-control-expand::after {
+            background: #a4a4a4;
+        }
       }
     `,
 })
