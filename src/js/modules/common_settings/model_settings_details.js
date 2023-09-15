@@ -45,7 +45,7 @@ var getItemsList = function (data, instance){
             list.push(prop)
         }
     }
-    return list
+    return element.getAllProperties()
 }
 var getRelationList = function (data, instance){
     var entityRepo = createEntityManagement()
@@ -142,6 +142,7 @@ var setUpTable = function (event, data, instance) {
             {title:"value", field:"name", },
             // {title:"added", field:"theTime", },
             {title:"Type", field:"type", },
+            {title:"Herited", field:"herited", },
             {customButton: {
                 value:"X", 
                 onClick:function(e, cell){

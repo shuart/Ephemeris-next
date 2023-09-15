@@ -2,6 +2,7 @@ import createRepoManagement from "./repo_management.js";
 import projectManagement from "./project_management.js";
 import projectStores from "./project_data_store.js";
 import nanoid from "../../vendor/nanoid.js";
+import createPropertyManagement from "./properties_management.js";
 
 var entityAggregate = function(aggregate, projectStore){
 
@@ -69,6 +70,54 @@ var entityAggregate = function(aggregate, projectStore){
             
         }
         return instances
+    }
+
+    aggregate.getAssignedProperties = function () {
+        var ownProperties = []
+        for (const key in aggregate.attributes) {
+            if (Object.hasOwnProperty.call(aggregate.attributes, key)  && key.search("prop_")>=0 && aggregate.attributes[key]) {
+                var property = projectStore.get("properties").where("uuid").equals(key.substring(5))
+                ownProperties.push(property)
+                // const element = aggregate.attributes[key];
+                
+            }
+        }
+        return ownProperties
+    }
+    aggregate.getHeritedProperties = function () {
+        var selfRepo = createEntityManagement()
+        var propertyRepo = createPropertyManagement()
+        // var parent = selfRepo.getById(aggregate.attributes.parentId)
+        var heritedProperties = []
+        var foundProperties = {}
+        var currentParent = selfRepo.getById(aggregate.attributes.parentId) || undefined
+        var level =0
+        console.log(aggregate.attributes);
+        console.log(currentParent);
+        while(currentParent && level <15){
+            
+            level ++
+            for (const key in currentParent.attributes) {
+                if (Object.hasOwnProperty.call(currentParent.attributes, key)  && key.search("prop_")>=0 && currentParent.attributes[key]) {
+                    // var property = projectStore.get("properties").where("uuid").equals(key.substring(5))
+                    var property = propertyRepo.getById(key.substring(5))
+                    if (property && !foundProperties[property.uuid]) {
+                        foundProperties[property.uuid] = true
+                        // var property = Object.assign({},property,{assign:true})
+                        property.herited = true;
+                        heritedProperties.push(property)
+                    }
+                }
+            }
+            currentParent = selfRepo.getById(currentParent.attributes.parentId) || undefined
+        }
+        
+        return heritedProperties
+    }
+    aggregate.getAllProperties = function () {
+        var selfProps = aggregate.getAssignedProperties()
+        var heritedProps = aggregate.getHeritedProperties()
+        return selfProps.concat(heritedProps)
     }
     //methods
     aggregate.addProperty = function (param, type) {

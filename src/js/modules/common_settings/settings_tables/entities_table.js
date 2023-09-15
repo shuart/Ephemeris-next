@@ -77,13 +77,12 @@ export function createEntitiesSettingsTable (projectId, data) {
             }
 
         }
-
+        // list.forEach(l=> console.log( l.getAllProperties() ))
         if (hasHierarchy) {
             list = sortAsTree(list)
         }
-        
 
-        
+    
         
         var cols = [
             // {title:"id", field:"uuid", },
