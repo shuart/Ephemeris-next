@@ -14629,7 +14629,7 @@ function $4e76ad1d525e6107$export$283bd57e93429c29(opts) {
         var top = textDOM.offsetHeight + offset.top;
         el.style.top = top + "px";
         el.style.display = "block";
-        el.style.zIndex = "999999";
+        el.style.zIndex = "9999999999999999999999998";
     };
     var hideList = function() {
         el.style.display = "none";

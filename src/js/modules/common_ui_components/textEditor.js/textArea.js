@@ -19,6 +19,8 @@ var textArea = createAdler({
           console.log(json,'txt');
         },
         onSetDocument:undefined,
+        showExplorer:true,
+        showMenu:true,
         defaultValue:undefined,
         otherInstances:[],
         mentionsDefs: [
@@ -61,10 +63,13 @@ var textArea = createAdler({
         var editor = createEditor({
           onSave:self.onSave,
           onSetDocument:self.onSetDocument,
+          showExplorer:self.showExplorer,
+          showMenu:self.showMenu,
           mentionsDefinitions : self.mentionsDefs,
           mentionsOptions : self.mentionsOptions,
           mentionsCallback : self.mentionsCallback,
           otherEntries : self.otherInstances,
+          defaultValue : self.defaultValue,
         })
         editor.mountAt(self.query(".writerArea"))
         // var jsonContent = undefined

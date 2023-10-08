@@ -208,7 +208,7 @@ export function getMentionsPlugin(defs,opts) {
     var top = textDOM.offsetHeight + offset.top;
     el.style.top = top + "px";
     el.style.display = "block";
-    el.style.zIndex = "999999";
+    el.style.zIndex = "999999999999999999999999";
   };
 
   var hideList = function() {

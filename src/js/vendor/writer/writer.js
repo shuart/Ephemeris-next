@@ -28,6 +28,9 @@ var createEditor = function ({
     documentsList = [],
     isEditable = true,
     otherEntries =[],
+    showExplorer = true,
+    showMenu = true,
+    defaultValue = undefined,
     onSave = (json,editor, currentDocument)=> console.log(json,editor, currentDocument),
     onSetDocument = (doc, editor, updateDoc)=> console.log(doc, editor, updateDoc),
 }={}) {
@@ -92,6 +95,9 @@ var createEditor = function ({
         // var value = "<p>*some sentence* whatever.</p>";
         // var dom = (new DOMParser).parseFromString(value, "text/html");
         var jsonInit = {"doc": {"type": "doc","content": [{"type": "paragraph", "content": [] }]}}
+        if (defaultValue) {
+            jsonInit = defaultValue
+        }
         editor = new EditorView(domWrapper, {
             state: EditorState.create({
                 // doc: DOMParser.fromSchema(mySchema).parse("Hello"),
@@ -167,11 +173,12 @@ var createEditor = function ({
     }
 
     var toggleMenu = function () {
-        domWrapper.querySelector('.ProseMirror-menubar')
-        if (domWrapper.style.display !="none") { 
-            domWrapper.style.display ="none"
+        var menuDom = domWrapper.querySelector('.ProseMirror-menubar')
+
+        if (menuDom.style.display !="none") { 
+            menuDom.style.display ="none"
         }else{
-            domWrapper.style.display ="block"
+            menuDom.style.display ="block"
         }
     }
 
@@ -185,11 +192,11 @@ var createEditor = function ({
         
         addEditor()
         if (modes.editable) {
-            addSideView()
+            if (showExplorer) addSideView()
             addSaveButton()
             addDocTitle()
         }
-        if (!modes.editable) {toggleMenu()}
+        if (!modes.editable || showMenu == false) {toggleMenu()}
         if (currentDocument) setDocument(currentDocument);
         
     }
