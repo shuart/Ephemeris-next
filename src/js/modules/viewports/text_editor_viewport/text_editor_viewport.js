@@ -4,7 +4,7 @@ import projectManagement from "../../common_project_management/project_managemen
 import createEvaluator from "../../common_evaluators/evaluators.js";
 import instanceCard from "../../common_ui_components/instance_card/instance_card.js";
 import createInstancesManagement from "../../common_project_management/instances_management.js";
-import createTexteArea from "../../common_ui_components/textEditor.js/textEditor.js";
+
 import { textArea } from "../../common_ui_components/textEditor.js/textArea.js";
 import showPopupInstancePreview from "../../popup_instance_preview/popup_instance_preview.js";
 

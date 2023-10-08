@@ -2,8 +2,6 @@ import createAdler from "../../../vendor/adlerLegacy.js";
 import userManagement from "../../common_user_management/user_management.js";
 import state_manager from "../../common_state/state_manager.js";
 
-import createTexteArea from "../textEditor.js/textEditor.js";
-import { textWriter } from "../textEditor.js/writer.js";
 import { textArea } from "../textEditor.js/textArea.js";
 import createInstancesManagement from "../../common_project_management/instances_management.js";
 import showPopupInstancePreview from "../../popup_instance_preview/popup_instance_preview.js";
