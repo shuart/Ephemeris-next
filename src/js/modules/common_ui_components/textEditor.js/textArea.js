@@ -1,7 +1,6 @@
 import { createAdler } from "../../../vendor/adler.js"
 import createInstancesManagement from "../../common_project_management/instances_management.js";
 import { createEditor } from "../../../vendor/writer/writer.js";
-// import createEditor from "../../../vendor/proseMirror/pmCustom.js"
 import showPopupInstancePreview from "../../popup_instance_preview/popup_instance_preview.js";
 
 var setCurrentTags = function () {
