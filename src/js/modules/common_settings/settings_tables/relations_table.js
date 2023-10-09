@@ -86,7 +86,7 @@ export function createRelationsSettingsTable (projectId) {
             }),
             callback :(id)=>state_manager.goTo("/:/settings/details/entities/"+id)
         },
-        {customButton: {value:"X", onClick:function(e, cell){if(confirm("Delete?"))projectManagement.getProjectStore(projectId,"relations").remove(cell.getRow().getData().uuid)} } },
+        {customButton: {value:"X", style:"smallCircle", onClick:function(e, cell){if(confirm("Delete?"))projectManagement.getProjectStore(projectId,"relations").remove(cell.getRow().getData().uuid)} } },
         // {title:"To", field:"toList", customObjects:true, cellClick:function(e, cell){
         //     var entityRepo = createEntityManagement()
         //     mainPopup.mount()

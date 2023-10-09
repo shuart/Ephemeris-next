@@ -81,7 +81,7 @@ export function createAttributeSettingsTable (projectId) {
         // },
         
         // {customSwitch: {onClick:function(e, cell){projectManagement.getProjectStore(projectId,"properties").add({uuid:cell.getRow().getData().uuid, isVisible:e.value.checked})}}, field:"isVisible"  },
-        {customButton: {value:"X", onClick:function(e, cell){if(confirm("Delete?"))projectManagement.getProjectStore(projectId,"properties").remove(cell.getRow().getData().uuid)} } },
+        {customButton: {value:"X", style:"smallCircle", onClick:function(e, cell){if(confirm("Delete?"))projectManagement.getProjectStore(projectId,"properties").remove(cell.getRow().getData().uuid)} } },
         
     ];
     return {list, cols}

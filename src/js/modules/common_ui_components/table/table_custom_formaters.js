@@ -89,9 +89,15 @@ var checkColsForCustomFormating = function(rows, cols){
 }
 
 var getCustomButtonFormatterForCol = function(rows, col){
+    var styleClass=""
+
+    if (col.customButton.style) {
+        styleClass = col.customButton.style 
+        
+    }
     
     var printIcon = function(cell, formatterParams, onRendered){ //plain text value
-        return "<i class='fa fa-print'>"+col.customButton.value+"</i>";
+        return "<i class='fa fa-print "+styleClass+ " '>"+col.customButton.value+"</i>";
     };
     var formatterButton = {formatter:printIcon, width:40, hozAlign:"center", cellClick:col.customButton.onClick};
     return formatterButton

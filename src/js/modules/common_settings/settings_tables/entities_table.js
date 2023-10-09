@@ -120,7 +120,7 @@ export function createEntitiesSettingsTable (projectId, data) {
                         cell.getData().setName(newName)
                     }
             } } },
-            {customButton: {value:"X", onClick:function(e, cell){ if(confirm("Delete?"))projectManagement.getProjectStore(projectId,"entities").remove(cell.getRow().getData().uuid) } } },
+            {customButton: {value:"X", style:"smallCircle", onClick:function(e, cell){ if(confirm("Delete?"))projectManagement.getProjectStore(projectId,"entities").remove(cell.getRow().getData().uuid) } } },
         ];
     return {list, cols}
 }

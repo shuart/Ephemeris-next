@@ -195,6 +195,17 @@ var table_component =createAdler({
         border-radius:10px;
         background-color:transparent
     }
+    .fa-print.smallCircle{
+        background-color: #c84c4c8f;
+        background-color: rgba(174, 113, 113, 0.33);
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+        font-family: arial;
+        font-style: normal;
+        border-radius: 11px;
+        color: white;
+    }
     
     @media (prefers-color-scheme: dark) {
         .table-tag{

@@ -122,8 +122,8 @@ var getItemsList = function (data, instance){
             //     } } 
             // },
             
-            {customSwitch: {onClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, isVisible:e.value.checked})}}, field:"isVisible"  },
-            {customButton: {value:"X", onClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).remove(cell.getRow().getData().uuid)} } },
+            {title:"Visible",customSwitch: {onClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, isVisible:e.value.checked})}}, field:"isVisible"  },
+            {customButton: {value:"X", style:"smallCircle", onClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).remove(cell.getRow().getData().uuid)} } },
             
         ];
     } else if (instance.props.modelElementType.get() == "attributes") {
