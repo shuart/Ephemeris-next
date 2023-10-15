@@ -22,11 +22,12 @@ var createRouter = function(){
     }
 
     var resolveUrl = function (url) {
-        var urlToResolve = url
+        var urlToResolve = url.split("?")[0] // get url without search parmas 
+        var searchParams = url.split("?")[1]
         if(urlToResolve[0]=="/"){
             urlToResolve = urlToResolve.slice(1)
         }
-        let resolvedRoute = findRoute(urlToResolve)
+        let resolvedRoute = findRoute(urlToResolve, searchParams)
         if(resolvedRoute){
           console.log(resolvedRoute)
           applyMiddelwares(resolvedRoute)
@@ -47,9 +48,20 @@ var createRouter = function(){
       }
     }
   
-    var findRoute = function (url) {
+    var findRoute = function (url, searchParams) {
       var splitUrl = url.split("/")
-      var result = {match:false,route:undefined, callback: undefined, params:{}, url:"/"+url}
+      var result = {match:false,route:undefined, callback: undefined, params:{}, searchParams:{}, url:"/"+url}
+
+      //assign search params
+      if (searchParams) {
+        var allParams = searchParams.split("&")
+        for (let i = 0; i < allParams.length; i++) {
+          const sparams = allParams[i].split("=");
+          var sparamId = sparams[0]
+          var sparamValue = sparams[1]
+          result.searchParams[sparamId] = sparamValue
+        }
+      }
 
       if ((typeof splitUrl[0] === 'string' && splitUrl[0].length === 0)) {//if root
         for (let i = 0; i < routes.length; i++) {
@@ -121,6 +133,49 @@ var createRouter = function(){
       for (let i = 1; i < arguments.length; i++) {
         middlewaresStore.push(arguments[i]);
       }
+    }
+
+    function setSearchParams(id, value, mode) { //mode can be "silent"
+      
+      let url = window.location.hash.slice(1) || '/';
+      var currentParams = []
+
+      if (url.split("?")[1]) {//if there are already search params
+        
+        var splitedParams = url.split("?")[1].split("&")
+        url = url.split("?")[0]
+        var updated=false;
+        for (let i = 0; i < splitedParams.length; i++) {
+          const sparam = splitedParams[i].split("=");
+          if (sparam[0]==id) { //check if param should be updated
+            sparam[1]=value
+            updated=true
+          }
+          currentParams.push({id:sparam[0], value:sparam[1]})
+        }
+        if (!updated) { //if id set is new, add it to the list
+          currentParams.push({id:id, value:value})
+        }
+      }else{
+        currentParams.push({id:id, value:value})
+      }
+
+      var urlWithSearchParams = url +"?"
+      for (let i = 0; i < currentParams.length; i++) {
+        const element = currentParams[i];
+        var joinSymbol =""
+        if (i>0) {
+          joinSymbol ="&"
+        }
+        urlWithSearchParams +=joinSymbol+currentParams[i].id + "="+ currentParams[i].value
+      }
+      console.log(urlWithSearchParams);
+      var hrefUrl = "#"+urlWithSearchParams
+      window.history.pushState({}, window.title, hrefUrl) // Update URL as well as browser history.
+      if (mode != "silent") {
+        setPageFromUrl()
+      }
+      
     }
 
     function goTo(url) {
@@ -201,6 +256,7 @@ var createRouter = function(){
     }
   
     self.goTo = goTo
+    self.setSearchParams = setSearchParams
     self.use = use
     self.listen = init
     self.route = route

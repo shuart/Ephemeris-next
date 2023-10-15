@@ -201,6 +201,9 @@ var createStateManager = function({
     var goTo = function(href){
         common_router.goTo(href)
     }
+    var setSearchParams = function(id, value, mode){
+        common_router.setSearchParams(id, value, mode)
+    }
     var goToLastBeforeRedirect = function(href){
         if (lastUrlBeforeRedirect) {
             common_router.goTo(lastUrlBeforeRedirect)
@@ -216,6 +219,7 @@ var createStateManager = function({
     init()
     self.goToLastBeforeRedirect = goToLastBeforeRedirect
     self.goTo = goTo
+    self.setSearchParams = setSearchParams
     return self
 }
 

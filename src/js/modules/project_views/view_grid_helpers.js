@@ -44,13 +44,13 @@ var renderPlaceholder = function ({
     parent=undefined,
     hsize = 2,
     vsize= 2,
+    area=undefined,
     uuid = undefined,
     deleteCallback = (e)=>console.log("no action"),
     componentType ="undefined",
     evaluatorUuid =undefined,
     settings ={evaluatorUuid:undefined},
 }={}) {
-    var area = componentType
     var areaName = "No Type"
     var areaIcon  = "airplay"
     var evaluatorUuid = evaluatorUuid || settings.evaluatorUuid
@@ -79,7 +79,6 @@ var renderPlaceholder = function ({
     if (componentType == "textEditor") {
         areaName = "Text Editor";
         areaIcon = "credit-card";
-        alert("e")
     }
     var domElement = document.createElement("div")
     domElement.id = "comp"+index
@@ -92,6 +91,7 @@ var renderPlaceholder = function ({
     domElement.dataset.evaluatorUuid = evaluatorUuid
     domElement.dataset.vsize = vsize
     domElement.dataset.hsize = hsize
+    domElement.dataset.area = area
 
     domElement.innerHTML =`
     <div id="${index}" style="height:100%;" a-slot="view_mount_point_${rowId}_${colId}_${index}" data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${index}"  class="adler_grid_comp_area inside" >

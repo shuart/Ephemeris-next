@@ -3,6 +3,8 @@ import table_viewport from "../viewports/table_viewport/table_ui.js"
 import graph from "../common_graph/graph.js"
 import viewGridSettings from "./view_grid_settings.js"
 import projectManagement from "../common_project_management/project_management.js";
+import folder_view_component from "../common_ui_components/folder_view/folder_view.js";
+import state_manager from "../common_state/state_manager.js";
 
 var softUpdate= function (event, data, instance) {
 
@@ -19,10 +21,21 @@ var loadLayout = function(currentPageId){
         { settings:{}, cols:[
             { settings:{}, components:[]},
         ]}
-    ]))
+    ])) //TODO, check if can be removed
 }
-
-function setUp(event, data, instance){
+function getVisibleAreas(event,data,instance) {
+    var visibleArea = {main:true, left:false}
+    var layout= loadLayout(data.viewId)
+    
+    for (let i = 0; i < layout.length; i++) {
+        const element = layout[i];
+        if (layout[i].area == "left") {
+            visibleArea.left = true
+        }
+    }
+    return visibleArea
+}
+function setMainView(event, data, instance) {
     var projectId = projectManagement.getCurrent().id
     var view = projectManagement.getProjectStore(projectId,"views").getById(data.viewId)
     data.viewName = view.name
@@ -35,6 +48,28 @@ function setUp(event, data, instance){
     // console.log(loadLayout(data.viewId));
     // console.log(viewGrid.schema);
     instance.query(".view_mount_point_grid").append(viewGrid)
+}
+function setLeftView(event, data, instance) {
+    var sideArea = instance.query(".view_mount_point_select")
+        sideArea.classList.add("inuse")
+        instance.query(".view_mount_point_grid").classList.add('with_side')
+        instance.query(".container").classList.add('with_side')
+        var folderView = folder_view_component.instance()
+        folderView.onClick= function (e, cell) {
+            state_manager.setSearchParams("test","tas", "silent")
+            instance.query(".view_mount_point_grid").innerHTML=''
+            setMainView(event, data, instance)
+        }
+        instance.query(".view_mount_point_select").append(folderView)
+}
+
+function setUp(event, data, instance){
+    var visibleArea = getVisibleAreas(event, data, instance)
+    setMainView(event, data, instance)
+    if (visibleArea.left) {
+        setLeftView(event, data, instance)
+        
+    }
 
 }
 
@@ -53,6 +88,7 @@ var component =createAdler({
             <h2 a-if="subtitle" class="subtitle">${p.viewId}, called from ${p.calledFromInstance}</h2>
         </div>
         <div class="view_mount_point_grid" a-slot="view_mount_point_grid" style="height: calc(100% - 90px);"></div>
+        <div class="view_mount_point_select" a-slot="view_mount_point_select" style=""></div>
 
     </div>
         `,
@@ -88,7 +124,24 @@ var component =createAdler({
             softUpdate:(event, data, instance)=>softUpdate(event, data, instance),
         },
     },
-    // css:/*css*/` `,
+    css:/*css*/`
+    .view_mount_point_select.inuse{
+        height: 100%;
+        width: 250px;
+        position: absolute;
+        top: 0px;
+    }
+    .view_mount_point_grid.with_side{
+        width: calc(100% - 250px);
+        position:relative;
+        left:250px;
+    }
+    .container.with_side{
+        width: calc(100% - 250px);
+        position:relative;
+        left:250px;
+    }
+    `,
 })
 
 export default component

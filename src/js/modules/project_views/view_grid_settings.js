@@ -130,7 +130,7 @@ var renderItems = function (self) {
                 settings:{evaluatorId:evaluatorId, calledFromInstance:self.calledFromInstance},
             }
         })
-        if (view) {
+        if (view && (comp.area==self.currentArea || comp.area==undefined || comp.area=='undefined') ) {
             var domElement = document.createElement("div")
             // domElement.id = "comp"+index
             var vsize = comp.vsize || 2
@@ -158,7 +158,12 @@ var renderPlaceholders = function (self) {
         const compItem = Object.assign({},comp, {index:i, parent:self, deleteCallback:()=>updateSchema(self), });
         var view = renderPlaceholder(compItem)
         if (view) {
-            self.query('.viewGridArea').append(view)
+            if (comp.area == "left") {
+                self.query('.viewGridAreaDemoLeft').append(view)
+            }else{
+                self.query('.viewGridArea').append(view)
+            }
+            
         }
     }
 }
@@ -167,6 +172,11 @@ var getSchemaFromGrid = function (self) {
     var newSchema = []
     let childArray = [ ...self.query('.viewGridArea').children ]
     childArray.forEach(function (item) {
+        var itemDef= JSON.parse(JSON.stringify(item.dataset));
+        newSchema.push(itemDef)
+    })
+    let childArrayLeft = [ ...self.query('.viewGridAreaDemoLeft').children ]
+    childArrayLeft.forEach(function (item) {
         var itemDef= JSON.parse(JSON.stringify(item.dataset));
         newSchema.push(itemDef)
     })
@@ -182,10 +192,7 @@ var saveNewLayout = function (event,self) {
     }
 }
 
-var addComp = function(event, self){
-    // mainPopup.mount()
-    // mainPopup.append(thumbs, "main-slot")
-    // mainPopup.update();
+var showAddMenu = function(event, self, area){
     var narrowPopup = mainPopup.instance({data:{narrow:true}})
     narrowPopup.mount()
     narrowPopup.append(select.instance({
@@ -199,7 +206,7 @@ var addComp = function(event, self){
             ],
             callback:function(result){
                 var newSchema = getSchemaFromGrid(self)
-                newSchema.push({uuid:nanoid(), componentType:result.value.uuid})
+                newSchema.push({uuid:nanoid(), componentType:result.value.uuid, area:area})
                 self.schema = newSchema
                 console.log(newSchema);
                 updateView(self)
@@ -208,11 +215,24 @@ var addComp = function(event, self){
         }
     }), "main-slot")
     narrowPopup.update();
-    
+}
+
+var addComp = function(event, self){
+    // mainPopup.mount()
+    // mainPopup.append(thumbs, "main-slot")
+    // mainPopup.update();
+    showAddMenu(event, self)
+}
+var addCompLeft = function(event, self){
+    // mainPopup.mount()
+    // mainPopup.append(thumbs, "main-slot")
+    // mainPopup.update();
+    showAddMenu(event, self, "left")
 }
 
 var setGrid = function (self) {
     self.query(".viewGridArea").innerHTML = ""
+    self.query(".viewGridAreaDemoLeft").innerHTML = ""
     self.query(".viewGridArea").style.gridTemplateColumns = `repeat(${self.cols}, 1fr)`
     self.query(".viewGridArea").style.gridTemplateRows = `repeat(${self.rows}, 1fr)`
 }
@@ -222,6 +242,8 @@ var updateView = function (self) {
     if (!self.showSettings) {
         self.query(".action-grid-save").remove()
         self.query(".action_grid_add").remove()
+        self.query(".action-grid-add-left").remove()
+        self.query(".viewGridAreaDemoLeft").remove() //this is shown only in settings mode. This part is handeled by the project view view itself in any other case
         renderItems(self)
     } else {
         renderPlaceholders(self)
@@ -235,6 +257,7 @@ var gridView = createAdler({
     tag:'eph-grid-view',
     props:{
         currentPageId:undefined,
+        currentArea:undefined,
         calledFromInstance:undefined,
         cols:4,
         rows:4,
@@ -246,6 +269,7 @@ var gridView = createAdler({
     events : [
         ["click", '.action_grid_add', addComp],
         ["click", '.action-grid-save', saveNewLayout],
+        ["click", '.action-grid-add-left', addCompLeft],
     ],
     html:()=>/*html*/`
         <link rel="stylesheet" href="css/bulma.min.css">
@@ -256,9 +280,13 @@ var gridView = createAdler({
 
         <div class="area container is-widescreen">
             <button class="button action_grid_add">add</button>
-          <div class="button action-grid-save">Save</div>
-          <div class="block"></div>
+            <div class="button action-grid-save">Save</div>
+            <div class="button action-grid-add-left">Add to Left Panel</div>
+            <div class="block"></div>
             <div class="viewGridArea"></div>
+
+            <div class="viewGridAreaDemoLeft"></div>
+
         </div>
         
     `,
@@ -316,6 +344,14 @@ var gridView = createAdler({
     .adler_grid_comp_area{
         position:relative;
     }
+    .viewGridAreaDemoLeft {
+        position: absolute;
+        height: 50%;
+        background-color: rgba(166, 166, 166, 0.04);
+        width: 25%;
+        top: 64px;
+        left: -26%;
+      }
     `,
 })
 
