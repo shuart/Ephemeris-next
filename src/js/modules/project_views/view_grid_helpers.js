@@ -64,6 +64,10 @@ var renderPlaceholder = function ({
         areaName = "Table";
         areaIcon = "table"
     }
+    if (componentType == "folder") {
+        areaName = "Folder";
+        areaIcon = "table"
+    }
     if (componentType == "graph") {
         areaName = "Graph";
         areaIcon = "git-merge"

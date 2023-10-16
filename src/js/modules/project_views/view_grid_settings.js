@@ -12,6 +12,7 @@ import textEditorViewport from "../viewports/text_editor_viewport/text_editor_vi
 // import state from "../common_state/state_manager.js";
 import propertiesViewport from "../viewports/properties_viewport/properties_viewport.js";
 import { renderPlaceholder } from "./view_grid_helpers.js";
+import folder_viewport from "../viewports/folder_viewport/folder_viewport.js";
 
 
 function sortable(self, section, onUpdate){
@@ -92,6 +93,7 @@ var availableViewports = {
     graph:graph_viewport,
     propertiesList:propertiesViewport,
     textEditor:textEditorViewport,
+    folder:folder_viewport,
 }
 
 var getComponents = function (self) {
@@ -118,6 +120,9 @@ var getComponents = function (self) {
 
 var renderItems = function (self) {
     var components = getComponents(self)
+    if (self.currentArea == "left") { //change the grid
+        self.query('.viewGridArea').classList.add("isLeft")   
+    }
     for (let i = 0; i < components.length; i++) {
         const comp = components[i];
         var instanceType = availableViewports[comp.componentType]
@@ -130,7 +135,8 @@ var renderItems = function (self) {
                 settings:{evaluatorId:evaluatorId, calledFromInstance:self.calledFromInstance},
             }
         })
-        if (view && (comp.area==self.currentArea || comp.area==undefined || comp.area=='undefined') ) {
+        
+        if (view && (comp.area==self.currentArea || ((comp.area==undefined || comp.area=='undefined') && (self.currentArea==undefined || self.currentArea=='undefined')) ) ) {
             var domElement = document.createElement("div")
             // domElement.id = "comp"+index
             var vsize = comp.vsize || 2
@@ -199,6 +205,7 @@ var showAddMenu = function(event, self, area){
         data:{
             list:[
                 {uuid:"table", name:"Table", iconPath:"table.svg",},
+                {uuid:"folder", name:"Folder", iconPath:"table.svg",},
                 {uuid:"graph", name:"Graph", iconPath:"git-merge.svg",},
                 {uuid:"instanceCard", name:"Instance Card", iconPath:"credit-card.svg",},
                 {uuid:"propertiesList", name:"Properties List", iconPath:"credit-card.svg",},
@@ -304,6 +311,23 @@ var gridView = createAdler({
         grid-template-rows: repeat(4, 1fr);
         gap: 10px;
         height: 100%;
+    }
+    .viewGridArea.isLeft {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-rows: repeat(2, 1fr) !important;
+        position: relative;
+        top: -25px;
+        gap: 10px;
+        height: 100%;
+    }
+    .viewGridAreaDemoLeft{
+        display: grid;
+        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-rows: repeat(2, 1fr) !important;
+        position: relative;
+        top: -25px;
+        gap: 10px;
     }
     .ghost {
         opacity:0.75;

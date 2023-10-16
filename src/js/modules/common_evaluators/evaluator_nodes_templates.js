@@ -559,6 +559,35 @@ evaluatorTemplates.outputGraph = {
     },
 }
 
+evaluatorTemplates.outputFolders = {
+    templateName : "output_folder",
+    name : "output_folder",
+    style:{
+        headerColor:nodeColors.output,
+    },
+    category:"output",
+    props :[
+        // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"nodes", expect:"data", multiple:true, label:"Entities", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"links", expect:"array", isSquare:true, multiple:true, label:"links", type:"text", editable:true, socket:"input", value:false},
+        {id:"actions", expect:"function" , label:"action", type:"hidden", editable:true, socket:"input", value:false},
+
+        {id:"onConnectAction", expect:"function", label:"onConnect", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"onNodeClickAction", expect:"function", label:"onNodeClick", type:"hidden", editable:true, socket:"input", value:false},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props) =>{
+            console.log(props.actions.get());
+        },
+        onInit:(props) =>{
+
+        },
+    },
+}
+
 evaluatorTemplates.outputProperties = {
     templateName : "output_properties",
     name : "output_properties",

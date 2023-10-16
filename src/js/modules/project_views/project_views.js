@@ -49,18 +49,39 @@ function setMainView(event, data, instance) {
     // console.log(viewGrid.schema);
     instance.query(".view_mount_point_grid").append(viewGrid)
 }
+// function setLeftView(event, data, instance) {
+//     var sideArea = instance.query(".view_mount_point_select")
+//         sideArea.classList.add("inuse")
+//         instance.query(".view_mount_point_grid").classList.add('with_side')
+//         instance.query(".container").classList.add('with_side')
+//         var folderView = folder_view_component.instance()
+        
+//         folderView.onClick= function (e, cell) {
+//             state_manager.setSearchParams("test","tas", "silent")
+//             instance.query(".view_mount_point_grid").innerHTML=''
+//             setMainView(event, data, instance)
+//         }
+//         instance.query(".view_mount_point_select").append(folderView)
+// }
 function setLeftView(event, data, instance) {
     var sideArea = instance.query(".view_mount_point_select")
         sideArea.classList.add("inuse")
         instance.query(".view_mount_point_grid").classList.add('with_side')
         instance.query(".container").classList.add('with_side')
-        var folderView = folder_view_component.instance()
-        folderView.onClick= function (e, cell) {
-            state_manager.setSearchParams("test","tas", "silent")
-            instance.query(".view_mount_point_grid").innerHTML=''
-            setMainView(event, data, instance)
-        }
-        instance.query(".view_mount_point_select").append(folderView)
+        
+        var projectId = projectManagement.getCurrent().id
+        var view = projectManagement.getProjectStore(projectId,"views").getById(data.viewId)
+        data.viewName = view.name
+
+        var viewGrid = viewGridSettings.instance()
+        viewGrid.currentPageId= data.viewId
+        viewGrid.currentArea= "left"
+        viewGrid.calledFromInstance= data.calledFromInstance
+        viewGrid.schema= loadLayout(data.viewId)
+        viewGrid.showSettings= data.settings
+        // console.log(loadLayout(data.viewId));
+        // console.log(viewGrid.schema);
+        instance.query(".view_mount_point_select").append(viewGrid)
 }
 
 function setUp(event, data, instance){
