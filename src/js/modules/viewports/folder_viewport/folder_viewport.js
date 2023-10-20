@@ -26,7 +26,7 @@ var getItemsList = function (event, data, instance){
     var evaluationResult = evaluator.evaluate().output_folder
     console.log(evaluator.evaluate());
 
-    data.list =evaluationResult.nodes
+    data.list =evaluationResult.list
     data.cols =evaluationResult.cols
     data.actions =evaluationResult.actions
     console.log(data);
@@ -40,7 +40,6 @@ var getItemsList = function (event, data, instance){
         data.cols=[{name:"name", field:'name'}]
     }
     console.log(data);
-    // alert("ddd")
     for (let i = 0; i < data.list.length; i++) {
         const item = data.list[i];
         var newItem = {uuid: item.uuid, name:item.name, color:item.color}
@@ -61,11 +60,12 @@ var getItemsList = function (event, data, instance){
         
     }
     data.list =newList
+    console.log(data);
+    
     joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))
     
     
     console.log(data);
-    
     return data
 }
 var subscribeToDB = function (event, data, instance) {
@@ -100,6 +100,9 @@ var setUpTable = function (event, data, instance) {
         tablevp.classList="current-table"
         tablevp.list = itemsData.list
         tablevp.cols = itemsData.cols
+        if (itemsData.actions) {
+            tablevp.onClick = itemsData.actions
+        }
         mountPlace.append(tablevp)
         subscribeToDB(event, data, instance)
 

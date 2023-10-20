@@ -5,11 +5,11 @@ import {TabulatorFull as Tabulator} from "../../../vendor/tabulator_esm.min.js";
 // import {checkColsForCustomFormating} from "./table_custom_formaters.js"
 
 var setUpTable = function(self){
-    // var itemsList = self.list
+    var itemsList = self.list || []
     // var colsList = self.cols
     // var currentHeight = self.height
     // console.log(itemsList);
-    var itemsList = []
+    // var itemsList = []
     var colsList = []
 
     if (!itemsList[0]) {
@@ -90,6 +90,7 @@ var folder_view_component =createAdler({
     tag:'folder-view',
     props:{
         onClick:function (e,cell) {
+            alert("no action")
             // state_manager.setSearchParams("test","tas", "silent")
         }
         // test:15,

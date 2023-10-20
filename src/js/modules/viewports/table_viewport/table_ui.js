@@ -89,7 +89,6 @@ var getItemsList = function (event, data, instance){
     
     
     console.log(data);
-    
     return data
 }
 var subscribeToDB = function (event, data, instance) {

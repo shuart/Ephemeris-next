@@ -5,6 +5,8 @@ import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
 import select from "../common_ui_components/select/select.js"
 import showPopupInstancePreview from "../popup_instance_preview/popup_instance_preview.js";
 import createAttributeManagement from "../common_project_management/attributes_management.js";
+import state_manager from "../common_state/state_manager.js";
+
 
 var getProp = function(props,propName, data){
     var valuePassed = props[propName].get()
@@ -566,15 +568,13 @@ evaluatorTemplates.outputFolders = {
         headerColor:nodeColors.output,
     },
     category:"output",
+
     props :[
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"nodes", expect:"data", multiple:true, label:"Entities", type:"hidden", editable:true, socket:"input", value:false},
-        {id:"links", expect:"array", isSquare:true, multiple:true, label:"links", type:"text", editable:true, socket:"input", value:false},
-        {id:"actions", expect:"function" , label:"action", type:"hidden", editable:true, socket:"input", value:false},
-
-        {id:"onConnectAction", expect:"function", label:"onConnect", type:"hidden", editable:true, socket:"input", value:false},
-        {id:"onNodeClickAction", expect:"function", label:"onNodeClick", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"cols", expect:"configuration",multiple:true, label:"cols definition", type:"hidden", editable:true, socket:"input", value:false},
+        {id:"rows", expect:"data", label:"rows", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"actions", expect:"function", label:"action", type:"hidden", editable:true, socket:"input", value:false},
     ],
     methods:{
     },
@@ -896,6 +896,40 @@ evaluatorTemplates.previewInstance = {
         // onInit:(props) =>{
 
         // },
+    },
+}
+
+evaluatorTemplates.setLocalParam = {
+    templateName : "action_set_local_param",
+    name : "Set local parameter",
+    category:"action",
+    props :[
+        {id:"output", expect:"function", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
+        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"name",expect:"string", label:"Name", type:"text", editable:true, socket:"input", value:""},
+        {id:"value",expect:"string", label:"Value", type:"text", editable:true, socket:"input", value:""},
+        // {id:"paramName", label:"param name", type:"text", editable:true, socket:"input", value:"0"},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props, globals) =>{
+            var functionToUse = function (data) {
+                console.log(data);
+                alert("eee")
+                var parmaName = getProp(props,"name",data)
+                var parmaValue = getProp(props,"value",data)
+                if (parmaName && parmaValue !="") {
+                    // showPopupInstancePreview(targetItem)
+                    state_manager.setSearchParams(parmaName,parmaValue, "silent")
+                }else{
+                    alert("Reference Missing")
+                }
+
+            }
+            props.output.set(functionToUse)     
+        },
+
     },
 }
 
