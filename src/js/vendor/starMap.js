@@ -7,11 +7,10 @@ var createRouter = function(){
     var setListener = function(){
       window.addEventListener('hashchange', function() {
         // new hash value
+        //TODO not trigger
         setPageFromUrl()
       });
     }
-  
-  
     var setPageFromUrl = async function(){
       // var hash = new URL(document.URL).hash;
       let url = window.location.hash.slice(1) || '/';
@@ -20,6 +19,16 @@ var createRouter = function(){
         resolveUrl(url)
       }
     }
+
+    function notifySearchParamChange(data){
+      // for (let i = 0; i < subscribers.length; i++) {
+      //     subscribers[i].callback(data);
+          
+      // }
+      //use global event
+      const event = new CustomEvent('search_param_update', { detail: {} });
+      window.dispatchEvent(event);
+  }
 
     var resolveUrl = function (url) {
         var urlToResolve = url.split("?")[0] // get url without search parmas 
@@ -175,6 +184,7 @@ var createRouter = function(){
       if (mode != "silent") {
         setPageFromUrl()
       }
+      notifySearchParamChange()
       
     }
 

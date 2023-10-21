@@ -5,6 +5,7 @@ import projectManagement from "../../common_project_management/project_managemen
 import createEvaluator from "../../common_evaluators/evaluators.js";
 import showPopupInstancePreview from "../../popup_instance_preview/popup_instance_preview.js";
 import { joinRelationsWithEntities } from "../helper_functionsViewport/helper_function_viewport.js";
+import { subscribeToChanges } from "../../common_state/state_change_subscription.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -101,10 +102,25 @@ var setUpTable = function (event, data, instance) {
         tablevp.list = itemsData.list
         tablevp.cols = itemsData.cols
         if (itemsData.actions) {
-            tablevp.onClick = itemsData.actions
+            // tablevp.onClick = itemsData.actions
+            tablevp.onClick = function (e, cell) {
+                var actionData = {
+                    input:{
+                        clickedItem:cell.getData().uuid,
+                        clickedItemUuid:cell.getData().uuid,
+                        contextualItemUuid:cell.getData().uuid,
+                        clickedItemValue:cell.getValue(),
+                        sourceItem:cell.getData().uuid,
+                        targetItem:false,
+                    }
+                }
+                itemsData.actions(actionData)
+            }
+
+            
         }
         mountPlace.append(tablevp)
-        subscribeToDB(event, data, instance)
+        subscribeToChanges(event, data, instance)
 
     })
 
