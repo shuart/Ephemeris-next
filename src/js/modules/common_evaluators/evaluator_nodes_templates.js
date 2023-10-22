@@ -148,6 +148,76 @@ evaluatorTemplates.sourceInstance = {
         // },
     },
 }
+evaluatorTemplates.instanceFromId = {
+    templateName : "instance_from_id",
+    name : "Instance from Id",
+    style:{
+        headerColor:nodeColors.inputObject,
+    },
+    category:"input",
+
+    props :[
+        {id:"output", expect:"object", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"instanceId", expect:"text", label:"Instance Id", type:"text", editable:true, socket:"input", value:"...."},
+
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props, globals) =>{
+            var idOfInstance = props.instanceId.get()
+            if (idOfInstance) {
+                var instanceRepo = createInstancesManagement()
+                var currentInstance = instanceRepo.getById(idOfInstance)
+                console.log(currentInstance);
+                props.output.set(currentInstance)
+            }
+            
+        },
+        // onInit:(props) =>{
+        // },
+    },
+}
+
+evaluatorTemplates.searchParam = {
+    templateName : "search_param",
+    name : "Search Param",
+    style:{
+        headerColor:nodeColors.inputObject,
+    },
+    category:"input",
+
+    props :[
+        {id:"output", expect:"text", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        {id:"paramName", expect:"text", label:"Param Name", type:"text", editable:true, socket:"input", value:"...."},
+    ],
+    methods:{
+    },
+    event:{
+        onEvaluate:(props, globals) =>{
+            // var instanceRepo = createInstancesManagement()
+            // var currentInstance = instanceRepo.getById(globals.originInstance)
+            // props.output.set(currentInstance)
+            var paramName = props.paramName.get()
+            if (paramName!="....") {
+                props.output.set("false")
+                let url = window.location.hash.slice(1) || '/';
+                if (url.split("?")[1]) {//if there are already search params
+                    var splitedParams = url.split("?")[1].split("&")
+                    url = url.split("?")[0]
+                    for (let i = 0; i < splitedParams.length; i++) {
+                        const sparam = splitedParams[i].split("=");
+                        if (paramName == sparam[0]) {
+                            props.output.set(sparam[1] || "flase")
+                        }
+                    }
+                }
+            }
+        },
+        // onInit:(props) =>{
+        // },
+    },
+}
 
 evaluatorTemplates.debugAlert = {
     templateName : "debug_alert",
@@ -916,7 +986,6 @@ evaluatorTemplates.setLocalParam = {
         onEvaluate:(props, globals) =>{
             var functionToUse = function (data) {
                 console.log(data);
-                alert("eee")
                 var parmaName = getProp(props,"name",data)
                 var parmaValue = getProp(props,"value",data)
                 if (parmaName && parmaValue !="") {

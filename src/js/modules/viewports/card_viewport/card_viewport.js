@@ -5,18 +5,11 @@ import createEvaluator from "../../common_evaluators/evaluators.js";
 import showPopupInstancePreview from "../../popup_instance_preview/popup_instance_preview.js";
 import instanceCard from "../../common_ui_components/instance_card/instance_card.js";
 import createInstancesManagement from "../../common_project_management/instances_management.js";
+import { subscribeToChanges } from "../../common_state/state_change_subscription.js";
 
-
-var softUpdate= function (event, data, instance) {
-    var itemsData = getItemsList(event,data, instance)
-    instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols}, false)
-    instance.getNodes().tablevp.do.softUpdate()
-}
 
 var addItem = function (event, data, instance) {
-
     instance.props.get("addAction" )()
-
 }
 
 var getEvaluatorData = function (event, data, instance){
@@ -37,28 +30,18 @@ var getEvaluatorData = function (event, data, instance){
     
     console.log(data);
     
-
-    
     return data
 }
-var subscribeToDB = function (event, data, instance) {
-    var updateFunc = function (params) {
-        if (instance && instance.getDOMElement() && instance.getDOMElement().isConnected) {
-            softUpdate(event, data, instance)
-            // alert("update")//TODO sometimes to update. Why?
-        }else{
-            window.removeEventListener("cluster_update", updateFunc);
-        }
-        
-    }
-    window.addEventListener("cluster_update", updateFunc);
-}
 
-
-var setUpTable = function (event, data, instance) {
-     var itemData = getEvaluatorData(event,data, instance)
+var updateTable = function (event, data, instance) {
+    var itemData = getEvaluatorData(event,data, instance)
      instance.getNodes().instance_card.setData({instance:itemData.instance })
     //  subscribeToDB(event, data, instance)
+}
+
+var setUpTable = function (event, data, instance) {
+    updateTable(event, data, instance) 
+    subscribeToChanges(event, data, instance, updateTable)
 }
 
 var cardViewport =createAdler({

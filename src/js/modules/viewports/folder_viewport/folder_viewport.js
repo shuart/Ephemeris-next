@@ -9,11 +9,11 @@ import { subscribeToChanges } from "../../common_state/state_change_subscription
 
 
 var softUpdate= function (event, data, instance) {
-    var itemsData = getItemsList(event,data, instance)
-    var currentTable = instance.query(".current-table")
-    currentTable.list = itemsData.list
+    // var itemsData = getItemsList(event,data, instance)
+    // var currentTable = instance.query(".current-table")
+    // currentTable.list = itemsData.list
 
-    currentTable.updateTable()
+    // currentTable.updateTable()
 }
 
 var getItemsList = function (event, data, instance){
@@ -120,7 +120,7 @@ var setUpTable = function (event, data, instance) {
             
         }
         mountPlace.append(tablevp)
-        subscribeToChanges(event, data, instance)
+        subscribeToChanges(event, data, instance, softUpdate)
 
     })
 
