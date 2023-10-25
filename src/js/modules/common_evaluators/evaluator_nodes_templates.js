@@ -7,6 +7,9 @@ import showPopupInstancePreview from "../popup_instance_preview/popup_instance_p
 import createAttributeManagement from "../common_project_management/attributes_management.js";
 import state_manager from "../common_state/state_manager.js";
 
+import { filter } from "./templates/node_filter.js";
+import { settingsNodeColors as  nodeColors} from "./templates/settings_node_colors.js";
+
 
 var getProp = function(props,propName, data){
     var valuePassed = props[propName].get()
@@ -19,13 +22,9 @@ var getProp = function(props,propName, data){
 
 var evaluatorTemplates = {}
 
-var nodeColors = {
-    input:0x83314a,
-    inputData:0x00d6a3,
-    inputObject:0xed9e5c,
-    output:0x1d1d1d,
-    attribute:0xa35abd,
-}
+
+
+evaluatorTemplates.filter = filter
 
 // baseTemplates.input_number = {
 //     templateName : "input_number",
