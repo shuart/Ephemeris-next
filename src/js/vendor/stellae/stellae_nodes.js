@@ -122,14 +122,45 @@ var createNode= function({
                 element.valueFromInput = element.value //save Default and set input for when no nodes
             }
             interactivePropsObject[element.id] = {
-                get:function () {
+                // get:function () {
                    
-                    if (element.valueFromLink != undefined) {
-                        return element.valueFromLink
-                    }else{
-                        return element.value
-                    }
+                //     if (element.valueFromLink != undefined) {
+                //         return element.valueFromLink
+                //     }else{
+                //         return element.value
+                //     }
                     
+                // },
+                get:function(data){
+
+                    function containsOnlyNumbers(str) {
+                        return /^[+-]?[0-9]+$/.test(str);
+                    }
+                    function containsOnlyFloat(str) {
+                        return /^[+-]?[0-9]+\.[0-9]+$/.test(str);
+                    }
+
+                    function checkForNumbers(str){ //check if the string is an int or a float, and switch if needed
+                        if (containsOnlyNumbers(str)) {
+                            return parseInt(str)
+                        }else if(containsOnlyFloat(str)){
+                            return parseFloat(str)
+                        }else{
+                            return str
+                        }
+                    }
+                    var valuePassed = undefined
+                    if (element.valueFromLink != undefined) {
+                        valuePassed = element.valueFromLink
+                    }else{
+                        valuePassed = element.value
+                    }
+
+                    if (data && valuePassed instanceof Function) {
+                        return valuePassed(data)
+                    }else{
+                        return checkForNumbers(valuePassed)
+                    }
                 },
                 _getFromInput:function () {
                     // return element.valueFromInput || element.value

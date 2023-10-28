@@ -8,6 +8,8 @@ import createAttributeManagement from "../common_project_management/attributes_m
 import state_manager from "../common_state/state_manager.js";
 
 import { filter } from "./templates/node_filter.js";
+import { readAttribute } from "./templates/data_read_attribute.js";
+import { mathDataCompare } from "./templates/math_data_compare.js";
 import { settingsNodeColors as  nodeColors} from "./templates/settings_node_colors.js";
 
 
@@ -25,6 +27,8 @@ var evaluatorTemplates = {}
 
 
 evaluatorTemplates.filter = filter
+evaluatorTemplates.readAttribute = readAttribute
+evaluatorTemplates.mathDataCompare = mathDataCompare
 
 // baseTemplates.input_number = {
 //     templateName : "input_number",

@@ -9,10 +9,11 @@ export var filter = {
     category:"data",
 
     props :[
-        {id:"output", expect:"text", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
-        {id:"paramName", expect:"text", label:"Param Name", type:"text", editable:true, socket:"input", value:"...."},
-        {id:"paramIndex", expect:"text", label:"Param Name", type:"text", editable:true, socket:"input", value:"...."},
+        {id:"output", expect:"data", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+        // {id:"paramName", expect:"text", label:"Param Name", type:"text", editable:true, socket:"input", value:"...."},
+        // {id:"paramIndex", expect:"text", label:"Param Name", type:"text", editable:true, socket:"input", value:"...."},
         {id:"a", expect:"data", label:"Data", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"selection", expect:"array", label:"Selection", type:"hidden", editable:false, socket:"input", value:"...."},
     ],
     methods:{
     },
@@ -41,7 +42,10 @@ export var filter = {
                 var newDataSet = []
                 for (let i = 0; i < oldDataSet.length; i++) {
                     const element = oldDataSet[i];
-                    if (i<2) {
+                    var condition = props.selection.get(element)
+                    console.log(condition);
+                    // alert("eee")
+                    if (condition == 1) {
                         newDataSet.push(element)
                     }
                 }
