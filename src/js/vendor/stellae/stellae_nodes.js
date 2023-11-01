@@ -271,6 +271,10 @@ var createNode= function({
         interactiveProps[prop].set(value)
     }
     var getProp = function (prop) {
+        if (!interactiveProps[prop]) {
+            console.warn("no props found")
+            return undefined
+        }
         return interactiveProps[prop].get()
     }
 

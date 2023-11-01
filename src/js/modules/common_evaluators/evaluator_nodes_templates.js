@@ -10,7 +10,9 @@ import state_manager from "../common_state/state_manager.js";
 import { filter } from "./templates/node_filter.js";
 import { readAttribute } from "./templates/data_read_attribute.js";
 import { mathDataCompare } from "./templates/math_data_compare.js";
+import { readRelations } from "./templates/data_read_relations.js";
 import { settingsNodeColors as  nodeColors} from "./templates/settings_node_colors.js";
+import { deriveRelations, extractRelations } from "./templates/data_derive_relations.js";
 
 
 var getProp = function(props,propName, data){
@@ -29,6 +31,9 @@ var evaluatorTemplates = {}
 evaluatorTemplates.filter = filter
 evaluatorTemplates.readAttribute = readAttribute
 evaluatorTemplates.mathDataCompare = mathDataCompare
+evaluatorTemplates.readRelations = readRelations
+evaluatorTemplates.deriveRelations = deriveRelations
+evaluatorTemplates.extractRelations = extractRelations
 
 // baseTemplates.input_number = {
 //     templateName : "input_number",
@@ -380,120 +385,6 @@ evaluatorTemplates.extractProperty = {
                 return {id:e.uuid, value:e.name}
             })) 
             
-        },
-    },
-}
-
-evaluatorTemplates.extractRelations = {
-    templateName : "extract_relations",
-    name : "extract_relations",
-    style:{
-        headerColor:nodeColors.attribute,
-    },
-    category:"relations",
-    props :[
-        {id:"output", expect:"array", isSquare:true, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
-        {id:"id", expect:"string", label:"prop id", type:"hidden", editable:false, socket:"output", value:false},
-        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"inOrOut", label:"Direction", type:"select", options:[
-            {id:"incoming", value:"Incoming"},
-            {id:"outgoing", value:"outgoing"},
-        ],editable:true, socket:"none", value:"Greater Than"},
-        {id:"method", label:"Relation", type:"select", options:[
-            {id:"Greater_Than", value:"Greater Than"},
-        ],editable:true, socket:"none", value:"Greater Than"},
-        {id:"a", expect:"data", label:"Data", type:"text", editable:true, socket:"input", value:"0"},
-    ],
-    methods:{
-    },
-    event:{
-        onEvaluate:(props) =>{
-            
-            // console.log(entityRepo.getAll());
-            
-            // props.method.setOptions(props.a.get().map(function (e) {
-            //         var currentKey = e.parameters.keys
-            //         return {id:e.uuid, value:e.name}
-            // }))
-            console.log(props.a.get()[0] );
-            var currentRelationsToConsider = []
-            if (Array.isArray(props.a.get()) && props.a.get()[0] &&  props.a.get()[0].attributes.type) {
-                var entityRepo = createEntityManagement()
-                var entity = entityRepo.getById(props.a.get()[0].attributes.type)
-                var inOrOut = props.inOrOut.getOptionId()
-                if (inOrOut == "incoming" ) {
-                    if (entity.getIncomingRelations()) {
-                        currentRelationsToConsider = entity.getIncomingRelations()
-                        props.method.setOptions(entity.getIncomingRelations().map(function (e) {
-                            return {id:e.uuid, value:e.name}
-                        }))
-                    }
-                }else{
-                    console.log(entity.getOutgoingRelations());
-                    if (entity.getOutgoingRelations()) {
-                        currentRelationsToConsider = entity.getOutgoingRelations()
-                        props.method.setOptions(entity.getOutgoingRelations().map(function (e) {
-                            return {id:e.uuid, value:e.name}
-                        }))
-                    }
-                }
-                // if (entity.relations) {
-                //     props.method.setOptions(entity.relations.map(function (e) {
-                //         return {id:e.uuid, value:e.name}
-                //     }))
-                // }
-                if (props.method.get()) {
-                    var instancesRepo = createInstancesManagement()
-                    var inOrOut = props.inOrOut.getOptionId()
-                    props.output.set(props.a.get().map(function (e) {
-                        
-                        var targetsOfRelation=[]
-                        var relatedRelation=[]
-                        var instancesRelations = e.getRelations()
-                        for (let i = 0; i < instancesRelations.length; i++) {
-                            const relation = instancesRelations[i];
-                            
-                            if (relation.type == props.method.getOptionId() && inOrOut == "incoming") {
-                                var relationSource = instancesRepo.getById(relation.from)
-                                targetsOfRelation.push(relationSource)
-                                relatedRelation.push({displayAs:"relation", relation:relation, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:relationSource})
-                            }else if (relation.type == props.method.getOptionId() ) {
-                                var relationTarget = instancesRepo.getById(relation.to)
-                                targetsOfRelation.push(relationTarget)
-                                relatedRelation.push({displayAs:"relation", relation:relation, direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:relationTarget})
-                            }
-                            
-                            
-                        }
-                        console.log(relatedRelation);
-                        return {[props.method.get()]:relatedRelation}
-                    }))
-                    props.id.set(props.method.getOptionId())
-                }
-                
-            }
-
-            // var getEntity = entityRepo
-
-            // console.log(props.a.get());
-            // alert("fdfes")
-            // if (props.a.get()[0] && props.a.get()[0].relations) {
-            //     props.method.setOptions(props.a.get()[0].relations.map(function (e) {
-            //         return {id:e.uuid, value:e.name}
-            //     }))
-            //     // props.output.set("undefined")
-            //     if (props.method.get()) {
-            //         props.output.set(props.a.get().map(function (e) {
-            //             console.log(e.properties);
-            //             return {[props.method.get()]:e.relations[props.method.get()]}
-            //         }))
-            //     }
-            // }else{
-            //     props.output.set("undefined")
-            // }
-            
-        },
-        onInit:(props) =>{
         },
     },
 }
