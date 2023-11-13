@@ -40,6 +40,7 @@ export var deriveRelations = {
                     for (let i = 0; i < relationFieldToDerive.length; i++) {
                         const relationsToDerive = relationFieldToDerive[i].relations;
                         var localField = []
+                        var localFieldNonSeparated = []
                         for (let j = 0; j < relationsToDerive.length; j++) {
                             
                             const relations = relationsToDerive[j];
@@ -58,18 +59,22 @@ export var deriveRelations = {
                                     var relationSource = instancesRepo.getById(relation.from)
                                     targetsOfRelation.push(relationSource)
                                     relatedRelation.push({displayAs:"relation", relation:relation, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:relationSource})
+                                    localFieldNonSeparated.push({displayAs:"relation", relation:relation, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:relationSource})
                                 }else if (relation.type == props.method.getOptionId() ) {
                                     var relationTarget = instancesRepo.getById(relation.to)
                                     targetsOfRelation.push(relationTarget)
                                     relatedRelation.push({displayAs:"relation", relation:relation, direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:relationTarget})
+                                    localFieldNonSeparated.push({displayAs:"relation", relation:relation, direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:relationTarget})
                                 }
                                 
                                 
                             }
                             console.log(relatedRelation);
-                            localField.push(relatedRelation)
+                            localField.push(relatedRelation) //TODO choose between concat and push
+                            // localField.push(localFieldNonSeparated)
                         }
-                        outputField.push({relations:localField})
+                        // outputField.push({relations:localField})
+                        outputField.push({relations:localFieldNonSeparated})//TODO choose between concat and push
                     }
                     console.log(outputField);
                     props.output.set(outputField)

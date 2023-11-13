@@ -13,6 +13,7 @@ import { mathDataCompare } from "./templates/math_data_compare.js";
 import { readRelations } from "./templates/data_read_relations.js";
 import { settingsNodeColors as  nodeColors} from "./templates/settings_node_colors.js";
 import { deriveRelations, extractRelations } from "./templates/data_derive_relations.js";
+import { storeAttribute } from "./templates/attribute_store_attribute.js";
 
 
 var getProp = function(props,propName, data){
@@ -29,6 +30,7 @@ var evaluatorTemplates = {}
 
 
 evaluatorTemplates.filter = filter
+evaluatorTemplates.storeAttribute = storeAttribute
 evaluatorTemplates.readAttribute = readAttribute
 evaluatorTemplates.mathDataCompare = mathDataCompare
 evaluatorTemplates.readRelations = readRelations
