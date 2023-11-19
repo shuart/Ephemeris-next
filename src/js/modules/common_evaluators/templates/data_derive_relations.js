@@ -12,7 +12,7 @@ export var deriveRelations = {
     category:"relations",
     props :[
         {id:"output", expect:"array", isSquare:true, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
-        {id:"id", expect:"string", label:"prop id", type:"hidden", editable:false, socket:"output", value:false},
+        // {id:"id", expect:"string", label:"prop id", type:"hidden", editable:false, socket:"output", value:false},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
         {id:"inOrOut", label:"Direction", type:"select", options:[
             {id:"incoming", value:"Incoming"},
@@ -22,6 +22,8 @@ export var deriveRelations = {
             {id:"Greater_Than", value:"...."},
         ],editable:true, socket:"none", value:"...."},
         {id:"a", expect:"array", isSquare:true,label:"Data", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"selection", expect:"array", label:"Selection", type:"hidden", editable:false, socket:"input", value:"...."},
+
     ],
     methods:{
     },
@@ -57,14 +59,24 @@ export var deriveRelations = {
                                 
                                 if (relation.type == props.method.getOptionId() && inOrOut == "incoming") {
                                     var relationSource = instancesRepo.getById(relation.from)
-                                    targetsOfRelation.push(relationSource)
-                                    relatedRelation.push({displayAs:"relation", relation:relation, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:relationSource})
-                                    localFieldNonSeparated.push({displayAs:"relation", relation:relation, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:relationSource})
+                                    var condition = props.selection.get(relationSource)
+
+                                    if (condition =="...." || condition == 1) {
+                                        targetsOfRelation.push(relationSource)
+                                        relatedRelation.push({displayAs:"relation", relation:relation, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:relationSource})
+                                        localFieldNonSeparated.push({displayAs:"relation", relation:relation, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:relationSource})
+                                    }
+                                    
                                 }else if (relation.type == props.method.getOptionId() ) {
                                     var relationTarget = instancesRepo.getById(relation.to)
-                                    targetsOfRelation.push(relationTarget)
-                                    relatedRelation.push({displayAs:"relation", relation:relation, direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:relationTarget})
-                                    localFieldNonSeparated.push({displayAs:"relation", relation:relation, direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:relationTarget})
+                                    var condition = props.selection.get(relationTarget)
+
+                                    if (condition =="...." || condition == 1) {
+                                        targetsOfRelation.push(relationTarget)
+                                        relatedRelation.push({displayAs:"relation", relation:relation, direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:relationTarget})
+                                        localFieldNonSeparated.push({displayAs:"relation", relation:relation, direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:relationTarget})
+                                    }
+                                    
                                 }
                                 
                                 
@@ -78,7 +90,7 @@ export var deriveRelations = {
                     }
                     console.log(outputField);
                     props.output.set(outputField)
-                    props.id.set(props.method.getOptionId())
+                    // props.id.set(props.method.getOptionId())
                 }
                 
             }
@@ -107,7 +119,7 @@ export var extractRelations = {
     category:"relations",
     props :[
         {id:"output", expect:"array", isSquare:true, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
-        {id:"id", expect:"string", label:"prop id", type:"hidden", editable:false, socket:"output", value:false},
+        // {id:"id", expect:"string", label:"prop id", type:"hidden", editable:false, socket:"output", value:false},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
         {id:"inOrOut", label:"Direction", type:"select", options:[
             {id:"incoming", value:"Incoming"},
@@ -117,6 +129,7 @@ export var extractRelations = {
             {id:"Greater_Than", value:"...."},
         ],editable:true, socket:"none", value:"...."},
         {id:"a", expect:"data", label:"Data", type:"text", editable:true, socket:"input", value:"0"},
+        {id:"selection", expect:"array", label:"Selection", type:"hidden", editable:false, socket:"input", value:"...."},
     ],
     methods:{
     },
@@ -165,12 +178,22 @@ export var extractRelations = {
                             
                             if (relation.type == props.method.getOptionId() && inOrOut == "incoming") {
                                 var relationSource = instancesRepo.getById(relation.from)
-                                targetsOfRelation.push(relationSource)
-                                relatedRelation.push({displayAs:"relation", relation:relation, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:relationSource})
+                                var condition = props.selection.get(relationSource)
+
+                                if (condition =="...." || condition == 1) {
+                                    targetsOfRelation.push(relationSource)
+                                    relatedRelation.push({displayAs:"relation", relation:relation, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:relationSource})
+                                }
+
                             }else if (relation.type == props.method.getOptionId() ) {
                                 var relationTarget = instancesRepo.getById(relation.to)
-                                targetsOfRelation.push(relationTarget)
-                                relatedRelation.push({displayAs:"relation", relation:relation, direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:relationTarget})
+                                var condition = props.selection.get(relationTarget)
+
+                                if (condition =="...." || condition == 1) {
+                                    targetsOfRelation.push(relationTarget)
+                                    relatedRelation.push({displayAs:"relation", relation:relation, direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:relationTarget})
+                                }
+
                             }
                             
                             
@@ -179,7 +202,7 @@ export var extractRelations = {
                         // return {[props.method.get()]:relatedRelation}
                         return {relations:relatedRelation}
                     }))
-                    props.id.set(props.method.getOptionId())
+                    // props.id.set(props.method.getOptionId())
                 }
                 
             }
