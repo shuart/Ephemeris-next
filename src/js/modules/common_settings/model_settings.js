@@ -102,6 +102,14 @@ var getItemsList = function (data, instance){
         listData.cols = [
             // {title:"id", field:"uuid", },
             {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) }, ///evaluators/:evaluatorId 
+            {customButton: {value:"+", style:"smallCircle", onClick:function(e, cell){
+                var dataToCopy = projectManagement.getProjectStore(projectId,data.modelElementType).getById(cell.getRow().getData().uuid);
+                var newName = prompt("Set Name", dataToCopy.name+"_copy")
+                if (newName) {
+                    projectManagement.getProjectStore(projectId,data.modelElementType).add({name:newName ,theTime:Date.now(), nodeLayout: dataToCopy.nodeLayout})
+                }
+            } } },
+            {customButton: {value:"X", style:"smallCircle", onClick:function(e, cell){projectManagement.getProjectStore(projectId,data.modelElementType).remove(cell.getRow().getData().uuid)} } },
         ];
     } else if (instance.props.modelElementType.get() == "views") {
         listData.list = projectManagement.getProjectStore(projectId,instance.props.modelElementType.get()).getAll()
