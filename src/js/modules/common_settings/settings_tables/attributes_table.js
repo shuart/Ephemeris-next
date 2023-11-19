@@ -54,7 +54,7 @@ export function createAttributeSettingsTable (projectId) {
         // {title:"id", field:"uuid", },
         {customIcon:true, field:"iconPath", defaultPath:"book.svg",callback:(e,cell)=>{ 
             iconSelect({
-                callback:e=>{console.log(cell.getData()); console.log(e);projectManagement.getProjectStore(projectId,"properties").add({uuid:cell.getRow().getData().uuid, iconPath:e.value.name})}
+                callback:e=>{console.log(cell.getData()); console.log(e);projectManagement.getProjectStore(projectId,"properties").add({uuid:cell.getRow().getData().uuid, iconPath:e.value.uuid})}
                 })  
             }  
         },

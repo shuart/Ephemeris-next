@@ -11,7 +11,7 @@ var getItemsList = function (){
 var renderElement = function(p){
     var htmlElement= document.createElement("div");
     var iconPathToDisplay = p.iconPath || "monitor.svg"
-    htmlElement.innerHTML= `<div class="side-bar-page-item" ><div class="side-bar-page-item-inside" ><img src="./img/icons/${iconPathToDisplay}" style="filter: invert(100%);"> <span>${p.name}</span> </div> </div>`
+    htmlElement.innerHTML= `<div class="side-bar-page-item" ><div class="side-bar-page-item-inside" ><img src="./img/icons/${iconPathToDisplay}" style="filter: invert(100%); height:24px; width:34px;"> <span>${p.name}</span> </div> </div>`
     htmlElement.addEventListener("click", ()=> state.goTo("/:/views/"+p.uuid))
     return htmlElement
 }

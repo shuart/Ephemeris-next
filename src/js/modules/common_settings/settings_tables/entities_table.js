@@ -89,7 +89,7 @@ export function createEntitiesSettingsTable (projectId, data) {
             
             {customIcon:true, field:"iconPath",defaultPath:"box.svg", callback:(e,cell)=>{ 
                 iconSelect({
-                    callback:e=>{projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, iconPath:e.value.name})}
+                    callback:e=>{projectManagement.getProjectStore(projectId,data.modelElementType).add({uuid:cell.getRow().getData().uuid, iconPath:e.value.uuid})}
                     })  
                 }  
             },

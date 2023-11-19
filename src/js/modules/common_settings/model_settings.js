@@ -78,7 +78,7 @@ var getItemsList = function (data, instance){
             // {title:"id", field:"uuid", },
             {customIcon:true, field:"iconPath", defaultPath:"monitor.svg",callback:(e,cell)=>{ 
                 iconSelect({
-                    callback:e=>{console.log(cell.getData()); console.log(e);projectManagement.getProjectStore(projectId,instance.props.modelElementType.get()).add({uuid:cell.getRow().getData().uuid, iconPath:e.value.name})}
+                    callback:e=>{console.log(cell.getData()); console.log(e);projectManagement.getProjectStore(projectId,instance.props.modelElementType.get()).add({uuid:cell.getRow().getData().uuid, iconPath:e.value.uuid})}
                     })  
                 }  
             },

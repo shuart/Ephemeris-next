@@ -131,7 +131,7 @@ var getCustomButtonFormatterForIcons = function(rows, col){
 
     var toDisplay= function(cell, formatterParams, onRendered){ //plain text value
         var iconPath = cell.getData()[col.field] || col.defaultPath
-        return `<img class="darkModeCompatibleIcons" src="./img/icons/${iconPath}" >`;
+        return `<img class="darkModeCompatibleIcons" style="height:24px; width:24px" src="./img/icons/${iconPath}" >`;
     };
     var formatterIcon = {formatter:toDisplay, width:40, hozAlign:"center",cellClick:function (e,cell) {
         if (col.callback) {
