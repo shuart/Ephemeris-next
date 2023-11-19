@@ -13,7 +13,22 @@ var setUp = function (event, data, instance) {
     setTimeout(() => {
         var element= instance.query('.graph')
         element.innerHTML = ''//TODO GRAPH IS LOADED 2 TIMES. PREVENT THAT
-        data.graph = createStellae({container:element, fullSize:true,})
+        data.graph = createStellae({
+            container:element, 
+            fullSize:true, 
+            addListDefaultIconPath:"./img/icons/hexagon.svg",
+            addListCustomCategoriesIconPath:{
+                input:"./img/icons/arrow-right-circle.svg",
+                Input:"./img/icons/arrow-right-circle.svg",
+                Mathematics:"./img/icons/plus-square.svg",
+                data:"./img/icons/box.svg",
+                attribute:"./img/icons/book.svg",
+                relations:"./img/icons/share-2.svg",
+                Actions:"./img/icons/play-circle.svg",
+                output:"./img/icons/monitor.svg",
+                Helpers:"./img/icons/coffee.svg",
+            },
+        })
     
         var repo = createEvaluatorsManagement()
         var currentGraph = repo.getById(instance.props.get("evaluatorId"))

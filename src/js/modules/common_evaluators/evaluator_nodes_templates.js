@@ -85,6 +85,7 @@ evaluatorTemplates.sourceEntity = {
         headerColor:nodeColors.inputData,
     },
     category:"input",
+    iconPath:"./img/icons/arrow-right-circle.svg",
     props :[
         {id:"output", expect:"data", isSquare:false, label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         {id:"outputReference", expect:"string", label:"Type Reference", type:"hidden", editable:false, socket:"output", value:""},
@@ -138,6 +139,7 @@ evaluatorTemplates.sourceEntity = {
 evaluatorTemplates.sourceInstance = {
     templateName : "source_instance",
     name : "Source Instance",
+    iconPath:"./img/icons/arrow-right.svg",
     style:{
         headerColor:nodeColors.inputObject,
     },
@@ -232,6 +234,7 @@ evaluatorTemplates.searchParam = {
 evaluatorTemplates.debugAlert = {
     templateName : "debug_alert",
     name : "debug alert",
+    category:"Actions",
     props :[
         {id:"message", expect:"string", label:"Message", type:"text", editable:true, socket:"input", value:"This is a debug alert"},
     ],
@@ -330,6 +333,7 @@ evaluatorTemplates.extractProperty = {
 evaluatorTemplates.extractProperty = {
     templateName : "attribute",
     name : "Attribute",
+    category:"data",
     props :[
         {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"id", label:"prop id", type:"hidden", editable:false, socket:"output", value:false},
@@ -391,83 +395,83 @@ evaluatorTemplates.extractProperty = {
     },
 }
 
-evaluatorTemplates.joinFields = {
-    templateName : "join_fields",
-    name : "join_fields",
-    props :[
-        {id:"output", expect:"data", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
-        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"field", expect:"data", label:"Source Field", type:"hidden", editable:true, socket:"input", value:false},
-        {id:"fields_to_join",expect:"array", isSquare:true, multiple:true, label:"Fields to join", type:"hidden", editable:true, socket:"input", value:false},
-    ],
-    methods:{
-    },
-    event:{
-        onEvaluate:(props) =>{
-            console.log(props.fields_to_join.get());
-            var newFields = []
-            var sourceField = props.field.get()
-            var fieldsToJoin = props.fields_to_join.get()
-            if (sourceField && fieldsToJoin) {
-                var fieldsQt = fieldsToJoin.length
-                console.log(sourceField);
-                // alert("f")
-                for (let i = 0; i < sourceField.length; i++) {
-                    const sourceFieldElement = sourceField[i];
-                    var newFieldElement = Object.assign({},sourceFieldElement)
-                    for (let j = 0; j < fieldsToJoin.length; j++) {
-                        const fieldToJoin = fieldsToJoin[j];
-                        newFieldElement = Object.assign(sourceFieldElement,fieldToJoin[i])
-                    }
-                    newFields.push(newFieldElement)
-                }
-                props.output.set(newFields)
-            }
+// evaluatorTemplates.joinFields = {
+//     templateName : "join_fields",
+//     name : "join_fields",
+//     props :[
+//         {id:"output", expect:"data", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+//         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+//         {id:"field", expect:"data", label:"Source Field", type:"hidden", editable:true, socket:"input", value:false},
+//         {id:"fields_to_join",expect:"array", isSquare:true, multiple:true, label:"Fields to join", type:"hidden", editable:true, socket:"input", value:false},
+//     ],
+//     methods:{
+//     },
+//     event:{
+//         onEvaluate:(props) =>{
+//             console.log(props.fields_to_join.get());
+//             var newFields = []
+//             var sourceField = props.field.get()
+//             var fieldsToJoin = props.fields_to_join.get()
+//             if (sourceField && fieldsToJoin) {
+//                 var fieldsQt = fieldsToJoin.length
+//                 console.log(sourceField);
+//                 // alert("f")
+//                 for (let i = 0; i < sourceField.length; i++) {
+//                     const sourceFieldElement = sourceField[i];
+//                     var newFieldElement = Object.assign({},sourceFieldElement)
+//                     for (let j = 0; j < fieldsToJoin.length; j++) {
+//                         const fieldToJoin = fieldsToJoin[j];
+//                         newFieldElement = Object.assign(sourceFieldElement,fieldToJoin[i])
+//                     }
+//                     newFields.push(newFieldElement)
+//                 }
+//                 props.output.set(newFields)
+//             }
             
-        },
-        onInit:(props) =>{
+//         },
+//         onInit:(props) =>{
 
-        },
-    },
-}
-evaluatorTemplates.joinAllProperties = {
-    templateName : "join_all_properties",
-    name : "join_all_properties",
-    props :[
-        {id:"output", expect:"data", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
-        // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
-        {id:"field", expect:"data", label:"Source Field", type:"hidden", editable:true, socket:"input", value:false},
-        // {id:"fields_to_join",expect:"array", isSquare:true, multiple:true, label:"Fields to join", type:"hidden", editable:true, socket:"input", value:false},
-    ],
-    methods:{
-    },
-    event:{
-        onEvaluate:(props) =>{
+//         },
+//     },
+// }
+// evaluatorTemplates.joinAllProperties = {
+//     templateName : "join_all_properties",
+//     name : "join_all_properties",
+//     props :[
+//         {id:"output", expect:"data", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
+//         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
+//         {id:"field", expect:"data", label:"Source Field", type:"hidden", editable:true, socket:"input", value:false},
+//         // {id:"fields_to_join",expect:"array", isSquare:true, multiple:true, label:"Fields to join", type:"hidden", editable:true, socket:"input", value:false},
+//     ],
+//     methods:{
+//     },
+//     event:{
+//         onEvaluate:(props) =>{
             
-            var sourceField = props.field.get()
-            if (sourceField) {
-                for (let i = 0; i < sourceField.length; i++) {
-                    const currentItem = sourceField[i];
-                    var fieldsProperties = currentItem.properties
-                    for (const propName in fieldsProperties) {
-                        if (Object.hasOwnProperty.call(fieldsProperties, propName)) {
-                            const prop = fieldsProperties[propName];
-                            currentItem[propName] =prop
+//             var sourceField = props.field.get()
+//             if (sourceField) {
+//                 for (let i = 0; i < sourceField.length; i++) {
+//                     const currentItem = sourceField[i];
+//                     var fieldsProperties = currentItem.properties
+//                     for (const propName in fieldsProperties) {
+//                         if (Object.hasOwnProperty.call(fieldsProperties, propName)) {
+//                             const prop = fieldsProperties[propName];
+//                             currentItem[propName] =prop
                             
-                        }
-                    }
-                }
+//                         }
+//                     }
+//                 }
                 
                 
-                props.output.set(sourceField)
-            }
+//                 props.output.set(sourceField)
+//             }
             
-        },
-        onInit:(props) =>{
+//         },
+//         onInit:(props) =>{
 
-        },
-    },
-}
+//         },
+//     },
+// }
 
 
 
@@ -478,7 +482,7 @@ evaluatorTemplates.outputTable = {
         headerColor:nodeColors.output,
     },
     category:"output",
-
+    iconPath:"./img/icons/table.svg",
     props :[
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
@@ -505,6 +509,7 @@ evaluatorTemplates.outputGraph = {
         headerColor:nodeColors.output,
     },
     category:"output",
+    iconPath:"./img/icons/git-merge.svg",
     props :[
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
@@ -534,7 +539,7 @@ evaluatorTemplates.outputFolders = {
         headerColor:nodeColors.output,
     },
     category:"output",
-
+    iconPath:"./img/icons/table.svg",
     props :[
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
@@ -561,6 +566,7 @@ evaluatorTemplates.outputProperties = {
         headerColor:nodeColors.output,
     },
     category:"output",
+    iconPath:"./img/icons/credit-card.svg",
     props :[
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
@@ -585,6 +591,7 @@ evaluatorTemplates.outputTextEditor = {
         headerColor:nodeColors.output,
     },
     category:"output",
+    iconPath:"./img/icons/credit-card.svg",
     props :[
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         {id:"attribute", label:"Attribute", type:"text", editable:true, socket:"input", value:false},
@@ -610,6 +617,7 @@ evaluatorTemplates.outputInstanceCard = {
         headerColor:nodeColors.output,
     },
     category:"output",
+    iconPath:"./img/icons/credit-card.svg",
     props :[
         // {id:"output", label:"output", type:"hidden", editable:false, socket:"output", value:"output"},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
@@ -750,6 +758,7 @@ evaluatorTemplates.colCustomButton = {
 evaluatorTemplates.actionAddInstance = {
     templateName : "action_add_instance",
     name : "action_add_instance",
+    category:"Actions",
     props :[
         {id:"output",expect:"function", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
@@ -783,6 +792,7 @@ evaluatorTemplates.actionAddInstance = {
 evaluatorTemplates.actionRemoveInstance = {
     templateName : "action_remove_instance",
     name : "action_remove_instance",
+    category:"Actions",
     props :[
         {id:"output", expect:"function", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
@@ -822,6 +832,7 @@ evaluatorTemplates.actionRemoveInstance = {
 evaluatorTemplates.previewInstance = {
     templateName : "action_preview_instance",
     name : "action_preview_instance",
+    category:"Actions",
     props :[
         {id:"output", expect:"function", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
@@ -868,7 +879,7 @@ evaluatorTemplates.previewInstance = {
 evaluatorTemplates.setLocalParam = {
     templateName : "action_set_local_param",
     name : "Set local parameter",
-    category:"action",
+    category:"Actions",
     props :[
         {id:"output", expect:"function", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
         // {id:"method", label:"A", type:"text", editable:true, socket:"input", value:"0"},
@@ -903,6 +914,7 @@ evaluatorTemplates.setLocalParam = {
 evaluatorTemplates.actionShowMessage = {
     templateName : "action_show_message",
     name : "action_show_message",
+    category:"Actions",
     props :[
         {id:"output",expect:"function", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
         {id:"message",expect:"string", label:"Message", type:"text", editable:true, socket:"input", value:""},
@@ -1025,6 +1037,7 @@ evaluatorTemplates.findInstanceDirectRelation = {
 evaluatorTemplates.actionEditRelation = {
     templateName : "action_edit_relation",
     name : "action_edit_relation",
+    category:"Actions",
     props :[
         {id:"output",expect:"function", label:"output", type:"hidden", editable:false, socket:"output", value:()=>alert("No Action")},
         {id:"relationType",expect:"string", label:"Relation Type", type:"text", editable:true, socket:"input", value:""},

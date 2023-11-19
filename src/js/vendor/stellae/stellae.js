@@ -18,6 +18,8 @@ function createStellae({
     showToolbar =false,
     highlightConnections= false,
     addNodesFromCustomList= false,
+    addListDefaultIconPath=false,
+    addListCustomCategoriesIconPath=false,
     allowCustomNameForNodes= false,
     allowCustomNameForRelations = false,
     } = {}) {
@@ -63,6 +65,7 @@ function createStellae({
         if (headless) {
             nodeManager = createNodeManager()
         }else{
+            
             ui = createStellaeUi({
                 container:container,
                 canvasWidth:canvasWidth,
@@ -75,6 +78,8 @@ function createStellae({
                 showToolbar:showToolbar,
                 useConnectionHighlighter:highlightConnections,
                 useCustomNodeAddList:addNodesFromCustomList,
+                addListDefaultIconPath:addListDefaultIconPath,
+                addListCustomCategoriesIconPath:addListCustomCategoriesIconPath,
                 allowCustomNameForNodes:allowCustomNameForNodes,
                 allowCustomNameForRelations:allowCustomNameForRelations,
             })

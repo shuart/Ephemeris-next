@@ -63,7 +63,7 @@ var getItemsList = function (data, instance){
         listData.cols = [
             // {title:"id", field:"uuid", },
             {title:"Name", field:"name", cellClick:(e,cell)=>state_manager.goTo("/:/"+instance.props.modelElementType.get()+"/"+cell.getData().uuid) }, ///evaluators/:evaluatorId 
-            {customButton: {value:"+", style:"smallCircle", onClick:function(e, cell){
+            {customButton: {value:"", iconPath:"copy.svg", style:"", onClick:function(e, cell){
                 var dataToCopy = projectManagement.getProjectStore(projectId,data.modelElementType).getById(cell.getRow().getData().uuid);
                 var newName = prompt("Set Name", dataToCopy.name+"_copy")
                 if (newName) {

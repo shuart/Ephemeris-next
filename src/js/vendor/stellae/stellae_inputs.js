@@ -31,7 +31,7 @@ function addCSS(cssText){
         .stellae_input_list {
             width: 78%;
             background-color: white;
-            max-height: 200px;
+            max-height: 300px;
             margin: auto;
             position: relative;
             top: 28px;
@@ -45,6 +45,17 @@ function addCSS(cssText){
             border-bottom: 1px solid #ededed;
             cursor:pointer;
         }
+        .stellae_input_list_items img{
+            display: inline;
+            margin-right: 8px;
+            height: 20px;
+            position: relative;
+            top: -2px;
+        }
+        .stellae_input_list_items div{
+            display: inline;
+        }
+        
         .stellae_input_list_items:hover{
             background-color: #80808017;
         }
@@ -139,6 +150,10 @@ function addCSS(cssText){
                 padding: .5em .75em;
                 border-bottom: 1px solid #17181c;
             }
+            .stellae_input_list_items img{
+                filter: invert(100%);
+            }
+            
           }
     
     `;
@@ -151,6 +166,8 @@ inputElements.createListInput = function ({
     inputTitle=undefined,
     showSearch=true,
     customName = false,
+    defaultIconPath=false,
+    customCategoriesIconPath=false,
     options =[
         {id:"1", value:"Default", params:{}},
         {id:"2", value:"Default"},
@@ -170,7 +187,16 @@ inputElements.createListInput = function ({
                 categoryElement[data.category ] = true;
                 var optionsDomElement= document.createElement('div')
                 optionsDomElement.classList ='stellae_input_list_items'
-                optionsDomElement.innerText = data.category+ " >"
+                if (customCategoriesIconPath && customCategoriesIconPath[data.category]) {
+                    // ExtraIcon = "isInCategory stellae_cat_"+data.category
+                    let optionsIconElement = new Image();
+                    optionsIconElement.src = customCategoriesIconPath[data.category]
+                    optionsDomElement.appendChild(optionsIconElement)
+                }
+
+                var optionsDomElementText= document.createElement('div')
+                optionsDomElementText.innerText = data.category+ " >"
+                optionsDomElement.appendChild(optionsDomElementText)
                 optionsDomElement.addEventListener("click",function () {
                 
                 showOnlyInCategory(domElement, data.category)
@@ -216,11 +242,23 @@ inputElements.createListInput = function ({
     function createOption(data, domElement,shieldElement) {
         var optionsDomElement= document.createElement('div')
         var classExtraAttributes = ""
+        var ExtraIcon = ""
         if (data.category) {
             classExtraAttributes = "isInCategory stellae_cat_"+data.category
         }
+        if (data.iconPath || defaultIconPath) {
+            // ExtraIcon = "isInCategory stellae_cat_"+data.category
+            let optionsIconElement = new Image();
+            optionsIconElement.src = data.iconPath || defaultIconPath
+            optionsDomElement.appendChild(optionsIconElement)
+
+        }
+        
         optionsDomElement.classList ='stellae_input_list_items '+classExtraAttributes
-        optionsDomElement.innerText = data.value
+        var optionsDomElementText= document.createElement('div')
+        optionsDomElementText.innerText = data.value
+        optionsDomElement.appendChild(optionsDomElementText)
+        
         optionsDomElement.addEventListener("click",function () {
             if (!data.params) {
                 data.params ={}

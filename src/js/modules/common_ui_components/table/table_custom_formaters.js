@@ -90,14 +90,20 @@ var checkColsForCustomFormating = function(rows, cols){
 
 var getCustomButtonFormatterForCol = function(rows, col){
     var styleClass=""
+    var iconElement=""
 
     if (col.customButton.style) {
         styleClass = col.customButton.style 
         
     }
+    if (col.customButton.iconPath) {
+        // iconElement = `<img class="darkModeCompatibleIcons" style="height: 16px;position: relative;left: 2px; top: -1px;" src="./img/icons/${col.customButton.iconPath}" >`
+        iconElement = `<img class="darkModeCompatibleIcons" style="width: 105%; height: auto;" src="./img/icons/${col.customButton.iconPath}" >`
+        
+    }
     
     var printIcon = function(cell, formatterParams, onRendered){ //plain text value
-        return "<i class='fa fa-print "+styleClass+ " '>"+col.customButton.value+"</i>";
+        return "<i class='fa fa-print "+styleClass+ " '>"+ iconElement+ col.customButton.value+"</i>";
     };
     var formatterButton = {formatter:printIcon, width:40, hozAlign:"center", cellClick:col.customButton.onClick};
     return formatterButton

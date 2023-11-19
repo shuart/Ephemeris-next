@@ -27,6 +27,8 @@ export default function createStellaeUi({
     showSearchBox= true,
     useConnectionHighlighter =true,
     useCustomNodeAddList = false,
+    addListDefaultIconPath=false,
+    addListCustomCategoriesIconPath=false,
     useSelectionBox = true,
     allowCustomNameForNodes = false,
     allowCustomNameForRelations = false,
@@ -499,7 +501,7 @@ export default function createStellaeUi({
             for (const key in usedTemplates) {
                 if (Object.hasOwnProperty.call(usedTemplates, key)) {
                     const template = usedTemplates[key];
-                    usedTemplatesList.push({id:template.templateName, value:template.name, category:template.category})
+                    usedTemplatesList.push({id:template.templateName, value:template.name, category:template.category, iconPath:template.iconPath})
                 }
             }
             //check if there is an alternative user provided list
@@ -512,6 +514,8 @@ export default function createStellaeUi({
                 inputTitle:"Add Nodes",
                 options :selectionList,
                 customName : allowCustomNameForNodes,
+                defaultIconPath: addListDefaultIconPath,
+                customCategoriesIconPath:addListCustomCategoriesIconPath,
                 callback:function (event) {
                     if (!event.params.position) {
                         event.params.position={x:intersects.x,y:intersects.z}
