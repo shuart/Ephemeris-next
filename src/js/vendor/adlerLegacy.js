@@ -390,6 +390,11 @@ var createAdler = function({
     var append = function (component,slot) {
         slotMap[slot] = component;
     }
+    var loadAt = function (component,domElem) {
+        var mountPoint = query(domElem)
+        mountPoint.innerHTML=""
+        mountPoint.append(component)
+    }
     var clearSlot = function (slot) {
         if (Array.isArray(slotMap[slot])) {
             for (let i = 0; i < slotMap[slot].length; i++) {
@@ -444,6 +449,7 @@ var createAdler = function({
     self.clearSlot = clearSlot;
     self.update = update;
     self.append = append;
+    self.loadAt=loadAt;
     self.getNodes = getNodes;
     self.getData = getData;
     self.instance = instance;

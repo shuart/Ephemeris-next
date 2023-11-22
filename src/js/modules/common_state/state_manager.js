@@ -19,7 +19,8 @@ import instance_view from "../instance_view/instance_view.js";
 import tools_graph from "../tools_graph/tools_graph.js";
 import tools_graphs_selection from "../tools_graph/tools_graph_selector.js";
 import simulation_selector from "../simulations_editor/simulation_selector.js";
-
+import toolsCollectionsSelector from "../tools_collections/tools_collections_selector.js";
+import toolsCollections from "../tools_collections/tools_collections.js";
 
 const common_router = createRouter()
 
@@ -127,6 +128,24 @@ var createStateManager = function({
             mainUiElement.append(tools_graph.instance({data:{instanceId:event.params.instanceId}}), "main_area_mount_point");
             mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
             mainUiElement.update();
+        })
+        common_router.route("/:project/collections/:instanceId", async (event)=> //TODO why is instance id needed?
+        {
+            console.log(event);
+            await setCurrentProject(event.params.project)
+            mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
+            mainUiElement.update();
+            mainUiElement.loadAt(toolsCollectionsSelector.instance(), ".main_area_mount_point");
+        })
+        common_router.route("/:project/collection/:instanceId", async (event)=> //TODO why is instance id needed?
+        {
+            console.log(event);
+            await setCurrentProject(event.params.project)
+            mainUiElement.append(common_side_bar.instance(), "toolbar_area_mount_point");
+            mainUiElement.update();
+            var pageInstance = toolsCollections.instance()
+            pageInstance.instanceId = event.params.instanceId
+            mainUiElement.loadAt(pageInstance, ".main_area_mount_point");
         })
         common_router.route("/:project/cycles/:cycles", async (event)=>
         {

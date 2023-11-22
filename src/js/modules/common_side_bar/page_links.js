@@ -48,6 +48,7 @@ var addRegularIcons = function(instance) {
     var items = [
         {iconPath:"grid.svg", name:"Dashboard", path:"/:/dashboard", isVisible:true},
         {iconPath:"shuffle.svg", name:"Graphs", path:"/:/graphs/home", isVisible:true},
+        {iconPath:"book.svg", name:"Collections", path:"/:/collections/home", isVisible:true},
     ]
     for (let i = 0; i < items.length; i++) {
         const element = items[i];
