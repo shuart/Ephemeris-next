@@ -37,6 +37,9 @@ var createProjectStore = function(){
             evaluators:["uuid","type"],
             links:["uuid","type","from","to"],
             relationsInstances:["uuid","type","from","to"],
+            structures:["uuid","name","type"],
+            hierarchies:["uuid","type","from","to"],
+            references:["uuid","type","from","to"],
 
         },{persistence:projectId, crdt:true, syncTo:false})
         // },{persistence:projectId, crdt:true, syncTo:"http://127.0.0.1:3000/crdtGeneral"})

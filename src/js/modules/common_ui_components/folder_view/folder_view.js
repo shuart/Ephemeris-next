@@ -86,10 +86,20 @@ var setUpTable = function(self){
 //     self.tablepr.replaceData(self.list) //load data array
 // }
 
+var setUpActionMenu = function(self){
+    self.query(".add").addEventListener("click", function (event) {
+        self.addItem(event)
+    })
+}
+
 var folder_view_component =createAdler({
     tag:'folder-view',
     props:{
         onClick:function (e,cell) {
+            alert("no action")
+            // state_manager.setSearchParams("test","tas", "silent")
+        },
+        addItem:function (e) {
             alert("no action")
             // state_manager.setSearchParams("test","tas", "silent")
         }
@@ -119,7 +129,7 @@ var folder_view_component =createAdler({
     ],
     onRender:(self) =>{
         setUpTable(self)
-        
+        setUpActionMenu(self)
     },
     html: p => /*html*/`
     <link rel="stylesheet" href="css/vendor/tabulator_semanticui.min.css">
@@ -129,6 +139,7 @@ var folder_view_component =createAdler({
 
 
     <div class="folder_view">
+        <div class="add">add</div>
         <input type="text" placeholder="Search.." class="stellae_inj_css_side_search">
         <div class="tableComponent"></div>
     </div>

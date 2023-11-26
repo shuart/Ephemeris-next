@@ -4,6 +4,9 @@ import folder_view_component from "../common_ui_components/folder_view/folder_vi
 import state from "../common_state/state_manager.js";
 import createInstancesManagement from "../common_project_management/instances_management.js";
 import project_views from "../project_views/project_views.js";
+import createStructuresManagement from "../common_project_management/structures_management.js";
+
+
 
 var showCollections = function (self) {
     var entitiesRepo = createEntityManagement()
@@ -34,6 +37,7 @@ var loadSideMenu = function (self) {
         return{name:i.name, uuid:i.uuid}
     })
     folderComponent.onClick = sideMenuClickAction(self)
+    folderComponent.addItem = addClickAction(self)
     folderComponent.list = [
         {name:currentEntity.name, _children:instancesList},
         // {name:"Chapitre 2 ", _children:[
@@ -42,7 +46,16 @@ var loadSideMenu = function (self) {
         // ]},
     ];
 
+    var structuresRep = createStructuresManagement()
+    // var structuresList = structuresRep.getAll()
+    var structuresList = structuresRep.getChildrenOfId(self.instanceId)
+    for (let i = 0; i < structuresList.length; i++) {
+        const element = structuresList[i];
+        folderComponent.list.push({name:element.name})
+    }
+
     self.query(".collection_side_view").append(folderComponent)
+    // subscribeToChanges(event, data, instance, softUpdate)
 }
 
 var sideMenuClickAction = function (self) {
@@ -66,6 +79,21 @@ var sideMenuClickAction = function (self) {
         linkedView.mount(self.query(".instance_view_area"))
         // self.query(".graph_selection_select_area").append(linkedView)
     }
+}
+
+var addClickAction = function (self) {
+    // console.log(e);
+    // console.log(cell.getData());
+    return function (event) {
+        var name = prompt("Folder Name")
+        if (name) {
+            var repo = createStructuresManagement()
+            var created = repo.createFrom(self.instanceId, {name:name, type:"folder"})
+            console.log(created);
+        }
+        
+    }
+    
 }
 
 
