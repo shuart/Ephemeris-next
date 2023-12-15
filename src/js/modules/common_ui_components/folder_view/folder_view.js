@@ -1,5 +1,6 @@
 import { createAdler } from "../../../vendor/adler.js";
 import {TabulatorFull as Tabulator} from "../../../vendor/tabulator_esm.min.js";
+import { createFolders } from "./folder_custom_table.js";
 
 
 // import {checkColsForCustomFormating} from "./table_custom_formaters.js"
@@ -58,23 +59,28 @@ var setUpTable = function(self){
     
 
     var tableAra = instanceElem
-    console.log(tableAra);
-    var table = new Tabulator(instanceElem, {
-        // height:tableHeight, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
-        data:itemsList, //assign data to table
-        headerVisible:false,
-        dataTreeCollapseElement:"<span class='collapse'>></span>",
-        dataTreeBranchElement:"<span class='branch'>", //hide branch element
-        dataTreeChildIndent:25, //indent child rows by 15 px
-        layout:"fitColumns", //fit columns to width of table (optional)
-        columns:colsList,
-        dataTree:options.dataTree,
-        dataTreeStartExpanded:options.dataTreeStartExpanded,
-        dataTreeElementColumn:options.dataTreeElementColumn,
-   });
-   self.tablepr = table //to avoid using a proxy
-   console.log(table.rowManager)
 
+//     console.log(tableAra);
+//     var table = new Tabulator(instanceElem, {
+//         // height:tableHeight, // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+//         data:itemsList, //assign data to table
+//         headerVisible:false,
+//         dataTreeCollapseElement:"<span class='collapse'>></span>",
+//         dataTreeBranchElement:"<span class='branch'>", //hide branch element
+//         dataTreeChildIndent:25, //indent child rows by 15 px
+//         layout:"fitColumns", //fit columns to width of table (optional)
+//         columns:colsList,
+//         dataTree:options.dataTree,
+//         dataTreeStartExpanded:options.dataTreeStartExpanded,
+//         dataTreeElementColumn:options.dataTreeElementColumn,
+//         movableRows:true,
+//         // movableRowsConnectedElements: "#drop-area", //element to receive rows
+//    });
+//    self.tablepr = table //to avoid using a proxy
+//    console.log(table.rowManager)
+    var table = createFolders({
+        domElement:tableAra,
+    })
 
 
 }
