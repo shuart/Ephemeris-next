@@ -80,6 +80,10 @@ var setUpTable = function(self){
 //    console.log(table.rowManager)
     var table = createFolders({
         domElement:tableAra,
+        data:itemsList,
+        onNameClick:function(e, cell){
+            self.onClick(e, cell)
+            },
     })
 
 
