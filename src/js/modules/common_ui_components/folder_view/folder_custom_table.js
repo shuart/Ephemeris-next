@@ -4,6 +4,7 @@ export function createFolders({
     domElement = undefined,
     childrenOffset=15,
     dragAndDrop=true,
+    onDropped = undefined,
     onNameClick=function (e, cell) {
         console.log("eee");
     },
@@ -24,7 +25,17 @@ export function createFolders({
     var dataList = []
     var lastId =0
 
-    function toogleChildrenVisibility(did) {
+    function getIcons(name) {
+        var icons ={
+            "closed":'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-right"><path d="m9 18 6-6-6-6"/></svg>',
+            "open":'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-down"><path d="m6 9 6 6 6-6"/></svg>',
+            "folder":'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-closed"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/><path d="M2 10h20"/></svg>',
+            "file":'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>',
+        }
+        return icons[name]
+    }
+
+    function toogleChildrenVisibility(did, domElement) {
         
         // console.log(dataMap, dataMap[did]);
         // alert(did)
@@ -33,13 +44,21 @@ export function createFolders({
             const child = currentItem.children[i];
             if (child.domElement.style.display =="none") {
                 child.domElement.style.display ="block"
+                if (domElement) {
+                    domElement.innerHTML = getIcons("open")
+                }
             }else{
                 child.domElement.style.display ="none"
+                if (domElement) {
+                    domElement.innerHTML = getIcons("closed")
+                }
             }
             
             console.log(child);
         }
     }
+
+    
 
     var dataToDomElement= function (record) {
         var itemData = record.data
@@ -59,10 +78,11 @@ export function createFolders({
         if (record.children ) {
             
             var toogleElement = document.createElement("div")
-            toogleElement.innerHTML += " open "
+            toogleElement.innerHTML = getIcons("open")
+            toogleElement.style.display = "inline-block"
             itemElement.append(toogleElement)
             toogleElement.addEventListener("click", function (event) {
-                toogleChildrenVisibility(record.id) 
+                toogleChildrenVisibility(record.id, toogleElement);
             })
         }
 
@@ -73,6 +93,8 @@ export function createFolders({
 
         var nameElement = document.createElement("div")
         nameElement.innerHTML += itemData.name
+        nameElement.style.display = "inline-block"
+        nameElement.dataset.did = record.id
         itemElement.dataset.did = record.id
         itemElement.append(nameElement)
 
@@ -116,7 +138,17 @@ export function createFolders({
         domElement.innerHTML=""
         processItems(data, domElement)
 
-        sortableFolders(self, domElement)
+        var onDragUpdate = function (evt, data) {
+            
+            var target = dataMap[data.target.dataset.did]
+            var dragged = dataMap[data.dragged.dataset.did]
+            console.log(target,dragged );
+            if (onDropped) {
+                onDropped({target,dragged})
+            }
+        }
+
+        sortableFolders(self, domElement,onDragUpdate)
     }
 
     var processItems = function (items, domElement, parent, level) {

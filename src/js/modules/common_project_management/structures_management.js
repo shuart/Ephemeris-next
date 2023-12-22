@@ -169,10 +169,24 @@ var customRepoMethods = function (projectStore,createAggregate) {
         var currentRelationTarget = projectStore.get("structures").where("uuid").equals(targetId)
         var currentRelationSource = projectStore.get("structures").where("uuid").equals(sourceId)
         if (currentRelationTarget && currentRelationSource) {
-            projectStore.add("hierarchies",{name:`from ${currentRelationSource.name} to ${currentRelationSource.name}`, from:currentRelationSource.uuid, to:currentRelationTarget.uuid, type:type})
+            //first remove existing relation
+            var existingRelations = projectStore.get("hierarchies").where("to").equals(currentRelationTarget.uuid)
+            if (existingRelations) {
+                console.log(existingRelations);
+                for (let i = 0; i < existingRelations.length; i++) {
+                    projectStore.remove("hierarchies",existingRelations[i].uuid)
+                }
+                
+            }
+            projectStore.add("hierarchies",{name:`from ${currentRelationSource.name} to ${currentRelationSource.name}`, from:currentRelationSource.uuid, to:currentRelationTarget.uuid, type:"STS"}) //STS Structure to structure
+
         }else{
             console.warn("Missing source or target")
         }
+    }
+
+    repo.getHierarchies = function () {
+        return projectStore.get("hierarchies").toArray()
     }
 
     return repo

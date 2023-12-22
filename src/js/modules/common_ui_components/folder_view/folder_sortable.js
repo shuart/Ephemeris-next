@@ -18,34 +18,42 @@ export function sortableFolders(self, section, onUpdate){
         
         var target = e.target;
         currentTarget = e.target
-        if(!target.classList.contains("dragging_placeholder")){
-            target = target.closest(".dragging_placeholder")
-        }
-        if( target && target !== dragEl && target.nodeName == 'DIV' ){
-            if(target.classList.contains('inside')) {
-                console.log("inside");
-                e.stopPropagation();
-            } else {
-        
-                var targetPos = target.getBoundingClientRect();//getBoundinClientRect contains location-info about the element (relative to the viewport)
-                var next = (e.clientY - targetPos.top) / (targetPos.bottom - targetPos.top) > .5 || (e.clientX - targetPos.left) / (targetPos.right - targetPos.left) > .5;    //checking that dragEl is dragged over half the target y-axis or x-axis. (therefor the .5)
-                console.log(dragEl);
-                console.log(next && target.nextSibling);
-                console.log(next && target.nextSibling || target);
-                section.insertBefore(dragEl, next && target.nextSibling || target);
-                
-                /*  console.log("oldPos:" + JSON.stringify(oldPos));
-                console.log("newPos:" + JSON.stringify(newPos)); */
-                /* console.log(newPos.top === oldPos.top ? 'They are the same' : 'Not the same'); */
-                // console.log(oldPos);
+        if (false) { //ghost item
+            if(!target.classList.contains("dragging_placeholder")){
+                target = target.closest(".dragging_placeholder")
             }
-        }   
+            if( target && target !== dragEl && target.nodeName == 'DIV' ){
+                if(target.classList.contains('inside')) {
+                    console.log("inside");
+                    e.stopPropagation();
+                } else {
+            
+                    var targetPos = target.getBoundingClientRect();//getBoundinClientRect contains location-info about the element (relative to the viewport)
+                    var next = (e.clientY - targetPos.top) / (targetPos.bottom - targetPos.top) > .5 || (e.clientX - targetPos.left) / (targetPos.right - targetPos.left) > .5;    //checking that dragEl is dragged over half the target y-axis or x-axis. (therefor the .5)
+                    console.log(dragEl);
+                    console.log(next && target.nextSibling);
+                    console.log(next && target.nextSibling || target);
+                    section.insertBefore(dragEl, next && target.nextSibling || target);
+                    
+                    /*  console.log("oldPos:" + JSON.stringify(oldPos));
+                    console.log("newPos:" + JSON.stringify(newPos)); */
+                    /* console.log(newPos.top === oldPos.top ? 'They are the same' : 'Not the same'); */
+                    // console.log(oldPos);
+                }
+            }   
+        }
+        
     }
 
     function _onDragEnd(evt){
         evt.preventDefault();
-        console.log(currentTarget);
-        alert("aft")
+        var data = {target:currentTarget, dragged: dragEl}
+        console.log(data);
+        if (onUpdate) {
+            
+            onUpdate(evt, data)
+            
+        }
         // newPos = [...section.children].map(child => {      
         //         let pos = self.query("#"+child.id).getBoundingClientRect();
         //         return pos;

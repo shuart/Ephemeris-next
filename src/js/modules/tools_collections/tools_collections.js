@@ -25,7 +25,18 @@ var showCollections = function (self) {
     }
 }
 
+var traverseStructures = function (rootId, structuresRep, listToPush) {
+    var structuresList = structuresRep.getChildrenOfId(rootId)
+    for (let i = 0; i < structuresList.length; i++) {
+        const element = structuresList[i];
+        var data={uuid:element.uuid, name:element.name,_children:[]}
+        traverseStructures(element.uuid, structuresRep,data._children )
+        listToPush.push(data)
+    }
+}
+
 var loadSideMenu = function (self) {
+    self.query(".collection_side_view").innerHTML='' //TODO, update the componenet properly
     var folderComponent = folder_view_component.instance()
     
     var instancesRepo = createInstancesManagement()
@@ -39,6 +50,12 @@ var loadSideMenu = function (self) {
     })
     folderComponent.onClick = sideMenuClickAction(self)
     folderComponent.addItem = addClickAction(self)
+    folderComponent.onDropped = function (evt) {
+        console.log(evt);
+        var repo = createStructuresManagement()
+        repo.link(evt.target.data.uuid,evt.dragged.data.uuid )
+        loadSideMenu(self)
+    }
     folderComponent.list = [
         {name:currentEntity.name, _children:instancesList},
         // {name:"Chapitre 2 ", _children:[
@@ -48,13 +65,11 @@ var loadSideMenu = function (self) {
     ];
 
     var structuresRep = createStructuresManagement()
+    console.log(structuresRep.getHierarchies())
     // var structuresList = structuresRep.getAll()
-    var structuresList = structuresRep.getChildrenOfId(self.instanceId)
-    for (let i = 0; i < structuresList.length; i++) {
-        const element = structuresList[i];
-        folderComponent.list.push({name:element.name})
-    }
+    traverseStructures(self.instanceId,structuresRep, folderComponent.list)
 
+    
     self.query(".collection_side_view").append(folderComponent)
     // subscribeToChanges(event, data, instance, softUpdate)
 }

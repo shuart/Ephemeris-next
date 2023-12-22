@@ -81,6 +81,7 @@ var setUpTable = function(self){
     var table = createFolders({
         domElement:tableAra,
         data:itemsList,
+        onDropped: self.onDropped,
         onNameClick:function(e, cell){
             self.onClick(e, cell)
             },
@@ -106,6 +107,10 @@ var folder_view_component =createAdler({
     tag:'folder-view',
     props:{
         onClick:function (e,cell) {
+            alert("no action")
+            // state_manager.setSearchParams("test","tas", "silent")
+        },
+        onDropped:function (e,data) {
             alert("no action")
             // state_manager.setSearchParams("test","tas", "silent")
         },
