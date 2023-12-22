@@ -1,5 +1,6 @@
 export function sortableFolders(self, section, onUpdate){
     var dragEl, nextEl, newPos, dragGhost;
+    var currentTarget;
     console.log([...section.children]);
     
     // let oldPos = [...section.children].map(item => {
@@ -9,11 +10,14 @@ export function sortableFolders(self, section, onUpdate){
     //     return pos;
     // });
 
+
+
     function _onDragOver(e){
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
         
         var target = e.target;
+        currentTarget = e.target
         if(!target.classList.contains("dragging_placeholder")){
             target = target.closest(".dragging_placeholder")
         }
@@ -36,6 +40,22 @@ export function sortableFolders(self, section, onUpdate){
                 // console.log(oldPos);
             }
         }   
+    }
+
+    function _onDragEnd(evt){
+        evt.preventDefault();
+        console.log(currentTarget);
+        alert("aft")
+        // newPos = [...section.children].map(child => {      
+        //         let pos = self.query("#"+child.id).getBoundingClientRect();
+        //         return pos;
+        //     });
+        // console.log(newPos);
+        // dragEl.classList.remove('ghost');
+        // section.removeEventListener('dragover', _onDragOver, false);
+        // section.removeEventListener('dragend', _onDragEnd, false);
+
+        // nextEl !== dragEl.nextSibling ? onUpdate(dragEl) : false;
     }
 
     section.addEventListener('dragstart', function(e){     
