@@ -5,9 +5,15 @@ export function createFolders({
     childrenOffset=15,
     dragAndDrop=true,
     onDropped = undefined,
+    sessionId = undefined,
+    dataId = "uuid",
     onNameClick=function (e, cell) {
         console.log("eee");
     },
+    cols=[
+        {field:"img", type:"image"},
+        {field:"name", type:"name"},
+    ],
     data=[
         {name:"test", _children:[
             {name:"testChild"},
@@ -35,34 +41,90 @@ export function createFolders({
         return icons[name]
     }
 
-    function toogleChildrenVisibility(did, domElement) {
-        
-        // console.log(dataMap, dataMap[did]);
-        // alert(did)
+    function toogleElementClosedStatus(did, domElement) {
         var currentItem = dataMap[did]
-        for (let i = 0; i < currentItem.children.length; i++) {
-            const child = currentItem.children[i];
-            if (child.domElement.style.display =="none") {
-                child.domElement.style.display ="block"
-                if (domElement) {
-                    domElement.innerHTML = getIcons("open")
-                }
-            }else{
-                child.domElement.style.display ="none"
-                if (domElement) {
-                    domElement.innerHTML = getIcons("closed")
-                }
+        var existingStorage = localStorage.getItem("fv_uidofsfejfosie"); //check if the user as already a local storage data regarding the structures
+        console.log(dataMap);
+        console.log(existingStorage);
+        if (existingStorage) {
+            existingStorage = JSON.parse(existingStorage)
+        }
+        if (currentItem.isClosed == false || currentItem.isClosed == undefined) {
+            currentItem.isClosed =true
+            if (existingStorage && existingStorage[currentItem.id]) {
+                existingStorage[currentItem.id].isClosed = true 
             }
-            
-            console.log(child);
+            if (currentItem.domToggleElement) {
+                currentItem.domToggleElement.innerHTML = getIcons("closed")
+            }
+            hideChildren(did, domElement)
+        }else{
+            currentItem.isClosed = false
+            if (existingStorage && existingStorage[currentItem.id]) {
+                existingStorage[currentItem.id].isClosed = false 
+            }
+            if (currentItem.domToggleElement) {
+                currentItem.domToggleElement.innerHTML = getIcons("open")
+            }
+            restoreChildrendVisibility(did)
+        }
+        if (existingStorage) { //store back in local storage
+            var toStore = JSON.stringify(existingStorage)
+            localStorage.setItem("fv_uidofsfejfosie",toStore )
         }
     }
 
+    function updateRootVisibility(params) {
+        for (let i = 0; i < dataList.length; i++) {
+            const element = dataList[i];
+            if (element.level == 0) {
+                restoreChildrendVisibility(element.id)
+            }
+        }
+    }
+
+    function restoreChildrendVisibility(rootId) {
+        var currentItem = dataMap[rootId]
+        if (currentItem.children) {
+            for (let i = 0; i < currentItem.children.length; i++) {
+                const child = currentItem.children[i];
+                if (currentItem.isClosed == true) {
+                    if (currentItem.domToggleElement) {
+                        currentItem.domToggleElement.innerHTML = getIcons("closed")
+                    }
+                    child.domElement.style.display ="none"
+                    hideChildren(child.id, domElement) 
+                }else{
+                    if (currentItem.domToggleElement) {
+                        currentItem.domToggleElement.innerHTML = getIcons("open")
+                    }
+                    child.domElement.style.display ="block"
+                    restoreChildrendVisibility(child.id)
+                }
+            } 
+        }
+        
+    }
+
+    function hideChildren(did, domElement) {
+        var currentItem = dataMap[did]
+        if (currentItem.children) {
+            for (let i = 0; i < currentItem.children.length; i++) {
+                const child = currentItem.children[i];
     
+                child.domElement.style.display ="none"
+                var childid = child.id
+                hideChildren(childid, domElement)
+            } 
+        }
+        
+    }
+
 
     var dataToDomElement= function (record) {
         var itemData = record.data
         var itemElement = document.createElement("div")
+        var toogleElement = undefined
         
         
         itemElement.style.margin = "10px"
@@ -77,12 +139,14 @@ export function createFolders({
 
         if (record.children ) {
             
-            var toogleElement = document.createElement("div")
+            toogleElement = document.createElement("div")
             toogleElement.innerHTML = getIcons("open")
+            toogleElement.classList = 
             toogleElement.style.display = "inline-block"
             itemElement.append(toogleElement)
             toogleElement.addEventListener("click", function (event) {
-                toogleChildrenVisibility(record.id, toogleElement);
+                // toogleChildrenVisibility(record.id, toogleElement);
+                toogleElementClosedStatus(record.id, toogleElement);
             })
         }
 
@@ -91,18 +155,45 @@ export function createFolders({
             itemElement.classList.add("dragging_placeholder")
         }
 
-        var nameElement = document.createElement("div")
-        nameElement.innerHTML += itemData.name
-        nameElement.style.display = "inline-block"
-        nameElement.dataset.did = record.id
-        itemElement.dataset.did = record.id
-        itemElement.append(nameElement)
+        //create layout
+        for (let i = 0; i < cols.length; i++) {
+            var field=cols[i].field
+            var value = itemData[field]
+            if (value) {
+                var currentElement = document.createElement("div")
+                currentElement.dataset.did = record.id
+                if (cols[i].cellClick) {
+                    currentElement.addEventListener("click", function (event) {
+                        event.cellRecord = record
+                        cols[i].cellClick(event)
+                    })
+                }
+                if (cols[i].type == "name") {
+                    currentElement.innerText += value
+                    currentElement.style.display = "inline-block"
+                    currentElement.addEventListener("click", function (event) {
+                        onNameClick(event,record)
+                    })
+                }
+         
+                if (cols[i].type == "image") {
+                    // filter: invert(100%)
+                    currentElement.innerHTML += '<img src="'+value+'" style="height:24px; width:17px; margin-right:4px">'
+                    currentElement.classList.add("folder_view_img")
+                    currentElement.style.display = "inline-block"
+                }
+                itemElement.append(currentElement)
+            }
+            
+        }
 
-        nameElement.addEventListener("click", function (event) {
-            onNameClick(event,record)
-        })
+        itemElement.dataset.did = record.id
+        
+
+        
         
         record.domElement = itemElement //update the record with the dom element
+        record.domToggleElement = toogleElement //update the record with the dom element
         return itemElement
     }
 
@@ -117,9 +208,9 @@ export function createFolders({
             isContainer = true
         }
         // var toRecord = {id:lastId, data:itemData, domElement:domElement, parent, level, children:itemData._children, getData}
-        var toRecord = {id:lastId, data:itemData, domElement:domElement, parent, level, isContainer:isContainer, children:childrenType, getData}
+        var toRecord = {id:itemData[dataId], isClosed:itemData.isClosed || false, data:itemData, domElement:domElement, parent, level, isContainer:isContainer, children:childrenType, getData}
         dataList.push(toRecord)
-        dataMap[lastId]=toRecord
+        dataMap[itemData[dataId]]=toRecord
         lastId ++
         if (parent) { //record as child of parent
             parent.children.push(toRecord)
@@ -148,6 +239,8 @@ export function createFolders({
             }
         }
 
+        syncInLocalstorage(dataList)
+        updateRootVisibility() //update visibility from local storage
         sortableFolders(self, domElement,onDragUpdate)
     }
 
@@ -164,6 +257,27 @@ export function createFolders({
                 processItems(element._children, domElement, record, currentLevel+1)
             }
         }
+    }
+
+    var syncInLocalstorage = function (recordList) {
+        var containerRecords={} //save only containers info
+        var existingStorage = localStorage.getItem("fv_uidofsfejfosie"); //check if the user as already a local storage data regarding the structures
+        if (existingStorage) {
+            existingStorage = JSON.parse(existingStorage)
+        }
+        for (let i = 0; i < recordList.length; i++) {
+            if (recordList[i].isContainer) {
+                if (existingStorage && existingStorage[ recordList[i].data[dataId] ]) {
+                    containerRecords[ recordList[i].data[dataId] ] = existingStorage[ recordList[i].data[dataId] ]
+                    recordList[i].isClosed= existingStorage[ recordList[i].data[dataId] ].isClosed
+                }else{
+                    containerRecords[ recordList[i].data[dataId] ] = {isClosed:containerRecords.isClosed}
+                }
+            }
+        }
+        
+        var toStore = JSON.stringify(containerRecords)
+        localStorage.setItem("fv_uidofsfejfosie",toStore )
     }
 
 

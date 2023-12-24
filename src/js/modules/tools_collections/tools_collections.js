@@ -30,6 +30,9 @@ var traverseStructures = function (rootId, structuresRep, listToPush) {
     for (let i = 0; i < structuresList.length; i++) {
         const element = structuresList[i];
         var data={uuid:element.uuid, name:element.name,_children:[]}
+        // if (element.type == undefined) {
+            data.img = "./img/icons/folder.svg"
+        // }
         traverseStructures(element.uuid, structuresRep,data._children )
         listToPush.push(data)
     }
@@ -57,7 +60,7 @@ var loadSideMenu = function (self) {
         loadSideMenu(self)
     }
     folderComponent.list = [
-        {name:currentEntity.name, _children:instancesList},
+        {uuid:currentEntity.uuid, name:currentEntity.name, _children:instancesList},
         // {name:"Chapitre 2 ", _children:[
         //     {name:"Item 1"},
         //     {name:"Item 2"},
@@ -106,6 +109,7 @@ var addClickAction = function (self) {
             var repo = createStructuresManagement()
             var created = repo.createFrom(self.instanceId, {name:name, type:"folder"})
             console.log(created);
+            loadSideMenu(self)
         }
         
     }

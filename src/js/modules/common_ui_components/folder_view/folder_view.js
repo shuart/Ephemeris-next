@@ -80,7 +80,10 @@ var setUpTable = function(self){
 //    console.log(table.rowManager)
     var table = createFolders({
         domElement:tableAra,
+        context:self.context,
         data:itemsList,
+        cols:self.cols,
+        sessionId:self.sessionId,
         onDropped: self.onDropped,
         onNameClick:function(e, cell){
             self.onClick(e, cell)
@@ -106,6 +109,9 @@ var setUpActionMenu = function(self){
 var folder_view_component =createAdler({
     tag:'folder-view',
     props:{
+        cols:undefined,
+        context:undefined,
+        sessionId:undefined,
         onClick:function (e,cell) {
             alert("no action")
             // state_manager.setSearchParams("test","tas", "silent")
@@ -212,6 +218,10 @@ var folder_view_component =createAdler({
     @media (prefers-color-scheme: dark) {
         .folder_view{
             background-color: rgb(38, 38, 38);
+        }
+        .folder_view_img{
+            
+            filter: invert(100%);
         }
         .tabulator-row {
             background-color: transparent !important;
