@@ -165,7 +165,123 @@ var customRepoMethods = function (projectStore,createAggregate) {
         return toReturn
     }
 
-    repo.link = function (sourceId, targetId) {
+    repo.getAllChildrenOfId = function (sourceId, transformFunction) {
+        var rootElement = projectStore.get("structures").where("uuid").equals(sourceId)
+        var root = {
+            uuid:sourceId ,
+            element:rootElement || "root is not a structure",
+            _children:[]
+        }
+        var list =[root]
+        var toReturn = []
+        var sourceToChildMapping ={}
+        var childToSourceMapping ={}
+        var instanceMapping ={}
+        var structureMapping ={}
+
+        var currentHierarchies = projectStore.get("hierarchies").toArray()
+        var currentStructures = projectStore.get("structures").toArray()
+        var currentInstances = projectStore.get("instances").toArray()
+        for (let i = 0; i < currentInstances.length; i++) {
+            instanceMapping[currentInstances[i].uuid] =  currentInstances[i];
+        }
+        for (let i = 0; i < currentStructures.length; i++) {
+            // const structure = currentStructures[i];
+            // if (childToSourceMapping[structure.uuid] == sourceId) {
+            //     root.children.push(structure)
+            // }
+            structureMapping[currentStructures[i].uuid] =  currentStructures[i];
+        }
+
+        var recursiveSearch = function (root, currentHierarchies, instanceMapping, structureMapping) {
+            for (let i = 0; i < currentHierarchies.length; i++) {
+                const element = currentHierarchies[i];
+                // sourceToChildMapping[element.from] = element.to  
+                // childToSourceMapping[element.to] = element.from 
+                if (element.from == root.uuid) {
+                    var hasStructure = structureMapping[element.to]
+                    var hasInstance = instanceMapping[element.to]
+                    if (hasStructure) {
+                        
+                        var newRoot = {
+                            uuid:hasStructure.uuid,
+                            element:hasStructure,
+                            _isStructure:true,
+                            _children:[]
+                        }
+                        if (transformFunction) {
+                            var childrenReference = newRoot._children //keep original children reference for populating
+                            newRoot =transformFunction(newRoot)
+                            newRoot._children = childrenReference
+                        }
+                        root._children.push(newRoot)
+                        list.push(newRoot)
+                        recursiveSearch(newRoot, currentHierarchies, instanceMapping, structureMapping)
+                    }
+                    if (hasInstance) {
+                        var newRoot = {
+                            uuid:hasInstance.uuid,
+                            element:hasInstance,
+                            _isInstance:true,
+                            // _children:[]
+                        }
+                        if (transformFunction) {
+                            // var childrenReference = newRoot._children //keep original children reference for populating
+                            newRoot =transformFunction(newRoot)
+                            // newRoot._children = childrenReference
+
+                        }
+                        root._children.push(newRoot)
+                        list.push(newRoot)
+                        // recursiveSearch(newRoot, currentHierarchies, instanceMapping, structureMapping)
+                    }
+                    
+                }
+    
+            }
+        }
+
+        recursiveSearch(root, currentHierarchies, instanceMapping, structureMapping)
+        
+
+        return {root, list}
+    }
+
+    repo.link = function (sourceId, targetId, context) {
+        var linkType = "STS";
+        var currentRelationTarget = projectStore.get("structures").where("uuid").equals(targetId)
+        if (!currentRelationTarget) { //if not a structure
+            currentRelationTarget = projectStore.get("instances").where("uuid").equals(targetId)
+            linkType = "STI";
+        }
+        var currentRelationSource = projectStore.get("structures").where("uuid").equals(sourceId)
+        if (!currentRelationSource) {//if not a structure
+            currentRelationSource = projectStore.get("instances").where("uuid").equals(targetId)
+            linkType = "ITS";
+        }
+        if (currentRelationTarget && currentRelationSource) {
+            //first remove existing relation
+            var existingRelations = projectStore.get("hierarchies").where("to").equals(currentRelationTarget.uuid)
+            if (existingRelations) {
+                console.log(existingRelations);
+                for (let i = 0; i < existingRelations.length; i++) {
+                    if (!context) {
+                        projectStore.remove("hierarchies",existingRelations[i].uuid)
+                    }else if (context && existingRelations[i].context == context) {
+                        projectStore.remove("hierarchies",existingRelations[i].uuid)
+                    }
+                    
+                }
+                
+            }
+            projectStore.add("hierarchies",{name:`from ${currentRelationSource.name} to ${currentRelationSource.name}`, from:currentRelationSource.uuid, to:currentRelationTarget.uuid, context:context ||undefined, type:"linkType"}) //STS Structure to structure
+
+        }else{
+            console.warn("Missing source or target")
+        }
+    }
+
+    repo.linkLegacy = function (sourceId, targetId) {
         var currentRelationTarget = projectStore.get("structures").where("uuid").equals(targetId)
         var currentRelationSource = projectStore.get("structures").where("uuid").equals(sourceId)
         if (currentRelationTarget && currentRelationSource) {
@@ -191,6 +307,8 @@ var customRepoMethods = function (projectStore,createAggregate) {
 
     return repo
 }
+
+
 
 var createStructuresManagement = function () {
     return createRepoManagement(projectManagement.getCurrent().id, 'structures', structureAggregate, customRepoMethods)

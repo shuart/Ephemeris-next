@@ -25,18 +25,18 @@ var showCollections = function (self) {
     }
 }
 
-var traverseStructures = function (rootId, structuresRep, listToPush) {
-    var structuresList = structuresRep.getChildrenOfId(rootId)
-    for (let i = 0; i < structuresList.length; i++) {
-        const element = structuresList[i];
-        var data={uuid:element.uuid, name:element.name,_children:[]}
-        // if (element.type == undefined) {
-            data.img = "./img/icons/folder.svg"
-        // }
-        traverseStructures(element.uuid, structuresRep,data._children )
-        listToPush.push(data)
-    }
-}
+// var traverseStructures = function (rootId, structuresRep, listToPush) {
+//     var structuresList = structuresRep.getChildrenOfId(rootId)
+//     for (let i = 0; i < structuresList.length; i++) {
+//         const element = structuresList[i];
+//         var data={uuid:element.uuid, name:element.name,_children:[]}
+//         // if (element.type == undefined) {
+//             data.img = "./img/icons/folder.svg"
+//         // }
+//         traverseStructures(element.uuid, structuresRep,data._children )
+//         listToPush.push(data)
+//     }
+// }
 
 var loadSideMenu = function (self) {
     self.query(".collection_side_view").innerHTML='' //TODO, update the componenet properly
@@ -56,7 +56,15 @@ var loadSideMenu = function (self) {
     folderComponent.onDropped = function (evt) {
         console.log(evt);
         var repo = createStructuresManagement()
-        repo.link(evt.target.data.uuid,evt.dragged.data.uuid )
+        if (confirm()) {
+            if (evt.target.isContainer && evt.dragged.isContainer) {
+                repo.link(evt.target.data.uuid,evt.dragged.data.uuid )  
+            }
+            if (evt.target.isContainer && (!evt.dragged.isContainer) ) {
+                repo.link(evt.target.data.uuid,evt.dragged.data.uuid, self.instanceId )  //provide a context to make this relation unique to it
+            }
+        }
+        
         loadSideMenu(self)
     }
     folderComponent.list = [
@@ -70,7 +78,21 @@ var loadSideMenu = function (self) {
     var structuresRep = createStructuresManagement()
     console.log(structuresRep.getHierarchies())
     // var structuresList = structuresRep.getAll()
-    traverseStructures(self.instanceId,structuresRep, folderComponent.list)
+    var hierachStruct = structuresRep.getAllChildrenOfId(self.instanceId, function (item) {
+        var img="./img/icons/folder.svg"
+        var children = item._children
+        if (item._isInstance) {
+            img="./img/icons/file.svg"
+            children = undefined //clear children if needed
+        }
+        return { uuid:item.element.uuid, name:item.element.name, _children:children, img}
+    })
+    console.log(hierachStruct);
+    alert("eejjkjl")
+    var listOfStruct = hierachStruct.list
+    var struct = hierachStruct.root
+    folderComponent.list= folderComponent.list.concat( hierachStruct.root._children )
+    // traverseStructures(self.instanceId,structuresRep, folderComponent.list)
 
     
     self.query(".collection_side_view").append(folderComponent)
