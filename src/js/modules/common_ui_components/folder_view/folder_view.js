@@ -214,6 +214,11 @@ var folder_view_component =createAdler({
         font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
         font-size:12px;
     }
+
+    .folder_component_item:hover{
+        background-color: rgba(0, 0, 0, 0.05);
+        border-radius: 3px;
+    }
     
     @media (prefers-color-scheme: dark) {
         .folder_view{
@@ -225,6 +230,9 @@ var folder_view_component =createAdler({
         }
         .tabulator-row {
             background-color: transparent !important;
+        }
+        .folder_component_item:hover{
+            background-color: #ffffff26;
         }
         
       }

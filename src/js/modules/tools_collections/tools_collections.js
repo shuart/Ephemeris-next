@@ -76,16 +76,24 @@ var loadSideMenu = function (self) {
     ];
 
     var structuresRep = createStructuresManagement()
+    var entitiesRep = createEntityManagement()
     console.log(structuresRep.getHierarchies())
     // var structuresList = structuresRep.getAll()
     var hierachStruct = structuresRep.getAllChildrenOfId(self.instanceId, function (item) {
         var img="./img/icons/folder.svg"
         var children = item._children
+        var tcolor = undefined
         if (item._isInstance) {
             img="./img/icons/file.svg"
             children = undefined //clear children if needed
+            var entity = entitiesRep.getById(item.element.type)
+            if (entity) {
+                img = ["./img/icons/"+entity.attributes.iconPath, entity.attributes.color]
+                console.log(entity);
+            }
+            
         }
-        return { uuid:item.element.uuid, name:item.element.name, _children:children, img}
+        return { uuid:item.element.uuid, name:item.element.name, _children:children, img, imgType:"ag"}
     })
     console.log(hierachStruct);
     alert("eejjkjl")
