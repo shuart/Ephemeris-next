@@ -72,6 +72,13 @@ var entityAggregate = function(aggregate, projectStore){
         return instances
     }
 
+    aggregate.addInstance = function (data) {
+        data.type = aggregate.uuid
+        var instance = projectStore.add("instances", data)
+
+        return instance
+    }
+
     aggregate.getAssignedProperties = function () {
         var ownProperties = []
         for (const key in aggregate.attributes) {

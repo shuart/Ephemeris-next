@@ -219,6 +219,28 @@ var folder_view_component =createAdler({
         background-color: rgba(0, 0, 0, 0.05);
         border-radius: 3px;
     }
+
+    .folder_component_rcm{
+        width:150px;
+        position:absolute;
+        top:5px;
+        right:-5px;
+        z-index:999999999999999999999999999999999999999;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0px 0px 9px rgba(0, 0, 0, 0.2);
+        overflow:hidden;
+    }
+
+    .folder_component_rcm_option{
+        padding: 5px;
+        padding-left: 13px;
+        font-weight: normal;
+    }
+    .folder_component_rcm_option:hover{
+        background-color: #f9f9f9;
+    }
+
     
     @media (prefers-color-scheme: dark) {
         .folder_view{
@@ -234,6 +256,16 @@ var folder_view_component =createAdler({
         .folder_component_item:hover{
             background-color: #ffffff26;
         }
+        .folder_component_rcm{
+            background-color: rgb(27, 27, 27);
+        }
+        .folder_component_rcm_option:hover{
+            background-color: #252525;
+        }
+        .folder_component_rcm_option img{
+            filter: invert(100%);
+        }
+    
         
       }
     `,

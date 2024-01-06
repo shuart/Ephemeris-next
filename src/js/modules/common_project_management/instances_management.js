@@ -233,6 +233,17 @@ var instanceAggregate = function(aggregate, projectStore){
         projectStore.add("instances",newObject)
     }
 
+    aggregate.updateData = function (data) {
+        data.uuid = aggregate.uuid
+        projectStore.add("instances",data)
+    }
+    aggregate.rename = function (newName) {
+        projectStore.add("instances",{uuid: aggregate.uuid, name:newName})
+    }
+    aggregate.remove = function () {
+        projectStore.remove("instances",aggregate.uuid)
+    }
+
     //methods
     aggregate.addRelation = function (type, targetId) {
         var currentRelationTarget = projectStore.get("instances").where("uuid").equals(targetId)

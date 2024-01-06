@@ -7,110 +7,140 @@ import createEntityManagement from "./entity_management.js";
 
 var structureAggregate = function(aggregate, projectStore){
 
-    var propNameUuidMapping = {}
-    var propUuidNameMapping = {}
+    // var propNameUuidMapping = {}
+    // var propUuidNameMapping = {}
 
-    //parameters "Properties"
-    var ownProperties = {}
-    var sourceEntity = projectStore.get("entities").where("uuid").equals(aggregate.attributes.type)
-    for (const key in sourceEntity) {
-        if (Object.hasOwnProperty.call(sourceEntity, key) && key.search("prop_")>=0) {
-            const element = sourceEntity[key];
-            //TODO check if ref is still used
-            // ownProperties.push({uuid:key, value:aggregate.attributes[key]})
-            var property = projectStore.get("properties").where("uuid").equals(key.substring(5))
-            if (property) {
-                var propertyName = property.name
-                propNameUuidMapping[propertyName]=key
-                propUuidNameMapping[key]=propertyName
-                ownProperties[propertyName] = aggregate.attributes[key]
-                ownProperties[propertyName] = {property:property, value:aggregate.attributes[key]} 
-            }
+    // //parameters "Properties"
+    // var ownProperties = {}
+    // var sourceEntity = projectStore.get("entities").where("uuid").equals(aggregate.attributes.type)
+    // for (const key in sourceEntity) {
+    //     if (Object.hasOwnProperty.call(sourceEntity, key) && key.search("prop_")>=0) {
+    //         const element = sourceEntity[key];
+    //         //TODO check if ref is still used
+    //         // ownProperties.push({uuid:key, value:aggregate.attributes[key]})
+    //         var property = projectStore.get("properties").where("uuid").equals(key.substring(5))
+    //         if (property) {
+    //             var propertyName = property.name
+    //             propNameUuidMapping[propertyName]=key
+    //             propUuidNameMapping[key]=propertyName
+    //             ownProperties[propertyName] = aggregate.attributes[key]
+    //             ownProperties[propertyName] = {property:property, value:aggregate.attributes[key]} 
+    //         }
             
-        }
-    }      
-    aggregate.properties = ownProperties
+    //     }
+    // }      
+    // aggregate.properties = ownProperties
     
-    //parameters "Relations"
-    var ownRelations = []
-    var currentRelations = projectStore.get("hierarchies").toArray()
-    for (let i = 0; i < currentRelations.length; i++) {
-        const element = currentRelations[i];
-        if (element.from == aggregate.uuid) {
-            ownRelations.push(element);
-        }
-    }
-    aggregate.relations = ownRelations
-    // aggregate.color = sourceEntity.color
-    // aggregate.sourceEntity = sourceEntity
+    // //parameters "Relations"
+    // var ownRelations = []
+    // var currentRelations = projectStore.get("hierarchies").toArray()
+    // for (let i = 0; i < currentRelations.length; i++) {
+    //     const element = currentRelations[i];
+    //     if (element.from == aggregate.uuid) {
+    //         ownRelations.push(element);
+    //     }
+    // }
+    // aggregate.relations = ownRelations
+    // // aggregate.color = sourceEntity.color
+    // // aggregate.sourceEntity = sourceEntity
 
-    //methods
-    aggregate.getRelations = function () {
-        var ownRelations = []
-        var currentRelations = projectStore.get("hierarchies").toArray()
-        for (let i = 0; i < currentRelations.length; i++) {
-            const element = currentRelations[i];
-            if (element.from == aggregate.uuid) {
-                ownRelations.push(element);
-            }
-            if (element.to == aggregate.uuid) {
-                ownRelations.push(element);
-            }
-        }
-        return ownRelations
-    }
+    // //methods
+    // aggregate.getRelations = function () {
+    //     var ownRelations = []
+    //     var currentRelations = projectStore.get("hierarchies").toArray()
+    //     for (let i = 0; i < currentRelations.length; i++) {
+    //         const element = currentRelations[i];
+    //         if (element.from == aggregate.uuid) {
+    //             ownRelations.push(element);
+    //         }
+    //         if (element.to == aggregate.uuid) {
+    //             ownRelations.push(element);
+    //         }
+    //     }
+    //     return ownRelations
+    // }
 
 
 
-    //methods
-    aggregate.setPropertyByName = function (propName, value) {
-        var propRef = propNameUuidMapping[propName]
-        if (propRef) {
-            // var newObject = {uuid:aggregate.uuid,[ "prop_"+propRef ]:value}
-            var newObject = {uuid:aggregate.uuid,[ propRef ]:value} //TODO check why 'prop' is not needed
-            projectStore.add("structures",newObject)
-        }else{
-            console.warn("No property named "+ propRef);
-        }
-    }
-    aggregate.setPropertyByUuid = function (propRef, value) {
+    // //methods
+    // aggregate.setPropertyByName = function (propName, value) {
+    //     var propRef = propNameUuidMapping[propName]
+    //     if (propRef) {
+    //         // var newObject = {uuid:aggregate.uuid,[ "prop_"+propRef ]:value}
+    //         var newObject = {uuid:aggregate.uuid,[ propRef ]:value} //TODO check why 'prop' is not needed
+    //         projectStore.add("structures",newObject)
+    //     }else{
+    //         console.warn("No property named "+ propRef);
+    //     }
+    // }
+    // aggregate.setPropertyByUuid = function (propRef, value) {
         
-        var newObject = {uuid:aggregate.uuid,[ "prop_"+propRef ]:value}
-        projectStore.add("structures",newObject)
-    }
+    //     var newObject = {uuid:aggregate.uuid,[ "prop_"+propRef ]:value}
+    //     projectStore.add("structures",newObject)
+    // }
 
-    //methods
-    aggregate.addRelation = function (type, targetId) {
+    // //methods
+    // aggregate.addRelation = function (type, targetId) {
+    //     var currentRelationTarget = projectStore.get("structures").where("uuid").equals(targetId)
+    //     projectStore.add("hierarchies",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, from:aggregate.uuid, to:currentRelationTarget.uuid, type:type})
+    // }
+    // aggregate.addRelationFromSource = function (type, sourceId) {
+    //     var currentRelationSource = projectStore.get("structures").where("uuid").equals(sourceId)
+    //     projectStore.add("hierarchies",{name:`from ${currentRelationSource.name} to ${aggregate.name} `, to:aggregate.uuid, from:currentRelationSource.uuid, type:type})
+    // }
+    // aggregate.removeRelation = function (type, targetId) {
+    //     var currentRelationTarget = projectStore.get("hierarchies").where("type").equals(type)
+    //     var relationToRemove = undefined;
+    //     for (let i = 0; i < currentRelationTarget.length; i++) {
+    //         const element = currentRelationTarget[i];
+    //         if (element.to == targetId) { relationToRemove = element  }
+    //     }
+    //     if (relationToRemove) {
+    //         projectStore.remove("hierarchies",relationToRemove.uuid)
+    //     }
+        
+    // }
+    // aggregate.removeRelationFromSource = function (type, sourceId) {
+    //     var currentRelationTarget = projectStore.get("hierarchies").where("type").equals(type)
+    //     var relationToRemove = undefined;
+    //     for (let i = 0; i < currentRelationTarget.length; i++) {
+    //         const element = currentRelationTarget[i];
+    //         if (element.from == sourceId) { relationToRemove = element  }
+    //     }
+    //     if (relationToRemove) {
+    //         projectStore.remove("hierarchies",relationToRemove.uuid)
+    //     }
+        
+    // }
+
+    aggregate.addChild = function (targetId, context) {
+        var sourceId = aggregate.uuid
+        var linkType = "STS";
         var currentRelationTarget = projectStore.get("structures").where("uuid").equals(targetId)
-        projectStore.add("hierarchies",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, from:aggregate.uuid, to:currentRelationTarget.uuid, type:type})
-    }
-    aggregate.addRelationFromSource = function (type, sourceId) {
-        var currentRelationSource = projectStore.get("structures").where("uuid").equals(sourceId)
-        projectStore.add("hierarchies",{name:`from ${currentRelationSource.name} to ${aggregate.name} `, to:aggregate.uuid, from:currentRelationSource.uuid, type:type})
-    }
-    aggregate.removeRelation = function (type, targetId) {
-        var currentRelationTarget = projectStore.get("hierarchies").where("type").equals(type)
-        var relationToRemove = undefined;
-        for (let i = 0; i < currentRelationTarget.length; i++) {
-            const element = currentRelationTarget[i];
-            if (element.to == targetId) { relationToRemove = element  }
+        if (!currentRelationTarget) { //if not a structure
+            currentRelationTarget = projectStore.get("instances").where("uuid").equals(targetId)
+            linkType = "STI";
         }
-        if (relationToRemove) {
-            projectStore.remove("hierarchies",relationToRemove.uuid)
+        if (currentRelationTarget && aggregate) {
+            //first remove existing relation
+            var existingRelations = projectStore.get("hierarchies").where("to").equals(currentRelationTarget.uuid)
+            if (existingRelations) {
+                console.log(existingRelations);
+                for (let i = 0; i < existingRelations.length; i++) {
+                    if (!context) {
+                        projectStore.remove("hierarchies",existingRelations[i].uuid)
+                    }else if (context && existingRelations[i].context == context) {
+                        projectStore.remove("hierarchies",existingRelations[i].uuid)
+                    }
+                    
+                }
+                
+            }
+            projectStore.add("hierarchies",{name:`from ${aggregate.name} to ${currentRelationTarget.name}`, from:aggregate.uuid, to:currentRelationTarget.uuid, context:context ||undefined, type:linkType}) //STS Structure to structure
+
+        }else{
+            console.warn("Missing source or target")
         }
-        
-    }
-    aggregate.removeRelationFromSource = function (type, sourceId) {
-        var currentRelationTarget = projectStore.get("hierarchies").where("type").equals(type)
-        var relationToRemove = undefined;
-        for (let i = 0; i < currentRelationTarget.length; i++) {
-            const element = currentRelationTarget[i];
-            if (element.from == sourceId) { relationToRemove = element  }
-        }
-        if (relationToRemove) {
-            projectStore.remove("hierarchies",relationToRemove.uuid)
-        }
-        
     }
 
     return aggregate
@@ -274,7 +304,7 @@ var customRepoMethods = function (projectStore,createAggregate) {
                 }
                 
             }
-            projectStore.add("hierarchies",{name:`from ${currentRelationSource.name} to ${currentRelationSource.name}`, from:currentRelationSource.uuid, to:currentRelationTarget.uuid, context:context ||undefined, type:"linkType"}) //STS Structure to structure
+            projectStore.add("hierarchies",{name:`from ${currentRelationSource.name} to ${currentRelationTarget.name}`, from:currentRelationSource.uuid, to:currentRelationTarget.uuid, context:context ||undefined, type:"linkType"}) //STS Structure to structure
 
         }else{
             console.warn("Missing source or target")

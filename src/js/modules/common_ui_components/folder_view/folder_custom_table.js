@@ -13,6 +13,7 @@ export function createFolders({
     cols=[
         {field:"img", type:"image"},
         {field:"name", type:"name"},
+        {field:"_options", type:"options"},
     ],
     data=[
         {name:"test", _children:[
@@ -120,6 +121,42 @@ export function createFolders({
         
     }
 
+    function showRCM(sourceItem, options) {
+        var itemElement = document.createElement("div")
+        itemElement.classList.add("folder_component_rcm")
+        var deleteElement = function () {
+            itemElement.remove()
+        }
+        
+        itemElement.addEventListener("mouseleave", function (event) {
+            deleteElement()
+        })
+
+        
+
+        for (let i = 0; i < options.length; i++) {
+            const option = options[i];
+            var optionElement = document.createElement("div")
+            
+            optionElement.classList.add("folder_component_rcm_option")
+            
+            if (option[2]) {
+                optionElement.innerHTML= '<img src="'+option[2]+'" style="height:24px; width:17px; margin-right:4px">'+ option[0]
+            }else{
+                optionElement.innerText = option[0];
+            }
+            optionElement.addEventListener("mousedown", function (event) {
+                event.preventDefault
+                deleteElement()
+                option[1]()
+            })
+            itemElement.append(optionElement)
+        }
+
+        sourceItem.append(itemElement)
+        
+    }
+
 
     var dataToDomElement= function (record) {
         var itemData = record.data
@@ -130,6 +167,7 @@ export function createFolders({
         itemElement.classList.add("folder_component_item")
         itemElement.style.margin = "10px"
         itemElement.style.cursor = "pointer"
+        itemElement.style.position = "relative"
         if (record.level>0) {
             itemElement.style.marginLeft = (record.level*childrenOffset) +10+ "px"
         }
@@ -195,6 +233,17 @@ export function createFolders({
                     //     currentElement.innerHTML = '<div src="" style="height:24px; width:17px; margin-right:4px; position: relative;padding-left: 4px;background-color:'+value[0]+';">'+value[1].slice(0, 2)+'</div>'
                     //     currentElement.classList.remove("folder_view_img")
                     // }
+                }
+                if (cols[i].type == "options") {
+                    currentElement.innerHTML += ' :'
+                    currentElement.style.display = "inline-block"
+                    currentElement.style.marginRight = "10px"
+                    currentElement.style.float = "right"
+                    currentElement.style.fontWeight = "bold"
+                    currentElement.addEventListener("click", function (event) {
+                        showRCM(currentElement, value)
+                    })
+
                 }
                 itemElement.append(currentElement)
             }

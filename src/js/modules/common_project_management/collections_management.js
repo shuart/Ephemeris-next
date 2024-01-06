@@ -4,7 +4,7 @@ import projectStores from "./project_data_store.js";
 import nanoid from "../../vendor/nanoid.js";
 import createEntityManagement from "./entity_management.js";
 
-var relationInstancesAggregate = function(aggregate, projectStore){
+var collectionAggregate = function(aggregate, projectStore){
 
     // //parameters "Properties"
     // var ownProperties = {}
@@ -46,6 +46,40 @@ var relationInstancesAggregate = function(aggregate, projectStore){
     // }
 
     //Methods
+
+    aggregate.getEntities = function () {
+        var entities = []
+        console.log(aggregate);
+        for (const key in aggregate.attributes) {
+            if (Object.hasOwnProperty.call(aggregate.attributes, key)) {
+                const element = aggregate.attributes[key];
+                if (key.slice(0, 4) == "has_" && aggregate.attributes[key] == true) {
+                    entities.push(key.substring(4))
+                }
+            }
+        }
+        return entities
+    }
+
+    aggregate.addEntities = function (entitiesUuid) {
+        if (entitiesUuid[0]) {
+            var newObject= {uuid:aggregate.uuid}
+            for (let i = 0; i < entitiesUuid.length; i++) {
+                newObject["has_" + entitiesUuid[i]] = true;
+            }
+            projectStore.add("collections",newObject)
+        }
+        
+    }
+    aggregate.removeEntities = function (entitiesUuid) {
+        if (entitiesUuid[0]) {
+            var newObject= {uuid:aggregate.uuid}
+            for (let i = 0; i < entitiesUuid.length; i++) {
+                newObject["has_" + entitiesUuid[i]] = false;
+            }
+            projectStore.add("collections",newObject)
+        }
+    }
 
     // aggregate.getRelatedEntities = function(){
     //     var ownProperties = {}
@@ -96,16 +130,12 @@ var relationInstancesAggregate = function(aggregate, projectStore){
     //     var currentRelationTarget = projectStore.get("entities").where("uuid").equals(targetId)
     //     projectStore.add("relations",{uuid:aggregate.uuid,["from_"+currentRelationTarget.uuid]:true })
     // }
-    aggregate.updateData = function (data) {
-        data.uuid = aggregate.uuid
-        projectStore.add("relationsInstances",data)
-    }
 
     return aggregate
 }
 
-var createRelationInstancesAggregate = function () {
-    return createRepoManagement(projectManagement.getCurrent().id, 'relationsInstances', relationInstancesAggregate)
+var createCollectionsManagement = function () {
+    return createRepoManagement(projectManagement.getCurrent().id, 'collections', collectionAggregate)
 }
 
-export default createRelationInstancesAggregate
+export default createCollectionsManagement

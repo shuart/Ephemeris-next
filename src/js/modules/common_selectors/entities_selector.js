@@ -12,16 +12,24 @@ var selectedArrayToObject = function (selectedArray) {
 export function showEntitiesSelector ({
     selected=[], //uuid of selected items or object with uuid as prop names
     multipleSelection= true,
+    customOptions= false,
     onChange=(e)=>console.log(e),
 }={}) {
     console.log(selected);
 
-    var repo = createEntityManagement()
-    var entities = repo.getAll()
+    var options= undefined
 
-    var options = entities.map(e=>{
-        return  {name:e.name, uuid:e.uuid, iconPath:e.attributes.iconPath}
-    })
+    if (!customOptions) {
+        var repo = createEntityManagement()
+        var entities = repo.getAll()
+
+        options = entities.map(e=>{
+            return  {name:e.name, uuid:e.uuid, iconPath:e.attributes.iconPath}
+        })
+    }else{
+        options = customOptions
+    }
+    
 
     var showSelectionDialogue = function () {
         createDialogue({

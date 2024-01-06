@@ -29,6 +29,7 @@ var createProjectStore = function(){
             cycles:["uuid"],
             graphs:["uuid"],
             simulations:["uuid"],
+            collections:["uuid"],
             entities:["uuid","test"],
             properties:["uuid"],
             relations:["uuid","test"],

@@ -5,25 +5,28 @@ import state from "../common_state/state_manager.js";
 import createInstancesManagement from "../common_project_management/instances_management.js";
 import project_views from "../project_views/project_views.js";
 import createStructuresManagement from "../common_project_management/structures_management.js";
+import createCollectionsManagement from "../common_project_management/collections_management.js";
+import { showEntitiesSelector } from "../common_selectors/entities_selector.js";
+import nanoid from "../../vendor/nanoid.js";
 // import { sortable } from "./tools_collections_storable.js";
 
 
 
-var showCollections = function (self) {
-    var entitiesRepo = createEntityManagement()
-    var entities = entitiesRepo.getAll()
-    var mountPlace = self.query(".instance_view_area")
+// var showCollections = function (self) {
+//     var entitiesRepo = createEntityManagement()
+//     var entities = entitiesRepo.getAll()
+//     var mountPlace = self.query(".instance_view_area")
 
-    for (let i = 0; i < entities.length; i++) {
-        const entity = entities[i];
-        var link = document.createElement("div")
-        link.innerHTML=entity.name+ self.instanceId
-        link.addEventListener("click", function () {
-            state.goTo("/:/collection/"+entity.uuid)
-        })
-        mountPlace.append(link)
-    }
-}
+//     for (let i = 0; i < entities.length; i++) {
+//         const entity = entities[i];
+//         var link = document.createElement("div")
+//         link.innerHTML=entity.name+ self.instanceId
+//         link.addEventListener("click", function () {
+//             state.goTo("/:/collection/"+entity.uuid)
+//         })
+//         mountPlace.append(link)
+//     }
+// }
 
 // var traverseStructures = function (rootId, structuresRep, listToPush) {
 //     var structuresList = structuresRep.getChildrenOfId(rootId)
@@ -38,19 +41,53 @@ var showCollections = function (self) {
 //     }
 // }
 
+var addEntityToFolder = function(self, currentCollection,folderId,  callback) {
+    var entitiesRepo = createEntityManagement()
+    var structuresRep = createStructuresManagement()
+    var structure = structuresRep.getById(folderId)
+    var availableEntities = currentCollection.getEntities().map(e=>{
+        var entity =entitiesRepo.getById(e)
+        return  {name:entity.name, uuid:entity.uuid, iconPath:entity.attributes.iconPath}
+    })
+    showEntitiesSelector({
+        // selected : hasEntitites,
+        customOptions:availableEntities,
+        multipleSelection:false,
+        onChange: (e,f)=> {
+            if (f.added[0]) {
+                var entity =entitiesRepo.getById(f.added[0])
+                var name = prompt("Name")
+                if(entity && name  ){
+                    var id = nanoid()
+                    entity.addInstance({uuid:id, name:name})
+                    
+                    structure.addChild(id, self.instanceId)
+                } 
+            }
+            
+            if (callback) {
+                callback()
+            }
+            // data.addEntities(f.added)
+            // data.removeEntities(f.removed)
+            // showCollections(self)
+        },
+    })
+}
+
 var loadSideMenu = function (self) {
     self.query(".collection_side_view").innerHTML='' //TODO, update the componenet properly
     var folderComponent = folder_view_component.instance()
     
     var instancesRepo = createInstancesManagement()
-    var instances = instancesRepo.getByType(self.instanceId)
+    var collectionRepo = createCollectionsManagement()
+    
     var entitiesRepo = createEntityManagement()
-    var currentEntity = entitiesRepo.getById(self.instanceId)
+
+    var currentCollection = collectionRepo.getById(self.instanceId)
     // var entities = entitiesRepo.getAll()
 
-    var instancesList = instances.map(i=>{
-        return{name:i.name, uuid:i.uuid}
-    })
+    
     folderComponent.onClick = sideMenuClickAction(self)
     folderComponent.addItem = addClickAction(self)
     folderComponent.onDropped = function (evt) {
@@ -67,13 +104,31 @@ var loadSideMenu = function (self) {
         
         loadSideMenu(self)
     }
+
     folderComponent.list = [
-        {uuid:currentEntity.uuid, name:currentEntity.name, _children:instancesList},
         // {name:"Chapitre 2 ", _children:[
         //     {name:"Item 1"},
         //     {name:"Item 2"},
         // ]},
     ];
+
+    var currentEntities = currentCollection.getEntities()
+    for (let i = 0; i < currentEntities.length; i++) {
+        const entityId = currentEntities[i];
+        var entity = entitiesRepo.getById(entityId)
+        
+        if (entity) {
+            var instances = instancesRepo.getByType(entityId)
+            var instancesList = instances.map(i=>{
+                return{name:i.name, uuid:i.uuid}
+            })
+            folderComponent.list.push({uuid:entityId, name:entity.name, _children:instancesList})
+        }
+        
+    }
+
+    
+    
 
     var structuresRep = createStructuresManagement()
     var entitiesRep = createEntityManagement()
@@ -83,6 +138,7 @@ var loadSideMenu = function (self) {
         var img="./img/icons/folder.svg"
         var children = item._children
         var tcolor = undefined
+        var options = undefined
         if (item._isInstance) {
             img="./img/icons/file.svg"
             children = undefined //clear children if needed
@@ -90,13 +146,54 @@ var loadSideMenu = function (self) {
             if (entity) {
                 img = ["./img/icons/"+entity.attributes.iconPath, entity.attributes.color]
                 console.log(entity);
-            }
-            
+                options=[
+                    ["Rename", ()=>{
+                        var newName = prompt("New name", item.element.name)
+                        if (newName && newName != item.element.name && newName !="") {
+                            var instancesRep = createInstancesManagement()
+                            
+                            var instanceToChange = instancesRep.getById(item.uuid)
+                            console.log(instanceToChange);
+                            instanceToChange.rename(newName)
+                            loadSideMenu(self)
+                        }
+                    }, "./img/icons/edit.svg"],
+                    ["Delete", ()=>{
+                        var confirmed = confirm("Are you sure you want to delete this item")
+                        if (confirmed) {
+                            var instancesRep = createInstancesManagement()
+                            var instanceToChange = instancesRep.getById(item.uuid)
+                            console.log(instanceToChange);
+                            instanceToChange.remove()
+                            loadSideMenu(self)
+                        }
+                    }, "./img/icons/edit.svg"]
+                ]
+            }  
+        }else{
+            options=[
+                ["Rename", ()=>{
+                    var newName = prompt("New name", item.element.name)
+                    if (newName && newName != item.element.name && newName !="") {
+                        structuresRep.add({uuid:item.uuid, name:newName})
+                        loadSideMenu(self)
+                    }
+                }, "./img/icons/edit.svg"],
+                ["Add item", ()=>{
+                    addEntityToFolder(self, currentCollection, item.uuid, ()=> loadSideMenu(self))
+                }, "./img/icons/plus.svg"],
+            ]
         }
-        return { uuid:item.element.uuid, name:item.element.name, _children:children, img, imgType:"ag"}
+        
+        return { uuid:item.element.uuid, name:item.element.name,_options:options,  _children:children, img}
     })
+
+    
+
+
+
+
     console.log(hierachStruct);
-    alert("eejjkjl")
     var listOfStruct = hierachStruct.list
     var struct = hierachStruct.root
     folderComponent.list= folderComponent.list.concat( hierachStruct.root._children )
@@ -180,7 +277,7 @@ var toolsCollections =createAdler({
     ],
     onRender:(self) =>{
         // setUpTable(self)
-        showCollections(self)
+        // showCollections(self)
         loadSideMenu(self)
     },
     html: p => /*html*/`
@@ -194,11 +291,6 @@ var toolsCollections =createAdler({
     <div class="component">
         
         <div class="main_view_area">
-            <div class="project_selection_logo"></div>
-            <div class="has-text-centered project_selection_sub_title">
-                    Collections spec
-            </div>
-            
             <div class="instance_view_area container"></div>
         </div>
         <div class="collection_side_view"></div>
