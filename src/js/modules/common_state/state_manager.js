@@ -223,6 +223,22 @@ var createStateManager = function({
     var setSearchParams = function(id, value, mode){
         common_router.setSearchParams(id, value, mode)
     }
+    var getSearchParam = function (paramName) {
+        if (paramName) {
+            let url = window.location.hash.slice(1) || '/';
+            if (url.split("?")[1]) {//if there are already search params
+                var splitedParams = url.split("?")[1].split("&")
+                url = url.split("?")[0]
+                for (let i = 0; i < splitedParams.length; i++) {
+                    const sparam = splitedParams[i].split("=");
+                    if (paramName == sparam[0]) {
+                        return sparam[1]
+                    }
+                }
+            }
+        }
+        return undefined
+    }
     var goToLastBeforeRedirect = function(href){
         if (lastUrlBeforeRedirect) {
             common_router.goTo(lastUrlBeforeRedirect)
@@ -239,6 +255,7 @@ var createStateManager = function({
     self.goToLastBeforeRedirect = goToLastBeforeRedirect
     self.goTo = goTo
     self.setSearchParams = setSearchParams
+    self.getSearchParam = getSearchParam
     return self
 }
 

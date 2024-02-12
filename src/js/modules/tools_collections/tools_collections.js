@@ -221,6 +221,7 @@ var sideMenuClickAction = function (self) {
             title:false,
             
         }})
+        state.setSearchParams("selected",cell.getData().uuid, "silent")
         self.query(".instance_view_area").innerHTML=""
         linkedView.mount(self.query(".instance_view_area"))
         // self.query(".graph_selection_select_area").append(linkedView)
@@ -241,6 +242,25 @@ var addClickAction = function (self) {
         
     }
     
+}
+
+var setLinkedViewOnStartup = function (self) {
+    var searchParam = state.getSearchParam("selected")
+    if (searchParam) {
+        var instanceRepo = createInstancesManagement()
+        var currentInstance = instanceRepo.getById(searchParam)
+        if (currentInstance) {
+            var sourceEntity = currentInstance.sourceEntity
+            var linkedView = project_views.instance({data:{
+                viewId:sourceEntity.defaultViewId, 
+                calledFromInstance:searchParam,
+                title:false,
+                
+            }})
+            self.query(".instance_view_area").innerHTML=""
+            linkedView.mount(self.query(".instance_view_area"))  
+        }
+    }
 }
 
 
@@ -279,6 +299,7 @@ var toolsCollections =createAdler({
         // setUpTable(self)
         // showCollections(self)
         loadSideMenu(self)
+        setLinkedViewOnStartup(self)
     },
     html: p => /*html*/`
     <link rel="stylesheet" href="css/bulma.min.css">
