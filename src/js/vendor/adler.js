@@ -245,6 +245,15 @@ var createAdler = function ({
             query = function (selector) {
                 return this.shadowRoot.querySelector(selector)
             }
+            queryAll = function (selector, callback) {
+                var elList = this.shadowRoot.querySelectorAll(selector)
+                if (callback && typeof callback == "function") {
+                    for (let i = 0; i < elList.length; i++) {
+                        callback(elList[i]);
+                    }
+                }
+                return elList
+            }
             toDom = utilsToDomElement
             tpl = utilsToTemplate
 

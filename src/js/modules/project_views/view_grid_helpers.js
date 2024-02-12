@@ -35,6 +35,31 @@ var setUpSettingsEvent = function (event, domElement, callback){
     // instance.props.schema.set(currentSchema); instance.update();
 }
 
+// var renderPreview = function (params) {
+//     const comp = components[i];
+//     var instanceType = availableViewports[comp.componentType]
+//     var evaluatorId = comp.settings?.evaluatorUuid || comp.evaluatorUuid
+//     if (evaluatorId == "undefined") {
+//         evaluatorId = undefined //TODO, solve this issue. It's caused by the stringification of the dataset of the placeholder
+//     }
+//     var view = instanceType.instance({
+//         props:{
+//             settings:{evaluatorId:evaluatorId, calledFromInstance:self.calledFromInstance},
+//         }
+//     })
+    
+//     if (view && (comp.area==self.currentArea || ((comp.area==undefined || comp.area=='undefined') && (self.currentArea==undefined || self.currentArea=='undefined')) ) ) {
+//         var domElement = document.createElement("div")
+//         // domElement.id = "comp"+index
+//         var vsize = comp.vsize || 2
+//         var hsize = comp.hsize || 2
+//         domElement.style.gridArea =  `span ${vsize}/span ${hsize}`
+//         view.mount(domElement)
+//         // view.mount(self.query('.viewGridArea'))
+//         self.query('.viewGridArea').append(domElement)
+//     }
+// }
+
 var renderPlaceholder = function ({
     rowId=undefined,
     colId = undefined,
@@ -49,6 +74,7 @@ var renderPlaceholder = function ({
     deleteCallback = (e)=>console.log("no action"),
     componentType ="undefined",
     evaluatorUuid =undefined,
+    currentComp = undefined,
     settings ={evaluatorUuid:undefined},
 }={}) {
     var areaName = "No Type"

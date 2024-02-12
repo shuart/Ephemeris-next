@@ -125,8 +125,16 @@ var renderItems = function (self) {
     }
     for (let i = 0; i < components.length; i++) {
         const comp = components[i];
-        
-        var view = renderItem(self, comp)
+        var instanceType = availableViewports[comp.componentType]
+        var evaluatorId = comp.settings?.evaluatorUuid || comp.evaluatorUuid
+        if (evaluatorId == "undefined") {
+            evaluatorId = undefined //TODO, solve this issue. It's caused by the stringification of the dataset of the placeholder
+        }
+        var view = instanceType.instance({
+            props:{
+                settings:{evaluatorId:evaluatorId, calledFromInstance:self.calledFromInstance},
+            }
+        })
         
         if (view && (comp.area==self.currentArea || ((comp.area==undefined || comp.area=='undefined') && (self.currentArea==undefined || self.currentArea=='undefined')) ) ) {
             var domElement = document.createElement("div")
@@ -141,20 +149,6 @@ var renderItems = function (self) {
     }
 }
 
-var renderItem = function (self, comp) {
-    var instanceType = availableViewports[comp.componentType]
-    var evaluatorId = comp.settings?.evaluatorUuid || comp.evaluatorUuid
-    if (evaluatorId == "undefined") {
-        evaluatorId = undefined //TODO, solve this issue. It's caused by the stringification of the dataset of the placeholder
-    }
-    var view = instanceType.instance({
-        props:{
-            settings:{evaluatorId:evaluatorId, calledFromInstance:self.calledFromInstance},
-        }
-    })
-    return view
-}
-
 var updateSchema= function (self) {
     var newSchema = getSchemaFromGrid(self)
     self.schema = newSchema
@@ -167,17 +161,13 @@ var renderPlaceholders = function (self) {
     for (let i = 0; i < components.length; i++) {
         const comp = components[i];
         var instanceType = availableViewports[comp.componentType]
-        const compItem = Object.assign({},comp, {index:i, currentComp:comp, parent:self, deleteCallback:()=>updateSchema(self), });
+        const compItem = Object.assign({},comp, {index:i, parent:self, deleteCallback:()=>updateSchema(self), });
         var view = renderPlaceholder(compItem)
         if (view) {
             if (comp.area == "left") {
                 self.query('.viewGridAreaDemoLeft').append(view)
             }else{
                 self.query('.viewGridArea').append(view)
-            }
-            if (true) { //render preview
-                var compView = renderItem(self, comp)
-                compView.mount(view.querySelector(".box"))
             }
             
         }
@@ -206,7 +196,6 @@ var saveNewLayout = function (event,self) {
         projectManagement.getProjectStore(projectId,"views").add({uuid:self.currentPageId, layout:JSON.stringify(newSchema) ,theTime:Date.now()})
         console.log(projectManagement.getProjectStore(projectId,"views").getAll())
     }
-    updateSchema(self)
 }
 
 var showAddMenu = function(event, self, area){
