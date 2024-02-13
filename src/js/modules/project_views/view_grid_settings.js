@@ -14,6 +14,8 @@ import propertiesViewport from "../viewports/properties_viewport/properties_view
 import { renderPlaceholder } from "./view_grid_helpers.js";
 import folder_viewport from "../viewports/folder_viewport/folder_viewport.js";
 
+import gridViewHeaders from "./view_grid_headers.js";
+
 
 function sortable(self, section, onUpdate){
     var dragEl, nextEl, newPos, dragGhost;
@@ -134,11 +136,31 @@ var renderItems = function (self) {
             var vsize = comp.vsize || 2
             var hsize = comp.hsize || 2
             domElement.style.gridArea =  `span ${vsize}/span ${hsize}`
+            if (self.showHeaders) {
+                var header = renderItemHeader(self, comp)
+                domElement.append(header)
+                domElement.classList.add("viewGridElementWithHeader")
+            }
             view.mount(domElement)
             // view.mount(self.query('.viewGridArea'))
             self.query('.viewGridArea').append(domElement)
         }
     }
+}
+
+var renderItemHeader = function (self, comp) {
+    var viewHeader = gridViewHeaders.instance()
+    viewHeader.component = comp
+    viewHeader.editEvaluatorCallback = function (compId, evalId) {
+        for (let i = 0; i < self.schema.length; i++) {
+            if (self.schema[i].uuid == compId){
+                self.schema[i].evaluatorUuid = evalId;
+                pushLayoutToDb(self, self.schema)//modify and save new schema
+                updateView(self)
+            }
+        }
+    }
+    return viewHeader
 }
 
 var renderItem = function (self, comp) {
@@ -201,12 +223,15 @@ var getSchemaFromGrid = function (self) {
 
 var saveNewLayout = function (event,self) {
     var newSchema = getSchemaFromGrid(self)
+    pushLayoutToDb(self, newSchema)
+    updateSchema(self)
+}
+var pushLayoutToDb = function (self, schema) {
     var projectId = projectManagement.getCurrent().id
     if (self.currentPageId) {
-        projectManagement.getProjectStore(projectId,"views").add({uuid:self.currentPageId, layout:JSON.stringify(newSchema) ,theTime:Date.now()})
+        projectManagement.getProjectStore(projectId,"views").add({uuid:self.currentPageId, layout:JSON.stringify(schema) ,theTime:Date.now()})
         console.log(projectManagement.getProjectStore(projectId,"views").getAll())
     }
-    updateSchema(self)
 }
 
 var showAddMenu = function(event, self, area){
@@ -281,6 +306,10 @@ var toogleSettings = function (event, self) {
     self.showSettings = !self.showSettings
     updateView(self)
 }
+var toogleHeaders = function (event, self) {
+    self.showHeaders = !self.showHeaders
+    updateView(self)
+}
 
 var gridView = createAdler({
     tag:'eph-grid-view',
@@ -292,6 +321,7 @@ var gridView = createAdler({
         rows:4,
         schema:[],
         showSettings:false,
+        showHeaders: true,
     },
     attributes:[
     ],
@@ -300,6 +330,7 @@ var gridView = createAdler({
         ["click", '.action-grid-save', saveNewLayout],
         ["click", '.action-grid-add-left', addCompLeft],
         ["click", '.action-grid-toggle-edit', toogleSettings],
+        ["click", '.action-grid-toggle-headers', toogleHeaders],
     ],
     html:()=>/*html*/`
         <link rel="stylesheet" href="css/bulma.min.css">
@@ -309,7 +340,8 @@ var gridView = createAdler({
 
 
         <div class="area container is-widescreen">
-            <div class="button action-grid-toggle-edit">edit</div>
+            <div class="button action-grid-toggle-edit">Reorganize</div>
+            <div class="button action-grid-toggle-headers">edit</div>
             <button class="button action_grid_add only_settings">add</button>
             <div class="button action-grid-save only_settings">Save</div>
             <div class="button action-grid-add-left only_settings">Add to Left Panel</div>
@@ -400,6 +432,11 @@ var gridView = createAdler({
         top: 64px;
         left: -26%;
       }
+    .viewGridElementWithHeader {
+        border-style: solid;
+        border-color: #8a8a8a29;
+        border-radius: 7px;
+    }
     `,
 })
 

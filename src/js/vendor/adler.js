@@ -289,7 +289,7 @@ var createAdler = function ({
                 setEffects(this)
                 
                 this.shadowRoot.adoptedStyleSheets = [stylesheet].concat(cssfiles) //Add local css or external stylesheets
-                this.shadowRoot.innerHTML = currentHtml();
+                this.shadowRoot.innerHTML = currentHtml(this);
                 iterateLifeCycle(lifeCycle, 'connected', this)
                 onRender(this)
                 iterateEvents(events, this )// Add event listeners when connected
@@ -297,7 +297,7 @@ var createAdler = function ({
             }
             update = function () {
                 setEffects(this)
-                this.shadowRoot.innerHTML = currentHtml();
+                this.shadowRoot.innerHTML = currentHtml(this);
                 iterateLifeCycle(lifeCycle, 'connected', this)
                 onRender(this)
                 iterateEvents(events, this )// Add event listeners when connected

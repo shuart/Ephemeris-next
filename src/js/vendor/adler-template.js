@@ -93,3 +93,54 @@ var HelloWorld = createAdler({
 })
 
 export {HelloWorld}
+////////////#########################################################""
+
+var gridViewHeadersTEMP = createAdler({
+    tag:'eph-grid-view-headers',
+    props:{
+        currentPageId:undefined,
+        currentArea:undefined,
+        calledFromInstance:undefined,
+        cols:4,
+        rows:4,
+        schema:[],
+        showSettings:false,
+    },
+    attributes:[
+    ],
+    events : [
+        ["click", '.action_grid_add', addComp],
+        ["click", '.action-grid-save', saveNewLayout],
+        ["click", '.action-grid-add-left', addCompLeft],
+        ["click", '.action-grid-toggle-edit', toogleSettings],
+    ],
+    html:()=>/*html*/`
+        <link rel="stylesheet" href="css/bulma.min.css">
+        <link rel="stylesheet" href="css/bulma.dark.css">
+
+        <link rel="stylesheet" href="css/main.css">
+
+
+        <div class="area container is-widescreen">
+            <div class="button action-grid-toggle-edit">edit</div>
+            <button class="button action_grid_add only_settings">add</button>
+            <div class="button action-grid-save only_settings">Save</div>
+            <div class="button action-grid-add-left only_settings">Add to Left Panel</div>
+            <div class="block"></div>
+            <div class="viewGridArea"></div>
+
+            <div class="viewGridAreaDemoLeft only_settings"></div>
+
+        </div>
+        
+    `,
+    onRender:(self) =>{
+        updateView(self)
+        
+    },
+    css:`
+
+    `,
+})
+
+export {gridViewHeadersTEMP}
