@@ -83,3 +83,14 @@ export function showEntitiesSelector ({
     showSelectionDialogue()
 
 }
+
+export function createEntitiesSelectionOptions(params) {
+    var repo = createEntityManagement()
+        var entities = repo.getAll()
+
+    var options = entities.map(e=>{
+        return  {name:e.name, uuid:e.uuid, iconPath:e.attributes.iconPath}
+    })
+
+    return options
+}

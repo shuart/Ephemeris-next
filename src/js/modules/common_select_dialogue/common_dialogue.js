@@ -1,6 +1,7 @@
 
 import mainPopup from "../../modules/common_ui_components/mainPopup/mainPopup.js"
 import select from "../../modules/common_ui_components/select/select.js"
+import input_boolean from "../common_ui_elements/input_boolean.js"
 import input_selection from "../common_ui_elements/input_selection.js"
 import input_text from "../common_ui_elements/input_text.js"
 import common_dialogue_footer from "./common_dialogue_footer.js"
@@ -44,6 +45,18 @@ var createDialoguePage = function (params) {
             var item = input_text.instance({
                 data:field.config
             })
+            fieldsToAdd.push(item)
+        }else if (field.type  == "boolean"){
+            
+            if (!field.config.onChange) { //if an action is not setup the dialogue component will do it. 
+                field.config.onChange=(event, data, instance)=>{ //the text element use the focus out event to store the value in the local store
+                    params.choiceStore[field.name] = data.value
+                }
+            }
+            var item = input_boolean.instance({
+                data:field.config
+            })
+            params.choiceStore[field.name] = field.config.value || false
             fieldsToAdd.push(item)
         }
     }

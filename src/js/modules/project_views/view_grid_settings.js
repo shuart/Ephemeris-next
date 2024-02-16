@@ -166,12 +166,13 @@ var renderItemHeader = function (self, comp) {
 var renderItem = function (self, comp) {
     var instanceType = availableViewports[comp.componentType]
     var evaluatorId = comp.settings?.evaluatorUuid || comp.evaluatorUuid
+    var renderSettings = comp.renderSettings
     if (evaluatorId == "undefined") {
         evaluatorId = undefined //TODO, solve this issue. It's caused by the stringification of the dataset of the placeholder
     }
     var view = instanceType.instance({
         props:{
-            settings:{evaluatorId:evaluatorId, calledFromInstance:self.calledFromInstance},
+            settings:{evaluatorId:evaluatorId, calledFromInstance:self.calledFromInstance, settings:renderSettings},
         }
     })
     return view

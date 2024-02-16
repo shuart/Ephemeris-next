@@ -6,6 +6,9 @@ import projectManagement from "../common_project_management/project_management.j
 import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
 import select from "../common_ui_components/select/select.js"
 import { showEvaluatorsSelector } from "../common_selectors/evaluators_selector.js";
+import createDialogue from "../common_select_dialogue/common_dialogue.js";
+import { createEntitiesSelectionOptions } from "../common_selectors/entities_selector.js";
+import { createTableSettings } from "./settings/view_grid_settings_table.js";
 
 var goToEvaluator = function(event){
     var evaluator = event.target.dataset.id
@@ -32,6 +35,21 @@ var setUpSettingsEvent = function (self, event, domElement, currentUuid, uuid, c
             // showCollections(self)
         },
     })
+
+
+    
+    // alert(JSON.stringify(currentSchema))
+    // instance.props.schema.set(currentSchema); instance.update();
+}
+
+var setUpOptionsEvent = function (self, event, domElement, currentUuid, uuid, callback){
+    var compPos = [event.target.dataset.rowId,event.target.dataset.colId,event.target.dataset.compId,]
+    var projectId = projectManagement.getCurrent().id
+    var entities = projectManagement.getProjectStore(projectId,"evaluators").getAll()
+
+    
+
+    createTableSettings()
 
 
     
@@ -76,6 +94,10 @@ var renderMenu = function (self, comp) {
     domElement.querySelector(".action-view-settings-goto-evaluator").addEventListener("click",goToEvaluator )
     domElement.querySelector(".action-view-settings-edit-evaluator").addEventListener("click",function (event) {
         setUpSettingsEvent(self,event,domElement, evaluatorUuid, uuid )
+        
+    } )
+    domElement.querySelector(".image").addEventListener("click",function (event) {
+        setUpOptionsEvent(self,event,domElement, evaluatorUuid, uuid )
         
     } )
     
