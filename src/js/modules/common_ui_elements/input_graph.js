@@ -42,6 +42,7 @@ var showPopup = function (event, data, instance) {
                 fullSize:true,
                 simulateForces:true, 
                 uiCallbacks:undefined,
+                autoDeselect:false,
                 showNodeList: false,
                 showSearchBox: true,
                 highlightConnections: false,

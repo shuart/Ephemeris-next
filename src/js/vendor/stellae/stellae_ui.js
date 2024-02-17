@@ -20,6 +20,7 @@ export default function createStellaeUi({
     canvasWidth =800, canvasHeight = 500,
     darkMode = "auto",
     useSimulation = false,
+    autoDeselect = true, 
     uiCallbacks = {},//onConnect,
     showList = true,
     showToolbar =false,
@@ -71,8 +72,8 @@ export default function createStellaeUi({
         scene:undefined,camera:undefined,renderer:undefined,mouse: new THREE.Vector2(),raycaster:new THREE.Raycaster(),raycasterPlan:undefined,
         canvas:undefined,containerDim:undefined,controls:undefined,play:true,helperLine:undefined,
         nodes:[],links:[], mapping:undefined,
-        triggers:{headers:[], sockets:{}, props:{}},
-        selectedToMove:[], selectedSocket:undefined, selectedHandle:undefined, lastSelectedHeader:undefined, selectedLine:undefined, linkToAdd: undefined,
+        triggers:{headers:[], sockets:{}, props:{}}, //check if currentSelection works with box select
+        currentSelection:{}, selectedToMove:[], selectedSocket:undefined, selectedHandle:undefined, lastSelectedHeader:undefined, selectedLine:undefined, linkToAdd: undefined,
         draggingNodes:false,boxSelecting:false, boxSelectingInProgress:false, draggingSocket:false,draggingHandle:false,draggingPreviousPosition:undefined,dragStarted:false,dragOffset:{x:0,z:0},
         recordedClickForMouseUp:false,
         simulation:simulation, sideList:sideList, toolbar:toolbar, searchBox:searchBox, connectionHighlighter:connectionHighlighter
@@ -298,8 +299,19 @@ export default function createStellaeUi({
                     connectionHighlighter.highlight(object.layoutItemRoot)
                 }
                 if (showSelections && behaveAsNormalNode(object.layoutItemRoot) ) {
-                    markUnSelected(state.nodes)
-                    markSelected(object.layoutItemRoot)
+                    if (autoDeselect) { //deselect All Other Nodes
+                        markUnSelected(state.nodes)
+                        markSelected(object.layoutItemRoot)
+                    }else{
+                        if (state.currentSelection[object.layoutItemRoot.edata.uuid]) {
+                            delete state.currentSelection[object.layoutItemRoot.edata.uuid]
+                            markUnSelected(object.layoutItemRoot)
+                        }else{
+                            state.currentSelection[object.layoutItemRoot.edata.uuid] =true
+                            markSelected(object.layoutItemRoot)
+                        }
+                    }
+                    
                 }
             }
             
