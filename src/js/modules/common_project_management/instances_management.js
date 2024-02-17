@@ -285,13 +285,26 @@ var customRepoMethods = function (projectStore,createAggregate) {
     var repo = {}
 
     repo.getByType = function(targetId){
-        var exportedByType = []
-        var entities = projectStore.get("instances").where("type").equals(targetId)
-        for (let i = 0; i < entities.length; i++) {
-            const element = entities[i];
-            exportedByType.push(createAggregate(element))
+        if (Array.isArray(targetId)) {
+            var exportedByType = []
+            for (let i = 0; i < targetId.length; i++) {
+                var entities = projectStore.get("instances").where("type").equals(targetId[i])
+                for (let i = 0; i < entities.length; i++) {
+                    const element = entities[i];
+                    exportedByType.push(createAggregate(element))
+                }
+            }
+            return exportedByType
+        }else{
+            var exportedByType = []
+            var entities = projectStore.get("instances").where("type").equals(targetId)
+            for (let i = 0; i < entities.length; i++) {
+                const element = entities[i];
+                exportedByType.push(createAggregate(element))
+            }
+            return exportedByType
         }
-        return exportedByType
+        
     }
 
     return repo

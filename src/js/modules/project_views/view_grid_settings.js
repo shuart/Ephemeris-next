@@ -160,6 +160,15 @@ var renderItemHeader = function (self, comp) {
             }
         }
     }
+    viewHeader.editRenderSettingsCallback = function (compId, newSettings) {
+        for (let i = 0; i < self.schema.length; i++) {
+            if (self.schema[i].uuid == compId){
+                self.schema[i].renderSettings = newSettings;
+                pushLayoutToDb(self, self.schema)//modify and save new schema
+                updateView(self)
+            }
+        }
+    }
     return viewHeader
 }
 
@@ -172,7 +181,7 @@ var renderItem = function (self, comp) {
     }
     var view = instanceType.instance({
         props:{
-            settings:{evaluatorId:evaluatorId, calledFromInstance:self.calledFromInstance, settings:renderSettings},
+            settings:{evaluatorId:evaluatorId, calledFromInstance:self.calledFromInstance, renderSettings:renderSettings},
         }
     })
     return view

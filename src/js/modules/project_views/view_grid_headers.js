@@ -42,14 +42,14 @@ var setUpSettingsEvent = function (self, event, domElement, currentUuid, uuid, c
     // instance.props.schema.set(currentSchema); instance.update();
 }
 
-var setUpOptionsEvent = function (self, event, domElement, currentUuid, uuid, callback){
-    var compPos = [event.target.dataset.rowId,event.target.dataset.colId,event.target.dataset.compId,]
+var setUpOptionsEvent = function (self, event, domElement, currentUuid, uuid, comp){
     var projectId = projectManagement.getCurrent().id
-    var entities = projectManagement.getProjectStore(projectId,"evaluators").getAll()
 
     
 
-    createTableSettings()
+    createTableSettings(comp, function(data) {
+        self.editRenderSettingsCallback(uuid, data)
+    })
 
 
     
@@ -97,7 +97,7 @@ var renderMenu = function (self, comp) {
         
     } )
     domElement.querySelector(".image").addEventListener("click",function (event) {
-        setUpOptionsEvent(self,event,domElement, evaluatorUuid, uuid )
+        setUpOptionsEvent(self,event,domElement, evaluatorUuid, uuid, comp )
         
     } )
     
@@ -109,7 +109,8 @@ var gridViewHeaders = createAdler({
     tag:'eph-grid-view-headers',
     props:{
         component: undefined,
-        editEvaluatorCallback: ()=> alert("eval")
+        editEvaluatorCallback: ()=> alert("eval"),
+        editRenderSettingsCallback : ()=> alert("settings")
         // currentPageId:undefined,
         // currentArea:undefined,
         // calledFromInstance:undefined,

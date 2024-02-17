@@ -4,6 +4,7 @@ import projectManagement from "../../common_project_management/project_managemen
 import createEvaluator from "../../common_evaluators/evaluators.js";
 import showPopupInstancePreview from "../../popup_instance_preview/popup_instance_preview.js";
 import { joinRelationsWithEntities } from "../helper_functionsViewport/helper_function_viewport.js";
+import createInstancesManagement from "../../common_project_management/instances_management.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -42,18 +43,34 @@ var getItemsList = function (event, data, instance){
     // }
     // return []
     var data = {}
-    var evaluator = createEvaluator({originInstance:instance.props.get('settings').calledFromInstance, type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
-    console.log(evaluator);
-    if (!evaluator.evaluate()) {
-        return {list:[{name:"undefined LIST"}], cols:[]}
+    
+    var useNodes = true
+    var renderSettings = instance.props.get("settings").renderSettings
+    if (renderSettings) {
+        useNodes = renderSettings.useNodes
     }
-    var evaluationResult = evaluator.evaluate().output_table
-    console.log(evaluator.evaluate());
 
-    data.list =evaluationResult.list
-    data.cols =evaluationResult.cols
-    data.actions =evaluationResult.actions
-    console.log(data);
+    if (useNodes) {
+        var evaluator = createEvaluator({originInstance:instance.props.get('settings').calledFromInstance, type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
+        console.log(evaluator);
+        if (!evaluator.evaluate()) {
+            return {list:[{name:"undefined LIST"}], cols:[]}
+        }
+        var evaluationResult = evaluator.evaluate().output_table
+        console.log(evaluator.evaluate());
+
+        data.list =evaluationResult.list
+        data.cols =evaluationResult.cols
+        data.actions =evaluationResult.actions
+        console.log(data);
+    }else{
+        var instanceRepo = createInstancesManagement()
+        var instances = instanceRepo.getByType(renderSettings.entitiesToDisplay)
+        data.list =instances
+        data.cols =renderSettings.cols
+        data.actions =renderSettings.actions
+    }
+    
 
     // joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))
     
@@ -151,6 +168,7 @@ var component =createAdler({
                 entityType:false,
                 evaluatorId:false,
                 calledFromInstance:false,
+                renderSettings: undefined,
             },
         },
         listen:{

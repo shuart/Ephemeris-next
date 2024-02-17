@@ -8,6 +8,7 @@ import common_dialogue_footer from "./common_dialogue_footer.js"
 
 var selectedArrayToObject = function (selectedArray) {
     var obj = {}
+    console.log(selectedArray);
     for (let i = 0; i < selectedArray.length; i++) {
         obj[ selectedArray[i].uuid || selectedArray[i]  ] =true; //works if an object or an id
     }
@@ -18,6 +19,12 @@ var createDialoguePage = function (params) {
     var fieldsToAdd = []
     for (let i = 0; i < params.fields.length; i++) {
         const field = params.fields[i];
+        // field.config.selected = []
+        if (field.config.selected && field.config.selected[0]) { // copy it for keeping track of base selection before modification
+            params.choiceStore[field.name] = field.config.selected.map(function (i) {
+                return {uuid:i} //return in a form matching the input selection field output -> an object
+            })
+        }
         if (field.type=="selection") {
             if (Array.isArray(field.config.selected) ) {
                 field.config.selected = selectedArrayToObject(field.config.selected) //if selected is a list transform it to an object as required by input select
@@ -32,7 +39,7 @@ var createDialoguePage = function (params) {
             var item = input_selection.instance({
                 data:field.config
             })
-            params.choiceStore[field.name] = field.config.selected
+            // params.choiceStore[field.name] = field.config.selected
             fieldsToAdd.push(item) 
         }else if(field.type=="text"){ ////TEXT ELEMENT////
             if (!field.config.onFocusout) { //if an action is not setup the dialogue component will do it. 
@@ -92,12 +99,14 @@ var createDialoguePage = function (params) {
 //
 //      ],
 //     name:"page1",
+//     header: " a title",
+//     confirmEvenWithoutChanges:false,
 // }
 var createDialogue = function(params){ 
     var choiceStore = {}
     var choices = []
     var parameters = undefined
-    var containerPopup = mainPopup.with({data:{narrow:true,title:"Select Items"}})
+    var containerPopup = mainPopup.with({data:{narrow:true,title:params.header || "Select Items"}})
     if (!Array.isArray(params)) {
         parameters = [params]
     }else{
