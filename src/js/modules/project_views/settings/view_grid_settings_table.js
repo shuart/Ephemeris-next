@@ -44,6 +44,13 @@ export function createTableSettings(comp, callback) {
                 selected:[],
             }
         },
+        {type:"graph", name:"graph", config:{
+            multipleSelection:true,
+                label:"Show Relations With",
+                list: options,
+                selected:[],
+            }
+        },
         ],
         onConfirm:(result)=>{
             console.log(result);

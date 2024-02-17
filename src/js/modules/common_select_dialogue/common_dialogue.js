@@ -2,6 +2,7 @@
 import mainPopup from "../../modules/common_ui_components/mainPopup/mainPopup.js"
 import select from "../../modules/common_ui_components/select/select.js"
 import input_boolean from "../common_ui_elements/input_boolean.js"
+import input_graph from "../common_ui_elements/input_graph.js"
 import input_selection from "../common_ui_elements/input_selection.js"
 import input_text from "../common_ui_elements/input_text.js"
 import common_dialogue_footer from "./common_dialogue_footer.js"
@@ -65,6 +66,23 @@ var createDialoguePage = function (params) {
             })
             params.choiceStore[field.name] = field.config.value || false
             fieldsToAdd.push(item)
+        }else if (field.type=="graph") {
+            // if (Array.isArray(field.config.selected) ) {
+            //     field.config.selected = selectedArrayToObject(field.config.selected) //if selected is a list transform it to an object as required by input select
+            //     // params.choiceStore[field.name] = field.config.selected
+            // }
+            // if (!field.config.onChange) { //if an action is not setup the dialogue component will do it. 
+            //     field.config.onChange=(data)=>{ //the text element use the focus out event to store the value in the local store
+                    
+            //         params.choiceStore[field.name] = data.selectedList
+            //     }
+            // }
+            
+            var item = input_graph.instance({
+                data:field.config
+            })
+            // params.choiceStore[field.name] = field.config.selected
+            fieldsToAdd.push(item) 
         }
     }
     //add footer
