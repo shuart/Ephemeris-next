@@ -113,7 +113,11 @@ function createStellae({
     var getNodeManager = function () {
         return nodeManager
     }
+    var exportSelected = function () {
+        return ui.exportSelected()
+    }
     self.getNodeManager = getNodeManager
+    self.exportSelected = exportSelected
     return self
 }
 export default createStellae

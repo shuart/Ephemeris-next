@@ -73,7 +73,8 @@ export default function createStellaeUi({
         canvas:undefined,containerDim:undefined,controls:undefined,play:true,helperLine:undefined,
         nodes:[],links:[], mapping:undefined,
         triggers:{headers:[], sockets:{}, props:{}}, //check if currentSelection works with box select
-        currentSelection:{}, selectedToMove:[], selectedSocket:undefined, selectedHandle:undefined, lastSelectedHeader:undefined, selectedLine:undefined, linkToAdd: undefined,
+        currentSelection:{}, currentArrowsSelection:{}, 
+        selectedToMove:[], selectedSocket:undefined, selectedHandle:undefined, lastSelectedHeader:undefined, selectedLine:undefined, linkToAdd: undefined,
         draggingNodes:false,boxSelecting:false, boxSelectingInProgress:false, draggingSocket:false,draggingHandle:false,draggingPreviousPosition:undefined,dragStarted:false,dragOffset:{x:0,z:0},
         recordedClickForMouseUp:false,
         simulation:simulation, sideList:sideList, toolbar:toolbar, searchBox:searchBox, connectionHighlighter:connectionHighlighter
@@ -350,6 +351,14 @@ export default function createStellaeUi({
                 if ( intersectionsLines.length > 0 ) { //Case hit header
                     const object = intersectionsLines[ 0 ].object;
                     console.log(object)
+                    if (state.currentArrowsSelection[object.layoutItemRoot.edata.uuid]) {
+                        delete state.currentArrowsSelection[object.layoutItemRoot.edata.uuid]
+                        object.layoutItemRoot.setUnselectedColor()
+                    }else{
+                        state.currentArrowsSelection[object.layoutItemRoot.edata.uuid] = true;
+                        object.layoutItemRoot.setSelectedColor()
+                    }
+                    
                     state.selectedLine = object
                     if (event.button == 2) {
                         createLinksRCM(object, dataManager, state)
@@ -606,6 +615,18 @@ export default function createStellaeUi({
         return dataURL
     }
 
+    var exportSelected = function () {
+        var currentSelectionList = []
+        var currentArrowsSelectionList = []
+        for (const key in state.currentSelection) {
+            currentSelectionList.push(key)
+        }
+        for (const key in state.currentArrowsSelection) {
+            currentArrowsSelectionList.push(key)
+        }
+        return {nodes: currentSelectionList, arrows:currentArrowsSelectionList,}
+    }
+
     
 
     var init = function () {
@@ -621,5 +642,6 @@ export default function createStellaeUi({
     self.addNode = addNode;
     self.labelNode = labelNode;
     self.renderToDataURL = renderToDataURL;
+    self.exportSelected = exportSelected
     return self
 }

@@ -102,6 +102,7 @@ var createLineArrow  = function({
     var length = 1.2;
     // var hex = 0xffff00;
     var hex = 0xa5abb6;
+    var selectedHex = 0x769ae7;
 
 
     var line = createLine2({dashed, circular})
@@ -117,6 +118,12 @@ var createLineArrow  = function({
     lineGroup.arrowItem = arrowHelper 
     lineGroup.update = function(startPosition, endPosition, startPositionOffset, endPositionOffset){
         updatePositions(lineGroup, startPosition, endPosition, startPositionOffset, endPositionOffset)
+    }
+    lineGroup.setSelectedColor = function(){
+        arrowHelper.cone.material.color.setHex(selectedHex)
+    }
+    lineGroup.setUnselectedColor = function(){
+        arrowHelper.cone.material.color.setHex(hex)
     }
     if (!circular) {
         lineGroup.add( arrowHelper );

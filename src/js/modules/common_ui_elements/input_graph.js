@@ -25,7 +25,12 @@ var showPopup = function (event, data, instance) {
         var graphDomElement = document.createElement("div")
         graphDomElement.style.height = "500px";
         graphDomElement.style.width = "100%"
+        var graphSaveElement = document.createElement("div")
+        graphSaveElement.style.height = "50px";
+        graphSaveElement.style.width = "100%"
+        graphSaveElement.innerHTML = "save"
         mainPopupNarrow.query(".container").append(graphDomElement)
+        mainPopupNarrow.query(".container").append(graphSaveElement)
 
         setTimeout(() => {
             // var element= instance.query('.graph')
@@ -100,7 +105,12 @@ var showPopup = function (event, data, instance) {
             
             data.graph.getNodeManager().addLinks(unpackedRelations)
             data.graph.getNodeManager().addLinks(propertyToEntityRelations)
-    
+            
+            graphSaveElement.addEventListener('click', function () {
+                var exported = data.graph.exportSelected()
+                console.log(exported);
+                alert("fefsekkmm")
+            })
             
         }, 500);
 }
