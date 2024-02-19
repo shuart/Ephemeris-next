@@ -58,6 +58,7 @@ export function createTableSettings(comp, callback) {
                 useNodes : result.useNodes,
                 entitiesToDisplay : uuidFromSelection(result.entitiesToDisplay),
                 fieldsToDisplay : uuidFromSelection(result.propertiesToDisplay),
+                relationsToDisplay : result.graph,
             }
             console.log(newConfig);
             if (callback) {

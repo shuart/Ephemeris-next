@@ -255,10 +255,16 @@ var getCustomFormatterForRelations = function (rows, col, callback) {
         //onRendered - function to call when the formatter has been rendered
         var html = ""
         var instances = cell.getValue()
-        for (let i = 0; i < instances.length; i++) {
-            const element = instances[i];
-            html += `<span data-id='${element.target.uuid}' class="table-tag action-tag" > ${element.target.name} </span>`
+        console.log(cell);
+        if (instances) {
+            for (let i = 0; i < instances.length; i++) {
+                const element = instances[i];
+                html += `<span data-id='${element.target.uuid}' class="table-tag action-tag" > ${element.target.name} </span>`
+            }  
+        }else{
+            html += ``
         }
+        
 
         onRendered(function(params) {
             

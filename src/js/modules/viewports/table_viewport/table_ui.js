@@ -5,6 +5,7 @@ import createEvaluator from "../../common_evaluators/evaluators.js";
 import showPopupInstancePreview from "../../popup_instance_preview/popup_instance_preview.js";
 import { joinRelationsWithEntities } from "../helper_functionsViewport/helper_function_viewport.js";
 import createInstancesManagement from "../../common_project_management/instances_management.js";
+import { traverseGraphForRelations } from "../helper_functionsViewport/helper_traverse_graph.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -66,10 +67,22 @@ var getItemsList = function (event, data, instance){
     }else{
         var instanceRepo = createInstancesManagement()
         var instances = instanceRepo.getByType(renderSettings.entitiesToDisplay)
-        data.list =instances
+        console.log(renderSettings.relationsToDisplay);
+         
+        var extendedList = {roots:instances, cols:[]}
+        if (renderSettings.relationsToDisplay) {
+            extendedList = traverseGraphForRelations(instances, renderSettings.relationsToDisplay.arrows, renderSettings.relationsToDisplay.nodes)
+        }
+        
+        data.list =extendedList.roots
         data.cols =renderSettings.cols
         data.actions =renderSettings.actions
+
+        
     }
+
+    console.log(data.list);
+        alert("extended")
     
 
     // joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))
@@ -78,7 +91,7 @@ var getItemsList = function (event, data, instance){
     var newList = []
     //If not attributes are used, juste populate with basic ones
     if (!data.cols) {
-        data.cols=[{name:"name", field:'name'}]
+        data.cols=[{name:"name", field:'name'},{name:"backward", field:'backward'},{name:"forward", field:'forward'},]
     }
     console.log(data);
     // alert("ddd")

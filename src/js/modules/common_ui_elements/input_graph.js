@@ -98,7 +98,7 @@ var showPopup = function (event, data, instance) {
                     const unpackedSource = relation.fromList[j];
                     for (let k = 0; k < relation.toList.length; k++) {
                         const unpackedTarget = relation.toList[k];
-                        unpackedRelations.push({name:relation.name, from:unpackedSource.uuid, from_socket:"output", to:unpackedTarget.uuid, to_socket:"input"});
+                        unpackedRelations.push({uuid:relation.uuid, name:relation.name, from:unpackedSource.uuid, from_socket:"output", to:unpackedTarget.uuid, to_socket:"input"});
                     }
                 }
             }
@@ -109,7 +109,9 @@ var showPopup = function (event, data, instance) {
             graphSaveElement.addEventListener('click', function () {
                 var exported = data.graph.exportSelected()
                 console.log(exported);
-                alert("fefsekkmm")
+                data.onChange(exported)
+                mainPopupNarrow.unmount()
+                // alert("fefsekkmm")
             })
             
         }, 500);

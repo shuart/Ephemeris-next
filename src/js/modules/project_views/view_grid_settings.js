@@ -164,6 +164,8 @@ var renderItemHeader = function (self, comp) {
         for (let i = 0; i < self.schema.length; i++) {
             if (self.schema[i].uuid == compId){
                 self.schema[i].renderSettings = newSettings;
+                console.log(newSettings);
+                alert("fesfsefes")
                 pushLayoutToDb(self, self.schema)//modify and save new schema
                 updateView(self)
             }
