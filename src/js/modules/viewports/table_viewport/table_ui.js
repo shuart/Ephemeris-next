@@ -91,7 +91,7 @@ var getItemsList = function (event, data, instance){
     var newList = []
     //If not attributes are used, juste populate with basic ones
     if (!data.cols) {
-        data.cols=[{name:"name", field:'name'},{name:"backward", field:'backward'},{name:"forward", field:'forward'},]
+        data.cols=[{title:"name", field:'name'},{title:"backward", field:'backward'},{title:"forward", field:'forward'},]
     }
     console.log(data);
     // alert("ddd")

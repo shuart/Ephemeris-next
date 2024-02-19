@@ -135,6 +135,15 @@ var createCluster = function(initialSchema, options){
         var pack = {};
         // pack = {currentSchema:currentSchema , currentUUIDS:currentUUIDS, storageIndexes:storageIndexes, storageUUID:storageUUID, storage:storage,storageCrdt:storageCrdt};
         pack = {currentSchema:currentSchema , currentUUIDS:currentUUIDS, storageIndexes:storageIndexes, storageUUID:undefined, storage:storage,storageCrdt:undefined};
+        // console.log(pack); //used to cure cyclic relation
+        // for (let i = 0; i < pack.storage.instances.length; i++) {
+        //     const element = pack.storage.instances[i];
+        //     element.forward = "test"
+        //     element.backward = "test"
+
+        //     delete element.forward 
+        //     delete element.backward 
+        // }
         return JSON.stringify(pack)
     }
     var persist = function(){

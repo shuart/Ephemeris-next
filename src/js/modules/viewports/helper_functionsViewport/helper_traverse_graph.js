@@ -63,10 +63,14 @@ export function traverseGraphForRelations(roots, relations, nodes){
         
     }
 
+    
+
     //forwardTraverse
     console.log(roots);
     for (let i = 0; i < roots.length; i++) {
         const root = roots[i];
+        // root.forward = "test"
+        // root.backward= "test"
         for (let i = 0; i < relations.length; i++) {
             if (nodesToNodesOutMapping[root.uuid] && nodesToNodesOutMapping[root.uuid][relations[i]]) {
                 root.attributes["forward"] = nodesToNodesOutMapping[root.uuid][relations[i]].map(function (r) {
@@ -93,5 +97,5 @@ export function traverseGraphForRelations(roots, relations, nodes){
     console.log(nodesToNodesInMapping);
     console.log(nodesToNodesOutMapping);
     // alert("nodetoenode")
-    return {roots:roots, cols:[{name:"forward", field:"forward"}, {name:"backward", field:"backward"}]}
+    return {roots:roots, cols:[{title:"forward", field:"forward"}, {title:"backward", field:"backward"}]}
 }

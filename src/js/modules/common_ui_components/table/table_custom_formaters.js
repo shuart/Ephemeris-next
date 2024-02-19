@@ -259,6 +259,7 @@ var getCustomFormatterForRelations = function (rows, col, callback) {
         if (instances) {
             for (let i = 0; i < instances.length; i++) {
                 const element = instances[i];
+                console.log(element);
                 html += `<span data-id='${element.target.uuid}' class="table-tag action-tag" > ${element.target.name} </span>`
             }  
         }else{
