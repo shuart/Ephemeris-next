@@ -105,6 +105,8 @@ var showPopup = function (event, data, instance) {
             
             data.graph.getNodeManager().addLinks(unpackedRelations)
             data.graph.getNodeManager().addLinks(propertyToEntityRelations)
+
+            data.graph.getNodeManager().setSelected(data.selected)
             
             graphSaveElement.addEventListener('click', function () {
                 var exported = data.graph.exportSelected()
@@ -117,16 +119,33 @@ var showPopup = function (event, data, instance) {
         }, 500);
 }
 
+
 var fillElement = function(event, data, instance){
     console.log(instance.query(".start_select"));
     // instance.query(".start_select").innerHTML = data.list.filter(i=>data.selected[i.uuid]).map(i=>i.name).join(",")
     // var content = data.list.filter(i=>data.selected[i.uuid]).map(i=>'<span class="selectTag">'+i.name+'<span data-uuid="'+i.uuid+'" class="selectCloseTag"> | X</span></span>').join('')
-    var content = data.list.filter(i=>data.selected[i.uuid]).map(i=>{
+    var repoEntities = createEntityManagement()
+    var repoRelations = createRelationManagement()
+    var entities = repoEntities.getAll()
+    var relations = repoRelations.getAll()
+    var list = [].concat(entities).concat(relations)
+    var nodesToSelect = data.selected.nodes || []
+    var arrowsToSelect = data.selected.arrows || []
+    var nodesToSelectMap = selectedArrayToObject(nodesToSelect)
+    var arrowsToSelectMap = selectedArrayToObject(arrowsToSelect)
+    console.log(nodesToSelectMap);
+    console.log(arrowsToSelectMap);
+    var selectedMap = Object.assign({},nodesToSelectMap, arrowsToSelectMap )
+    var content = list.filter(i=>selectedMap[i.uuid]).map(i=>{
             var iconPart =""
-            if (i.iconPath) {
-                iconPart = '<span class=""><img class="selectionareaSelectTagIcon" src="./img/icons/'+i.iconPath+'"></img></span>'
+            var colorPart =""
+            if (i.attributes?.iconPath) {
+                iconPart = '<span class=""><img class="selectionareaSelectTagIcon" src="./img/icons/'+i.attributes.iconPath+'"></img></span>'
             }
-            return'<span class="selectionareaSelectTag">'+iconPart+' '+i.name+'</span>'
+            if (i.attributes?.color) {
+                colorPart = 'background-color:'+i.attributes?.color+";"
+            }
+            return'<span class="selectionareaSelectTag" style="' +colorPart+ '">' +iconPart+ ' ' +i.name+ '</span>'
         }).join('')
     if (content !="") {
         instance.query(".start_select").innerHTML = content
@@ -136,6 +155,15 @@ var fillElement = function(event, data, instance){
     }
     
  
+}
+
+var selectedArrayToObject = function (selectedArray) {
+    var obj = {}
+    console.log(selectedArray);
+    for (let i = 0; i < selectedArray.length; i++) {
+        obj[ selectedArray[i].uuid || selectedArray[i]  ] =true; //works if an object or an id
+    }
+    return obj
 }
 
 var input_graph =createAdler({
@@ -151,7 +179,7 @@ var input_graph =createAdler({
             value:"Nothing Selected",
             label:undefined,
             list: [{name:"test", uuid:"1"},{name:"tessqdqsdsqt", uuid:"2"}],
-            selected:{},
+            selected:[],
             multipleSelection:false,
             onChange:(e)=>console.log(e),
             onClick:showPopup

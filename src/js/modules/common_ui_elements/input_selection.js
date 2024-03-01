@@ -74,10 +74,15 @@ var fillElement = function(event, data, instance){
     // var content = data.list.filter(i=>data.selected[i.uuid]).map(i=>'<span class="selectTag">'+i.name+'<span data-uuid="'+i.uuid+'" class="selectCloseTag"> | X</span></span>').join('')
     var content = data.list.filter(i=>data.selected[i.uuid]).map(i=>{
             var iconPart =""
+            var colorPart =""
             if (i.iconPath) {
                 iconPart = '<span class=""><img class="selectionareaSelectTagIcon" src="./img/icons/'+i.iconPath+'"></img></span>'
             }
-            return'<span class="selectionareaSelectTag">'+iconPart+' '+i.name+'</span>'
+            if (i.color) {
+                colorPart = 'background-color:'+i.color+";"
+            }
+            return'<span class="selectionareaSelectTag" style="' +colorPart+ '">' +iconPart+ ' ' +i.name+ '</span>'
+            // return'<span class="selectionareaSelectTag">'+iconPart+' '+i.name+'</span>'
         }).join('')
     if (content !="") {
         instance.query(".start_select").innerHTML = content

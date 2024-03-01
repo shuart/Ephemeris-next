@@ -627,6 +627,42 @@ export default function createStellaeUi({
         return {nodes: currentSelectionList, arrows:currentArrowsSelectionList,}
     }
 
+    var setSelected = function (selectedArrowsAndNodes) {
+
+        var nodesToSelect = selectedArrowsAndNodes.nodes
+        var arrowsToSelect = selectedArrowsAndNodes.arrows
+        if (nodesToSelect) {
+            var nodesToSelectMap = selectedArrayToObject(nodesToSelect)
+            var nodesToSelectElements = []
+            for (let i = 0; i < state.nodes.length; i++) {
+                if (nodesToSelectMap[state.nodes[i].edata.uuid]) {
+                    nodesToSelectElements.push(state.nodes[i])
+                    state.currentSelection[state.nodes[i].edata.uuid] =true
+                }
+            }
+            markSelected(nodesToSelectElements)
+        }
+        if (arrowsToSelect) {
+            var arrowsToSelectMap = selectedArrayToObject(arrowsToSelect)
+            for (let i = 0; i < state.links.length; i++) {
+                if (arrowsToSelectMap[state.links[i].edata.uuid]) {
+                    state.currentArrowsSelection[state.links[i].edata.uuid] = true;
+                    state.links[i].setSelectedColor()
+                }
+            }
+           
+        }
+    }
+
+    var selectedArrayToObject = function (selectedArray) {
+        var obj = {}
+        console.log(selectedArray);
+        for (let i = 0; i < selectedArray.length; i++) {
+            obj[ selectedArray[i].uuid || selectedArray[i]  ] =true; //works if an object or an id
+        }
+        return obj
+    }
+
     
 
     var init = function () {
@@ -643,5 +679,6 @@ export default function createStellaeUi({
     self.labelNode = labelNode;
     self.renderToDataURL = renderToDataURL;
     self.exportSelected = exportSelected
+    self.setSelected = setSelected
     return self
 }

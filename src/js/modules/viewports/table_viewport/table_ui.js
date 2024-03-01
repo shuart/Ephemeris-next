@@ -80,11 +80,6 @@ var getItemsList = function (event, data, instance){
 
         
     }
-
-    console.log(data.list);
-        alert("extended")
-    
-
     // joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))
     
     //clean Objects TODO segregate in custom attributes object

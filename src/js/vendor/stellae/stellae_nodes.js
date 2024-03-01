@@ -556,6 +556,16 @@ var createNodeManager = function ({
             return ui.renderToDataURL(params)
         }
     }
+    var setSelected= function (params) {
+        if (ui) {
+            return ui.setSelected(params)
+        }
+    }
+    var getSelected= function (params) {
+        if (ui) {
+            return ui.getSelected(params)
+        }
+    }
 
 
 
@@ -585,6 +595,8 @@ var createNodeManager = function ({
     self.setGlobalSetting = setGlobalSetting
     self.labelNodes = labelNodes
     self.getScreenshot = getScreenshot
+    self.setSelected = setSelected
+    self.getSelected = getSelected
     
     return self
 }

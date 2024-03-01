@@ -14,6 +14,7 @@ export function createTableSettings(comp, callback) {
     var options = createEntitiesSelectionOptions()
     //DEFAULTS
     var useNodes = comp.renderSettings?.useNodes || false
+    var relationsToDisplay = comp.renderSettings?.relationsToDisplay || []
     var entitiesToDisplay = comp.renderSettings?.entitiesToDisplay || []
     //DIALOGUE
     createDialogue({
@@ -48,7 +49,7 @@ export function createTableSettings(comp, callback) {
             multipleSelection:true,
                 label:"Show Relations With",
                 list: options,
-                selected:[],
+                selected:relationsToDisplay,
             }
         },
         ],

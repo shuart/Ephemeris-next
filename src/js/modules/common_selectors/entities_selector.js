@@ -89,7 +89,7 @@ export function createEntitiesSelectionOptions(params) {
         var entities = repo.getAll()
 
     var options = entities.map(e=>{
-        return  {name:e.name, uuid:e.uuid, iconPath:e.attributes.iconPath}
+        return  {name:e.name, uuid:e.uuid, iconPath:e.attributes.iconPath, color:e.attributes.color}
     })
 
     return options

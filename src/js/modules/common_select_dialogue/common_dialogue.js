@@ -67,10 +67,10 @@ var createDialoguePage = function (params) {
             params.choiceStore[field.name] = field.config.value || false
             fieldsToAdd.push(item)
         }else if (field.type=="graph") {
-            // if (Array.isArray(field.config.selected) ) {
-            //     field.config.selected = selectedArrayToObject(field.config.selected) //if selected is a list transform it to an object as required by input select
-            //     // params.choiceStore[field.name] = field.config.selected
-            // }
+            if (field.config.selected ) {
+                field.config.selected = field.config.selected //if selected is a list transform it to an object as required by input select
+                // params.choiceStore[field.name] = field.config.selected
+            }
             if (!field.config.onChange) { //if an action is not setup the dialogue component will do it. 
                 field.config.onChange=(data)=>{ //the text element use the focus out event to store the value in the local store
                     
