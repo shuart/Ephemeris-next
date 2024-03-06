@@ -1,5 +1,6 @@
 import { createEntitiesSelectionOptions } from "../../common_selectors/entities_selector.js";
 import createDialogue from "../../common_select_dialogue/common_dialogue.js";
+import { createPropertiesSelectionOptions } from "../../common_selectors/properties_selector.js";
 
 var uuidFromSelection = function(data){
     if (data && data[0]) {
@@ -12,10 +13,12 @@ var uuidFromSelection = function(data){
 export function createTableSettings(comp, callback) {
     //OPTIONS
     var options = createEntitiesSelectionOptions()
+    var propertiesOptions = createPropertiesSelectionOptions()
     //DEFAULTS
     var useNodes = comp.renderSettings?.useNodes || false
     var relationsToDisplay = comp.renderSettings?.relationsToDisplay || []
     var entitiesToDisplay = comp.renderSettings?.entitiesToDisplay || []
+    var propertiesToDisplay = comp.renderSettings?.fieldsToDisplay || []
     //DIALOGUE
     createDialogue({
         header:"Table Settings",
@@ -41,8 +44,8 @@ export function createTableSettings(comp, callback) {
         {type:"selection", name:"propertiesToDisplay", config:{
             multipleSelection:true,
                 label:"Properties to Display",
-                list: options,
-                selected:[],
+                list: propertiesOptions,
+                selected:propertiesToDisplay,
             }
         },
         {type:"graph", name:"graph", config:{

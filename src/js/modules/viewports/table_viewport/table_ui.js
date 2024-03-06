@@ -6,6 +6,7 @@ import showPopupInstancePreview from "../../popup_instance_preview/popup_instanc
 import { joinRelationsWithEntities } from "../helper_functionsViewport/helper_function_viewport.js";
 import createInstancesManagement from "../../common_project_management/instances_management.js";
 import { traverseGraphForRelations } from "../helper_functionsViewport/helper_traverse_graph.js";
+import createPropertyManagement from "../../common_project_management/properties_management.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -66,17 +67,33 @@ var getItemsList = function (event, data, instance){
         console.log(data);
     }else{
         var instanceRepo = createInstancesManagement()
-        var instances = instanceRepo.getByType(renderSettings.entitiesToDisplay)
+        var instancesFromRepo = instanceRepo.getByType(renderSettings.entitiesToDisplay)
+
+        var instances =[]
+        for (let i = 0; i < instancesFromRepo.length; i++) { //copy all instances to prevent data leak TODO find a better solution
+            instances.push({uuid:instancesFromRepo[i].uuid, name:instancesFromRepo[i].name, color:instancesFromRepo[i].color, attributes:instancesFromRepo[i].attributes})
+            
+        }
         console.log(renderSettings.relationsToDisplay);
          
         var extendedList = {roots:instances, cols:[]}
-        if (renderSettings.relationsToDisplay) {
+        if (renderSettings.relationsToDisplay?.nodes) {
             extendedList = traverseGraphForRelations(instances, renderSettings.relationsToDisplay.arrows, renderSettings.relationsToDisplay.nodes)
+        }
+
+        var propRepo = createPropertyManagement()
+        // var props = propRepo.getAll()
+        var cols= [{title:"name", field:'name'},{title:"backward", field:'backward'},{title:"forward", field:'forward'}]
+
+        for (let i = 0; i < renderSettings.fieldsToDisplay.length; i++) {
+            var newProp = propRepo.getById( renderSettings.fieldsToDisplay[i] )
+            cols.push({title:newProp.name, field:'prop_'+newProp.uuid, isAttribute:true, attributeType:"text" })
         }
         
         data.list =extendedList.roots
-        data.cols =renderSettings.cols
+        data.cols =cols
         data.actions =renderSettings.actions
+        data.renderSettings =renderSettings
 
         
     }
@@ -89,8 +106,8 @@ var getItemsList = function (event, data, instance){
         data.cols=[{title:"name", field:'name'},{title:"backward", field:'backward'},{title:"forward", field:'forward'},]
     }
     console.log(data);
-    // alert("ddd")
-    for (let i = 0; i < data.list.length; i++) {
+    alert("ddd")
+    for (let i = 0; i < data.list.length; i++) { //create a new list to keep original clean
         const item = data.list[i];
         var newItem = {uuid: item.uuid, name:item.name, color:item.color}
         newList.push(newItem)
@@ -100,7 +117,7 @@ var getItemsList = function (event, data, instance){
                 if (item.attributes[col.field]) {
                     newItem[col.field] = item.attributes[col.field]
                 }
-                if (item.properties[col.field]) {
+                if (item.properties && item.properties[col.field]) {//TODO remove property from object
                     newItem[col.field] = item.properties[col.field].value
                 }
                 
@@ -110,7 +127,7 @@ var getItemsList = function (event, data, instance){
         
     }
     data.list =newList
-    joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))
+    // joinRelationsWithEntities(data.list, data.cols.map(c=>c.field)) //TODO check if still needed
     
     
     console.log(data);

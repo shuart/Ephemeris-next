@@ -1,3 +1,5 @@
+import { renderTextAttribute } from "../../common_attributes_editors/common_text_attribute_editor.js";
+
 var getCustomFormatterForCol = function (rows, col, originalColConfig) {
     
     var formatterFunction = undefined
@@ -84,8 +86,28 @@ var checkColsForCustomFormating = function(rows, cols){
             if (newCols[i].customObjects) {
                 newCols[i]= getCustomFormatterForObjects(rows, col)
             }
+            if (newCols[i].isAttribute) {
+                newCols[i]= getCustomFormatterForAttributes(rows, col)
+            }
         }
     }
+}
+
+var getCustomFormatterForAttributes = function(rows, col){
+
+    var renderedElement = function(cell, formatterParams, onRendered){ //plain text value
+        var domEl = renderTextAttribute(col.field.substring(5), cell.getData()[col.field], cell.getData().uuid)
+        return domEl
+    };
+    // var formatterButton = {formatter:printIcon, width:400, hozAlign:"center", cellClick:col.customSwitch.onClick};
+    // var formatterButton = {title:col.title, formatter:renderedElement, width:60, hozAlign:"center", cellClick:function (e,cell) {
+    //     //e.preventDefault()
+    //     var input=cell.getElement().querySelector(".tbl_toggle__input")
+    //     input.checked = !input.checked 
+    //     col.customSwitch.onClick({value:{checked:input.checked}}, cell)
+    // }};
+    col.formatter = renderedElement
+    return col
 }
 
 var getCustomButtonFormatterForCol = function(rows, col){

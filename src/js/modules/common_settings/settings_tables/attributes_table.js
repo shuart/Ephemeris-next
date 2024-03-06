@@ -45,10 +45,13 @@ export function createAttributeSettingsTable (projectId) {
             if (entity.attributes['prop_'+attribute.uuid]) {
                 attribute.assignedTo.push(entity)
             }
+            
+        }
+        if (attribute.attributes.iconPath) {
+            attribute.iconPath = attribute.attributes.iconPath
         }
     }
     console.log(list);
-
 
     var cols = [
         // {title:"id", field:"uuid", },

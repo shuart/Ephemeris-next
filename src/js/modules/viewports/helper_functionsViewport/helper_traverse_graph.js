@@ -67,28 +67,30 @@ export function traverseGraphForRelations(roots, relations, nodes){
 
     //forwardTraverse
     console.log(roots);
-    for (let i = 0; i < roots.length; i++) {
-        const root = roots[i];
-        // root.forward = "test"
-        // root.backward= "test"
-        for (let i = 0; i < relations.length; i++) {
-            if (nodesToNodesOutMapping[root.uuid] && nodesToNodesOutMapping[root.uuid][relations[i]]) {
-                root.attributes["forward"] = nodesToNodesOutMapping[root.uuid][relations[i]].map(function (r) {
-                    return {displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:r}
-                })
-                // root.attributes["forward"] = nodesToNodesOutMapping[root.uuid][relations[i]]
-                // root.attributes["forward"] = {displayAs:"relation", relation:nodesToNodesOutMapping[root.uuid][relations[i]], direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:undefined}
-            }
-            if (nodesToNodesInMapping[root.uuid] && nodesToNodesInMapping[root.uuid][relations[i]]) {
-                // root.attributes["backward"] = nodesToNodesInMapping[root.uuid][relations[i]]
-                root.attributes["backward"] = nodesToNodesInMapping[root.uuid][relations[i]].map(function (r) {
-                    return {displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:r}
-                })
-                // root.attributes["backward"] = {displayAs:"relation", relation:nodesToNodesInMapping[root.uuid][relations[i]], direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:undefined}
-            }
-        }
+
+    traverseLevel(roots,undefined, relations, nodesToNodesOutMapping, nodesToNodesInMapping)
+    // for (let i = 0; i < roots.length; i++) {
+    //     const root = roots[i];
+    //     // root.forward = "test"
+    //     // root.backward= "test"
+    //     for (let i = 0; i < relations.length; i++) {
+    //         if (nodesToNodesOutMapping[root.uuid] && nodesToNodesOutMapping[root.uuid][relations[i]]) {
+    //             root.attributes["forward"] = nodesToNodesOutMapping[root.uuid][relations[i]].map(function (r) {
+    //                 return {displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:r}
+    //             })
+    //             // root.attributes["forward"] = nodesToNodesOutMapping[root.uuid][relations[i]]
+    //             // root.attributes["forward"] = {displayAs:"relation", relation:nodesToNodesOutMapping[root.uuid][relations[i]], direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:undefined}
+    //         }
+    //         if (nodesToNodesInMapping[root.uuid] && nodesToNodesInMapping[root.uuid][relations[i]]) {
+    //             // root.attributes["backward"] = nodesToNodesInMapping[root.uuid][relations[i]]
+    //             root.attributes["backward"] = nodesToNodesInMapping[root.uuid][relations[i]].map(function (r) {
+    //                 return {displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:r}
+    //             })
+    //             // root.attributes["backward"] = {displayAs:"relation", relation:nodesToNodesInMapping[root.uuid][relations[i]], direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:undefined}
+    //         }
+    //     }
         
-    }
+    // }
 
     console.log(isRelationTypeOfInterest);
     console.log(isNodeTypeOfInterest);
@@ -96,6 +98,67 @@ export function traverseGraphForRelations(roots, relations, nodes){
     console.log(nodesOutMapping);
     console.log(nodesToNodesInMapping);
     console.log(nodesToNodesOutMapping);
-    // alert("nodetoenode")
+    console.log(roots);
+    alert("nodetoenode")
     return {roots:roots, cols:[{title:"forward", field:"forward"}, {title:"backward", field:"backward"}]}
 }
+
+function traverseLevel(roots,mainRoot, relations, nodesToNodesOutMapping, nodesToNodesInMapping) {
+    for (let i = 0; i < roots.length; i++) {
+        const root = roots[i];
+        var rootToUpdate = root
+        if (mainRoot) { //check which root to update depending of the level
+            rootToUpdate = mainRoot
+        }
+        // root.forward = "test"
+        // root.backward= "test"
+        for (let i = 0; i < relations.length; i++) {
+            if (nodesToNodesOutMapping[root.uuid] && nodesToNodesOutMapping[root.uuid][relations[i]]) {
+                rootToUpdate.attributes["forward"] = nodesToNodesOutMapping[root.uuid][relations[i]].map(function (r) {
+                    return {displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:r}
+                })
+                // root.attributes["forward"] = nodesToNodesOutMapping[root.uuid][relations[i]]
+                // root.attributes["forward"] = {displayAs:"relation", relation:nodesToNodesOutMapping[root.uuid][relations[i]], direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:undefined}
+            }
+            if (nodesToNodesInMapping[root.uuid] && nodesToNodesInMapping[root.uuid][relations[i]]) {
+                // root.attributes["backward"] = nodesToNodesInMapping[root.uuid][relations[i]]
+                rootToUpdate.attributes["backward"] = nodesToNodesInMapping[root.uuid][relations[i]].map(function (r) {
+                    return {displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:r}
+                })
+                // root.attributes["backward"] = {displayAs:"relation", relation:nodesToNodesInMapping[root.uuid][relations[i]], direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:undefined}
+            }
+        }
+        
+    }
+    // return {roots, cols}
+}
+
+// function traverseLevel(roots,mainRoot, relations, nodesToNodesOutMapping, nodesToNodesInMapping) {
+//     for (let i = 0; i < roots.length; i++) {
+//         const root = roots[i];
+//         var rootToUpdate = root
+//         if (mainRoot) { //check which root to update depending of the level
+//             rootToUpdate = mainRoot
+//         }
+//         // root.forward = "test"
+//         // root.backward= "test"
+//         for (let i = 0; i < relations.length; i++) {
+//             if (nodesToNodesOutMapping[root.uuid] && nodesToNodesOutMapping[root.uuid][relations[i]]) {
+//                 rootToUpdate.attributes["forward"] = nodesToNodesOutMapping[root.uuid][relations[i]].map(function (r) {
+//                     return {displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:r}
+//                 })
+//                 // root.attributes["forward"] = nodesToNodesOutMapping[root.uuid][relations[i]]
+//                 // root.attributes["forward"] = {displayAs:"relation", relation:nodesToNodesOutMapping[root.uuid][relations[i]], direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:undefined}
+//             }
+//             if (nodesToNodesInMapping[root.uuid] && nodesToNodesInMapping[root.uuid][relations[i]]) {
+//                 // root.attributes["backward"] = nodesToNodesInMapping[root.uuid][relations[i]]
+//                 rootToUpdate.attributes["backward"] = nodesToNodesInMapping[root.uuid][relations[i]].map(function (r) {
+//                     return {displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:r}
+//                 })
+//                 // root.attributes["backward"] = {displayAs:"relation", relation:nodesToNodesInMapping[root.uuid][relations[i]], direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:undefined}
+//             }
+//         }
+        
+//     }
+//     // return {roots, cols}
+// }

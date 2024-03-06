@@ -184,7 +184,7 @@ var createCluster = function(initialSchema, options){
             if (options.persistence) {
                 
                 var currentPersistence = localStorage.getItem('supercluster-'+options.persistence);
-                if (currentPersistence){
+                if (currentPersistence && currentPersistence != "undefined"){
                     console.log(currentPersistence);
                     var currentPersistence = JSON.parse(currentPersistence)
                     var newIndexedStorage = rebuildIndexes(currentPersistence.currentUUIDS, currentPersistence.storage)
@@ -207,6 +207,9 @@ var createCluster = function(initialSchema, options){
                     // }else 
                     
                 }
+                // if (true && confirm("force schema change")) {
+                //     setSchema(initialSchema)
+                // }
                 updatePersitenceSchema(currentSchema,initialSchema)
                 if (options.autoclean) { //clean the crdt in persitence
                     cleanOldMessages()
