@@ -67,13 +67,7 @@ var getItemsList = function (event, data, instance){
         console.log(data);
     }else{
         var instanceRepo = createInstancesManagement()
-        var instancesFromRepo = instanceRepo.getByType(renderSettings.entitiesToDisplay)
-
-        var instances =[]
-        for (let i = 0; i < instancesFromRepo.length; i++) { //copy all instances to prevent data leak TODO find a better solution
-            instances.push({uuid:instancesFromRepo[i].uuid, name:instancesFromRepo[i].name, color:instancesFromRepo[i].color, attributes:instancesFromRepo[i].attributes})
-            
-        }
+        var instances = instanceRepo.getByType(renderSettings.entitiesToDisplay)
         console.log(renderSettings.relationsToDisplay);
          
         var extendedList = {roots:instances, cols:[]}
@@ -83,7 +77,7 @@ var getItemsList = function (event, data, instance){
 
         var propRepo = createPropertyManagement()
         // var props = propRepo.getAll()
-        var cols= [{title:"name", field:'name'},{title:"backward", field:'backward'},{title:"forward", field:'forward'}]
+        var cols= [{title:"name", field:'name'}]
 
         for (let i = 0; i < renderSettings.fieldsToDisplay.length; i++) {
             var newProp = propRepo.getById( renderSettings.fieldsToDisplay[i] )
@@ -91,7 +85,7 @@ var getItemsList = function (event, data, instance){
         }
         
         data.list =extendedList.roots
-        data.cols =cols
+        data.cols =cols.concat(extendedList.cols)
         data.actions =renderSettings.actions
         data.renderSettings =renderSettings
 
@@ -103,7 +97,7 @@ var getItemsList = function (event, data, instance){
     var newList = []
     //If not attributes are used, juste populate with basic ones
     if (!data.cols) {
-        data.cols=[{title:"name", field:'name'},{title:"backward", field:'backward'},{title:"forward", field:'forward'},]
+        data.cols=[{title:"name", field:'name'},]
     }
     console.log(data);
     alert("ddd")
@@ -119,6 +113,9 @@ var getItemsList = function (event, data, instance){
                 }
                 if (item.properties && item.properties[col.field]) {//TODO remove property from object
                     newItem[col.field] = item.properties[col.field].value
+                }
+                if (item[col.field]) {//also check if not in attribute (relations)
+                    newItem[col.field] = item[col.field]
                 }
                 
             }
