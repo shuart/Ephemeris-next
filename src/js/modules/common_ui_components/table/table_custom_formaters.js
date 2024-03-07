@@ -97,6 +97,10 @@ var getCustomFormatterForAttributes = function(rows, col){
 
     var renderedElement = function(cell, formatterParams, onRendered){ //plain text value
         var domEl = renderTextAttribute(col.field.substring(5), cell.getData()[col.field], cell.getData().uuid)
+        
+        if (cell.getData()._copiedInTable &&  cell.getData()._copiedInTable[col.field]) {
+            domEl ="<span class='table_copied_cell'></span>"
+        }
         return domEl
     };
     // var formatterButton = {formatter:printIcon, width:400, hozAlign:"center", cellClick:col.customSwitch.onClick};
@@ -109,6 +113,20 @@ var getCustomFormatterForAttributes = function(rows, col){
     col.formatter = renderedElement
     return col
 }
+
+// var getCustomFormatterForAttributes = function(rows, col){
+
+//     var renderedElement = function(cell, formatterParams, onRendered){ //plain text value
+//         var domEl = renderTextAttribute(col.field.substring(5), cell.getData()[col.field], cell.getData().uuid)
+        
+//         if (cell.getData()._copiedInTable &&  cell.getData()._copiedInTable[col.field]) {
+//             domEl =""
+//         }
+//         return domEl
+//     };
+//     col.formatter = renderedElement
+//     return col
+// }
 
 var getCustomButtonFormatterForCol = function(rows, col){
     var styleClass=""
@@ -186,40 +204,21 @@ var getCustomButtonFormatterForColors = function(rows, col){
 }
 
 var getCustomFormatterForObject = function (rows, col) {
-    
-    var formatterFunction = undefined
-    console.log(col);
-    
-    //check if is an entity instance
-    // for (let i = 0; i < rows.length; i++) {
-    //     var rowColToCheck =rows[i][col.field]
-    //     if (rowColToCheck && rowColToCheck[0] && rowColToCheck[0].displayAs=="relation") { //iterate to find a row with something
-    //         // if (rowColToCheck && rowColToCheck[0] && rowColToCheck[0].uuid && rowColToCheck[0].name &&  rowColToCheck[0].relation) { //iterate to find a row with something
-    //         formatterFunction = function(cell, formatterParams, onRendered){
-    //             //cell - the cell component
-    //             //formatterParams - parameters set for the column
-    //             //onRendered - function to call when the formatter has been rendered
-    //             var html = ""
-    //             var instances = cell.getValue()
-    //             for (let i = 0; i < instances.length; i++) {
-    //                 const element = instances[i];
-    //                 html += `<span onclick='alert();  event.stopPropagation();' class="table-tag" > ${element.target.name} </span>`
-    //             }
-                
-    //             return html
-    //         }
-    //         break
-    //     }
-        
-    // }
-    
     var toDisplay= function(cell, formatterParams, onRendered){ //plain text value
-        return `<span onclick='alert();  event.stopPropagation();' class="table-tag" > ${cell.getData()[col.field]? cell.getData()[col.field].name : ""} </span>`;
+        
+        if (cell.getData()._copiedInTable &&  cell.getData()._copiedInTable[col.field]) {
+            return "<span class='table_copied_cell'></span>"
+        }else{
+            var item = cell.getData()
+            var colorField = ""
+            if (item.color) {
+                colorField = "background-color:"+(item.color)+";"
+            }
+            return `<span style="${colorField}" onclick='alert();  event.stopPropagation();' class="table-tag" > ${cell.getData()[col.field]? cell.getData()[col.field] : ""} </span>`;
+        }
     };
-    var formatterIcon = {formatter:toDisplay, width:90, title:col.title, cellClick:col.cellClick};
-    return formatterIcon
-
-    // return formatterFunction
+    var colObject = {formatter:toDisplay, width:90, title:col.title, cellClick:col.cellClick};
+    return colObject
 }
 
 var getCustomFormatterForObjects = function (rows, col) {
@@ -286,6 +285,9 @@ var getCustomFormatterForRelations = function (rows, col, callback) {
             }  
         }else{
             html += ``
+        }
+        if (cell.getData()._copiedInTable &&  cell.getData()._copiedInTable[col.field]) {
+            html ="<span class='table_copied_cell'></span>"
         }
         
 

@@ -78,8 +78,8 @@ export function traverseGraphForRelations(roots, relations, nodes){
     console.log(nodesToNodesInMapping);
     console.log(nodesToNodesOutMapping);
     console.log(expandedTest);
-    console.log(roots);
-    alert("nodetoenode")
+    // console.log(roots);
+    alert("nodetoenode2")
     return {roots:expandedTest.roots, cols:expandedTest.newCols}
 }
 
@@ -96,7 +96,7 @@ function expandTable(roots) {
     for (let i = 0; i < roots.length; i++) {
         const root = roots[i];
         // var currentDeferedRoot = deferedRoot || root //check if elements should be attached to the main root
-        alert("root" + root.name)
+        // alert("root" + root.name)
         traverseForward(mode, root,root, newCols, newColsDone,newRoots)
         
     }
@@ -121,6 +121,10 @@ function traverseForward(mode,root, deferedRoot, newColsToUpdate, newColsDoneToU
     }
 
     if (root.forward) {//Does the current element has relations
+
+        //create a current safe copy at this level before registering any extra prop (to avoid having them marked as "copied")
+        var newRoot = copyObject(currentDeferedRoot)
+
         if (!newColsDone[root.forward.name]) { //Build the cols definition for the table
             newCols.push({title:root.forward.name, field:root.forward.name})    
             newColsDone[root.forward.name] = true 
@@ -130,7 +134,7 @@ function traverseForward(mode,root, deferedRoot, newColsToUpdate, newColsDoneToU
             
         }
 
-        var newRoot = Object.assign({}, currentDeferedRoot) //create a current safe copy at this level
+        
 
         for (let j = 0; j < root.forward.list.length; j++) { //append each forwar element as a relation prop
             const forwardElement = root.forward.list[j];
@@ -142,7 +146,7 @@ function traverseForward(mode,root, deferedRoot, newColsToUpdate, newColsDoneToU
             }else{
 
                 if (!currentDeferedRoot[root.forward.name][0]) { //check if origin field is empty , then push and proceed forward with the same root
-                    currentDeferedRoot[root.forward.name].push({displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:forwardElement})
+                    currentDeferedRoot[root.forward.name]=[{displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:forwardElement}]
                     traverseForward(mode, forwardElement, currentDeferedRoot, newColsToUpdate, newColsDoneToUpdate, newRoots)
                 }else{
                     // newRoots.push(currentDeferedRoot)
@@ -155,6 +159,21 @@ function traverseForward(mode,root, deferedRoot, newColsToUpdate, newColsDoneToU
             }
         }
     }
+}
+
+function copyObject(object){
+    var newObj = {}
+    var copied = {}
+
+    for (const key in object) {
+        if (Object.hasOwnProperty.call(object, key)) {
+            // const element = object[key];
+            newObj[key] = object[key]
+            copied[key] = true
+        }
+    }
+    newObj._copiedInTable = copied
+    return newObj
 }
 
 

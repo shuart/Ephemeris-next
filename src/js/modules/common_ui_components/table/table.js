@@ -206,6 +206,17 @@ var table_component =createAdler({
         border-radius: 11px;
         color: white;
     }
+
+    .tabulator-row {
+        border-bottom: 0px solid rgba(34,36,38,.1);
+    }
+    
+    .tabulator-cell:has(.table_copied_cell) {
+        border-top: 0px solid rgba(162, 163, 164, 0.1);
+    }
+    .tabulator-cell {
+        border-top: 1px solid rgba(34,36,38,.1);
+    }
     
     @media (prefers-color-scheme: dark) {
         .table-tag{
@@ -229,6 +240,17 @@ var table_component =createAdler({
         .tabulator-row .tabulator-cell .tabulator-data-tree-control .tabulator-data-tree-control-expand::after {
             background: #a4a4a4;
         }
+
+        .tabulator-row {
+            border-bottom: 0px solid rgba(162, 163, 164, 0.1);
+        }
+        .tabulator-cell {
+            border-top: 1px solid rgba(162, 163, 164, 0.1);
+        }
+        .tabulator-cell:has(.table_copied_cell) {
+            border-top: 0px solid rgba(162, 163, 164, 0.1);
+        }
+        
       }
     `,
 })

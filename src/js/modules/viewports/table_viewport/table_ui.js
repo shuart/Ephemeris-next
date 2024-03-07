@@ -69,20 +69,25 @@ var getItemsList = function (event, data, instance){
         var instanceRepo = createInstancesManagement()
         var instances = instanceRepo.getByType(renderSettings.entitiesToDisplay)
         console.log(renderSettings.relationsToDisplay);
-         
+
+        // First get the props to know what should be displayed
+        var propRepo = createPropertyManagement()
+        var cols= [{title:"name", field:'name', customObject:true}]
+        for (let i = 0; i < renderSettings.fieldsToDisplay.length; i++) {
+            var newProp = propRepo.getById( renderSettings.fieldsToDisplay[i] )
+            cols.push({title:newProp.name, field:'prop_'+newProp.uuid, isAttribute:true, attributeType:"text" })
+        }
+
+        //Then clean the instance with simpler object having only the correct props attached
+        instances = attachPropToCleanedInstances(instances, cols)//clean Objects TODO segregate in custom attributes object
+        
+        //then check for relation to display and add them as root props
         var extendedList = {roots:instances, cols:[]}
         if (renderSettings.relationsToDisplay?.nodes) {
             extendedList = traverseGraphForRelations(instances, renderSettings.relationsToDisplay.arrows, renderSettings.relationsToDisplay.nodes)
         }
 
-        var propRepo = createPropertyManagement()
-        // var props = propRepo.getAll()
-        var cols= [{title:"name", field:'name'}]
-
-        for (let i = 0; i < renderSettings.fieldsToDisplay.length; i++) {
-            var newProp = propRepo.getById( renderSettings.fieldsToDisplay[i] )
-            cols.push({title:newProp.name, field:'prop_'+newProp.uuid, isAttribute:true, attributeType:"text" })
-        }
+        // data.list = attachPropToCleanedInstances(data.list, data.cols)//clean Objects TODO segregate in custom attributes object
         
         data.list =extendedList.roots
         data.cols =cols.concat(extendedList.cols)
@@ -93,20 +98,24 @@ var getItemsList = function (event, data, instance){
     }
     // joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))
     
-    //clean Objects TODO segregate in custom attributes object
-    var newList = []
-    //If not attributes are used, juste populate with basic ones
-    if (!data.cols) {
-        data.cols=[{title:"name", field:'name'},]
-    }
+    
+    // var newList = attachPropToCleanedInstances(data.list, data.cols)
+    // data.list =newList
+    // joinRelationsWithEntities(data.list, data.cols.map(c=>c.field)) //TODO check if still needed
     console.log(data);
-    alert("ddd")
-    for (let i = 0; i < data.list.length; i++) { //create a new list to keep original clean
-        const item = data.list[i];
+    return data
+}
+
+var attachPropToCleanedInstances = function (instances, cols) {
+    var newList = []
+    var cols = cols||[{title:"name", field:'name'},] //If not attributes are used, juste populate with basic ones
+
+    for (let i = 0; i < instances.length; i++) { //create a new list to keep original clean
+        const item = instances[i];
         var newItem = {uuid: item.uuid, name:item.name, color:item.color}
         newList.push(newItem)
-        for (let j = 0; j < data.cols.length; j++) {
-            const col = data.cols[j];
+        for (let j = 0; j < cols.length; j++) {
+            const col = cols[j];
             if (col.field) {
                 if (item.attributes[col.field]) {
                     newItem[col.field] = item.attributes[col.field]
@@ -123,12 +132,7 @@ var getItemsList = function (event, data, instance){
         }
         
     }
-    data.list =newList
-    // joinRelationsWithEntities(data.list, data.cols.map(c=>c.field)) //TODO check if still needed
-    
-    
-    console.log(data);
-    return data
+    return newList
 }
 var subscribeToDB = function (event, data, instance) {
     var updateFunc = function (params) {
