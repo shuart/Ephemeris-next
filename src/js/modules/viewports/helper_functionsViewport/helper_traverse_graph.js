@@ -3,7 +3,8 @@ import createRelationInstancesAggregate from "../../common_project_management/re
 import createRelationManagement from "../../common_project_management/relations_management.js";
 import showPopupInstancePreview from "../../popup_instance_preview/popup_instance_preview.js";
 
-export function traverseGraphForRelations(roots, relations, nodes){
+export function traverseGraphForRelations(roots, relations, nodes, mode){
+    var mode=mode || "default" //compact mode or not?
     var instancesRepo = createInstancesManagement()
     var relationsInstancesRepo = createRelationInstancesAggregate()
     var relationsRepo = createRelationManagement()
@@ -69,7 +70,7 @@ export function traverseGraphForRelations(roots, relations, nodes){
     traverseLevel(roots,undefined, relations, nodesToNodesOutMapping, nodesToNodesInMapping)
     console.log(roots);
     alert("nodetoenode")
-    var expandedTest = expandTable(roots)
+    var expandedTest = expandTable(roots, mode)
 
     console.log(isRelationTypeOfInterest);
     console.log(isNodeTypeOfInterest);
@@ -83,8 +84,8 @@ export function traverseGraphForRelations(roots, relations, nodes){
     return {roots:expandedTest.roots, cols:expandedTest.newCols}
 }
 
-function expandTable(roots) {
-    var mode= "cmpact"
+function expandTable(roots, mode) {
+    // var mode= "cmpact"
     var levels = levels || {tracker:-1, previous:-1} //use an object to keep track even out of the closure
     levels.previous = levels.tracker
     levels.tracker +=1

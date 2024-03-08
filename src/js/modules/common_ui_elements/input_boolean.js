@@ -1,18 +1,30 @@
 import createAdler from "../../vendor/adlerLegacy.js";
+import nanoid from "../../vendor/nanoid.js";
 
 
 var updateValue = function(event, data, instance){
     console.log(event);
+    alert("efesfgggggs")
     data.value = event.target.checked
     data.onChange(event, data, instance)
+}
+
+var configElement = function(event, data, instance){
+    var target = instance.query(".tbl_toggle__input")
+    target.addEventListener('change', function (ev) {
+        data.value = target.checked
+        data.onChange(event, data, instance)
+    })
+    // console.log(target);
+    // alert("ees")
 }
 
 var input_boolean =createAdler({
     content: p => /*html*/`
     <div class="input_selection_container field">
             <label class="label">${p.label}</label>
-            <label class="tbl_toggle" for="tg_${undefined}">
-                <input class="tbl_toggle__input" name="" type="checkbox" id="tg_${undefined}" ${p.value ? "checked":""}/>
+            <label class="tbl_toggle" for="tg_${p.uuid}">
+                <input class="tbl_toggle__input ${p.uuid}" name="" type="checkbox" id="tg_${p.uuid}" ${p.value ? "checked":""}/>
                 <div class="tbl_toggle__fill"></div>
             </label>
     </div>
@@ -22,6 +34,7 @@ var input_boolean =createAdler({
     params:{
         data:{
             value:"Hello",
+            uuid:"id_"+nanoid(),
             label:undefined,
             autofocus:false,
             hiddenInput:false,
@@ -29,12 +42,12 @@ var input_boolean =createAdler({
             onFocusout:()=>console.log("unfocus"),
         },
         events:{
-            // onBeforeMount:(event, data, instance) => setUp(event, data, instance),
-            // onMount:(event, data, instance) => fillElement(event, data, instance),
+            // onBeforeMount:(event, data, instance) => configElement(event, data, instance),
+            onMount:(event, data, instance) => configElement(event, data, instance),
             
         },
         on:[
-            [".tbl_toggle__input","change", (event, data, instance)=> updateValue(event, data, instance) ],
+            // [".tbl_toggle__input","change", (event, data, instance)=> updateValue(event, data, instance) ],
             // [".input","click", (event, data, instance)=> data.onClick(event, data, instance) ],
             // [".input","focusout", (event, data, instance)=> unFocus(event, data, instance) ],
             // [".input","keyup", (event, data, instance)=> updateValue(event, data, instance) ],

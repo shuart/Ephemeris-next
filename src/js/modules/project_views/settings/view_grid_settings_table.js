@@ -16,6 +16,7 @@ export function createTableSettings(comp, callback) {
     var propertiesOptions = createPropertiesSelectionOptions()
     //DEFAULTS
     var useNodes = comp.renderSettings?.useNodes || false
+    var compactMode = comp.renderSettings?.compactMode || false
     var relationsToDisplay = comp.renderSettings?.relationsToDisplay || []
     var entitiesToDisplay = comp.renderSettings?.entitiesToDisplay || []
     var propertiesToDisplay = comp.renderSettings?.fieldsToDisplay || []
@@ -49,12 +50,17 @@ export function createTableSettings(comp, callback) {
             }
         },
         {type:"graph", name:"graph", config:{
-            multipleSelection:true,
+                multipleSelection:true,
                 label:"Show Relations With",
                 list: options,
                 selected:relationsToDisplay,
             }
         },
+        {type:"boolean", name:"compactMode",config:{
+                label:"Show compact table",
+                value:compactMode,
+            }
+        },  
         ],
         onConfirm:(result)=>{
             console.log(result);
@@ -63,6 +69,7 @@ export function createTableSettings(comp, callback) {
                 entitiesToDisplay : uuidFromSelection(result.entitiesToDisplay),
                 fieldsToDisplay : uuidFromSelection(result.propertiesToDisplay),
                 relationsToDisplay : result.graph,
+                compactMode : result.compactMode,
             }
             console.log(newConfig);
             if (callback) {

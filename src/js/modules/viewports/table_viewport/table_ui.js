@@ -83,8 +83,12 @@ var getItemsList = function (event, data, instance){
         
         //then check for relation to display and add them as root props
         var extendedList = {roots:instances, cols:[]}
+        var mode= "default"
+        if (renderSettings.compactMode) {
+            mode = "compact"
+        }
         if (renderSettings.relationsToDisplay?.nodes) {
-            extendedList = traverseGraphForRelations(instances, renderSettings.relationsToDisplay.arrows, renderSettings.relationsToDisplay.nodes)
+            extendedList = traverseGraphForRelations(instances, renderSettings.relationsToDisplay.arrows, renderSettings.relationsToDisplay.nodes, mode)
         }
 
         // data.list = attachPropToCleanedInstances(data.list, data.cols)//clean Objects TODO segregate in custom attributes object

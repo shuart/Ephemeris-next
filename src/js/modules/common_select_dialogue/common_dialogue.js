@@ -6,6 +6,7 @@ import input_graph from "../common_ui_elements/input_graph.js"
 import input_selection from "../common_ui_elements/input_selection.js"
 import input_text from "../common_ui_elements/input_text.js"
 import common_dialogue_footer from "./common_dialogue_footer.js"
+import nanoid from "../../vendor/nanoid.js"
 
 var selectedArrayToObject = function (selectedArray) {
     var obj = {}
@@ -61,8 +62,10 @@ var createDialoguePage = function (params) {
                     params.choiceStore[field.name] = data.value
                 }
             }
+            field.config.uuid = "id"+nanoid()
             var item = input_boolean.instance({
-                data:field.config
+                data:field.config,
+                // uuid:nanoid()
             })
             params.choiceStore[field.name] = field.config.value || false
             fieldsToAdd.push(item)
