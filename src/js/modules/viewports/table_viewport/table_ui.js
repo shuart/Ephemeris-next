@@ -165,11 +165,12 @@ var setUpTable = function (event, data, instance) {
 
     setTimeout(function () {
         var mountPlace = instance.query(".example-table")
-        console.log(mountPlace);
         var tablevp = table_component.instance()
         tablevp.classList="current-table"
         tablevp.list = itemsData.list
         tablevp.cols = itemsData.cols
+        tablevp.height = mountPlace.parentElement.parentElement.offsetHeight-150
+        // tablevp.height = 20
         mountPlace.append(tablevp)
         subscribeToDB(event, data, instance)
 

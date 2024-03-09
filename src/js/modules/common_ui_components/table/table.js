@@ -33,10 +33,10 @@ var setUpTable = function(self){
 
     //get corret height:
     var instanceElem = self.query(".tableComponent")
-    var tableHeight = 205
+    var tableHeight = 405
     if (currentHeight<0) {
         tableHeight = window.innerHeight + currentHeight
-    } else if(typeof currentHeight == 'int'){
+    } else if(typeof currentHeight == 'number'){
         tableHeight = currentHeight
     }
     // if (instanceElem.parentElement && instanceElem.parentElement.parentElement) {
