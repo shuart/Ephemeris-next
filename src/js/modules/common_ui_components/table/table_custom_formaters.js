@@ -280,8 +280,12 @@ var getCustomFormatterForRelations = function (rows, col, callback) {
         if (instances) {
             for (let i = 0; i < instances.length; i++) {
                 const element = instances[i];
+                var colorField = ""
+                if (element.target.color || element.target.attributes?.color) {
+                    colorField = "background-color:"+(element.target.color || element.target.attributes?.color )+";"
+                }
                 console.log(element);
-                html += `<span data-id='${element.target.uuid}' class="table-tag action-tag" > ${element.target.name} </span>`
+                html += `<span style="${colorField}" data-id='${element.target.uuid}' class="table-tag action-tag" > ${element.target.name} </span>`
             }  
         }else{
             html += ``

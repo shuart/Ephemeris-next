@@ -68,19 +68,19 @@ export function traverseGraphForRelations(roots, relations, nodes, mode){
 
 
     traverseLevel(roots,undefined, relations, nodesToNodesOutMapping, nodesToNodesInMapping)
-    console.log(roots);
-    alert("nodetoenode")
+    // console.log(roots);
+    // alert("nodetoenode")
     var expandedTest = expandTable(roots, mode)
 
-    console.log(isRelationTypeOfInterest);
-    console.log(isNodeTypeOfInterest);
-    console.log(nodesInMapping);
-    console.log(nodesOutMapping);
-    console.log(nodesToNodesInMapping);
-    console.log(nodesToNodesOutMapping);
-    console.log(expandedTest);
-    // console.log(roots);
-    alert("nodetoenode2")
+    // console.log(isRelationTypeOfInterest);
+    // console.log(isNodeTypeOfInterest);
+    // console.log(nodesInMapping);
+    // console.log(nodesOutMapping);
+    // console.log(nodesToNodesInMapping);
+    // console.log(nodesToNodesOutMapping);
+    // console.log(expandedTest);
+    // // console.log(roots);
+    // alert("nodetoenode2")
     return {roots:expandedTest.roots, cols:expandedTest.newCols}
 }
 
@@ -127,7 +127,10 @@ function traverseForward(mode,root, deferedRoot, newColsToUpdate, newColsDoneToU
         var newRoot = copyObject(currentDeferedRoot)
 
         if (!newColsDone[root.forward.name]) { //Build the cols definition for the table
-            newCols.push({title:root.forward.name, field:root.forward.name})    
+            
+            var relationRepo = createRelationManagement()
+            var currentRel = relationRepo.getById(root.forward.name)
+            newCols.push({title:currentRel?.name, field:root.forward.name})
             newColsDone[root.forward.name] = true 
         }
         if (!currentDeferedRoot[root.forward.name]) { //if prop does not exist yet, create it

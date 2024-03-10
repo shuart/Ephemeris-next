@@ -75,16 +75,23 @@ var renderMenu = function (self, comp) {
 
     var menuHtml = /*html*/`
     <div class="media">
-    <div class="media-left">
-        <figure class="image is-32x32" style="margin:23%">
-        <img class="darkModeCompatibleIcons" src="./img/icons/${areaIcon}.svg" alt="Placeholder image">
-        </figure>
-    </div>
-    <div class="media-content">
-        <p class="is-4">${areaName} <button data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${index}" data-id="${uuid}" class="delete is-danger action-view-settings-delete-comp"></button> </p>
-        <div class="tags has-addons">
+        <div class="media-left">
+            <figure class="image is-32x32" style="margin:23%">
+            <img class="darkModeCompatibleIcons" src="./img/icons/${areaIcon}.svg" alt="Placeholder image">
+            </figure>
+        </div>
+        <div class="media-content viewport-header-title">
+            <p class="is-4">${areaName} <button data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${index}" data-id="${uuid}" class="delete is-danger action-view-settings-delete-comp"></button> </p>
+            
+        </div>
+        <div class="tags has-addons viewport-header-evaluator-tag">
             <span data-id="${evaluatorUuid}" class="tag is-link action-view-settings-goto-evaluator">Using ${evaluatorName }</span>
             <a data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${index}" data-id="${uuid}" class="tag action-view-settings-edit-evaluator"><img data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${index}" data-id="${uuid}" style="height:15px" class="darkModeCompatibleIcons" src="./img/icons/edit-2.svg" alt="Placeholder image"></a>
+        </div>
+        <div class="media viewport-header-settings-action">
+            <figure class="image is-32x32" style="margin:23%">
+            <img class="darkModeCompatibleIcons" src="./img/icons/settings.svg" alt="Settings">
+            </figure>
         </div>
     </div>
     
@@ -96,7 +103,7 @@ var renderMenu = function (self, comp) {
         setUpSettingsEvent(self,event,domElement, evaluatorUuid, uuid )
         
     } )
-    domElement.querySelector(".image").addEventListener("click",function (event) {
+    domElement.querySelector(".viewport-header-settings-action").addEventListener("click",function (event) {
         setUpOptionsEvent(self,event,domElement, evaluatorUuid, uuid, comp )
         
     } )
@@ -137,16 +144,6 @@ var gridViewHeaders = createAdler({
         <div class="card">
             <header class="card-header">
                 <div class="card-menu"></div>
-
-
-
-                <p class="card-header-title">
-                Card header
-                </p>
-                <button class="card-header-icon" aria-label="more options">
-                <span class="icon">
-                    <i class="fas fa-angle-down" aria-hidden="true"></i>
-                </span>
                 </button>
             </header>
         </div>
@@ -159,7 +156,21 @@ var gridViewHeaders = createAdler({
         self.query(".card-menu").append(editMenu)
     },
     css:`
-
+        .viewport-header-settings-action{
+            position: absolute;
+            right: 5px;
+            top:-5px;
+            cursor:pointer;
+        }
+        .viewport-header-title{
+            top: 11px;
+            position: relative;
+        }
+        .viewport-header-evaluator-tag{
+            top: 11px;
+            left:10px;
+            position: relative;
+        }
     `,
 })
 
