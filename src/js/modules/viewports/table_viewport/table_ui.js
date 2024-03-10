@@ -65,7 +65,7 @@ var getItemsList = function (event, data, instance){
         data.cols =evaluationResult.cols
         data.actions =evaluationResult.actions
         console.log(data);
-    }else{
+    }else if(renderSettings) {
         var instanceRepo = createInstancesManagement()
         var instances = instanceRepo.getByType(renderSettings.entitiesToDisplay)
         console.log(renderSettings.relationsToDisplay);
@@ -73,11 +73,13 @@ var getItemsList = function (event, data, instance){
         // First get the props to know what should be displayed
         var propRepo = createPropertyManagement()
         var cols= [{title:"name", field:'name', customObject:true}]
-        for (let i = 0; i < renderSettings.fieldsToDisplay.length; i++) {
-            var newProp = propRepo.getById( renderSettings.fieldsToDisplay[i] )
-            cols.push({title:newProp.name, field:'prop_'+newProp.uuid, isAttribute:true, attributeType:"text" })
-        }
 
+        if (renderSettings.fieldsToDisplay) {
+            for (let i = 0; i < renderSettings.fieldsToDisplay.length; i++) {
+                var newProp = propRepo.getById( renderSettings.fieldsToDisplay[i] )
+                cols.push({title:newProp.name, field:'prop_'+newProp.uuid, isAttribute:true, attributeType:"text" })
+            }
+        }
         //Then clean the instance with simpler object having only the correct props attached
         instances = attachPropToCleanedInstances(instances, cols)//clean Objects TODO segregate in custom attributes object
         
@@ -99,6 +101,11 @@ var getItemsList = function (event, data, instance){
         data.renderSettings =renderSettings
 
         
+    }else{
+        data.list =[]
+        data.cols =[{title:"name", field:'name', customObject:true}]
+        data.actions =undefined
+        data.renderSettings =undefined
     }
     // joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))
     

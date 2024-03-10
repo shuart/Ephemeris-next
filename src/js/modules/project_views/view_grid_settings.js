@@ -15,6 +15,7 @@ import { renderPlaceholder } from "./view_grid_helpers.js";
 import folder_viewport from "../viewports/folder_viewport/folder_viewport.js";
 
 import gridViewHeaders from "./view_grid_headers.js";
+import { getViewGridPlaceholder } from "./view_grid_placeholders.js";
 
 
 function sortable(self, section, onUpdate){
@@ -141,7 +142,7 @@ var renderItems = function (self) {
                 domElement.append(header)
                 domElement.classList.add("viewGridElementWithHeader")
             }
-            view.mount(domElement)
+            view.mount(domElement) 
             // view.mount(self.query('.viewGridArea'))
             self.query('.viewGridArea').append(domElement)
         }
@@ -209,9 +210,16 @@ var renderPlaceholders = function (self) {
             }else{
                 self.query('.viewGridArea').append(view)
             }
-            if (true) { //render preview
+            // if (true) { //render preview
+            //     var compView = renderItem(self, comp)
+            //     compView.mount(view.querySelector(".box"))
+            // }
+            if (!self.showSettings) {
                 var compView = renderItem(self, comp)
                 compView.mount(view.querySelector(".box"))
+            }else{
+                var domPlacehoder = getViewGridPlaceholder(comp.componentType)
+                view.querySelector(".box").append(domPlacehoder)
             }
             
         }
@@ -219,16 +227,29 @@ var renderPlaceholders = function (self) {
 }
 
 var getSchemaFromGrid = function (self) {
+    // self.schema[i].renderSettings 
     var newSchema = []
     let childArray = [ ...self.query('.viewGridArea').children ]
     childArray.forEach(function (item) {
-        var itemDef= JSON.parse(JSON.stringify(item.dataset));
-        newSchema.push(itemDef)
+        var baseDomDataset = item.dataset;
+        var newDataset= JSON.parse(JSON.stringify(baseDomDataset));
+        for (let i = 0; i < self.schema.length; i++) {
+            if(self.schema[i].uuid == newDataset.uuid){
+                newDataset.renderSettings = self.schema[i].renderSettings 
+            }
+        }
+        newSchema.push(newDataset)
     })
     let childArrayLeft = [ ...self.query('.viewGridAreaDemoLeft').children ]
     childArrayLeft.forEach(function (item) {
-        var itemDef= JSON.parse(JSON.stringify(item.dataset));
-        newSchema.push(itemDef)
+        var baseDomDataset = item.dataset;
+        var newDataset= JSON.parse(JSON.stringify(baseDomDataset));
+        for (let i = 0; i < self.schema.length; i++) {
+            if(self.schema[i].uuid == newDataset.uuid){
+                newDataset.renderSettings = self.schema[i].renderSettings 
+            }
+        }
+        newSchema.push(newDataset)
     })
     return newSchema
 }
