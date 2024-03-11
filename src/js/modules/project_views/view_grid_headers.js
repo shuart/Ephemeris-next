@@ -9,6 +9,7 @@ import { showEvaluatorsSelector } from "../common_selectors/evaluators_selector.
 import createDialogue from "../common_select_dialogue/common_dialogue.js";
 import { createEntitiesSelectionOptions } from "../common_selectors/entities_selector.js";
 import { createTableSettings } from "./settings/view_grid_settings_table.js";
+import { createCardSettings } from "./settings/view_grid_settings_card.js";
 
 var goToEvaluator = function(event){
     var evaluator = event.target.dataset.id
@@ -45,11 +46,18 @@ var setUpSettingsEvent = function (self, event, domElement, currentUuid, uuid, c
 var setUpOptionsEvent = function (self, event, domElement, currentUuid, uuid, comp){
     var projectId = projectManagement.getCurrent().id
 
+    if (comp.componentType =="table") {
+        createTableSettings(comp, function(data) {
+            self.editRenderSettingsCallback(uuid, data)
+        })
+    } else if(comp.componentType =="instanceCard") {
+        createCardSettings(comp, function(data) {
+            self.editRenderSettingsCallback(uuid, data)
+        })
+    }
     
 
-    createTableSettings(comp, function(data) {
-        self.editRenderSettingsCallback(uuid, data)
-    })
+    
 
 
     

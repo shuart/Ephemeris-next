@@ -6,6 +6,7 @@ import showPopupInstancePreview from "../../popup_instance_preview/popup_instanc
 import instanceCard from "../../common_ui_components/instance_card/instance_card.js";
 import createInstancesManagement from "../../common_project_management/instances_management.js";
 import { subscribeToChanges } from "../../common_state/state_change_subscription.js";
+import state from "../../common_state/state_manager.js";
 
 
 var addItem = function (event, data, instance) {
@@ -15,21 +16,44 @@ var addItem = function (event, data, instance) {
 var getEvaluatorData = function (event, data, instance){
 
     var data = {}
-    var evaluator = createEvaluator({originInstance:instance.props.get('settings').calledFromInstance, type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
-    console.log(evaluator);
-    if (!evaluator.evaluate()) {
-        return {instance:{}}
+    var useNodes = false
+    var renderSettings = instance.props.get("settings").renderSettings
+    if (renderSettings) {
+        useNodes = renderSettings.useNodes || false
     }
-    data.instance =evaluator.evaluate().output_instance_card.instance 
-    // data.cols =evaluator.evaluate().cols
-    // data.actions =evaluator.evaluate().actions
-    if (typeof data.instance == "string") {
-        var instanceRepo = createInstancesManagement()
-        data.instance = instanceRepo.getById(data.instance)
+    // alert(useNodes)
+    if (!useNodes) {
+
+        data.instance ={}
+        if (renderSettings.useCurrentlySelected ) {
+            data.instance =state.getSearchParam("selected")
+        }
+        // data.cols =evaluator.evaluate().cols
+        // data.actions =evaluator.evaluate().actions
+        if (typeof data.instance == "string") {
+            var instanceRepo = createInstancesManagement()
+            data.instance = instanceRepo.getById(data.instance)
+        }
+        
+        console.log(data);
+
+    }else{
+        // alert("efsfs")
+        var evaluator = createEvaluator({originInstance:instance.props.get('settings').calledFromInstance, type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
+        console.log(evaluator);
+        if (!evaluator.evaluate()) {
+            return {instance:{}}
+        }
+        data.instance =evaluator.evaluate().output_instance_card.instance 
+        // data.cols =evaluator.evaluate().cols
+        // data.actions =evaluator.evaluate().actions
+        if (typeof data.instance == "string") {
+            var instanceRepo = createInstancesManagement()
+            data.instance = instanceRepo.getById(data.instance)
+        }
+        
+        console.log(data);
     }
-    
-    console.log(data);
-    
     return data
 }
 
