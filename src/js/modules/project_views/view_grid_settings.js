@@ -476,6 +476,7 @@ var gridView = createAdler({
         color: #4a4a4a;
         display: block;
         padding: 0.50rem;
+        overflow: auto;
     }
     @media (prefers-color-scheme: dark) {
         .viewGridElementWithHeader {
