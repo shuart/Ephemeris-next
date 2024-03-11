@@ -11,6 +11,16 @@ var fillElement = function(event, data, instance){
         }, 200)
         
     }
+    if (data.onEnter) {
+        setTimeout(function () { //TODO Check why a timeout is needed
+            instance.query(".input").addEventListener("keyup", function(event) {
+                if (event.key === "Enter") {
+                    data.onEnter(event, data, instance)
+                }
+            });
+        }, 200)
+        
+    }
     if (data.hiddenInput) {
         instance.query(".input").style.display ="none"
         instance.query(".input_hidder").style.display ="block"
@@ -61,6 +71,7 @@ var input_text =createAdler({
             hiddenInput:false,
             onClick:()=>console.log("click"),
             onFocusout:()=>console.log("unfocus"),
+            onEnter:undefined,
         },
         events:{
             // onBeforeMount:(event, data, instance) => setUp(event, data, instance),

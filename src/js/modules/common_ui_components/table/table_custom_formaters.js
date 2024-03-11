@@ -1,4 +1,6 @@
+import { createNameAttributeEditor } from "../../common_attributes_editors/common_name_attribute_editor.js";
 import { renderTextAttribute } from "../../common_attributes_editors/common_text_attribute_editor.js";
+import showPopupInstancePreview from "../../popup_instance_preview/popup_instance_preview.js";
 
 var getCustomFormatterForCol = function (rows, col, originalColConfig) {
     
@@ -205,16 +207,50 @@ var getCustomButtonFormatterForColors = function(rows, col){
 
 var getCustomFormatterForObject = function (rows, col) {
     var toDisplay= function(cell, formatterParams, onRendered){ //plain text value
+
+        onRendered(function(params) {
+            var item = cell.getData()
+            var domElemOfCell = cell.getElement()
+            var editActions = domElemOfCell.querySelectorAll('.tableEditAction')
+            for (let i = 0; i < editActions.length; i++) {
+                editActions[i].addEventListener('click', function (ev) {
+                    ev.stopPropagation();
+                    createNameAttributeEditor(item.name,item.uuid)
+                })
+            }
+            // var domElemOfCell = cell.getElement()
+            var tags = domElemOfCell.querySelectorAll('.table-tag')
+            for (let i = 0; i < tags.length; i++) {
+                const tag = tags[i];
+                tag.addEventListener('click', function (ev) {
+                    ev.stopPropagation();
+                    showPopupInstancePreview(item.uuid)
+                })
+            }
+        })
         
         if (cell.getData()._copiedInTable &&  cell.getData()._copiedInTable[col.field]) {
             return "<span class='table_copied_cell'></span>"
         }else{
             var item = cell.getData()
             var colorField = ""
+            var iconPart =""
+            var editPart =""
+            var deletePart =""
             if (item.color) {
                 colorField = "background-color:"+(item.color)+";"
             }
-            return `<span style="${colorField}" onclick='alert();  event.stopPropagation();' class="table-tag" > ${cell.getData()[col.field]? cell.getData()[col.field] : ""} </span>`;
+            if (item.iconPath) {
+                iconPart = '<span class=""><img class="tableTagIcon" src="./img/icons/'+item.iconPath+'"></img></span>'
+            }
+            if (true) {
+                deletePart = '<span class="tableEditActionContainer "><img class="tableTagIcon tableObjectAction tableDeleteAction" src="./img/icons/x.svg"></img></span>'
+            }
+            if (true) {
+                editPart = '<span class="tableEditActionContainer "><img class="tableTagIcon tableObjectAction tableEditAction" src="./img/icons/edit-2.svg"></img></span>'
+            }
+            // return ` <span style="${colorField}" onclick='alert();  event.stopPropagation();' class="table-tag" >${editPart}${deletePart}  ${iconPart} ${cell.getData()[col.field]? cell.getData()[col.field] : ""} </span>`;
+            return ` <span style="${colorField}" class="table-tag" >${editPart}${deletePart}  ${iconPart} ${cell.getData()[col.field]? cell.getData()[col.field] : ""} </span>`;
         }
     };
     var colObject = {formatter:toDisplay, width:90, title:col.title, cellClick:col.cellClick};

@@ -466,10 +466,24 @@ var gridView = createAdler({
         left: -26%;
       }
     .viewGridElementWithHeader {
-        border-style: solid;
+        border-style: none;
         border-color: #8a8a8a29;
         border-radius: 7px;
+
+        background-color: #fff;
+        border-radius: 6px;
+        box-shadow: 0 .5em 1em -.125em rgba(10,10,10,.1),0 0 0 1px rgba(10,10,10,.02);
+        color: #4a4a4a;
+        display: block;
+        padding: 0.50rem;
     }
+    @media (prefers-color-scheme: dark) {
+        .viewGridElementWithHeader {
+          background-color: #1b1b1b;
+          box-shadow: 0 2px 3px rgba(255, 255, 255, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1);
+          color: #b5b5b5;
+          box-shadow: rgba(0, 0, 0, 0.81) 0px 8px 8px, rgb(0, 0, 0) 0px 0px 0px 1px;
+        }
     `,
 })
 

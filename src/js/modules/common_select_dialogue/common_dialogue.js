@@ -51,9 +51,22 @@ var createDialoguePage = function (params) {
                     console.log(params.choiceStore);
                 }
             }
+            if (field.config.confirmOnEnter) { //if an enter key up is supposed to confirm element
+                field.config.onEnter=(event, data, instance)=>{ //use the same confirm action then the button but add the input value first
+                    params.choiceStore[field.name] = data.value
+                    console.log(params.choiceStore);
+                    if (params.onConfirm) {
+                        params.onConfirm(params.choiceStore)
+                    }
+                    params.containerPopup.unmount()
+                }
+                
+            }
+            
             var item = input_text.instance({
                 data:field.config
             })
+            
             fieldsToAdd.push(item)
         }else if (field.type  == "boolean"){
             

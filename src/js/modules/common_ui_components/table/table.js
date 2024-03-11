@@ -74,6 +74,11 @@ var setUpTable = function(self){
    });
    self.tablepr = table //to avoid using a proxy
    console.log(table.rowManager)
+
+   //hide add button if needed
+   if (!self.onAdd) {
+    self.query(".action-table-add").style.display="none"
+   }
 //    table.on("rowMouseOut", function(e, row){
 //     console.log('efssssssss');
 //     });
@@ -140,9 +145,26 @@ var table_component =createAdler({
 
 
     <div class="tableComponent"></div>
-    <div a-if="onAdd" class="action-table-add button is-small is-primary">add</div>
+    <div a-if="onAdd" class="action-table-add button is-small is-primary">+</div>
         `,
     css:/*css*/`
+    .tableComponent{
+        margin:0px;
+    }
+    .action-table-add{
+        position: absolute;
+        top: -13px;
+        z-index: 2;
+        border-radius: 33px;
+        background-color: rgb(0, 181, 173);
+        border-style: none;
+        color: white;
+        right: 7px;
+        padding-right: 7px;
+        padding-left: 7px;
+        font-weight: bold;
+        cursor: pointer;
+    }
     .table-tag{
         background-color:#069c95;
         margin-right:5px;
@@ -217,6 +239,31 @@ var table_component =createAdler({
     .tabulator-cell {
         border-top: 1px solid rgba(34,36,38,.1);
     }
+    .tableTagIcon {
+        filter: invert(100%);
+        height: 17px;
+    }
+    .tableObjectAction{
+        filter: invert(100%);
+        background-color: white;
+        border-radius: 7px;
+        position: absolute;
+        top: 2px;
+        left: 1px;
+        width: 18px;
+        z-index: 2;
+        height: 18px;
+        padding: 1px;
+    }
+    .tableDeleteAction{
+        left: 22px;
+    }
+    .tableEditActionContainer{
+        display:none;
+    }
+    .table-tag:hover .tableEditActionContainer{
+        display:inline;
+    }
     
     @media (prefers-color-scheme: dark) {
         .table-tag{
@@ -249,6 +296,9 @@ var table_component =createAdler({
         }
         .tabulator-cell:has(.table_copied_cell) {
             border-top: 0px solid rgba(162, 163, 164, 0.1);
+        }
+        .tableTagIcon {
+            filter: invert(0%);
         }
         
       }

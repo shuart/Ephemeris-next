@@ -141,7 +141,7 @@ var gridViewHeaders = createAdler({
         <link rel="stylesheet" href="css/main.css">
 
 
-        <div class="card">
+        <div class="card viewport-header">
             <header class="card-header">
                 <div class="card-menu"></div>
                 </button>
@@ -161,6 +161,7 @@ var gridViewHeaders = createAdler({
             right: 5px;
             top:-5px;
             cursor:pointer;
+            border-style:none !important;
         }
         .viewport-header-title{
             top: 11px;
@@ -170,6 +171,9 @@ var gridViewHeaders = createAdler({
             top: 11px;
             left:10px;
             position: relative;
+        }
+        .viewport-header{
+            margin-bottom: 3px;
         }
     `,
 })

@@ -84,13 +84,22 @@ export function showEntitiesSelector ({
 
 }
 
-export function createEntitiesSelectionOptions(params) {
+export function createEntitiesSelectionOptions(allowedList) {
     var repo = createEntityManagement()
-        var entities = repo.getAll()
+    var entities = repo.getAll()
 
-    var options = entities.map(e=>{
-        return  {name:e.name, uuid:e.uuid, iconPath:e.attributes.iconPath, color:e.attributes.color}
-    })
+    var options =[]
+    for (let i = 0; i < entities.length; i++) {
+        const e = entities[i];
+        if (allowedList) {
+            if (allowedList.includes(e.uuid)) {
+                options.push({name:e.name, uuid:e.uuid, iconPath:e.attributes.iconPath, color:e.attributes.color})
+            }
+        }else{
+            options.push({name:e.name, uuid:e.uuid, iconPath:e.attributes.iconPath, color:e.attributes.color})
+        }
+        
+    }
 
     return options
 }

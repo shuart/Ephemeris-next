@@ -7,6 +7,8 @@ import { joinRelationsWithEntities } from "../helper_functionsViewport/helper_fu
 import createInstancesManagement from "../../common_project_management/instances_management.js";
 import { traverseGraphForRelations } from "../helper_functionsViewport/helper_traverse_graph.js";
 import createPropertyManagement from "../../common_project_management/properties_management.js";
+import { createEntitiesAddEditor } from "../../common_add_editors/common_entities_add_editor.js";
+import state from "../../common_state/state_manager.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -20,16 +22,16 @@ var softUpdate= function (event, data, instance) {
     // instance.getNodes().tablevp.do.softUpdate()
 }
 
-var addItem = function (event, data, instance) {
-    // alert(data.value)
-    // data.addAction()
-    instance.props.get("addAction" )()
-    //update table
-    // var itemsData = getItemsList(event,data, instance)
-    // instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols}, false)
-    // instance.getNodes().tablevp.do.softUpdate()
+// var addItem = function (event, data, instance) {
+//     // alert(data.value)
+//     // data.addAction()
+//     instance.props.get("addAction" )()
+//     //update table
+//     // var itemsData = getItemsList(event,data, instance)
+//     // instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols}, false)
+//     // instance.getNodes().tablevp.do.softUpdate()
 
-}
+// }
 
 var getItemsList = function (event, data, instance){
     // var evaluator = createEvaluator({type:instance.props.settings.get().entityType})
@@ -72,7 +74,9 @@ var getItemsList = function (event, data, instance){
 
         // First get the props to know what should be displayed
         var propRepo = createPropertyManagement()
-        var cols= [{title:"name", field:'name', customObject:true}]
+        var cols= [{title:"name", field:'name', customObject:true, cellClick:function (e,cell) {
+            state.setSearchParams("selected",cell.getData().uuid, "silent")
+        }}]
 
         if (renderSettings.fieldsToDisplay) {
             for (let i = 0; i < renderSettings.fieldsToDisplay.length; i++) {
@@ -97,8 +101,13 @@ var getItemsList = function (event, data, instance){
         
         data.list =extendedList.roots
         data.cols =cols.concat(extendedList.cols)
-        data.actions =renderSettings.actions
+        data.actions =renderSettings.actions 
         data.renderSettings =renderSettings
+        data.buttons ={
+            add:function() {
+                createEntitiesAddEditor(renderSettings.entitiesToDisplay, "New Element")
+            }
+        }
 
         
     }else{
@@ -106,6 +115,7 @@ var getItemsList = function (event, data, instance){
         data.cols =[{title:"name", field:'name', customObject:true}]
         data.actions =undefined
         data.renderSettings =undefined
+        data.buttons = undefined
     }
     // joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))
     
@@ -119,11 +129,11 @@ var getItemsList = function (event, data, instance){
 
 var attachPropToCleanedInstances = function (instances, cols) {
     var newList = []
-    var cols = cols||[{title:"name", field:'name'},] //If not attributes are used, juste populate with basic ones
+    var cols = cols||[{title:"name", field:'name',},] //If not attributes are used, juste populate with basic ones
 
     for (let i = 0; i < instances.length; i++) { //create a new list to keep original clean
         const item = instances[i];
-        var newItem = {uuid: item.uuid, name:item.name, color:item.color}
+        var newItem = {uuid: item.uuid, name:item.name, color:item.color, iconPath:item.iconPath}
         newList.push(newItem)
         for (let j = 0; j < cols.length; j++) {
             const col = cols[j];
@@ -163,8 +173,8 @@ var setUpTable = function (event, data, instance) {
      console.log(instance.getNodes());
      console.log(instance.props.settings.get());
      var itemsData = getItemsList(event,data, instance)
-     data.addAction = itemsData.actions
-     instance.props.set("addAction",itemsData.actions )
+    //  data.addAction = itemsData.actions
+    //  instance.props.set("addAction",itemsData.actions )
     //  data.value = Date.now()
     // // alert(data.value)
     //  console.log(data.addAction);
@@ -176,6 +186,7 @@ var setUpTable = function (event, data, instance) {
         tablevp.classList="current-table"
         tablevp.list = itemsData.list
         tablevp.cols = itemsData.cols
+        tablevp.onAdd = itemsData.buttons?.add
         tablevp.height = mountPlace.parentElement.parentElement.offsetHeight-150
         // tablevp.height = 20
         mountPlace.append(tablevp)
@@ -193,7 +204,6 @@ var setUpTable = function (event, data, instance) {
 var component =createAdler({
     content: p => /*html*/`
     <div class="Component container">
-        <div class="action_add_entity button is-small" >Add</div>
         <div class="example-table" a-id="tablevp"  ></div>
         
     </div>
@@ -222,7 +232,7 @@ var component =createAdler({
             // onClick:()=>console.log("click")
         },
         on:[
-            [".action_add_entity","click", (event, data, instance)=> addItem(event, data, instance) ],
+            // [".action_add_entity","click", (event, data, instance)=> addItem(event, data, instance) ],
         ],
         events:{
             // onBeforeMount:(event, data, instance) => setUpData(event, data, instance),

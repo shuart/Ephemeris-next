@@ -17,7 +17,7 @@ export function renderTextAttribute(attributeId,currentValue,bearingEntityId, ca
     // var attRepo= createPropertyManagement()
     // var att = attRepo.getById(attributeId)
     if (!currentValue) {
-        currentValue = ""
+        currentValue = "_"
     }
     var domEl = document.createElement("div")
     domEl.innerHTML=`<div>${currentValue}</div>`
@@ -40,6 +40,9 @@ export function createTextAttributeEditor(attributeId,currentValue,bearingEntity
     // var entitiesToDisplay = comp.renderSettings?.entitiesToDisplay || []
     // var propertiesToDisplay = comp.renderSettings?.fieldsToDisplay || []
     //DIALOGUE
+    if (currentValue == "_") {
+        currentValue=""
+    }
     createDialogue({
         header:"Table Settings",
         fields:[
