@@ -5,6 +5,9 @@ import state_manager from "../../common_state/state_manager.js";
 import { textArea } from "../textEditor.js/textArea.js";
 import createInstancesManagement from "../../common_project_management/instances_management.js";
 import showPopupInstancePreview from "../../popup_instance_preview/popup_instance_preview.js";
+import createPropertyManagement from "../../common_project_management/properties_management.js";
+import createEntityManagement from "../../common_project_management/entity_management.js";
+import { getAttributeRenderer } from "../../common_attributes_editors/common_render_attributes.js";
 
 // var getCurrentUser = function () {
 //     return userManagement.getCurrentUser()
@@ -31,6 +34,55 @@ var changeDescription = function (event, data, instance, json) {
     console.log(currentInstance);
 }
 
+var addPropertyList = function (event, data, instance, currentInstance) {
+    var propRepo = createPropertyManagement()
+    var props = propRepo.getAll()
+    var propsToShow=[]
+
+    for (let i = 0; i < props.length; i++) {
+        var prop = props[i];
+        var entityRepo = createEntityManagement()
+        
+        console.log(currentInstance);
+        var entity = entityRepo.getById(currentInstance.attributes.type)
+        console.log(entity);
+        for (const key in entity.attributes) {
+            if (Object.hasOwnProperty.call(entity.attributes, key) && key.search("prop_")>=0) {
+                const element = entity.attributes[key];
+
+                if (key.substring(5) == prop.uuid) {
+                    var AttributeDomElement = getAttributeRenderer("text")(prop.uuid,currentInstance.attributes[key],currentInstance.uuid, undefined)
+                    propsToShow.push({prop:prop, domElement:AttributeDomElement})
+                }
+                // //TODO check if ref is still used
+                // // ownProperties.push({uuid:key, value:aggregate.attributes[key]})
+                // var property = projectStore.get("properties").where("uuid").equals(key.substring(5))
+                // var propertyName = property.name
+                // // ownProperties[propertyName] = aggregate.attributes[key]
+                // ownProperties[propertyName] = property
+            }
+        }
+        
+    }
+    console.log(propsToShow);
+    console.log(propsToShow);
+    for (let i = 0; i < propsToShow.length; i++) {
+        const propToShow = propsToShow[i];
+        var domElement = document.createElement("div")
+        // domElement.innerHTML=`<div><span>${propToShow.prop.name}</span><span class="prop-value"></span></div>`
+        domElement.innerHTML=`<div class="tags has-addons">
+            <span class="tag is-primary  prop-name">${propToShow.prop.name}</span>
+            <span class="tag prop-value"></span>
+        </div>`
+        domElement.classList.add("control")
+        domElement.querySelector(".prop-value").append(propToShow.domElement)
+
+        instance.query(".attributes-area").append(domElement)
+        
+    }
+    alert("sgdftrq")
+}
+
 var setUp = function(event, data, instance){
     if (data.instance.uuid) {
         var instanceManagement = createInstancesManagement()
@@ -40,7 +92,9 @@ var setUp = function(event, data, instance){
         //     changeDescription(event, data, instance, json)
         // }
         // editor.defaultValue = currentInstance.attributes.desc
-        // instance.query(".textEditorArea").appendChild(editor) 
+        // instance.query(".textEditorArea").appendChild(editor)
+
+        addPropertyList(event, data, instance, currentInstance)
 
 
         ///////////////////////////
@@ -110,6 +164,9 @@ var setUp = function(event, data, instance){
         // "mention": [{name: 'John Doe', id: '101', email: 'joe@abc.com'}, {name: 'Joe Lewis', id: '102', email: 'lewis@abc.com'}],
         }
         instance.query(".textEditorArea").append(editor)
+    }else if (data.placeholder) {
+        instance.query(".card").innerHTML =""
+        instance.query(".card").append(data.placeholder)
     }
 }
 
@@ -140,6 +197,9 @@ var instanceCard =createAdler({
                 </p>
                 </div>
             </div>
+            <div class="field is-grouped is-grouped-multiline attributes-area">
+
+            </div>
         
             <div class="content">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit.
@@ -165,6 +225,7 @@ var instanceCard =createAdler({
         // },
         data:{
             instance:{name:"no name"},
+            placeholder:undefined,
             // onClick:()=>signOutUser(),
             // onClickSettings:()=>state_manager.goTo("/:/settings/model/entities")
         },

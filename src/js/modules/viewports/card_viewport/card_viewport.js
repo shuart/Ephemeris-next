@@ -7,6 +7,7 @@ import instanceCard from "../../common_ui_components/instance_card/instance_card
 import createInstancesManagement from "../../common_project_management/instances_management.js";
 import { subscribeToChanges } from "../../common_state/state_change_subscription.js";
 import state from "../../common_state/state_manager.js";
+import { getViewGridPlaceholder } from "../../project_views/view_grid_placeholders.js";
 
 
 var addItem = function (event, data, instance) {
@@ -26,13 +27,13 @@ var getEvaluatorData = function (event, data, instance){
 
         data.instance ={}
         if (renderSettings.useCurrentlySelected ) {
-            data.instance =state.getSearchParam("selected")
+            data.instance =state.getSearchParam("selected") || {}
         }
         // data.cols =evaluator.evaluate().cols
         // data.actions =evaluator.evaluate().actions
         if (typeof data.instance == "string") {
             var instanceRepo = createInstancesManagement()
-            data.instance = instanceRepo.getById(data.instance)
+            data.instance = instanceRepo.getById(data.instance) || {}
         }
         
         console.log(data);
@@ -58,8 +59,9 @@ var getEvaluatorData = function (event, data, instance){
 }
 
 var updateTable = function (event, data, instance) {
+    var placeholder = getViewGridPlaceholder("instanceCard")
     var itemData = getEvaluatorData(event,data, instance)
-     instance.getNodes().instance_card.setData({instance:itemData.instance })
+     instance.getNodes().instance_card.setData({instance:itemData.instance, placeholder:placeholder })
     //  subscribeToDB(event, data, instance)
 }
 
