@@ -8,6 +8,12 @@ import createInstancesManagement from "../../common_project_management/instances
 import createRelationInstancesAggregate from "../../common_project_management/relationInstances_management.js";
 import { subscribeToSearchParam } from "../../common_state/state_change_subscription.js";
 import state from "../../common_state/state_manager.js";
+import showPopupInstancePreview from "../../popup_instance_preview/popup_instance_preview.js";
+import mainPopup from "../../common_ui_components/mainPopup/mainPopup.js"
+import select from "../../common_ui_components/select/select.js"
+import createRelationManagement from "../../common_project_management/relations_management.js";
+import createEntityManagement from "../../common_project_management/entity_management.js";
+import nanoid from "../../../vendor/nanoid.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -97,10 +103,18 @@ var getItemsList = function (event, data, instance){
         }else{
             nodeInstances = instances
         }
+
+        var relationsRepo = createRelationManagement() //create a mapping for adding name in relations
+        var relationTypes = relationsRepo.getAll()
+        var relationMapping = {}
+        for (let i = 0; i < relationTypes.length; i++) {
+            relationMapping[relationTypes[i].uuid] = relationTypes[i];
+            
+        }
         
         var arrowsInstances = []
         for (let j = 0; j < relationInstances.length; j++) {
-            arrowsInstances.push({uuid:relationInstances[j].uuid, from:relationInstances[j].attributes.from, from_socket:"out", to:relationInstances[j].attributes.to, to_socket:"in",})
+            arrowsInstances.push({uuid:relationInstances[j].uuid, name:relationMapping[relationInstances[j].attributes.type]?.name, from:relationInstances[j].attributes.from, from_socket:"out", to:relationInstances[j].attributes.to, to_socket:"in",})
         }
         console.log(arrowsInstances);
         data.list =nodeInstances
@@ -110,6 +124,12 @@ var getItemsList = function (event, data, instance){
         }
         data.config.showSearch = renderSettings.showSearch
         data.config.showNodeList = renderSettings.showNodeList
+        data.config.uiCallbacks = {
+            onConnect:renderSettings.allowEditing ? (e)=>showConnectOptions(e.input.sourceItem, e.input.targetItem, data.graph) : undefined,
+            onNodeClick:(e)=>showPopupInstancePreview(e.input.targetItem),
+            onNodeAdd:(e)=>renderSettings.allowEditing ? addNodeCallback(e) : undefined,
+        };
+        data.config.allowEditing = renderSettings.allowEditing
 
     }else{
 
@@ -148,6 +168,45 @@ var subscribeToDB = function (event, data, instance) {
     window.addEventListener("cluster_update", updateFunc);
 }
 
+var showConnectOptions = function (sourceItemId, targetItemId, graph) {
+    var instanceRepo = createInstancesManagement()
+    var currentSelectedInstance = instanceRepo.getById(sourceItemId)
+    var targetItem = instanceRepo.getById(targetItemId)
+    var mainPopupNarrow = mainPopup.with({data:{narrow:true,title:"Select Items"}})
+    console.log(targetItem,currentSelectedInstance)
+    mainPopupNarrow.mount()
+    mainPopupNarrow.append(select.instance({
+        data:{
+            list:currentSelectedInstance.getPotentialRelationsWithInstance(targetItem.uuid),
+            callback:function(eventInCallback){ //TODO add callback
+                currentSelectedInstance.addRelation(eventInCallback.value.uuid,targetItem.uuid)
+                console.log(currentSelectedInstance.uuid, targetItem.uuid);
+                graph.getNodeManager().addLinks([{name:eventInCallback.value.name, from:currentSelectedInstance.uuid, from_socket:"out", to:targetItem.uuid, to_socket:"in"}])
+                mainPopupNarrow.unmount()
+                
+            }
+        }
+    }), "main-slot")
+    mainPopupNarrow.update();
+}
+var customNewNodeList = function(data){
+    var entityRepo = createEntityManagement()
+    var allEntities = entityRepo.getAll()
+    var addList  =[]
+    for (let i = 0; i < allEntities.length; i++) {
+        const entity = allEntities[i];
+        addList.push({id:"action_Input", value:entity.name, params:{ nodeLayout:"round",uuid:nanoid(), userData:{type:entity.name, entityUuid:entity.uuid}, name:entity.name, headerColor:entity.attributes.color, imgPath:'img/icons/'+entity.attributes.iconPath}})
+    }
+    console.log(allEntities);
+    return addList
+}
+var addNodeCallback = function (data) {
+    console.log(data);
+    var params = data.input.params;
+    var instancesRepo = createInstancesManagement()
+    instancesRepo.add({uuid:params.uuid,name:params.name,theTime:Date.now(), type:params.userData.entityUuid})
+}
+
 var updateSearchParam = function(event, data, instance){
     var selectedUuid =state.getSearchParam("selected")
     if (selectedUuid) {
@@ -173,7 +232,11 @@ var setUpTable = function (event, data, instance) {
             showNodeList : itemsData.config.showNodeList,
             simulateForces:true, 
             uiCallbacks:itemsData.uiCallbacks, 
-            canvasHeight:1500
+            canvasHeight:1500,
+            allowCustomNameForNodes: true,
+            uiCallbacks : itemsData.config.uiCallbacks,
+            addNodesFromCustomList:customNewNodeList,
+            allowEditing: itemsData.config.allowEditing,
         })
         // showNodeList:true,
         //     showSearchBox: true,

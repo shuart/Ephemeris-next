@@ -35,6 +35,7 @@ export default function createStellaeUi({
     allowCustomNameForNodes = false,
     allowCustomNameForRelations = false,
     fixNodesWithPositions = true,
+    allowEditing = true,
     } = {}) {
     var self = {};
 
@@ -447,7 +448,7 @@ export default function createStellaeUi({
                 console.log(state.selectedHandle);
                 state.selectedHandle.layoutItemInteractions.onMove(intersects.x,intersects.z)
             }
-            if (state.draggingSocket) {
+            if (state.draggingSocket && allowEditing) {
                 state.controls.enabled = false;
                 state.linkToAdd = undefined
                 var intersects = new THREE.Vector3();
@@ -516,7 +517,7 @@ export default function createStellaeUi({
                 markSelected(selectedNodes)
             }
         }
-        function onDblClick (){
+        function onDblClick (event){
             state.mouse.x = ( (event.clientX-state.containerDim.x) / state.containerDim.width ) * 2 - 1;
             state.mouse.y = - ( (event.clientY-state.containerDim.y) / state.containerDim.height ) * 2 + 1;
             var intersects = new THREE.Vector3();
@@ -539,23 +540,26 @@ export default function createStellaeUi({
             }else{
                 selectionList = usedTemplatesList
             }
-            inputElements.createListInput({
-                inputTitle:"Add Nodes",
-                options :selectionList,
-                customName : allowCustomNameForNodes,
-                defaultIconPath: addListDefaultIconPath,
-                customCategoriesIconPath:addListCustomCategoriesIconPath,
-                callback:function (event) {
-                    if (!event.params.position) {
-                        event.params.position={x:intersects.x,y:intersects.z}
-                    }
-                    // console.log(usedTemplates[event.id], {name:event.value,  position:{x:intersects.x,y:intersects.z}});
-                    dataManager.addNode(event.id, event.params)
-                    if (uiCallbacks.onNodeAdd) {
-                        uiCallbacks.onNodeAdd({dataManager, state, input:{params:event.params}})
-                    }
-                },
-            })
+            if (allowEditing) {
+                inputElements.createListInput({
+                    inputTitle:"Add Nodes",
+                    options :selectionList,
+                    customName : allowCustomNameForNodes,
+                    defaultIconPath: addListDefaultIconPath,
+                    customCategoriesIconPath:addListCustomCategoriesIconPath,
+                    callback:function (event) {
+                        if (!event.params.position) {
+                            event.params.position={x:intersects.x,y:intersects.z}
+                        }
+                        // console.log(usedTemplates[event.id], {name:event.value,  position:{x:intersects.x,y:intersects.z}});
+                        dataManager.addNode(event.id, event.params)
+                        if (uiCallbacks.onNodeAdd) {
+                            uiCallbacks.onNodeAdd({dataManager, state, input:{params:event.params}})
+                        }
+                    },
+                })
+            }
+            
                 // state.selectedToMove[0].position.set(intersects.x, 0.1, intersects.z);
             // alert(intersects.x)
         }

@@ -23,6 +23,7 @@ function createStellae({
     addListCustomCategoriesIconPath=false,
     allowCustomNameForNodes= false,
     allowCustomNameForRelations = false,
+    allowEditing = true,
     } = {}) {
     var self = {};
     var ui = undefined;
@@ -84,6 +85,7 @@ function createStellae({
                 addListCustomCategoriesIconPath:addListCustomCategoriesIconPath,
                 allowCustomNameForNodes:allowCustomNameForNodes,
                 allowCustomNameForRelations:allowCustomNameForRelations,
+                allowEditing:allowEditing,
             })
             nodeManager = createNodeManager({ui:ui})
             

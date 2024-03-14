@@ -19,6 +19,7 @@ function createGraphSettings(comp, callback) {
     var focusOnSelected = comp.renderSettings?.focusOnSelected || false
     var showSearch = comp.renderSettings?.showSearch || false
     var showNodeList = comp.renderSettings?.showNodeList || false
+    var allowEditing = comp.renderSettings?.allowEditing || false
     var relationsToDisplay = comp.renderSettings?.relationsToDisplay || []
     var entitiesToDisplay = comp.renderSettings?.entitiesToDisplay || []
     var propertiesToDisplay = comp.renderSettings?.fieldsToDisplay || []
@@ -73,6 +74,11 @@ function createGraphSettings(comp, callback) {
             value:showNodeList,
             }
         },  
+        {type:"boolean", name:"allowEditing",config:{
+            label:"Allow Editing",
+            value:allowEditing,
+            }
+        },  
         ],
         onConfirm:(result)=>{
             console.log(result);
@@ -84,6 +90,7 @@ function createGraphSettings(comp, callback) {
                 focusOnSelected : result.focusOnSelected,
                 showSearch : result.showSearch,
                 showNodeList : result.showNodeList,
+                allowEditing : result.allowEditing,
             }
             console.log(newConfig);
             if (callback) {
