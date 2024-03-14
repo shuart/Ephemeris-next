@@ -10,6 +10,7 @@ import createDialogue from "../common_select_dialogue/common_dialogue.js";
 import { createEntitiesSelectionOptions } from "../common_selectors/entities_selector.js";
 import { createTableSettings } from "./settings/view_grid_settings_table.js";
 import { createCardSettings } from "./settings/view_grid_settings_card.js";
+import { createGraphSettings } from "./settings/view_grid_settings_graph.js";
 
 var goToEvaluator = function(event){
     var evaluator = event.target.dataset.id
@@ -52,6 +53,10 @@ var setUpOptionsEvent = function (self, event, domElement, currentUuid, uuid, co
         })
     } else if(comp.componentType =="instanceCard") {
         createCardSettings(comp, function(data) {
+            self.editRenderSettingsCallback(uuid, data)
+        })
+    } else if(comp.componentType =="graph") {
+        createGraphSettings(comp, function(data) {
             self.editRenderSettingsCallback(uuid, data)
         })
     }

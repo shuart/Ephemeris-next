@@ -80,7 +80,6 @@ var addPropertyList = function (event, data, instance, currentInstance) {
         instance.query(".attributes-area").append(domElement)
         
     }
-    alert("sgdftrq")
 }
 
 var setUp = function(event, data, instance){

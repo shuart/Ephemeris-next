@@ -71,24 +71,24 @@ var showPopup = function (event, data, instance) {
                     currentPosition = currentNodeLayout.nodes.find(n=> n.params.uuid == element.uuid).params.position
                 }
                 // data.graph.getNodeManager().addNode(element)
-                data.graph.getNodeManager().addNode("in_out", { nodeLayout:"round",uuid:element.uuid, position: currentPosition||undefined, userData:{type:"entity"}, name:element.name, headerColor:element.attributes.color, imgPath:'img/iconsPNG/'+element.attributes.iconPath})
+                data.graph.getNodeManager().addNode("in_out", { nodeLayout:"round",uuid:element.uuid, position: currentPosition||undefined, userData:{type:"entity"}, name:element.name, headerColor:element.attributes.color, imgPath:'img/icons/'+element.attributes.iconPath})
             }
-            //unpack properties
+            //unpack properties //TODO see how to deak with props
             // debugger
-            var repoProperties = createPropertyManagement()
-            var properties = repoProperties.getAll()
-            var propertyToEntityRelations = []
-            for (let i = 0; i < properties.length; i++) {
-                const property = properties[i];
-                // data.graph.getNodeManager().addNode(element)
-                data.graph.getNodeManager().addNode("in_out", { nodeLayout:"round",uuid:property.uuid,userData:{type:"property"},  name:property.name, headerColor:"#c0bfbc", imgPath:'img/iconsPNG/info.svg'})
-                //unpack properties relations
-                var relatedEntities = property.getRelatedEntities()
-                for (let j = 0; j < relatedEntities.length; j++) {
-                    const relatedEntity = relatedEntities[j];
-                    propertyToEntityRelations.push({name:"is property of",userData:{}, dashed:true, from:property.uuid, from_socket:"output", to:relatedEntity.uuid, to_socket:"input"});
-                }
-            }
+            // var repoProperties = createPropertyManagement()
+            // var properties = repoProperties.getAll()
+            // var propertyToEntityRelations = []
+            // for (let i = 0; i < properties.length; i++) {
+            //     const property = properties[i];
+            //     // data.graph.getNodeManager().addNode(element)
+            //     data.graph.getNodeManager().addNode("in_out", { nodeLayout:"round",uuid:property.uuid,userData:{type:"property"},  name:property.name, headerColor:"#c0bfbc", imgPath:'img/icons/info.svg'})
+            //     //unpack properties relations
+            //     var relatedEntities = property.getRelatedEntities()
+            //     for (let j = 0; j < relatedEntities.length; j++) {
+            //         const relatedEntity = relatedEntities[j];
+            //         propertyToEntityRelations.push({name:"is property of",userData:{}, dashed:true, from:property.uuid, from_socket:"output", to:relatedEntity.uuid, to_socket:"input"});
+            //     }
+            // }
     
             // data.graph.getNodeManager().addNode("in_out", { nodeLayout:"group",uuid:"feefsfesfsefsdfsd", name:"group", headerColor:"#c0bfbc", imgPath:'img/iconsPNG/info.svg'})
             var unpackedRelations = [] //unpack relations in smaller relations for the graph
@@ -104,7 +104,7 @@ var showPopup = function (event, data, instance) {
             }
             
             data.graph.getNodeManager().addLinks(unpackedRelations)
-            data.graph.getNodeManager().addLinks(propertyToEntityRelations)
+            // data.graph.getNodeManager().addLinks(propertyToEntityRelations) //TODO see how to deak with props
 
             data.graph.getNodeManager().setSelected(data.selected)
             

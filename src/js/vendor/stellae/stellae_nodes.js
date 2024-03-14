@@ -566,6 +566,11 @@ var createNodeManager = function ({
             return ui.getSelected(params)
         }
     }
+    var setFocus= function (params) {
+        if (ui) {
+            return ui.setFocus(params)
+        }
+    }
 
 
 
@@ -597,6 +602,7 @@ var createNodeManager = function ({
     self.getScreenshot = getScreenshot
     self.setSelected = setSelected
     self.getSelected = getSelected
+    self.setFocus = setFocus
     
     return self
 }

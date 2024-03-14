@@ -6,6 +6,8 @@ import createStellae from "../../../vendor/stellae/stellae.js";
 import graphUiTemplates from "./graph_ui_node_templates.js";
 import createInstancesManagement from "../../common_project_management/instances_management.js";
 import createRelationInstancesAggregate from "../../common_project_management/relationInstances_management.js";
+import { subscribeToSearchParam } from "../../common_state/state_change_subscription.js";
+import state from "../../common_state/state_manager.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -78,6 +80,32 @@ var getItemsList = function (event, data, instance){
             onConnect: evaluatorResult.onConnect,
             onNodeClick:evaluatorResult.onNodeClick
         } 
+    }else if(renderSettings) {
+
+        var instanceRepo = createInstancesManagement()
+        var relationInstancesRepo = createRelationInstancesAggregate()
+        var relationInstances= relationInstancesRepo.getAll()
+        var instances = instanceRepo.getAll()
+        var nodeInstances = []
+        
+        if (renderSettings.relationsToDisplay?.nodes) {
+            for (let i = 0; i < instances.length; i++) {
+                if ( renderSettings.relationsToDisplay?.nodes.includes(instances[i].attributes.type) ) {
+                    nodeInstances.push(instances[i])
+                }
+            }
+        }else{
+            nodeInstances = instances
+        }
+        
+        var arrowsInstances = []
+        for (let j = 0; j < relationInstances.length; j++) {
+            arrowsInstances.push({uuid:relationInstances[j].uuid, from:relationInstances[j].attributes.from, from_socket:"out", to:relationInstances[j].attributes.to, to_socket:"in",})
+        }
+        console.log(arrowsInstances);
+        data.list =nodeInstances
+        data.links =arrowsInstances
+
     }else{
 
         var instanceRepo = createInstancesManagement()
@@ -115,6 +143,13 @@ var subscribeToDB = function (event, data, instance) {
     window.addEventListener("cluster_update", updateFunc);
 }
 
+var updateSearchParam = function(event, data, instance){
+    var selectedUuid =state.getSearchParam("selected")
+    if (selectedUuid) {
+        data.graph.getNodeManager().setFocus(selectedUuid)
+    }   
+}
+
 var setUpTable = function (event, data, instance) {
     var instanceRepo = createInstancesManagement()
     //  console.log(instance.getNodes());
@@ -143,6 +178,11 @@ var setUpTable = function (event, data, instance) {
         }
 
         data.graph.getNodeManager().addLinks(itemsData.links)
+        var renderSettings = instance.props.get("settings").renderSettings
+        if (renderSettings?.focusOnSelected == true) {
+            updateSearchParam(event, data, instance)
+            subscribeToSearchParam(event, data, instance, updateSearchParam)
+        }
         
     
         // var repo = createEvaluatorsManagement()

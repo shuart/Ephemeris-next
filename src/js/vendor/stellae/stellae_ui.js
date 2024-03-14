@@ -13,6 +13,7 @@ import createSelectionBox from "./stellae_selection_box.js";
 import { markSelected, markUnSelected } from "./stellae_utils_select_unselect.js";
 import cleanLinksVisibility from "./stellae_utils_clean_links_connections.js";
 import { createLinksRCM, createNodeRCM } from "./stellae_right_click_menu.js";
+import { fadeNode, unFadeNode } from "./stellae_hide_fade_nodes.js";
 
 
 export default function createStellaeUi({
@@ -189,7 +190,14 @@ export default function createStellaeUi({
         return node;
     }
 
-    var addLinks = function(links){
+    var addLinks = function(linksToAdd){
+        var links =[]
+        for (let i = 0; i < linksToAdd.length; i++) { //clean links that are not matching objects TODO, see if it gives errors
+            if ( state.mapping[linksToAdd[i].from] &&  state.mapping[linksToAdd[i].to] ){
+                links.push(linksToAdd[i])
+            }
+        }
+        
         for (let i = 0; i < links.length; i++) {
             const element = links[i];
             var meshLine = createMeshLine(element)
@@ -663,6 +671,19 @@ export default function createStellaeUi({
         return obj
     }
 
+    var setFocus = function (uuid) {
+        for (let i = 0; i < state.nodes.length; i++) {
+                if (state.nodes[i].edata.uuid == uuid) {
+                    // nodeList[i].visible = true
+                    unFadeNode(state.nodes[i])
+                }else{
+                    // nodeList[i].visible = false
+                    fadeNode(state.nodes[i])
+                }
+            
+        }
+    }
+
     
 
     var init = function () {
@@ -680,5 +701,6 @@ export default function createStellaeUi({
     self.renderToDataURL = renderToDataURL;
     self.exportSelected = exportSelected
     self.setSelected = setSelected
+    self.setFocus = setFocus
     return self
 }
