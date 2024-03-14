@@ -103,7 +103,7 @@ var customNewNodeList = function(data){
     var addList  =[]
     for (let i = 0; i < allEntities.length; i++) {
         const entity = allEntities[i];
-        addList.push({id:"action_Input", value:entity.name, params:{ nodeLayout:"round",uuid:nanoid(), userData:{type:entity.name, entityUuid:entity.uuid}, name:entity.name, headerColor:entity.attributes.color, imgPath:'img/iconsPNG/'+entity.attributes.iconPath}})
+        addList.push({id:"action_Input", value:entity.name, params:{ nodeLayout:"round",uuid:nanoid(), userData:{type:entity.name, entityUuid:entity.uuid}, name:entity.name, headerColor:entity.attributes.color, imgPath:'img/icons/'+entity.attributes.iconPath}})
     }
     console.log(allEntities);
     return addList
@@ -136,7 +136,7 @@ var createNewGraph =function(event,data, instance){
         if (currentInstance && !currentInstance.properties) {
             currentInstance = instanceRepo.getById(currentInstance.uuid) //NEDED because instance repo cannot be loaded in the domain. TODO, find a workaround
         }
-        data.graph.getNodeManager().addNode("action_Input", { nodeLayout:"round",uuid:currentInstance.uuid, name:currentInstance.name, headerColor:currentInstance.color, imgPath:'img/iconsPNG/'+currentInstance.sourceEntity.iconPath})
+        data.graph.getNodeManager().addNode("action_Input", { nodeLayout:"round",uuid:currentInstance.uuid, name:currentInstance.name, headerColor:currentInstance.color, imgPath:'img/icons/'+currentInstance.sourceEntity.iconPath})
         // data.graph.getNodeManager().addNode("action_Input", { uuid:element.uuid, name:element.name})
     }
     data.graph.getNodeManager().addLinks(itemsData.links)

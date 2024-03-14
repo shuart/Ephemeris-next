@@ -5,6 +5,7 @@ import createEvaluator from "../../common_evaluators/evaluators.js";
 import createStellae from "../../../vendor/stellae/stellae.js";
 import graphUiTemplates from "./graph_ui_node_templates.js";
 import createInstancesManagement from "../../common_project_management/instances_management.js";
+import createRelationInstancesAggregate from "../../common_project_management/relationInstances_management.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -25,52 +26,74 @@ var addItem = function (event, data, instance) {
 
 var getItemsList = function (event, data, instance){
     var data = {}
-    var evaluator = createEvaluator({originInstance:instance.props.get('settings').calledFromInstance, type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
-    console.log(evaluator);
-    var evaluatorResult = evaluator.evaluate().output_graph
-    if (!evaluatorResult) {
-        return {list:[{name:"undefined LIST"}], cols:[]}
+    var useNodes = false
+    var renderSettings = instance.props.get("settings").renderSettings
+    if (renderSettings) {
+        useNodes = renderSettings.useNodes || false
     }
-    data.list =[]
-    if (evaluatorResult.nodes && evaluatorResult.nodes[0]) {
-        for (let i = 0; i < evaluatorResult.nodes.length; i++) {
-            const entityGroup = evaluatorResult.nodes[i];
-            if (entityGroup.uuid) { //in case the entity is not a field but a an isolated entity
-                data.list.push(entityGroup)
-            }else{
-                for (let j = 0; j < entityGroup.length; j++) {
-                    data.list.push(entityGroup[j])
-                }
-            }
+    if (useNodes) {
+        var evaluator = createEvaluator({originInstance:instance.props.get('settings').calledFromInstance, type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
+        console.log(evaluator);
+        var evaluatorResult = evaluator.evaluate().output_graph
+        if (!evaluatorResult) {
+            return {list:[{name:"undefined LIST"}], cols:[]}
         }
-    }
-    data.links =[]
-    // debugger
-    if (evaluatorResult.links && evaluatorResult.links[0]) {
-        for (let i = 0; i < evaluatorResult.links.length; i++) {
-            const entityGroup = evaluatorResult.links[i];
-            for (let j = 0; j < entityGroup.length; j++) {
-                console.log(entityGroup[j]);
-                if (entityGroup[j].uuid) {
-                    data.links.push({uuid:entityGroup[j].uuid, from:entityGroup[j].from, from_socket:"out", to:entityGroup[j].to, to_socket:"in",})
-                }else{ //TODO Find why it is sometimes necessary
-                    for (var prop in entityGroup[j]) { //TODO Should be optimized
-                        for (let k = 0; k < entityGroup[j][prop].length; k++) {
-                            data.links.push({uuid:entityGroup[j][prop][k].relation.uuid, from:entityGroup[j][prop][k].relation.from, from_socket:"out", to:entityGroup[j][prop][k].relation.to, to_socket:"in",})
-                        }
+        data.list =[]
+        if (evaluatorResult.nodes && evaluatorResult.nodes[0]) {
+            for (let i = 0; i < evaluatorResult.nodes.length; i++) {
+                const entityGroup = evaluatorResult.nodes[i];
+                if (entityGroup.uuid) { //in case the entity is not a field but a an isolated entity
+                    data.list.push(entityGroup)
+                }else{
+                    for (let j = 0; j < entityGroup.length; j++) {
+                        data.list.push(entityGroup[j])
                     }
                 }
-                
+            }
+        }
+        data.links =[]
+        // debugger
+        if (evaluatorResult.links && evaluatorResult.links[0]) {
+            for (let i = 0; i < evaluatorResult.links.length; i++) {
+                const entityGroup = evaluatorResult.links[i];
+                for (let j = 0; j < entityGroup.length; j++) {
+                    console.log(entityGroup[j]);
+                    if (entityGroup[j].uuid) {
+                        data.links.push({uuid:entityGroup[j].uuid, from:entityGroup[j].from, from_socket:"out", to:entityGroup[j].to, to_socket:"in",})
+                    }else{ //TODO Find why it is sometimes necessary
+                        for (var prop in entityGroup[j]) { //TODO Should be optimized
+                            for (let k = 0; k < entityGroup[j][prop].length; k++) {
+                                data.links.push({uuid:entityGroup[j][prop][k].relation.uuid, from:entityGroup[j][prop][k].relation.from, from_socket:"out", to:entityGroup[j][prop][k].relation.to, to_socket:"in",})
+                            }
+                        }
+                    }
+                    
+                    
+                }
                 
             }
-            
         }
+        data.actions =evaluatorResult.actions
+        data.uiCallbacks={
+            onConnect: evaluatorResult.onConnect,
+            onNodeClick:evaluatorResult.onNodeClick
+        } 
+    }else{
+
+        var instanceRepo = createInstancesManagement()
+        var relationInstancesRepo = createRelationInstancesAggregate()
+        var relationInstances= relationInstancesRepo.getAll()
+        var arrowsInstances = []
+        for (let j = 0; j < relationInstances.length; j++) {
+            arrowsInstances.push({uuid:relationInstances[j].uuid, from:relationInstances[j].attributes.from, from_socket:"out", to:relationInstances[j].attributes.to, to_socket:"in",})
+        }
+        console.log(arrowsInstances);
+        data.list =instanceRepo.getAll()
+        data.links =arrowsInstances
+
     }
-    data.actions =evaluatorResult.actions
-    data.uiCallbacks={
-        onConnect: evaluatorResult.onConnect,
-        onNodeClick:evaluatorResult.onNodeClick
-    } 
+
+
     
 
     
@@ -112,7 +135,10 @@ var setUpTable = function (event, data, instance) {
             if (currentInstance && !currentInstance.properties) {
                 currentInstance = instanceRepo.getById(currentInstance.uuid) //NEDED because instance repo cannot be loaded in the domain. TODO, find a workaround
             }
-            data.graph.getNodeManager().addNode("action_Input", { nodeLayout:"round",uuid:currentInstance.uuid, name:currentInstance.name, headerColor:currentInstance.color, imgPath:'img/iconsPNG/'+currentInstance.sourceEntity.iconPath})
+            // console.log(currentInstance);
+            // alert("currentInstance");
+            
+            data.graph.getNodeManager().addNode("action_Input", { nodeLayout:"round",uuid:currentInstance.uuid, name:currentInstance.name, headerColor:currentInstance.color, imgPath:'img/icons/'+currentInstance.sourceEntity.iconPath})
             // data.graph.getNodeManager().addNode("action_Input", { uuid:element.uuid, name:element.name})
         }
 

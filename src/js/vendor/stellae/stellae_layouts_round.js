@@ -1,6 +1,8 @@
 import * as THREE from "../three.module.js"
 import inputElements from "./stellae_inputs.js"
 
+var imageCache = {}
+
 let nanoid=(t=21)=>crypto.getRandomValues(new Uint8Array(t)).reduce(((t,e)=>t+=(e&=63)<36?e.toString(36):e<62?(e-26).toString(36).toUpperCase():e>62?"-":"_"),"");
 
 const textCanvas = document.createElement( 'canvas' );
@@ -153,17 +155,68 @@ var createNodeRound  = function({
 
         return sprite;
     }
+    function svgToTexture(imgPath) {
+        // Create a new canvas element
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set the canvas size
+        canvas.width = 75; // You can adjust the size as needed
+        canvas.height = 75;
+
+        if (imageCache[imgPath]) {
+            const spriteImage = new THREE.Sprite( new THREE.SpriteMaterial( { map: imageCache[imgPath] } ) );
+            return spriteImage
+        }else{
+            var imageMap = new THREE.Texture(canvas);
+            imageCache[imgPath] = imageMap
+            var img = new Image();
+            imageMap.minFilter = THREE.LinearFilter;
+            // spriteMap.generateMipmaps = false;
+            imageMap.needsUpdate = true;
+            const spriteImage = new THREE.Sprite( new THREE.SpriteMaterial( { map: imageMap } ) );
+            img.onload = function() {
+                ctx.drawImage(img,0,0,img.width,img.height,0,0,75,75);
+                var imageData = ctx.getImageData(0, 0, 75, 75);
+                var dataArr = imageData.data;
+                for(var i = 0; i < dataArr.length; i += 4)
+                {
+                    var r = dataArr[i]; // Red color lies between 0 and 255
+                    var g = dataArr[i + 1]; // Green color lies between 0 and 255
+                    var b = dataArr[i + 2]; // Blue color lies between 0 and 255
+                    // var a = dataArr[i + 3]; // Transparency lies between 0 and 255
+                    var invertedRed = 255 - r;
+                    var invertedGreen = 255 - g;
+                    var invertedBlue = 255 - b;
+
+                    dataArr[i] = invertedRed;
+                    dataArr[i + 1] = invertedGreen;
+                    dataArr[i + 2] = invertedBlue;
+                }
+                ctx.putImageData(imageData, 0, 0);
+                imageMap.needsUpdate = true;
+            }
+            img.src = "./"+imgPath;
+            return spriteImage
+        }
+        
+    }
     function createImage(){
         //do it only one time
-        
         var ext = imgPath.slice(-3);
         if (ext == "svg") {
-            imgPath= imgPath.slice(0, -3) + "png";
+            // imgPath= imgPath.slice(0, -3) + "png";
+            const spriteImage = svgToTexture(imgPath)
+            return spriteImage
+        }else{
+            const textureLoader = new THREE.TextureLoader();
+            var imageMap = textureLoader.load( imgPath );
+            const spriteImage = new THREE.Sprite( new THREE.SpriteMaterial( { map: imageMap } ) );
+            return spriteImage;
         }
-        const textureLoader = new THREE.TextureLoader();
-        const imageMap = textureLoader.load( imgPath );
         
-        imageMap.minFilter = THREE.LinearFilter;
+        
+        // imageMap.minFilter = THREE.LinearFilter;
         // spriteMap.generateMipmaps = false;
         // spriteMap.needsUpdate = true;
         const spriteImage = new THREE.Sprite( new THREE.SpriteMaterial( { map: imageMap } ) );
@@ -171,7 +224,7 @@ var createNodeRound  = function({
         // sprite.scale.set( mult * 0.12 * shadowCanvas.width / shadowCanvas.height , mult *0.12, 1 );
         // sprite.position.y = 0.7 ;
         
-        return spriteImage;
+        // return spriteImage;
     }
 
     function createCharacterLabel( text, maxLength ) {
