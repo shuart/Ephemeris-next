@@ -105,6 +105,11 @@ var getItemsList = function (event, data, instance){
         console.log(arrowsInstances);
         data.list =nodeInstances
         data.links =arrowsInstances
+        if (!data.config) {
+            data.config ={}
+        }
+        data.config.showSearch = renderSettings.showSearch
+        data.config.showNodeList = renderSettings.showNodeList
 
     }else{
 
@@ -118,7 +123,7 @@ var getItemsList = function (event, data, instance){
         console.log(arrowsInstances);
         data.list =instanceRepo.getAll()
         data.links =arrowsInstances
-
+        
     }
 
 
@@ -157,12 +162,23 @@ var setUpTable = function (event, data, instance) {
      var itemsData = getItemsList(event,data, instance)
     //  data.addAction = itemsData.actions
     //  instance.props.set("addAction",itemsData.actions )
-
     //  instance.getNodes().tablevp.setData({list:itemsData.list, cols:itemsData.cols })
      setTimeout(() => {
         var element= instance.query('.graph_component')
         element.innerHTML = ''//TODO GRAPH IS LOADED 2 TIMES. PREVENT THAT
-        data.graph = createStellae({container:element, fullSize:true,simulateForces:true, uiCallbacks:itemsData.uiCallbacks, canvasHeight:1500})
+        data.graph = createStellae({
+            container:element, 
+            fullSize:true,
+            showSearchBox : itemsData.config.showSearch,
+            showNodeList : itemsData.config.showNodeList,
+            simulateForces:true, 
+            uiCallbacks:itemsData.uiCallbacks, 
+            canvasHeight:1500
+        })
+        // showNodeList:true,
+        //     showSearchBox: true,
+        //     showToolbar:true,
+        //     highlightConnections: false,
         data.graph.getNodeManager().useTemplate(graphUiTemplates)
         for (let i = 0; i < itemsData.list.length; i++) {
             var currentInstance = itemsData.list[i];
@@ -202,7 +218,7 @@ var component =createAdler({
     content: p => /*html*/`
     <div class="Component" style="width:100%; height:100%; min-height:150px;">
         <div style="display:none;" class="action_add_entity" >Graph</div>
-        <div style="width:100%; height:100%;" class="graph_component"></div>
+        <div style="width:100%; height:100%;position:relative;" class="graph_component"></div>
         
     </div>
         `,
@@ -215,6 +231,7 @@ var component =createAdler({
                 evaluatorId:false,
                 calledFromInstance: false,
             },
+            
         },
         listen:{
             test:function (event, data, instance) {
@@ -226,6 +243,7 @@ var component =createAdler({
             list:[],
             table:undefined,
             addAction: undefined,
+            graphConfig:{},
             // onClick:()=>console.log("click")
         },
         on:[

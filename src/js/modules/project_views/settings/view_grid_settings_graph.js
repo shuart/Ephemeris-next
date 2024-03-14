@@ -17,6 +17,8 @@ function createGraphSettings(comp, callback) {
     //DEFAULTS
     var useNodes = comp.renderSettings?.useNodes || false
     var focusOnSelected = comp.renderSettings?.focusOnSelected || false
+    var showSearch = comp.renderSettings?.showSearch || false
+    var showNodeList = comp.renderSettings?.showNodeList || false
     var relationsToDisplay = comp.renderSettings?.relationsToDisplay || []
     var entitiesToDisplay = comp.renderSettings?.entitiesToDisplay || []
     var propertiesToDisplay = comp.renderSettings?.fieldsToDisplay || []
@@ -61,6 +63,16 @@ function createGraphSettings(comp, callback) {
                 value:focusOnSelected,
             }
         },  
+        {type:"boolean", name:"showSearch",config:{
+            label:"Show Search Box",
+            value:showSearch,
+            }
+        },  
+        {type:"boolean", name:"showNodeList",config:{
+            label:"Show Node list",
+            value:showNodeList,
+            }
+        },  
         ],
         onConfirm:(result)=>{
             console.log(result);
@@ -70,6 +82,8 @@ function createGraphSettings(comp, callback) {
                 // fieldsToDisplay : uuidFromSelection(result.propertiesToDisplay),
                 relationsToDisplay : result.graph,
                 focusOnSelected : result.focusOnSelected,
+                showSearch : result.showSearch,
+                showNodeList : result.showNodeList,
             }
             console.log(newConfig);
             if (callback) {
