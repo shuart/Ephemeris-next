@@ -29,6 +29,7 @@ var showPopup = function (event, data, instance) {
         graphSaveElement.style.height = "50px";
         graphSaveElement.style.width = "100%"
         graphSaveElement.innerHTML = "save"
+        graphSaveElement.classList="input-graph-save-action"
         mainPopupNarrow.query(".container").append(graphDomElement)
         mainPopupNarrow.query(".container").append(graphSaveElement)
 
@@ -110,9 +111,11 @@ var showPopup = function (event, data, instance) {
             
             graphSaveElement.addEventListener('click', function () {
                 var exported = data.graph.exportSelected()
+                data.selected = exported
                 console.log(exported);
                 data.onChange(exported)
                 mainPopupNarrow.unmount()
+                instance.update()
                 // alert("fefsekkmm")
             })
             
@@ -194,6 +197,23 @@ var input_graph =createAdler({
         },
     },
     css:/*css*/`
+    .input-graph-save-action{
+        color: #ffffff;
+        align-items: center;
+        background-color: #f5f5f5;
+        border-radius: .375em;
+        display: inline-flex;
+        height: 2em;
+        justify-content: center;
+        line-height: 1.5;
+        padding-left: .75em;
+        padding-right: .75em;
+        white-space: nowrap;
+        background-color: #00d1b2;
+        margin-right:5px;
+        font-weight: bold;
+        cursor:pointer;
+    }
     .ephSelectionarea{
         background-color: #fff;
         border-color: #363636;
