@@ -5,6 +5,7 @@ import createPropertyManagement from "../common_project_management/properties_ma
 import createDialogue from "../common_select_dialogue/common_dialogue.js";
 import { createPropertiesSelectionOptions } from "../common_selectors/properties_selector.js";
 import { textArea } from "../common_ui_components/textEditor.js/textArea.js";
+import showPopupInstancePreview from "../popup_instance_preview/popup_instance_preview.js";
 
 var uuidFromSelection = function(data){
     if (data && data[0]) {
@@ -14,14 +15,25 @@ var uuidFromSelection = function(data){
     }
 }
 
+function extractSummary(stringifyData) {
+    var rx = /(?<=\"text\":\").*?(?=\")/s;
+    
+    var arr = rx.exec(stringifyData);
+    return arr[0] +"..."; 
+  }
+
 export function renderNotebookAttribute(attributeId,currentValue,bearingEntityId, callback){
     // var attRepo= createPropertyManagement()
     // var att = attRepo.getById(attributeId)
+    var valueToDisplay
     if (!currentValue) {
         currentValue = "_"
+        valueToDisplay = "_"
+    }else{
+        valueToDisplay = extractSummary(currentValue)
     }
     var domEl = document.createElement("div")
-    domEl.innerHTML=`<div>${currentValue}</div>`
+    domEl.innerHTML=`<div>${valueToDisplay}</div>`
     domEl.addEventListener('click', function (event) {
         createNotebookAttributeEditor(attributeId,currentValue,bearingEntityId, callback)
         if (callback) {
@@ -31,17 +43,41 @@ export function renderNotebookAttribute(attributeId,currentValue,bearingEntityId
     return domEl
 }
 
-function createTextAreaEditor(domElement) {
+var setCurrentTags = function () {
+    var instancesRepo = createInstancesManagement()
+    var instances = instancesRepo.getAll()
+  
+    return instances.map(i=>({id:i.uuid, tag:i.name}))
+  }
+
+function createTextAreaEditor(domElement, currentValue, attributeId, bearingEntityId) {
     var editor = textArea.instance()
     editor.showExplorer = false;
     editor.showMenu = false;
-    if (currentInstance.attributes.desc) {
-        editor.defaultValue= JSON.parse(currentInstance.attributes.desc)
+    // console.log(currentValue);
+    // var currentInstance = undefined
+    // if (currentInstance || currentInstance?.attributes?.desc) {
+    //     editor.defaultValue= JSON.parse(currentInstance.attributes.desc)
         
+    // }
+    if (currentValue && currentValue !="" & currentValue !="_") {
+        editor.defaultValue= JSON.parse(currentValue)
     }
     
     editor.onSave=(json,editor, currentDoc)=>{
-        changeDescription(event, data, instance, json)
+        // changeDescription(event, data, instance, json)
+        var result = JSON.stringify(json)
+        console.log(result);
+            var attRepo= createPropertyManagement()
+            var att = attRepo.getById(attributeId)
+            var instancesRepo = createInstancesManagement()
+            var entity =instancesRepo.getById(bearingEntityId)
+            console.log(att, entity);
+            if (att && entity) {
+                var payload={uuid:bearingEntityId}
+                payload["prop_"+attributeId] = result
+                instancesRepo.update(payload)
+            }
     }
 
     editor.mentionsDefs= [
@@ -63,7 +99,7 @@ function createTextAreaEditor(domElement) {
     // "mention": [{name: 'John Doe', id: '101', email: 'joe@abc.com'}, {name: 'Joe Lewis', id: '102', email: 'lewis@abc.com'}],
     }
 
-    // instance.query(".textEditorArea").append(editor)
+    domElement.append(editor)
     
 }
 
@@ -88,12 +124,12 @@ export function createNotebookAttributeEditor(attributeId,currentValue,bearingEn
         //         value:useNodes,
         //     }
         // },  
-        {type:"text", name:"text",config:{
-                label:"Property Name",
-                value:currentValue,
-                autofocus:true,
-            }
-        },
+        // {type:"text", name:"text",config:{
+        //         label:"Property Name",
+        //         value:currentValue,
+        //         autofocus:true,
+        //     }
+        // },
         // {type:"selection", name:"entitiesToDisplay", config:{
         //     multipleSelection:true,
         //         label:"Entities to Display",
@@ -117,35 +153,34 @@ export function createNotebookAttributeEditor(attributeId,currentValue,bearingEn
         // },
         ],
         onRender:(domElem)=>{
-            alert("fff")
-            domElem.innerHTML("fefsffesfes")
+            createTextAreaEditor(domElem,currentValue, attributeId, bearingEntityId)
         } ,
-        onConfirm:(result)=>{
-            console.log(result);
-            var attRepo= createPropertyManagement()
-            var att = attRepo.getById(attributeId)
-            var instancesRepo = createInstancesManagement()
-            var entity =instancesRepo.getById(bearingEntityId)
-            console.log(att, entity);
-            if (att && entity) {
-                var payload={uuid:bearingEntityId}
-                payload["prop_"+attributeId] = result.text
-                instancesRepo.update(payload)
-            }
-            // var newConfig = {
-            //     useNodes : result.useNodes,
-            //     entitiesToDisplay : uuidFromSelection(result.entitiesToDisplay),
-            //     fieldsToDisplay : uuidFromSelection(result.propertiesToDisplay),
-            //     relationsToDisplay : result.graph,
-            // }
-            // console.log(newConfig);
-            // if (callback) {
-            //     callback(newConfig)
-            // }
-            // var added = []
-            // var removed = []
-            // var newSelection = result.selection
-        } 
+        // onConfirm:(result)=>{
+        //     console.log(result);
+        //     var attRepo= createPropertyManagement()
+        //     var att = attRepo.getById(attributeId)
+        //     var instancesRepo = createInstancesManagement()
+        //     var entity =instancesRepo.getById(bearingEntityId)
+        //     console.log(att, entity);
+        //     if (att && entity) {
+        //         var payload={uuid:bearingEntityId}
+        //         payload["prop_"+attributeId] = result.text
+        //         instancesRepo.update(payload)
+        //     }
+        //     // var newConfig = {
+        //     //     useNodes : result.useNodes,
+        //     //     entitiesToDisplay : uuidFromSelection(result.entitiesToDisplay),
+        //     //     fieldsToDisplay : uuidFromSelection(result.propertiesToDisplay),
+        //     //     relationsToDisplay : result.graph,
+        //     // }
+        //     // console.log(newConfig);
+        //     // if (callback) {
+        //     //     callback(newConfig)
+        //     // }
+        //     // var added = []
+        //     // var removed = []
+        //     // var newSelection = result.selection
+        // } 
      })
     
 }

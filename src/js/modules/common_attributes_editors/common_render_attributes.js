@@ -9,6 +9,6 @@ export var getAttributeRenderer = function (type) {
         notebook:renderNotebookAttribute,
     }
 
-    return table[type]
+    return table[type] || renderTextAttribute
     
 }

@@ -157,9 +157,7 @@ var createDialogue = function(params){
     //     choices.push({uuid:element, name:element, isIcon:true, iconPath:element})
     // }
     containerPopup.mount()
-    console.log(params);
-    alert(parameters.onRender)
-    if (parameters.onRender) {
+    if (params.onRender) {
         var domElem = containerPopup.query(".main_popup_menu_area")
         params.onRender(domElem)
     }

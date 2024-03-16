@@ -101,6 +101,7 @@ var textArea = createAdler({
         padding: 15px;
         border-color: #363636;
         box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.1);
+        position:relative;
     }
     .action-writer-save{
       position: absolute;
@@ -129,7 +130,7 @@ var textArea = createAdler({
       display: flex;
       column-gap: 11px;
       position: absolute;
-      top: 0px;
+      top: -23px;
       left: 40px;
     }
     .prosemirror-top-bar-item{

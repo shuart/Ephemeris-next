@@ -38,6 +38,7 @@ var addPropertyList = function (event, data, instance, currentInstance) {
     var propRepo = createPropertyManagement()
     var props = propRepo.getAll()
     var propsToShow=[]
+    // var propsTypeMapping = propRepo.getPropertiesTypes()
 
     for (let i = 0; i < props.length; i++) {
         var prop = props[i];
@@ -51,7 +52,7 @@ var addPropertyList = function (event, data, instance, currentInstance) {
                 const element = entity.attributes[key];
 
                 if (key.substring(5) == prop.uuid) {
-                    var AttributeDomElement = getAttributeRenderer("text")(prop.uuid,currentInstance.attributes[key],currentInstance.uuid, undefined)
+                    var AttributeDomElement = getAttributeRenderer(prop.attributes.type)(prop.uuid,currentInstance.attributes[key],currentInstance.uuid, undefined)
                     propsToShow.push({prop:prop, domElement:AttributeDomElement})
                 }
                 // //TODO check if ref is still used
