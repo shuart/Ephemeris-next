@@ -13,6 +13,7 @@ import { createSimpleSummaryPageForEntities } from "../common_quick_settings/com
 import { createAttributeSettingsTable } from "./settings_tables/attributes_table.js";
 import { createRelationsSettingsTable } from "./settings_tables/relations_table.js";
 import { createEntitiesSettingsTable } from "./settings_tables/entities_table.js";
+import { createAttributesAddEditor } from "../common_add_editors/common_attributes_add_editor.js";
 // import createViewManagement from "../common_project_management/view_management.js";
 
 var getCurrentUser = function(){
@@ -25,14 +26,17 @@ var getCurrentProject = function(){
 var addEntityToProject = function(event, data, instance){
     var projectId = projectManagement.getCurrent().id
     console.log(projectId)
-    var name= prompt("Name")
-    if (name) {
-        if (data.modelElementType == "attributes") {
-            data.modelElementType = "properties"
+    if (data.modelElementType="attributes") {
+        // data.modelElementType = "properties"
+        createAttributesAddEditor()
+    }else{
+        var name= prompt("Name")
+        if (name) {
+            projectManagement.getProjectStore(projectId,data.modelElementType).add({name:name ,theTime:Date.now()})
+            // instance.getNodes().table.do.softUpdate()
         }
-        projectManagement.getProjectStore(projectId,data.modelElementType).add({name:name ,theTime:Date.now()})
-        // instance.getNodes().table.do.softUpdate()
     }
+   
     // instance.update()
 }
 var getItemsList = function (data, instance){

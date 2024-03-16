@@ -88,6 +88,9 @@ var checkColsForCustomFormating = function(rows, cols){
             if (newCols[i].customObjects) {
                 newCols[i]= getCustomFormatterForObjects(rows, col)
             }
+            if (newCols[i].customTags) {
+                newCols[i]= getCustomFormatterForTags(rows, col)
+            }
             if (newCols[i].isAttribute) {
                 newCols[i]= getCustomFormatterForAttributes(rows, col)
             }
@@ -256,6 +259,56 @@ var getCustomFormatterForObject = function (rows, col) {
     var colObject = {formatter:toDisplay, width:90, title:col.title, cellClick:col.cellClick};
     return colObject
 }
+
+var getCustomFormatterForTags = function (rows, col) {
+    
+    var formatterFunction = function(cell, formatterParams, onRendered){
+        //cell - the cell component
+        //formatterParams - parameters set for the column
+        //onRendered - function to call when the formatter has been rendered
+        var html = ""
+        var items = cell.getData()[col.field]
+        if (items == undefined) {
+            items = []
+        }
+        if (!Array.isArray(items)) {
+            items = [items]
+        }
+        if (items[0] === undefined) {
+            items = []  
+        }
+        for (let i = 0; i < items.length; i++) {
+            const element = items[i];
+            var colorField = ""
+            var iconPart =""
+            if (element.attributes?.color || element.color) {
+                colorField = "background-color:"+(element.attributes?.color || element.color )+";"
+            }
+            if (element.iconPath) {
+                iconPart = '<span class=""><img class="tableTagIcon" src="./img/icons/'+element.iconPath+'"></img></span>'
+            }
+            console.log(element);
+            html += `<span style="${colorField}" data-id='${element.uuid}' class="table-tag action-tag" >${iconPart} ${element.name} </span>`
+        }
+        // onRendered(function(params) {
+            
+        //     var domElemOfCell = cell.getElement()
+        //     var tags = domElemOfCell.querySelectorAll('.action-tag')
+        //     for (let i = 0; i < tags.length; i++) {
+        //         const tag = tags[i];
+        //         tag.addEventListener('click', function (ev) {
+        //             ev.stopPropagation();
+        //             col.callback(ev.target.dataset.id)
+        //         })
+        //     }
+        // })
+        return html
+    }
+
+    var rowDef = {formatter:formatterFunction, width:col.width, title:col.title, cellClick:col.cellClick};
+    return rowDef
+}
+
 
 var getCustomFormatterForObjects = function (rows, col) {
     

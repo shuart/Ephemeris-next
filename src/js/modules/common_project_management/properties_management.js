@@ -100,8 +100,33 @@ var propertyAggregate = function(aggregate, projectStore){
     return aggregate
 }
 
+var customRepoMethods = function (projectStore,createAggregate) {
+    var repo = {}
+    repo.getPropertiesTypes = function () {
+        return {
+            "text":{name:"Text", uuid:"text", iconPath:"text.svg"},
+            "notebook":{name:"Notebook", uuid:"notebook", iconPath:"book-text.svg"},
+            "choice":{name:"Choices", uuid:"choice", iconPath:"list-todo.svg"}
+        }
+    }
+    repo.getPropertiesTypesList=function () {
+        var list= []
+        var objElement = repo.getPropertiesTypes()
+        for (const key in objElement) {
+            if (Object.hasOwnProperty.call(objElement, key)) {
+                list.push(objElement[key]);
+                
+            }
+        }
+        return list
+    }
+
+
+    return repo
+}
+
 var createPropertyManagement = function () {
-    return createRepoManagement(projectManagement.getCurrent().id, 'properties', propertyAggregate)
+    return createRepoManagement(projectManagement.getCurrent().id, 'properties', propertyAggregate,customRepoMethods)
 }
 
 export default createPropertyManagement

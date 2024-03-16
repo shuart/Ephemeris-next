@@ -38,6 +38,7 @@ export function createAttributeSettingsTable (projectId) {
     for (let i = 0; i < list.length; i++) {
         const attribute = list[i];
         attribute.assignedTo=[]
+        attribute.isOfType=[]
         for (let j = 0; j < entities.length; j++) {
             const entity = entities[j];
             console.log(entity);
@@ -45,11 +46,17 @@ export function createAttributeSettingsTable (projectId) {
             if (entity.attributes['prop_'+attribute.uuid]) {
                 attribute.assignedTo.push(entity)
             }
-            
         }
         if (attribute.attributes.iconPath) {
             attribute.iconPath = attribute.attributes.iconPath
         }
+        if (attribute.attributes['type']) {
+            var typeObject = propRepo.getPropertiesTypes()[ attribute.attributes['type'] ]
+            if (typeObject) {
+                attribute.isOfType.push(typeObject)
+            }
+        }
+        
     }
     console.log(list);
 
@@ -68,6 +75,13 @@ export function createAttributeSettingsTable (projectId) {
                 }
             } 
         }, 
+        {title:"Type", customTags:true, field:"isOfType", 
+            // cellClick:(e,cell)=>showEntitiesSelector({
+            //     selected : cell.getData()["assignedTo"].map(d=>d.uuid),
+            //     onChange: (e,f)=> changeAssignedItems(cell.getData().uuid, f.added, f.removed)
+            // }),
+            // callback :(id)=>state_manager.goTo("/:/settings/details/entities/"+id)
+        },
         {title:"Assigned To", customObjects:true, field:"assignedTo", 
             cellClick:(e,cell)=>showEntitiesSelector({
                 selected : cell.getData()["assignedTo"].map(d=>d.uuid),
