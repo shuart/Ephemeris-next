@@ -26,7 +26,7 @@ var getCurrentProject = function(){
 var addEntityToProject = function(event, data, instance){
     var projectId = projectManagement.getCurrent().id
     console.log(projectId)
-    if (data.modelElementType="attributes") {
+    if (data.modelElementType=="attributes") {
         // data.modelElementType = "properties"
         createAttributesAddEditor()
     }else{

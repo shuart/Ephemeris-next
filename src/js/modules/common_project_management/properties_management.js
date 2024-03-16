@@ -102,7 +102,15 @@ var propertyAggregate = function(aggregate, projectStore){
 
 var customRepoMethods = function (projectStore,createAggregate) {
     var repo = {}
+    const infos = {
+        "text":{name:"Text", uuid:"text", iconPath:"text.svg"},
+        "notebook":{name:"Notebook", uuid:"notebook", iconPath:"book-text.svg"},
+        "choice":{name:"Choices", uuid:"choice", iconPath:"list-todo.svg"}
+    }
     repo.getPropertiesTypes = function () {
+        return infos
+    }
+    repo.getPropertyInfoById = function (id) {
         return {
             "text":{name:"Text", uuid:"text", iconPath:"text.svg"},
             "notebook":{name:"Notebook", uuid:"notebook", iconPath:"book-text.svg"},

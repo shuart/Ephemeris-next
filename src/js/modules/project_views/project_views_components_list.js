@@ -5,6 +5,7 @@ var componentList = {
     instanceCard:{name:"Title Card", icon:"credit-card",},
     propertiesList:{name:"Properties", icon:"credit-card",},
     textEditor:{name:"Text Editor", icon:"credit-card",},
+    writingBoard:{name:"Writing Board", icon:"text",},
 }
 
 export {componentList}

@@ -16,6 +16,7 @@ import folder_viewport from "../viewports/folder_viewport/folder_viewport.js";
 
 import gridViewHeaders from "./view_grid_headers.js";
 import { getViewGridPlaceholder } from "./view_grid_placeholders.js";
+import writingBoardViewport from "../viewports/writing_board_viewport/writing_board_viewport.js";
 
 
 function sortable(self, section, onUpdate){
@@ -97,6 +98,7 @@ var availableViewports = {
     propertiesList:propertiesViewport,
     textEditor:textEditorViewport,
     folder:folder_viewport,
+    writingBoard:writingBoardViewport
 }
 
 var getComponents = function (self) {
@@ -279,6 +281,7 @@ var showAddMenu = function(event, self, area){
                 {uuid:"instanceCard", name:"Instance Card", iconPath:"credit-card.svg",},
                 {uuid:"propertiesList", name:"Properties List", iconPath:"credit-card.svg",},
                 {uuid:"textEditor", name:"Text Editor", iconPath:"credit-card.svg",},
+                {uuid:"writingBoard", name:"Writing Board", iconPath:"text.svg",},
             ],
             callback:function(result){
                 var newSchema = getSchemaFromGrid(self)
