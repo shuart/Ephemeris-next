@@ -233,6 +233,9 @@ var instanceAggregate = function(aggregate, projectStore){
         var newObject = {uuid:aggregate.uuid,[ "prop_"+propRef ]:value}
         projectStore.add("instances",newObject)
     }
+    aggregate.hasPropertyWithUuid = function (propRef) {
+        return sourceEntity["prop_"+propRef]
+    }
 
     aggregate.updateData = function (data) {
         data.uuid = aggregate.uuid

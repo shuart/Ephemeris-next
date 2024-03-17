@@ -22,6 +22,7 @@ var textArea = createAdler({
         showMenu:true,
         defaultValue:undefined,
         otherInstances:[],
+        onError:undefined,
         mentionsDefs: [
           // {name:"hashtag", key:"#", attributes:["id", "tag"], attributeToDisplay:'tag'},
           // {name:"mention", key:"@", attributes:["name", "id","email"], attributeToDisplay:'name'},
@@ -62,6 +63,7 @@ var textArea = createAdler({
         var editor = createEditor({
           onSave:self.onSave,
           onSetDocument:self.onSetDocument,
+          onError:self.onError,
           showExplorer:self.showExplorer,
           showMenu:self.showMenu,
           mentionsDefinitions : self.mentionsDefs,
@@ -71,6 +73,9 @@ var textArea = createAdler({
           defaultValue : self.defaultValue,
         })
         editor.mountAt(self.query(".writerArea"))
+        self.setDocument = function (doc) {
+          editor.setDocument(doc)
+        }
         // var jsonContent = undefined
         // if (self.defaultValue) {
         //   jsonContent = JSON.parse(self.defaultValue).doc
@@ -125,6 +130,7 @@ var textArea = createAdler({
       border-radius: 7px;
       top: 25px;
       z-index: 11;
+      cursor:pointer;
     }
     .prosemirror-top-bar-menu{
       display: flex;

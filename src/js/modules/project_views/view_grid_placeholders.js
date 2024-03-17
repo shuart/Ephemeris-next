@@ -5,6 +5,8 @@ export var getViewGridPlaceholder = function (type) {
         return gridViewTablePlaceHolder.instance()
     }else if(type =="instanceCard"){
         return gridViewInstanceCardPlaceHolder.instance()
+    }else if(type =="writingBoard"){
+        return gridViewWritingBoardPlaceHolder.instance()
     }else{
         var domPlaceholder = document.createElement("div")
         domPlaceholder.innerHTML="placehodler"
@@ -165,6 +167,82 @@ var gridViewInstanceCardPlaceHolder = createAdler({
         </div>
         </div>
     </div>
+        
+    `,
+    onRender:(self) =>{
+        // updateView(self)
+        
+    },
+    css:`
+    .placeholder{
+        margin-top:20px;
+    }
+    .skeleton {
+        animation: skeleton-loading 8s linear infinite alternate;
+    }
+    @keyframes skeleton-loading {
+        0% {
+            background-color: hsl(200, 20%, 80%);
+        }
+        100% {
+            background-color: hsl(200, 20%, 95%);
+        }
+    }
+    
+    .skeleton-text {
+        width: 90%;
+        height: 19px;
+        border-radius: 2px;
+        opacity: 0.5;
+        margin-left: 5%;
+    }
+    .skeleton-text-short {
+        width: 50%;
+        height: 19px;
+        border-radius: 2px;
+        opacity: 0.5;
+        margin-left: 5%;
+    }
+    .skeleton-text__body {
+        width: 75%;
+    }
+    `,
+})
+
+
+var gridViewWritingBoardPlaceHolder = createAdler({
+    tag:'eph-grid-view-placeholder-writing-board',
+    props:{
+        currentPageId:undefined,
+        // currentArea:undefined,
+        // calledFromInstance:undefined,
+        // cols:4,
+        // rows:4,
+        // schema:[],
+        // showSettings:false,
+    },
+    attributes:[
+    ],
+    events : [
+        // ["click", '.action_grid_add', addComp],
+        // ["click", '.action-grid-save', saveNewLayout],
+        // ["click", '.action-grid-add-left', addCompLeft],
+        // ["click", '.action-grid-toggle-edit', toogleSettings],
+    ],
+    html:()=>/*html*/`
+    <link rel="stylesheet" href="css/bulma.min.css">
+    <link rel="stylesheet" href="css/bulma.dark.css">
+
+    <link rel="stylesheet" href="css/main.css">
+
+    <div class="writing_board_placeholder placeholder">
+        <div class="content ">
+            <div class="skeleton skeleton-text"></div>
+            <div>\b</div>
+            <div class="skeleton skeleton-text"></div>
+            
+            <div class="skeleton skeleton-text"></div>
+        </div>
         
     `,
     onRender:(self) =>{

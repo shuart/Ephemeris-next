@@ -41,20 +41,20 @@ export function createWritingBoardSettings(comp, callback) {
                 autofocus:true,
             }
         },
-        // {type:"selection", name:"entitiesToDisplay", config:{
-        //     multipleSelection:true,
-        //         label:"Entities to Display",
-        //         list: options,
-        //         selected:entitiesToDisplay,
-        //     }
-        // },
-        // {type:"selection", name:"propertiesToDisplay", config:{
-        //     multipleSelection:true,
-        //         label:"Properties to Display",
-        //         list: propertiesOptions,
-        //         selected:propertiesToDisplay,
-        //     }
-        // },
+        {type:"selection", name:"entitiesToDisplay", config:{
+            multipleSelection:true,
+                label:"Entities to Display",
+                list: options,
+                selected:entitiesToDisplay,
+            }
+        },
+        {type:"selection", name:"propertiesToDisplay", config:{
+            multipleSelection:false,
+                label:"Properties to Use",
+                list: propertiesOptions,
+                selected:propertiesToDisplay,
+            }
+        },
         // {type:"graph", name:"graph", config:{
         //         multipleSelection:true,
         //         label:"Show Relations With",
@@ -72,9 +72,9 @@ export function createWritingBoardSettings(comp, callback) {
             console.log(result);
             var newConfig = {
                 useNodes : result.useNodes,
-                useCurrentlySelected: result.useCurrentlySelected
-                // entitiesToDisplay : uuidFromSelection(result.entitiesToDisplay),
-                // fieldsToDisplay : uuidFromSelection(result.propertiesToDisplay),
+                useCurrentlySelected: result.useCurrentlySelected,
+                entitiesToDisplay : uuidFromSelection(result.entitiesToDisplay),
+                fieldsToDisplay : uuidFromSelection(result.propertiesToDisplay),
                 // relationsToDisplay : result.graph,
                 // compactMode : result.compactMode,
             }

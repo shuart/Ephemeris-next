@@ -33,6 +33,8 @@ var createEditor = function ({
     defaultValue = undefined,
     onSave = (json,editor, currentDocument)=> console.log(json,editor, currentDocument),
     onSetDocument = (doc, editor, updateDoc)=> console.log(doc, editor, updateDoc),
+    onError = (message)=>console.log(message),
+    preventWritingWithoutTarget = true,
 }={}) {
     var self = {}
     var domWrapper = document.createElement('div')
@@ -97,6 +99,9 @@ var createEditor = function ({
         var jsonInit = {"doc": {"type": "doc","content": [{"type": "paragraph", "content": [] }]}}
         if (defaultValue) {
             jsonInit = defaultValue
+        }else{
+            onError("No Default Value")
+            if (preventWritingWithoutTarget) { addShield() }
         }
         editor = new EditorView(domWrapper, {
             state: EditorState.create({
@@ -129,6 +134,29 @@ var createEditor = function ({
         topBar = createTopBar({
             mountAt:domWrapper
         })   
+    }
+
+    //Shield
+    var addShield = function(){
+        var shield = document.createElement("div")
+        shield.classList="shield"
+        shield.style.position= "absolute";
+        shield.style.backgroundColor= "#9191919c";
+        shield.style.zIndex= "11";
+        shield.style.top= "0px";
+        shield.style.left= "0px";
+        shield.style.width= "100%";
+        shield.style.height= "100%";
+        shield.style.borderRadius= "5px";
+        shield.style.backdropFilter= "blur(10px)";
+        shield.innerHTML="<div style='width:50px; height:50px;'>"
+        domWrapper.append(shield)
+    }
+    var removeShield = function () {
+        var shield = domWrapper.querySelector(".shield")
+        if (shield) {
+            shield.remove()
+        }
     }
 
     //SideView
@@ -169,6 +197,7 @@ var createEditor = function ({
     var setDocument = function (doc) {
         currentDocument = doc
         if(docTitle) docTitle.update(doc.name);
+        removeShield()
         onSetDocument(doc, editor, updateDoc)
     }
 
@@ -207,6 +236,7 @@ var createEditor = function ({
     
     self.mountAt = mountAt
     self.getJson = getJson
+    self.setDocument = setDocument
     return self
 }
 
