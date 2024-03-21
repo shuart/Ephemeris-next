@@ -99,6 +99,13 @@ var textArea = createAdler({
         // })
     },
     css:`
+    .area{
+      height:100%;
+    }
+    .writer-dom-wrapper{
+      height:100%;
+    }
+
     .writerArea{
         border-color: rgb(253, 253, 253);
         background-color: rgb(249, 249, 249);
@@ -107,6 +114,7 @@ var textArea = createAdler({
         border-color: #363636;
         box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.1);
         position:relative;
+        height: calc(100% - 38px);
     }
     .action-writer-save{
       position: absolute;
@@ -178,6 +186,10 @@ var textArea = createAdler({
       }
       
       .ProseMirror {
+
+        overflow: auto;
+        height: calc( 100% - 20px);
+
         word-wrap: break-word;
         white-space: pre-wrap;
         white-space: break-spaces;
@@ -189,7 +201,9 @@ var textArea = createAdler({
       .ProseMirror pre {
         white-space: pre-wrap;
       }
-      
+      .ProseMirror-menubar-wrapper{
+        height:100%;
+      }
       .ProseMirror li {
         position: relative;
       }

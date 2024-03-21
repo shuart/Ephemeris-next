@@ -198,8 +198,8 @@ var setUpTable = function (event, data, instance) {
 
 var writingBoardViewport =createAdler({
     content: p => /*html*/`
-    <div class="Component container">
-        <div style="top:25px; position:relative;"class="textEditorDesc" ></div>
+    <div class="Component container" style="height: calc(100% - 75px);">
+        <div style="top:25px; position:relative; height:100%;"class="textEditorDesc" ></div>
         
     </div>
         `,

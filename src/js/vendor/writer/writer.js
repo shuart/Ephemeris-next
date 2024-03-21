@@ -38,6 +38,7 @@ var createEditor = function ({
 }={}) {
     var self = {}
     var domWrapper = document.createElement('div')
+    domWrapper.classList="writer-dom-wrapper"
     var editor = undefined
     var plugins = undefined
     var mySchema = undefined
@@ -141,14 +142,14 @@ var createEditor = function ({
         var shield = document.createElement("div")
         shield.classList="shield"
         shield.style.position= "absolute";
-        shield.style.backgroundColor= "#9191919c";
+        shield.style.backgroundColor= "rgba(100, 100, 100, 0)";
         shield.style.zIndex= "11";
         shield.style.top= "0px";
         shield.style.left= "0px";
         shield.style.width= "100%";
         shield.style.height= "100%";
         shield.style.borderRadius= "5px";
-        shield.style.backdropFilter= "blur(10px)";
+        shield.style.backdropFilter= "blur(4px)";
         shield.innerHTML="<div style='width:50px; height:50px;'>"
         domWrapper.append(shield)
     }
