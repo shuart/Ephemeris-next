@@ -42,6 +42,8 @@ function setMainView(event, data, instance) {
 
     var viewGrid = viewGridSettings.instance()
     viewGrid.currentPageId= data.viewId
+    viewGrid.currentPageName= data.viewName
+    viewGrid.currentPageIcon= view.iconPath
     viewGrid.calledFromInstance= data.calledFromInstance
     viewGrid.schema= loadLayout(data.viewId)
     viewGrid.showSettings= data.settings
@@ -103,12 +105,7 @@ function addEntity(event, data, instance){
 var component =createAdler({
     content: p => /*html*/`
     <div class="Component" style="height:100%;">
-        <div class="block"></div>
-        <div class="container is-widescreen">
-            <h1 a-if="title" class="title">${p.viewName}</h1>
-            <h2 a-if="subtitle" class="subtitle">${p.viewId}, called from ${p.calledFromInstance}</h2>
-        </div>
-        <div class="view_mount_point_grid" a-slot="view_mount_point_grid" style="height: calc(100% - 90px);"></div>
+        <div class="view_mount_point_grid" a-slot="view_mount_point_grid" style="height: 100%;"></div>
         <div class="view_mount_point_select" a-slot="view_mount_point_select" style=""></div>
 
     </div>

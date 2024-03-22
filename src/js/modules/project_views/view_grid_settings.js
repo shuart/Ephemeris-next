@@ -310,6 +310,8 @@ var addCompLeft = function(event, self){
 }
 
 var setGrid = function (self) {
+    self.query(".grid_title_area").innerHTML = self.currentPageName
+    self.query(".grid_title_icon_area").innerHTML = `<img class="darkModeCompatibleIcons" src="./img/icons/${self.currentPageIcon || "monitor.svg"}">`
     self.query(".viewGridArea").innerHTML = ""
     self.query(".viewGridAreaDemoLeft").innerHTML = ""
     self.query(".viewGridArea").style.gridTemplateColumns = `repeat(${self.cols}, 1fr)`
@@ -351,6 +353,8 @@ var gridView = createAdler({
     tag:'eph-grid-view',
     props:{
         currentPageId:undefined,
+        currentPageName:undefined,
+        currentPageIcon:undefined,
         currentArea:undefined,
         calledFromInstance:undefined,
         cols:4,
@@ -376,14 +380,17 @@ var gridView = createAdler({
 
 
         <div class="area container is-widescreen">
-            <div class="button action-grid-toggle-edit">Reorganize</div>
-            <div class="button action-grid-toggle-headers">edit</div>
-            <button class="button action_grid_add only_settings">add</button>
-            <div class="button action-grid-save only_settings">Save</div>
-            <div class="button action-grid-add-left only_settings">Add to Left Panel</div>
-            <div class="block"></div>
+            <div class="grid_title_icon_area"></div>
+            <div class="grid_title_area"></div>
+            <div class="grid_menu_area">
+                <div class="grid_menu_button action-grid-toggle-edit"><img class="darkModeCompatibleIcons" src="./img/icons/gallery-horizontal.svg">Reorganize</div>
+                <div class="grid_menu_button action-grid-toggle-headers"><img class="darkModeCompatibleIcons" src="./img/icons/settings-2.svg">Edit</div>
+                <button class="button action_grid_add only_settings">add</button>
+                <div class="button action-grid-save only_settings">Save</div>
+                <div class="button action-grid-add-left only_settings">Add to Left Panel</div>
+            </div>
+            
             <div class="viewGridArea"></div>
-
             <div class="viewGridAreaDemoLeft only_settings"></div>
 
         </div>
@@ -397,12 +404,41 @@ var gridView = createAdler({
     .area{
         height: 100%;
     }
+    .grid_title_area{
+        position: absolute;
+        font-size: 18px;
+        font-weight: bold;
+        opacity: 0.7;
+        left:28px;
+        top:5px;
+    }
+    .grid_title_icon_area{
+        position: absolute;
+        opacity: 0.7;
+        top:5px;
+    }
+    .grid_menu_area{
+        justify-content: right;
+        display: flex;
+        opacity:0.6;
+    }
+    .grid_menu_button{
+        padding: 8px 4px 2px 6px;
+        display: inline-block;
+        cursor:pointer;
+        font-size: 13px;
+    }
+    .grid_menu_button img{
+        height:20px;
+        margin-right: 4px;
+    }
     .viewGridArea {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
         grid-template-rows: repeat(4, 1fr);
         gap: 10px;
-        height: 100%;
+        height: calc(100% - 45px);
+        margin-top: 7px;
     }
     .viewGridArea.isLeft {
         display: grid;
