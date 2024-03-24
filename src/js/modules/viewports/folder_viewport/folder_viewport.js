@@ -14,11 +14,11 @@ import state from "../../common_state/state_manager.js";
 
 
 var softUpdate= function (event, data, instance) {
-    // var itemsData = getItemsList(event,data, instance)
-    // var currentTable = instance.query(".current-table")
-    // currentTable.list = itemsData.list
+    var itemsData = getItemsList(event,data, instance)
+    var currentTable = instance.query(".current-table")
+    currentTable.list = itemsData.list
 
-    // currentTable.updateTable()
+    currentTable.updateData()
 }
 
 var attachPropToCleanedInstances = function (instances, cols) {
@@ -86,6 +86,7 @@ var addClickAction = function (event, data, instance) {
                 var created = repo.createFrom(renderSettings.structuresToDisplay[0], {name:name, type:"folder"})
                 console.log(created);
                 // loadSideMenu(self)
+                softUpdate(event, data, instance)
             }
             
         }
@@ -122,20 +123,20 @@ var getItemsList = function (event, data, instance){
 
         data.onClick = entityClickAction(self)
         data.addItem = addClickAction(event, data, instance)
-        // data.onDropped = function (evt) {
-        //     console.log(evt);
-        //     var repo = createStructuresManagement()
-        //     if (confirm()) {
-        //         if (evt.target.isContainer && evt.dragged.isContainer) {
-        //             repo.link(evt.target.data.uuid,evt.dragged.data.uuid )  
-        //         }
-        //         if (evt.target.isContainer && (!evt.dragged.isContainer) ) {
-        //             repo.link(evt.target.data.uuid,evt.dragged.data.uuid, self.instanceId )  //provide a context to make this relation unique to it
-        //         }
-        //     }
+        data.onDropped = function (evt) {
+            console.log(evt);
+            var repo = createStructuresManagement()
+            if (confirm()) {
+                if (evt.target.isContainer && evt.dragged.isContainer) {
+                    repo.link(evt.target.data.uuid,evt.dragged.data.uuid )  
+                }
+                if (evt.target.isContainer && (!evt.dragged.isContainer) ) {
+                    repo.link(evt.target.data.uuid,evt.dragged.data.uuid, renderSettings.structuresToDisplay[0] )  //provide a context to make this relation unique to it
+                }
+            }
             
-        //     loadSideMenu(self)
-        // }
+            softUpdate(event, data, instance)
+        }
 
 
     
@@ -186,7 +187,7 @@ var getItemsList = function (event, data, instance){
                                     var instanceToChange = instancesRep.getById(item.uuid)
                                     console.log(instanceToChange);
                                     instanceToChange.rename(newName)
-                                    loadSideMenu(self)
+                                    softUpdate(event, data, instance)
                                 }
                             }, "./img/icons/edit.svg"],
                             ["Delete", ()=>{
@@ -196,7 +197,7 @@ var getItemsList = function (event, data, instance){
                                     var instanceToChange = instancesRep.getById(item.uuid)
                                     console.log(instanceToChange);
                                     instanceToChange.remove()
-                                    loadSideMenu(self)
+                                    softUpdate(event, data, instance)
                                 }
                             }, "./img/icons/edit.svg"]
                         ]
@@ -207,7 +208,7 @@ var getItemsList = function (event, data, instance){
                             var newName = prompt("New name", item.element.name)
                             if (newName && newName != item.element.name && newName !="") {
                                 structuresRep.add({uuid:item.uuid, name:newName})
-                                loadSideMenu(self)
+                                softUpdate(event, data, instance)
                             }
                         }, "./img/icons/edit.svg"],
                         ["Add item", ()=>{
@@ -342,12 +343,13 @@ var setUpTable = function (event, data, instance) {
     setTimeout(function () {
         var mountPlace = instance.query(".folder_component")
         console.log(mountPlace);
-        var tablevp = folder_view_component.instance()
-        tablevp.classList="current-table"
-        tablevp.list = itemsData.list
-        tablevp.cols = itemsData.cols
-        tablevp.onClick = itemsData.onClick
-        tablevp.addItem = itemsData.addItem
+        data.tablevp = folder_view_component.instance()
+        data.tablevp.classList="current-table"
+        data.tablevp.list = itemsData.list
+        data.tablevp.cols = itemsData.cols
+        data.tablevp.onClick = itemsData.onClick
+        data.tablevp.addItem = itemsData.addItem
+        data.tablevp.onDropped = itemsData.onDropped
         // if (itemsData.actions) {
         //     // tablevp.onClick = itemsData.actions
         //     tablevp.onClick = function (e, cell) {
@@ -366,7 +368,7 @@ var setUpTable = function (event, data, instance) {
 
             
         // }
-        mountPlace.append(tablevp)
+        mountPlace.append(data.tablevp)
         subscribeToChanges(event, data, instance, softUpdate)
 
     })

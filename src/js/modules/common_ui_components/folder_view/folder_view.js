@@ -94,12 +94,15 @@ var setUpTable = function(self){
 
 }
 
-// var softUpdate= function (self) {
-//     console.log("data.table--------------------");
-//     console.log(self.table);
-//     console.log(self.list);
-//     self.tablepr.replaceData(self.list) //load data array
-// }
+var softUpdate= function (self) {
+    console.log("data.table--------------------");
+    console.log(self.table);
+    console.log(self.list);
+    // self.tablepr.replaceData(self.list) //load data array
+    var instanceElem = self.query(".tableComponent")
+    instanceElem.innerHTML =""
+    setUpTable(self)
+}
 
 var setUpActionMenu = function(self){
     self.query(".add").addEventListener("click", function (event) {
@@ -143,7 +146,7 @@ var folder_view_component =createAdler({
     ],
     methods:[
         // ["updateTable", (self)=>softUpdate(self)],
-        // ["updateData", (self)=>softUpdate(self)]
+        ["updateData", (self)=>softUpdate(self)]
     ],
     events : [
         // ["click", ".action-table-add", (ev,self)=>self.onAdd()],
