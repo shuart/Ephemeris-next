@@ -4,7 +4,6 @@ import mainPopup from "../common_ui_components/mainPopup/mainPopup.js"
 import select from "../common_ui_components/select/select.js"
 import projectManagement from "../common_project_management/project_management.js";
 // import createEvaluatorsManagement from "../common_project_management/evaluators_management.js";
-
 import table_viewport from "../viewports/table_viewport/table_ui.js"
 import graph_viewport from "../viewports/graph_viewport/graph_ui.js"
 import cardViewport from "../viewports/card_viewport/card_viewport.js";
@@ -90,7 +89,6 @@ function sortable(self, section, onUpdate){
     });
 }
                                         
-
 var availableViewports = {
     instanceCard:cardViewport,
     table:table_viewport,
@@ -125,16 +123,10 @@ var getComponents = function (self) {
 
 var renderItems = function (self) {
     var components = getComponents(self)
-    // if (self.currentArea == "left") { //change the grid
-    //     self.query('.viewGridArea').classList.add("isLeft")   
-    // }
     for (let i = 0; i < components.length; i++) {
         const comp = components[i];
-        
         var view = renderItem(self, comp)
-        
         if (view) {
-        // if (view && (comp.area==self.currentArea || ((comp.area==undefined || comp.area=='undefined') && (self.currentArea==undefined || self.currentArea=='undefined')) ) ) {
             var domElement = document.createElement("div")
             // domElement.id = "comp"+index
             var vsize = comp.vsize || 2
@@ -146,7 +138,6 @@ var renderItems = function (self) {
                 domElement.classList.add("viewGridElementWithHeader")
             }
             view.mount(domElement) 
-            // view.mount(self.query('.viewGridArea'))
             if (comp.area !="left") {
                 self.query('.viewGridArea').append(domElement)
             }else{
@@ -220,10 +211,6 @@ var renderPlaceholders = function (self) {
             }else{
                 self.query('.viewGridArea').append(view)
             }
-            // if (true) { //render preview
-            //     var compView = renderItem(self, comp)
-            //     compView.mount(view.querySelector(".box"))
-            // }
             if (!self.showSettings) {
                 var compView = renderItem(self, comp)
                 compView.mount(view.querySelector(".box"))
@@ -231,7 +218,6 @@ var renderPlaceholders = function (self) {
                 var domPlacehoder = getViewGridPlaceholder(comp.componentType)
                 view.querySelector(".box").append(domPlacehoder)
             }
-            
         }
     }
 }
@@ -305,15 +291,9 @@ var showAddMenu = function(event, self, area){
 }
 
 var addComp = function(event, self){
-    // mainPopup.mount()
-    // mainPopup.append(thumbs, "main-slot")
-    // mainPopup.update();
     showAddMenu(event, self)
 }
 var addCompLeft = function(event, self){
-    // mainPopup.mount()
-    // mainPopup.append(thumbs, "main-slot")
-    // mainPopup.update();
     showAddMenu(event, self, "left")
 }
 
@@ -331,16 +311,7 @@ var setGrid = function (self) {
 var updateView = function (self) {
     setGrid(self)
     if (!self.showSettings) {
-        // self.query(".action-grid-save").remove()
-        // self.query(".action_grid_add").remove()
-        // self.query(".action-grid-add-left").remove()
-        // self.query(".viewGridAreaDemoLeft").remove() //this is shown only in settings mode. This part is handeled by the project view view itself in any other case
-        // self.query(".action-grid-save").style.display="none"
-        // self.query(".action_grid_add").style.display="none"
-        // self.query(".action-grid-add-left").style.display="none"
-        // self.query(".viewGridAreaDemoLeft").style.display="none" //this is shown only in settings mode. This part is handeled by the project view view itself in any other case
         self.queryAll(".only_settings", e=>e.style.display="none")
-        
         renderItems(self)
     } else {
         self.queryAll(".only_settings", e=>e.style.removeProperty('display'))
@@ -453,15 +424,6 @@ var gridView = createAdler({
         gap: 10px;
         height: calc(100% - 45px);
         margin-top: 12px;
-    }
-    .viewGridArea.isLeft {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr) !important;
-        grid-template-rows: repeat(2, 1fr) !important;
-        position: relative;
-        top: -25px;
-        gap: 10px;
-        height: 100%;
     }
     .viewGridArea.hasLeft {
         width: calc(100% - 220px);
