@@ -12,6 +12,7 @@ import { createTableSettings } from "./settings/view_grid_settings_table.js";
 import { createCardSettings } from "./settings/view_grid_settings_card.js";
 import { createGraphSettings } from "./settings/view_grid_settings_graph.js";
 import { createWritingBoardSettings } from "./settings/view_grid_settings_writing_board.js";
+import { createFolderSettings } from "./settings/view_grid_settings_folder.js";
 
 var goToEvaluator = function(event){
     var evaluator = event.target.dataset.id
@@ -62,6 +63,10 @@ var setUpOptionsEvent = function (self, event, domElement, currentUuid, uuid, co
         })
     }else if(comp.componentType =="writingBoard") {
         createWritingBoardSettings(comp, function(data) {
+            self.editRenderSettingsCallback(uuid, data)
+        })
+    }else if(comp.componentType =="folder") {
+        createFolderSettings(comp, function(data) {
             self.editRenderSettingsCallback(uuid, data)
         })
     }

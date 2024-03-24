@@ -6,6 +6,11 @@ import createEvaluator from "../../common_evaluators/evaluators.js";
 import showPopupInstancePreview from "../../popup_instance_preview/popup_instance_preview.js";
 import { joinRelationsWithEntities } from "../helper_functionsViewport/helper_function_viewport.js";
 import { subscribeToChanges } from "../../common_state/state_change_subscription.js";
+import createInstancesManagement from "../../common_project_management/instances_management.js";
+import createPropertyManagement from "../../common_project_management/properties_management.js";
+import createStructuresManagement from "../../common_project_management/structures_management.js";
+import createEntityManagement from "../../common_project_management/entity_management.js";
+import state from "../../common_state/state_manager.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -16,43 +21,25 @@ var softUpdate= function (event, data, instance) {
     // currentTable.updateTable()
 }
 
-var getItemsList = function (event, data, instance){
-
-    var data = {}
-    var evaluator = createEvaluator({originInstance:instance.props.get('settings').calledFromInstance, type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
-    console.log(evaluator);
-    if (!evaluator.evaluate()) {
-        return {list:[{name:"undefined LIST"}], cols:[]}
-    }
-    var evaluationResult = evaluator.evaluate().output_folder
-    console.log(evaluator.evaluate());
-
-    data.list =evaluationResult.list
-    data.cols =evaluationResult.cols
-    data.actions =evaluationResult.actions
-    console.log(data);
-
-    // joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))
-    
-    //clean Objects TODO segregate in custom attributes object
+var attachPropToCleanedInstances = function (instances, cols) {
     var newList = []
-    //If not attributes are used, juste populate with basic ones
-    if (!data.cols) {
-        data.cols=[{name:"name", field:'name'}]
-    }
-    console.log(data);
-    for (let i = 0; i < data.list.length; i++) {
-        const item = data.list[i];
-        var newItem = {uuid: item.uuid, name:item.name, color:item.color}
+    var cols = cols||[{title:"name", field:'name',},] //If not attributes are used, juste populate with basic ones
+
+    for (let i = 0; i < instances.length; i++) { //create a new list to keep original clean
+        const item = instances[i];
+        var newItem = {uuid: item.uuid, name:item.name, color:item.color, iconPath:item.iconPath}
         newList.push(newItem)
-        for (let j = 0; j < data.cols.length; j++) {
-            const col = data.cols[j];
+        for (let j = 0; j < cols.length; j++) {
+            const col = cols[j];
             if (col.field) {
-                if (item.attributes && item.attributes[col.field]) {
+                if (item.attributes[col.field]) {
                     newItem[col.field] = item.attributes[col.field]
                 }
-                if (item.properties && item.properties[col.field]) {
+                if (item.properties && item.properties[col.field]) {//TODO remove property from object
                     newItem[col.field] = item.properties[col.field].value
+                }
+                if (item[col.field]) {//also check if not in attribute (relations)
+                    newItem[col.field] = item[col.field]
                 }
                 
             }
@@ -60,14 +47,272 @@ var getItemsList = function (event, data, instance){
         }
         
     }
-    data.list =newList
-    console.log(data);
+    return newList
+}
+
+var entityClickAction = function (self) {
+    // console.log(e);
+    // console.log(cell.getData());
     
-    joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))
+    return function (e,cell) {
+        console.log(e);
+        console.log(cell.getData());
+        console.log(self);
+        // var instanceRepo = createInstancesManagement()
+        // var currentInstance = instanceRepo.getById(cell.getData().uuid)
+        // var sourceEntity = currentInstance.sourceEntity
+        // var linkedView = project_views.instance({data:{
+        //     viewId:sourceEntity.defaultViewId, 
+        //     calledFromInstance:cell.getData().uuid,
+        //     title:false,
+            
+        // }})
+        
+        state.setSearchParams("selected",cell.getData().uuid, "silent")
+        // self.query(".instance_view_area").innerHTML=""
+        // linkedView.mount(self.query(".instance_view_area"))
+        // self.query(".graph_selection_select_area").append(linkedView)
+    }
+}
+var addClickAction = function (event, data, instance) {
+    // console.log(e);
+    // console.log(cell.getData());
+    var renderSettings = instance.props.get("settings").renderSettings
+    if (renderSettings && renderSettings.structuresToDisplay[0]) {
+        return function (event) {
+            var name = prompt("Folder Name")
+            if (name) {
+                var repo = createStructuresManagement()
+                var created = repo.createFrom(renderSettings.structuresToDisplay[0], {name:name, type:"folder"})
+                console.log(created);
+                // loadSideMenu(self)
+            }
+            
+        }
+    }else{
+        return undefined
+    }
     
     
+}
+
+var getItemsList = function (event, data, instance){
+
+    var data = {}
+    var useNodes = false
+    var renderSettings = instance.props.get("settings").renderSettings
+    if (renderSettings) {
+        useNodes = renderSettings.useNodes || false
+    }
+    // alert(useNodes)
+    if (!useNodes && renderSettings) {
+
+        // var instanceRepo = createInstancesManagement()
+        // var instances = instanceRepo.getByType(renderSettings.entitiesToDisplay)
+        
+
+        var instancesRepo = createInstancesManagement()
+        // var collectionRepo = createCollectionsManagement()
+        var entitiesRepo = createEntityManagement()
+    
+        // var currentCollection = collectionRepo.getById(self.instanceId)
+        // var entities = entitiesRepo.getAll()
+
+
+
+        data.onClick = entityClickAction(self)
+        data.addItem = addClickAction(event, data, instance)
+        // data.onDropped = function (evt) {
+        //     console.log(evt);
+        //     var repo = createStructuresManagement()
+        //     if (confirm()) {
+        //         if (evt.target.isContainer && evt.dragged.isContainer) {
+        //             repo.link(evt.target.data.uuid,evt.dragged.data.uuid )  
+        //         }
+        //         if (evt.target.isContainer && (!evt.dragged.isContainer) ) {
+        //             repo.link(evt.target.data.uuid,evt.dragged.data.uuid, self.instanceId )  //provide a context to make this relation unique to it
+        //         }
+        //     }
+            
+        //     loadSideMenu(self)
+        // }
+
+
+    
+        data.list = [
+            // {name:"Chapitre 2 ", _children:[
+            //     {name:"Item 1"},
+            //     {name:"Item 2"},
+            // ]},
+        ];
+    
+        var currentEntities = renderSettings.entitiesToDisplay
+        for (let i = 0; i < currentEntities.length; i++) {
+            const entityId = currentEntities[i];
+            var entity = entitiesRepo.getById(entityId)
+            
+            if (entity) {
+                var instances = instancesRepo.getByType(entityId)
+                var instancesList = instances.map(i=>{
+                    return{name:i.name, uuid:i.uuid, img:["./img/icons/"+i.iconPath, i.color]}
+                })
+                data.list.push({uuid:entityId, name:entity.name, _children:instancesList, img:"./img/icons/folder.svg"})
+            }
+            
+        }
+        if (renderSettings.structuresToDisplay) {
+            var structuresRep = createStructuresManagement()
+            var entitiesRep = createEntityManagement()
+            console.log(structuresRep.getHierarchies())
+            // var structuresList = structuresRep.getAll()
+            var hierachStruct = structuresRep.getAllChildrenOfId(renderSettings.structuresToDisplay[0], function (item) {
+                var img="./img/icons/folder.svg"
+                var children = item._children
+                var tcolor = undefined
+                var options = undefined
+                if (item._isInstance) {
+                    img="./img/icons/file.svg"
+                    children = undefined //clear children if needed
+                    var entity = entitiesRep.getById(item.element.type)
+                    if (entity) {
+                        img = ["./img/icons/"+entity.attributes.iconPath, entity.attributes.color]
+                        console.log(entity);
+                        options=[
+                            ["Rename", ()=>{
+                                var newName = prompt("New name", item.element.name)
+                                if (newName && newName != item.element.name && newName !="") {
+                                    var instancesRep = createInstancesManagement()
+                                    
+                                    var instanceToChange = instancesRep.getById(item.uuid)
+                                    console.log(instanceToChange);
+                                    instanceToChange.rename(newName)
+                                    loadSideMenu(self)
+                                }
+                            }, "./img/icons/edit.svg"],
+                            ["Delete", ()=>{
+                                var confirmed = confirm("Are you sure you want to delete this item")
+                                if (confirmed) {
+                                    var instancesRep = createInstancesManagement()
+                                    var instanceToChange = instancesRep.getById(item.uuid)
+                                    console.log(instanceToChange);
+                                    instanceToChange.remove()
+                                    loadSideMenu(self)
+                                }
+                            }, "./img/icons/edit.svg"]
+                        ]
+                    }  
+                }else{
+                    options=[
+                        ["Rename", ()=>{
+                            var newName = prompt("New name", item.element.name)
+                            if (newName && newName != item.element.name && newName !="") {
+                                structuresRep.add({uuid:item.uuid, name:newName})
+                                loadSideMenu(self)
+                            }
+                        }, "./img/icons/edit.svg"],
+                        ["Add item", ()=>{
+                            addEntityToFolder(self, currentCollection, item.uuid, ()=> loadSideMenu(self))
+                        }, "./img/icons/plus.svg"],
+                    ]
+                }
+                
+                return { uuid:item.element.uuid, name:item.element.name,_options:options,  _children:children, img}
+            })
+        }
+        data.list= data.list.concat( hierachStruct.root._children )
+        // console.log(renderSettings.relationsToDisplay);
+
+        // // First get the props to know what should be displayed
+        // var propRepo = createPropertyManagement()
+        // var cols= [{title:"name", field:'name', customObject:true, cellClick:function (e,cell) {
+        //     state.setSearchParams("selected",cell.getData().uuid, "silent")
+        // }}]
+
+        // if (renderSettings.fieldsToDisplay) {
+        //     for (let i = 0; i < renderSettings.fieldsToDisplay.length; i++) {
+        //         var newProp = propRepo.getById( renderSettings.fieldsToDisplay[i] )
+        //         cols.push({title:newProp.name, field:'prop_'+newProp.uuid, isAttribute:true, attributeType:"text" })
+        //     }
+        // }
+        // //Then clean the instance with simpler object having only the correct props attached
+        // instances = attachPropToCleanedInstances(instances, cols)//clean Objects TODO segregate in custom attributes object
+        
+        // //then check for relation to display and add them as root props
+        // var extendedList = {roots:instances, cols:[]}
+        // var mode= "default"
+        // if (renderSettings.compactMode) {
+        //     mode = "compact"
+        // }
+        // if (renderSettings.relationsToDisplay?.nodes) {
+        //     extendedList = traverseGraphForRelations(instances, renderSettings.relationsToDisplay.arrows, renderSettings.relationsToDisplay.nodes, mode)
+        // }
+
+        // // data.list = attachPropToCleanedInstances(data.list, data.cols)//clean Objects TODO segregate in custom attributes object
+        
+        // data.list =extendedList.roots
+        // data.cols =cols.concat(extendedList.cols)
+        // data.actions =renderSettings.actions 
+        // data.renderSettings =renderSettings
+        // data.buttons ={
+        //     add:function() {
+        //         createEntitiesAddEditor(renderSettings.entitiesToDisplay, "New Element")
+        //     }
+        // }
+
+    }else{
+        var evaluator = createEvaluator({originInstance:instance.props.get('settings').calledFromInstance, type:instance.props.get("settings").entityType , graphId:instance.props.get("settings").evaluatorId})
+        console.log(evaluator);
+        if (!evaluator.evaluate()) {
+            return {list:[{name:"undefined LIST"}], cols:[]}
+        }
+        var evaluationResult = evaluator.evaluate().output_folder
+        console.log(evaluator.evaluate());
+
+        data.list =evaluationResult.list
+        data.cols =evaluationResult.cols
+        data.actions =evaluationResult.actions
+        console.log(data);
+
+        // joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))
+        
+        //clean Objects TODO segregate in custom attributes object
+        var newList = []
+        //If not attributes are used, juste populate with basic ones
+        if (!data.cols) {
+            data.cols=[{name:"name", field:'name'}]
+        }
+        console.log(data);
+        for (let i = 0; i < data.list.length; i++) {
+            const item = data.list[i];
+            var newItem = {uuid: item.uuid, name:item.name, color:item.color}
+            newList.push(newItem)
+            for (let j = 0; j < data.cols.length; j++) {
+                const col = data.cols[j];
+                if (col.field) {
+                    if (item.attributes && item.attributes[col.field]) {
+                        newItem[col.field] = item.attributes[col.field]
+                    }
+                    if (item.properties && item.properties[col.field]) {
+                        newItem[col.field] = item.properties[col.field].value
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        data.list =newList
+        console.log(data);
+        
+        joinRelationsWithEntities(data.list, data.cols.map(c=>c.field))
+        
+        
+        
+    }
+
     console.log(data);
     return data
+    
 }
 var subscribeToDB = function (event, data, instance) {
     var updateFunc = function (params) {
@@ -101,24 +346,26 @@ var setUpTable = function (event, data, instance) {
         tablevp.classList="current-table"
         tablevp.list = itemsData.list
         tablevp.cols = itemsData.cols
-        if (itemsData.actions) {
-            // tablevp.onClick = itemsData.actions
-            tablevp.onClick = function (e, cell) {
-                var actionData = {
-                    input:{
-                        clickedItem:cell.getData().uuid,
-                        clickedItemUuid:cell.getData().uuid,
-                        contextualItemUuid:cell.getData().uuid,
-                        clickedItemValue:cell.getValue(),
-                        sourceItem:cell.getData().uuid,
-                        targetItem:false,
-                    }
-                }
-                itemsData.actions(actionData)
-            }
+        tablevp.onClick = itemsData.onClick
+        tablevp.addItem = itemsData.addItem
+        // if (itemsData.actions) {
+        //     // tablevp.onClick = itemsData.actions
+        //     tablevp.onClick = function (e, cell) {
+        //         var actionData = {
+        //             input:{
+        //                 clickedItem:cell.getData().uuid,
+        //                 clickedItemUuid:cell.getData().uuid,
+        //                 contextualItemUuid:cell.getData().uuid,
+        //                 clickedItemValue:cell.getValue(),
+        //                 sourceItem:cell.getData().uuid,
+        //                 targetItem:false,
+        //             }
+        //         }
+        //         itemsData.actions(actionData)
+        //     }
 
             
-        }
+        // }
         mountPlace.append(tablevp)
         subscribeToChanges(event, data, instance, softUpdate)
 

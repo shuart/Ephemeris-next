@@ -95,6 +95,7 @@ var common_settings =createAdler({
                     value:"Interface",
                     items:[
                         {id:"views", iconPath:"monitor.svg", value:"Views",onClick:()=> state_manager.goTo({mode:"replace", url:"interface/views"})},
+                        {id:"structures", iconPath:"folder-tree.svg", value:"Structures",onClick:()=> state_manager.goTo({mode:"replace", url:"interface/structures"})},
                         {id:"evaluators", iconPath:"code.svg", value:"Evaluators",onClick:()=> state_manager.goTo({mode:"replace", url:"interface/evaluators"})},
                     ]
                 },

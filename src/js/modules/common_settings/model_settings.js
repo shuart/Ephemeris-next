@@ -14,6 +14,8 @@ import { createAttributeSettingsTable } from "./settings_tables/attributes_table
 import { createRelationsSettingsTable } from "./settings_tables/relations_table.js";
 import { createEntitiesSettingsTable } from "./settings_tables/entities_table.js";
 import { createAttributesAddEditor } from "../common_add_editors/common_attributes_add_editor.js";
+import { createStructureSettingsTable } from "./settings_tables/structures_table.js";
+import { createStructuresAddEditor } from "../common_add_editors/common_structures_add_editor.js";
 // import createViewManagement from "../common_project_management/view_management.js";
 
 var getCurrentUser = function(){
@@ -29,6 +31,8 @@ var addEntityToProject = function(event, data, instance){
     if (data.modelElementType=="attributes") {
         // data.modelElementType = "properties"
         createAttributesAddEditor()
+    }else if (data.modelElementType=="structures") {
+        createStructuresAddEditor()
     }else{
         var name= prompt("Name")
         if (name) {
@@ -106,6 +110,10 @@ var getItemsList = function (data, instance){
         listData.cols = tableSettings.cols
     } else if (instance.props.modelElementType.get() == "relations")  {
         var tableSettings = createRelationsSettingsTable(projectId);
+        listData.list = tableSettings.list
+        listData.cols = tableSettings.cols
+    }else if (instance.props.modelElementType.get() == "structures")  {
+        var tableSettings = createStructureSettingsTable(projectId);
         listData.list = tableSettings.list
         listData.cols = tableSettings.cols
     }

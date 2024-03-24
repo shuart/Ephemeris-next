@@ -438,7 +438,7 @@ var gridView = createAdler({
         grid-template-rows: repeat(4, 1fr);
         gap: 10px;
         height: calc(100% - 45px);
-        margin-top: 7px;
+        margin-top: 12px;
     }
     .viewGridArea.isLeft {
         display: grid;

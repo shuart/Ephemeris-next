@@ -7,6 +7,7 @@ import { createFolders } from "./folder_custom_table.js";
 
 var setUpTable = function(self){
     var itemsList = self.list || []
+
     // var colsList = self.cols
     // var currentHeight = self.height
     // console.log(itemsList);
