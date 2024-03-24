@@ -72,6 +72,7 @@ var renderPlaceholder = function ({
     area=undefined,
     uuid = undefined,
     deleteCallback = (e)=>console.log("no action"),
+    refreshCallback = (e)=>console.log("no action"),
     componentType ="undefined",
     evaluatorUuid =undefined,
     currentComp = undefined,
@@ -124,6 +125,7 @@ var renderPlaceholder = function ({
     domElement.dataset.area = area
 
     domElement.innerHTML =`
+    <div class="switch-area">Switch Area</div>
     <div id="${index}" style="height:100%;" a-slot="view_mount_point_${rowId}_${colId}_${index}" data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${index}"  class="adler_grid_comp_area inside" >
         <div class="scale_h">
             <div class="minus_h">-</div>
@@ -150,6 +152,16 @@ var renderPlaceholder = function ({
             </div>
         </div>
     </div>`
+
+    domElement.querySelector(".switch-area").addEventListener("click",function (event) {
+        // domElement.remove()
+        if (domElement.dataset.area =="left") {
+            domElement.dataset.area ="center"
+        }else{
+            domElement.dataset.area ="left"
+        }
+        deleteCallback()
+    } )
     
     domElement.querySelector(".action-view-settings-delete-comp").addEventListener("click",function (event) {
         domElement.remove()

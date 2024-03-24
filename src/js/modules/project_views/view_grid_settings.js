@@ -125,15 +125,16 @@ var getComponents = function (self) {
 
 var renderItems = function (self) {
     var components = getComponents(self)
-    if (self.currentArea == "left") { //change the grid
-        self.query('.viewGridArea').classList.add("isLeft")   
-    }
+    // if (self.currentArea == "left") { //change the grid
+    //     self.query('.viewGridArea').classList.add("isLeft")   
+    // }
     for (let i = 0; i < components.length; i++) {
         const comp = components[i];
         
         var view = renderItem(self, comp)
         
-        if (view && (comp.area==self.currentArea || ((comp.area==undefined || comp.area=='undefined') && (self.currentArea==undefined || self.currentArea=='undefined')) ) ) {
+        if (view) {
+        // if (view && (comp.area==self.currentArea || ((comp.area==undefined || comp.area=='undefined') && (self.currentArea==undefined || self.currentArea=='undefined')) ) ) {
             var domElement = document.createElement("div")
             // domElement.id = "comp"+index
             var vsize = comp.vsize || 2
@@ -146,7 +147,13 @@ var renderItems = function (self) {
             }
             view.mount(domElement) 
             // view.mount(self.query('.viewGridArea'))
-            self.query('.viewGridArea').append(domElement)
+            if (comp.area !="left") {
+                self.query('.viewGridArea').append(domElement)
+            }else{
+                self.query('.viewGridAreaLeft').append(domElement)
+                self.query('.viewGridAreaLeft').style.display="grid"
+                self.query('.viewGridArea').classList.add("hasLeft")
+            }
         }
     }
 }
@@ -200,6 +207,7 @@ var updateSchema= function (self) {
 }
 
 var renderPlaceholders = function (self) {
+    
     var components = getComponents(self)
     for (let i = 0; i < components.length; i++) {
         const comp = components[i];
@@ -313,6 +321,8 @@ var setGrid = function (self) {
     self.query(".grid_title_area").innerHTML = self.currentPageName
     self.query(".grid_title_icon_area").innerHTML = `<img class="darkModeCompatibleIcons" src="./img/icons/${self.currentPageIcon || "monitor.svg"}">`
     self.query(".viewGridArea").innerHTML = ""
+    self.query(".viewGridAreaLeft").innerHTML = ""
+    self.query(".viewGridAreaLeft").style.display = "none"
     self.query(".viewGridAreaDemoLeft").innerHTML = ""
     self.query(".viewGridArea").style.gridTemplateColumns = `repeat(${self.cols}, 1fr)`
     self.query(".viewGridArea").style.gridTemplateRows = `repeat(${self.rows}, 1fr)`
@@ -379,20 +389,24 @@ var gridView = createAdler({
         <link rel="stylesheet" href="css/main.css">
 
 
-        <div class="area container is-widescreen">
-            <div class="grid_title_icon_area"></div>
-            <div class="grid_title_area"></div>
-            <div class="grid_menu_area">
-                <div class="grid_menu_button action-grid-toggle-edit"><img class="darkModeCompatibleIcons" src="./img/icons/gallery-horizontal.svg">Reorganize</div>
-                <div class="grid_menu_button action-grid-toggle-headers"><img class="darkModeCompatibleIcons" src="./img/icons/settings-2.svg">Edit</div>
-                <button class="button action_grid_add only_settings">add</button>
-                <div class="button action-grid-save only_settings">Save</div>
-                <div class="button action-grid-add-left only_settings">Add to Left Panel</div>
-            </div>
-            
-            <div class="viewGridArea"></div>
-            <div class="viewGridAreaDemoLeft only_settings"></div>
+        <div class="area">
+            <div class="area container is-widescreen">
+                <div class="grid_title_icon_area"></div>
+                <div class="grid_title_area"></div>
+                <div class="grid_menu_area">
+                    <div class="grid_menu_button action-grid-toggle-edit"><img class="darkModeCompatibleIcons" src="./img/icons/gallery-horizontal.svg">Reorganize</div>
+                    <div class="grid_menu_button action-grid-toggle-headers"><img class="darkModeCompatibleIcons" src="./img/icons/settings-2.svg">Edit</div>
+                    <button class="button action_grid_add only_settings">add</button>
+                    <div class="button action-grid-save only_settings">Save</div>
+                    <div class="button action-grid-add-left only_settings">Add to Left Panel</div>
+                </div>
+                
+                <div class="viewGridArea"></div>
+                <div class="viewGridAreaDemoLeft only_settings"></div>
+                
 
+             </div>
+             <div class="viewGridAreaLeft"></div>
         </div>
         
     `,
@@ -449,6 +463,11 @@ var gridView = createAdler({
         gap: 10px;
         height: 100%;
     }
+    .viewGridArea.hasLeft {
+        width: calc(100% - 220px);
+        position: relative;
+        left: 220px;
+    }
     .viewGridAreaDemoLeft{
         display: grid;
         grid-template-columns: repeat(2, 1fr) !important;
@@ -456,6 +475,16 @@ var gridView = createAdler({
         position: relative;
         top: -25px;
         gap: 10px;
+    }
+    .viewGridAreaLeft{
+        background-color: red;
+        height: 100%;
+        width: 220px;
+        position: absolute;
+        top: 0px;
+        display:none;
+        grid-template-columns: repeat(2, 1fr) !important;
+        grid-template-rows: repeat(2, 1fr) !important;
     }
     .ghost {
         opacity:0.75;

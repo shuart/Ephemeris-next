@@ -87,12 +87,12 @@ function setLeftView(event, data, instance) {
 }
 
 function setUp(event, data, instance){
-    var visibleArea = getVisibleAreas(event, data, instance)
+    // var visibleArea = getVisibleAreas(event, data, instance)
     setMainView(event, data, instance)
-    if (visibleArea.left) {
-        setLeftView(event, data, instance)
+    // if (visibleArea.left) {
+    //     setLeftView(event, data, instance)
         
-    }
+    // }
 
 }
 
