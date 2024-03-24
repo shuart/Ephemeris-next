@@ -566,9 +566,9 @@ var createNodeManager = function ({
             return ui.getSelected(params)
         }
     }
-    var setFocus= function (params) {
+    var setFocus= function (params, options) {
         if (ui) {
-            return ui.setFocus(params)
+            return ui.setFocus(params, options)
         }
     }
 

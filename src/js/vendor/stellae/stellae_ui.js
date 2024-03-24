@@ -675,17 +675,86 @@ export default function createStellaeUi({
         return obj
     }
 
-    var setFocus = function (uuid) {
-        for (let i = 0; i < state.nodes.length; i++) {
-                if (state.nodes[i].edata.uuid == uuid) {
+    //TODO move to other files
+
+    var findNodeDirectRelations = function (uuid, recursions) {
+        var nodesRelatedUuids = {
+            list:[],
+            objects:{},
+            arrowList:[],
+            arrowObjects:[]
+        }
+        var seen = {}
+        // var mapping = {
+        //     in:{},
+        //     out:{},
+        // }
+        for (let i = 0; i < state.links.length; i++) {
+            
+            if ( state.links[i].edata.from == uuid && !seen[state.links[i].edata.to]) {
+                nodesRelatedUuids.list.push(state.links[i].edata.to)
+                nodesRelatedUuids.arrowList.push(state.links[i].edata.uuid)
+                nodesRelatedUuids.objects[state.links[i].edata.to]= true
+                nodesRelatedUuids.arrowObjects[state.links[i].edata.uuid]= true
+                seen[state.links[i].edata.to] =true
+            }
+            if ( state.links[i].edata.to == uuid && !seen[state.links[i].edata.from]) {
+                nodesRelatedUuids.list.push(state.links[i].edata.from)
+                nodesRelatedUuids.arrowList.push(state.links[i].edata.uuid)
+                nodesRelatedUuids.objects[state.links[i].edata.from] = true
+                nodesRelatedUuids.arrowObjects[state.links[i].edata.uuid] = true
+                seen[state.links[i].edata.from] =true
+            }
+            // mapping.in[state.links[i].edata.from] = mapping.in[state.links[i].edata.from]
+        }
+        return nodesRelatedUuids
+    }
+
+    var setFocus = function (uuid, options) {
+        var extendToRelations = options?.extendToRelations || false
+        var mode = options?.mode || undefined
+        var visibleNodes = {[uuid]:true}
+        var arrowObjects = undefined
+
+        if (extendToRelations) {
+            var otherLevels = findNodeDirectRelations(uuid)
+            visibleNodes = Object.assign({},visibleNodes, otherLevels.objects )
+            arrowObjects = otherLevels.arrowObjects
+            console.log(otherLevels);
+        }
+
+        if (!mode) {
+            for (let i = 0; i < state.nodes.length; i++) {
+                if (visibleNodes[state.nodes[i].edata.uuid]) {
                     // nodeList[i].visible = true
                     unFadeNode(state.nodes[i])
                 }else{
                     // nodeList[i].visible = false
                     fadeNode(state.nodes[i])
                 }
+            }
+        } else{
+            for (let i = 0; i < state.nodes.length; i++) {
+                if ( visibleNodes[state.nodes[i].edata.uuid]) {
+                    state.nodes[i].visible = true
+                    // unFadeNode(state.nodes[i])
+                }else{
+                    state.nodes[i].visible = false
+                    // fadeNode(state.nodes[i])
+                }
+            }
+            if (arrowObjects) {
+                for (let i = 0; i < state.links.length; i++) {
+                    if ( arrowObjects[state.links[i].edata.uuid]) {
+                        state.links[i].visible = true
+                    }else{
+                        state.links[i].visible = false
+                    }
+                }
+            }
             
         }
+        
     }
 
     
