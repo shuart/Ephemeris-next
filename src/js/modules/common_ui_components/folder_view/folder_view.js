@@ -171,8 +171,11 @@ var folder_view_component =createAdler({
 
 
     <div class="folder_view">
-        <div class="add">add</div>
-        <input type="text" placeholder="Search.." class="stellae_inj_css_side_search">
+        
+        <input type="text" placeholder="Search.." class=" folder_search">
+        <div class="folder_options">
+            <div class="add folder_options_button"><img style="height:18px;" class="darkModeCompatibleIcons"src="./img/icons/folder-plus.svg"></div>
+        </div>
         <div class="tableComponent"></div>
     </div>
         `,
@@ -184,6 +187,20 @@ var folder_view_component =createAdler({
         background-color: #f9f9f9;
         position: relative;
         top: 0px;
+    }
+    .folder_options{
+        height: 24px;
+        margin-left: 18px;
+        margin-right: 18px;
+        border-bottom-style: solid;
+        border-bottom-width: 1px;
+        border-bottom-color: rgba(136, 136, 136, 0.44);
+        justify-content: right;
+        display: flex;
+    }
+    .folder_options_button{
+        cursor:pointer;
+        display:inline-block;
     }
     .stellae_inj_css_side_search {
         width: 80%;
@@ -232,8 +249,10 @@ var folder_view_component =createAdler({
     }
 
     .folder_component_item:hover{
-        background-color: rgba(0, 0, 0, 0.05);
-        border-radius: 3px;
+        font-weight:bold;
+    }
+    .folder_component_item img{
+        filter: invert(100%);
     }
 
     .folder_component_rcm{
@@ -256,6 +275,20 @@ var folder_view_component =createAdler({
     .folder_component_rcm_option:hover{
         background-color: #f9f9f9;
     }
+    .folder_search{
+        width: 80%;
+        border-radius: 11px;
+        border-style: none;
+        padding: 8px;
+        outline: none;
+        margin-left: 6%;
+        margin-top: 13px;
+        
+    }
+    .folder_view_img{
+            
+        filter: invert(100%);
+    }
 
     
     @media (prefers-color-scheme: dark) {
@@ -264,13 +297,12 @@ var folder_view_component =createAdler({
         }
         .folder_view_img{
             
-            filter: invert(100%);
+            filter: invert(0%);
         }
         .tabulator-row {
             background-color: transparent !important;
         }
         .folder_component_item:hover{
-            background-color: #ffffff26;
         }
         .folder_component_rcm{
             background-color: rgb(27, 27, 27);
@@ -280,6 +312,10 @@ var folder_view_component =createAdler({
         }
         .folder_component_rcm_option img{
             filter: invert(100%);
+        }
+        .folder_search{
+            background-color: #424242;
+            color: white;
         }
     
         

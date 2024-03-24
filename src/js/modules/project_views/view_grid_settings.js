@@ -293,9 +293,6 @@ var showAddMenu = function(event, self, area){
 var addComp = function(event, self){
     showAddMenu(event, self)
 }
-var addCompLeft = function(event, self){
-    showAddMenu(event, self, "left")
-}
 
 var setGrid = function (self) {
     self.query(".grid_title_area").innerHTML = self.currentPageName
@@ -349,7 +346,6 @@ var gridView = createAdler({
     events : [
         ["click", '.action_grid_add', addComp],
         ["click", '.action-grid-save', saveNewLayout],
-        ["click", '.action-grid-add-left', addCompLeft],
         ["click", '.action-grid-toggle-edit', toogleSettings],
         ["click", '.action-grid-toggle-headers', toogleHeaders],
     ],
@@ -369,7 +365,6 @@ var gridView = createAdler({
                     <div class="grid_menu_button action-grid-toggle-headers"><img class="darkModeCompatibleIcons" src="./img/icons/settings-2.svg">Edit</div>
                     <button class="button action_grid_add only_settings">add</button>
                     <div class="button action-grid-save only_settings">Save</div>
-                    <div class="button action-grid-add-left only_settings">Add to Left Panel</div>
                 </div>
                 
                 <div class="viewGridArea"></div>
@@ -439,7 +434,6 @@ var gridView = createAdler({
         gap: 10px;
     }
     .viewGridAreaLeft{
-        background-color: red;
         height: 100%;
         width: 220px;
         position: absolute;
