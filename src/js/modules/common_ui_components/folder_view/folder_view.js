@@ -42,6 +42,13 @@ var setUpTable = function(self){
 
     //get corret height:
     var instanceElem = self.query(".tableComponent")
+    if (instanceElem) {
+        instanceElem.remove()//remove current element to clean all events
+    }
+    var instanceElem = document.createElement("div")
+    instanceElem.classList.add("tableComponent")
+    var instanceRoot = self.query(".folder_view")
+    instanceRoot.append(instanceElem)
     // var tableHeight = 205
     // if (currentHeight<0) {
     //     tableHeight = window.innerHeight + currentHeight
@@ -217,6 +224,11 @@ var folder_view_component =createAdler({
         text-transform: uppercase;
         font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
         font-size:12px;
+    }
+
+    .tableComponent{
+        height: calc(100% - 140px);
+        overflow: auto; 
     }
 
     .folder_component_item:hover{

@@ -50,9 +50,7 @@ export function sortableFolders(self, section, onUpdate){
         var data = {target:currentTarget, dragged: dragEl}
         console.log(data);
         if (onUpdate) {
-            
             onUpdate(evt, data)
-            
         }
         // newPos = [...section.children].map(child => {      
         //         let pos = self.query("#"+child.id).getBoundingClientRect();

@@ -14,7 +14,7 @@ var uuidFromSelection = function(data){
     }
 }
 
-export function createEntitiesAddEditor(entitiesID,name, callback) {
+export function createEntitiesAddEditor(entitiesID,data, callback) {
     //OPTIONS
     var options = createEntitiesSelectionOptions(entitiesID)
     // var propertiesOptions = createPropertiesSelectionOptions()
@@ -24,6 +24,13 @@ export function createEntitiesAddEditor(entitiesID,name, callback) {
     // var entitiesToDisplay = comp.renderSettings?.entitiesToDisplay || []
     // var propertiesToDisplay = comp.renderSettings?.fieldsToDisplay || []
     //DIALOGUE
+    // var defaultData = data
+    var defaultNameValue = undefined
+    if (typeof data == "string") {
+        defaultNameValue = data
+    }else{
+        defaultNameValue = data.name
+    }
     createDialogue({
         header:"Add element",
         fields:[
@@ -35,7 +42,7 @@ export function createEntitiesAddEditor(entitiesID,name, callback) {
         {type:"text", name:"name",config:{
                 label:"New Element Name",
                 confirmOnEnter:true,
-                value:name,
+                value:defaultNameValue,
                 autofocus:true,
             }
         },
@@ -66,6 +73,9 @@ export function createEntitiesAddEditor(entitiesID,name, callback) {
 
             var instanceRepo = createInstancesManagement()
             var payload={name:result.name, type:result.entitiesType[0].uuid}
+            if (data.uuid) {
+                payload.uuid = data.uuid
+            }
             instanceRepo.add(payload)
 
             if (callback) {

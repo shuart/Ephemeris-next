@@ -11,6 +11,8 @@ import createPropertyManagement from "../../common_project_management/properties
 import createStructuresManagement from "../../common_project_management/structures_management.js";
 import createEntityManagement from "../../common_project_management/entity_management.js";
 import state from "../../common_state/state_manager.js";
+import { createEntitiesAddEditor } from "../../common_add_editors/common_entities_add_editor.js";
+import nanoid from "../../../vendor/nanoid.js";
 
 
 var softUpdate= function (event, data, instance) {
@@ -21,34 +23,34 @@ var softUpdate= function (event, data, instance) {
     currentTable.updateData()
 }
 
-var attachPropToCleanedInstances = function (instances, cols) {
-    var newList = []
-    var cols = cols||[{title:"name", field:'name',},] //If not attributes are used, juste populate with basic ones
+// var attachPropToCleanedInstances = function (instances, cols) {
+//     var newList = []
+//     var cols = cols||[{title:"name", field:'name',},] //If not attributes are used, juste populate with basic ones
 
-    for (let i = 0; i < instances.length; i++) { //create a new list to keep original clean
-        const item = instances[i];
-        var newItem = {uuid: item.uuid, name:item.name, color:item.color, iconPath:item.iconPath}
-        newList.push(newItem)
-        for (let j = 0; j < cols.length; j++) {
-            const col = cols[j];
-            if (col.field) {
-                if (item.attributes[col.field]) {
-                    newItem[col.field] = item.attributes[col.field]
-                }
-                if (item.properties && item.properties[col.field]) {//TODO remove property from object
-                    newItem[col.field] = item.properties[col.field].value
-                }
-                if (item[col.field]) {//also check if not in attribute (relations)
-                    newItem[col.field] = item[col.field]
-                }
+//     for (let i = 0; i < instances.length; i++) { //create a new list to keep original clean
+//         const item = instances[i];
+//         var newItem = {uuid: item.uuid, name:item.name, color:item.color, iconPath:item.iconPath}
+//         newList.push(newItem)
+//         for (let j = 0; j < cols.length; j++) {
+//             const col = cols[j];
+//             if (col.field) {
+//                 if (item.attributes[col.field]) {
+//                     newItem[col.field] = item.attributes[col.field]
+//                 }
+//                 if (item.properties && item.properties[col.field]) {//TODO remove property from object
+//                     newItem[col.field] = item.properties[col.field].value
+//                 }
+//                 if (item[col.field]) {//also check if not in attribute (relations)
+//                     newItem[col.field] = item[col.field]
+//                 }
                 
-            }
+//             }
             
-        }
+//         }
         
-    }
-    return newList
-}
+//     }
+//     return newList
+// }
 
 var entityClickAction = function (self) {
     // console.log(e);
@@ -97,6 +99,49 @@ var addClickAction = function (event, data, instance) {
     
 }
 
+var addEntityToFolder = function(availableEntities, renderSettings, folderId) {
+    var id= nanoid()
+    createEntitiesAddEditor(availableEntities, {name:"New Element", uuid:id}, ()=>{
+        if (folderId) {
+            var structuresRep = createStructuresManagement()
+            var structure = structuresRep.getById(folderId)
+            structure.addChild(id, renderSettings.structuresToDisplay[0]) 
+        }
+    });
+    
+    // var entitiesRepo = createEntityManagement()
+    // var structuresRep = createStructuresManagement()
+    // var structure = structuresRep.getById(folderId)
+    // var availableEntities = currentCollection.getEntities().map(e=>{
+    //     var entity =entitiesRepo.getById(e)
+    //     return  {name:entity.name, uuid:entity.uuid, iconPath:entity.attributes.iconPath}
+    // })
+    // showEntitiesSelector({
+    //     // selected : hasEntitites,
+    //     customOptions:availableEntities,
+    //     multipleSelection:false,
+    //     onChange: (e,f)=> {
+    //         if (f.added[0]) {
+    //             var entity =entitiesRepo.getById(f.added[0])
+    //             var name = prompt("Name")
+    //             if(entity && name  ){
+    //                 var id = nanoid()
+    //                 entity.addInstance({uuid:id, name:name})
+                    
+    //                 structure.addChild(id, folderId)
+    //             } 
+    //         }
+            
+    //         if (callback) {
+    //             callback()
+    //         }
+    //         // data.addEntities(f.added)
+    //         // data.removeEntities(f.removed)
+    //         // showCollections(self)
+    //     },
+    // })
+}
+
 var getItemsList = function (event, data, instance){
 
     var data = {}
@@ -126,16 +171,19 @@ var getItemsList = function (event, data, instance){
         data.onDropped = function (evt) {
             console.log(evt);
             var repo = createStructuresManagement()
-            if (confirm()) {
-                if (evt.target.isContainer && evt.dragged.isContainer) {
-                    repo.link(evt.target.data.uuid,evt.dragged.data.uuid )  
+            setTimeout(function () {
+                if (confirm("Move Item?")) {
+                    if (evt.target.isContainer && evt.dragged.isContainer) {
+                        repo.link(evt.target.data.uuid,evt.dragged.data.uuid )  
+                    }
+                    if (evt.target.isContainer && (!evt.dragged.isContainer) ) {
+                        repo.link(evt.target.data.uuid,evt.dragged.data.uuid, renderSettings.structuresToDisplay[0] )  //provide a context to make this relation unique to it
+                    }
                 }
-                if (evt.target.isContainer && (!evt.dragged.isContainer) ) {
-                    repo.link(evt.target.data.uuid,evt.dragged.data.uuid, renderSettings.structuresToDisplay[0] )  //provide a context to make this relation unique to it
-                }
-            }
+                
+                softUpdate(event, data, instance)
+            },100)
             
-            softUpdate(event, data, instance)
         }
 
 
@@ -155,9 +203,34 @@ var getItemsList = function (event, data, instance){
             if (entity) {
                 var instances = instancesRepo.getByType(entityId)
                 var instancesList = instances.map(i=>{
-                    return{name:i.name, uuid:i.uuid, img:["./img/icons/"+i.iconPath, i.color]}
+                    var options=[
+                        ["Rename", ()=>{
+                            var newName = prompt("New name", i.name)
+                            if (newName && newName != i.name && newName !="") {
+                                i.rename(newName)
+                                softUpdate(event, data, instance)
+                            }
+                        }, "./img/icons/edit.svg"],
+                        
+                    ]
+                    return{name:i.name, uuid:i.uuid, img:["./img/icons/"+i.iconPath, i.color],_options:options}
                 })
-                data.list.push({uuid:entityId, name:entity.name, _children:instancesList, img:"./img/icons/folder.svg"})
+                var options=[
+                    // ["Rename", ()=>{
+                    //     var newName = prompt("New name", item.element.name)
+                    //     if (newName && newName != item.element.name && newName !="") {
+                    //         structuresRep.add({uuid:item.uuid, name:newName})
+                    //         softUpdate(event, data, instance)
+                    //     }
+                    // }, "./img/icons/edit.svg"],
+                    ["Add item", ()=>{
+                        // addEntityToFolder(self, currentCollection, item.uuid, ()=> softUpdate(event, data, instance))
+                        // createEntitiesAddEditor([entityId], "New Element");
+                        addEntityToFolder([entityId], renderSettings)
+                        softUpdate(event, data, instance);
+                    }, "./img/icons/plus.svg"],
+                ]
+                data.list.push({uuid:entityId, name:entity.name, _children:instancesList, img:"./img/icons/folder.svg", _options:options})
             }
             
         }
@@ -212,7 +285,9 @@ var getItemsList = function (event, data, instance){
                             }
                         }, "./img/icons/edit.svg"],
                         ["Add item", ()=>{
-                            addEntityToFolder(self, currentCollection, item.uuid, ()=> loadSideMenu(self))
+                            // addEntityToFolder(self, currentCollection, item.uuid, ()=> softUpdate(event, data, instance))
+                            addEntityToFolder(renderSettings.entitiesToDisplay, renderSettings, item.uuid)
+                            softUpdate(event, data, instance);
                         }, "./img/icons/plus.svg"],
                     ]
                 }
