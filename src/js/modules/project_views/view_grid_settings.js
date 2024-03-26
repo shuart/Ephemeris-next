@@ -143,7 +143,8 @@ var renderItems = function (self) {
             }else{
                 self.query('.viewGridAreaLeft').append(domElement)
                 self.query('.viewGridAreaLeft').style.display="grid"
-                self.query('.viewGridArea').classList.add("hasLeft")
+                // self.query('.viewGridArea').classList.add("hasLeft")
+                self.query('.grid-main-area').classList.add("hasLeft")
             }
         }
     }
@@ -207,9 +208,14 @@ var renderPlaceholders = function (self) {
         var view = renderPlaceholder(compItem)
         if (view) {
             if (comp.area == "left") {
-                self.query('.viewGridAreaDemoLeft').append(view)
+                self.query('.viewGridAreaLeft').append(view)
+                self.query('.viewGridAreaLeft').style.display="grid"
+                // self.query('.viewGridArea').classList.add("hasLeft")
+                self.query('.grid-main-area').classList.add("hasLeft")
             }else{
                 self.query('.viewGridArea').append(view)
+                self.query('.viewGridArea').classList.add("hasGuides")
+                
             }
             if (!self.showSettings) {
                 var compView = renderItem(self, comp)
@@ -236,7 +242,7 @@ var getSchemaFromGrid = function (self) {
         }
         newSchema.push(newDataset)
     })
-    let childArrayLeft = [ ...self.query('.viewGridAreaDemoLeft').children ]
+    let childArrayLeft = [ ...self.query('.viewGridAreaLeft').children ]
     childArrayLeft.forEach(function (item) {
         var baseDomDataset = item.dataset;
         var newDataset= JSON.parse(JSON.stringify(baseDomDataset));
@@ -298,9 +304,9 @@ var setGrid = function (self) {
     self.query(".grid_title_area").innerHTML = self.currentPageName
     self.query(".grid_title_icon_area").innerHTML = `<img class="darkModeCompatibleIcons" src="./img/icons/${self.currentPageIcon || "monitor.svg"}">`
     self.query(".viewGridArea").innerHTML = ""
+    self.query(".viewGridArea").classList.remove("hasGuides")
     self.query(".viewGridAreaLeft").innerHTML = ""
     self.query(".viewGridAreaLeft").style.display = "none"
-    self.query(".viewGridAreaDemoLeft").innerHTML = ""
     self.query(".viewGridArea").style.gridTemplateColumns = `repeat(${self.cols}, 1fr)`
     self.query(".viewGridArea").style.gridTemplateRows = `repeat(${self.rows}, 1fr)`
 }
@@ -357,7 +363,7 @@ var gridView = createAdler({
 
 
         <div class="area">
-            <div class="area container is-widescreen">
+            <div class="area grid-main-area ">
                 <div class="grid_title_icon_area"></div>
                 <div class="grid_title_area"></div>
                 <div class="grid_menu_area">
@@ -368,7 +374,6 @@ var gridView = createAdler({
                 </div>
                 
                 <div class="viewGridArea"></div>
-                <div class="viewGridAreaDemoLeft only_settings"></div>
                 
 
              </div>
@@ -389,13 +394,23 @@ var gridView = createAdler({
         font-size: 18px;
         font-weight: bold;
         opacity: 0.7;
-        left:28px;
+        left:71px;
         top:5px;
     }
     .grid_title_icon_area{
         position: absolute;
         opacity: 0.7;
         top:5px;
+    }
+    .switch-area{
+        cursor: pointer;
+        font-size: 13px;
+        position: absolute;
+        background-color: #09938d;
+        padding: 3px;
+        border-radius: 5px;
+        top: -14px;
+        left: 16px;
     }
     .grid_menu_area{
         justify-content: right;
@@ -420,18 +435,38 @@ var gridView = createAdler({
         height: calc(100% - 45px);
         margin-top: 12px;
     }
+    .viewGridArea.hasGuides {
+        background-repeat:no-repeat; 
+        background-color: #2196F3;
+        background: linear-gradient(rgba(0, 0, 0, 0.1),rgba(0, 0, 0, 0.1)) calc(1*(100% - 20px) / 4 + 10px) 10px / 2px calc(100% - 20px), 
+        linear-gradient(rgba(0, 0, 0, 0.1),rgba(0, 0, 0, 0.1)) calc(2*((100% - 20px) / 4) + 10px) 10px / 2px calc(100% - 20px), 
+        linear-gradient(rgba(0, 0, 0, 0.1),rgba(0, 0, 0, 0.1)) calc(3*((100% - 20px) / 4) + 10px) 10px / 2px calc(100% - 20px), 
+
+        linear-gradient(rgba(0, 0, 0, 0.1),rgba(0, 0, 0, 0.1)) 10px calc(100% / 4 * 1 ) /calc(100% - 20px) 2px,
+        linear-gradient(rgba(0, 0, 0, 0.1),rgba(0, 0, 0, 0.1)) 10px calc(100% / 4 * 2 ) /calc(100% - 20px) 2px,
+        linear-gradient(rgba(0, 0, 0, 0.1),rgba(0, 0, 0, 0.1)) 10px calc(100% / 4 *3  ) /calc(100% - 20px) 2px,
+        linear-gradient(rgba(0, 0, 0, 0.1),rgba(0, 0, 0, 0.1)) 10px calc(100% - 10px) /calc(100% - 20px) 2px;
+        padding: 10px;
+        background-repeat: no-repeat;
+        background-color: rgba(223, 223, 223, 0.07);
+    }
     .viewGridArea.hasLeft {
         width: calc(100% - 220px);
         position: relative;
-        left: 220px;
+        left: 110px;
     }
-    .viewGridAreaDemoLeft{
-        display: grid;
-        grid-template-columns: repeat(2, 1fr) !important;
-        grid-template-rows: repeat(2, 1fr) !important;
+    .grid-main-area{
+        max-width: 1500px;
+        padding-left: 40px;
+        padding-right: 40px;
+        margin-left: auto;
+        margin-right: auto;
         position: relative;
-        top: -25px;
-        gap: 10px;
+    }
+    .grid-main-area.hasLeft{
+        width: calc(100% - 220px);
+        position: relative;
+        left: 110px;
     }
     .viewGridAreaLeft{
         height: 100%;
@@ -449,46 +484,43 @@ var gridView = createAdler({
     .scale_h {
         position: absolute;
         top: 20px;
-        right:10px;
+        right: 10px;
+        background-color: #09938d;
+        border-radius: 4px;
+        padding-left: 2px;
+        padding-right: 2px;
+        padding-bottom: 2px;
     }
     .scale_h div {
-        background-color: #09938d;
         display: inline-block;
         width: 20px;
         height: 24px;
         text-align: center;
         text-anchor: middle;
         color:white;
-        border-radius: 7px;
         cursor:pointer;
     }
     .scale_v {
         position: absolute;
         bottom: 0px;
         right:10px;
-    }
-    .scale_h div {
         background-color: #09938d;
-        display: inline-block;
+        border-radius: 4px;
+        padding-left: 2px;
+        padding-right: 2px;
+        margin-bottom: 12px;
+    }
+    .scale_v div {
         width: 20px;
         height: 24px;
         text-align: center;
         text-anchor: middle;
         color:white;
-        border-radius: 7px;
         cursor:pointer;
     }
     .adler_grid_comp_area{
         position:relative;
     }
-    .viewGridAreaDemoLeft {
-        position: absolute;
-        height: 50%;
-        background-color: rgba(166, 166, 166, 0.04);
-        width: 25%;
-        top: 64px;
-        left: -26%;
-      }
     .viewGridElementWithHeader {
         border-style: none;
         border-color: #8a8a8a29;

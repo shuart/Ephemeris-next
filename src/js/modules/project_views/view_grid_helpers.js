@@ -93,7 +93,7 @@ var renderPlaceholder = function ({
     }
     if (componentType == "folder") {
         areaName = "Folder";
-        areaIcon = "table"
+        areaIcon = "folder-tree"
     }
     if (componentType == "graph") {
         areaName = "Graph";
@@ -107,9 +107,9 @@ var renderPlaceholder = function ({
         areaName = "Properties";
         areaIcon = "credit-card"
     }
-    if (componentType == "textEditor") {
+    if (componentType == "writingBoard") {
         areaName = "Text Editor";
-        areaIcon = "credit-card";
+        areaIcon = "text";
     }
     var domElement = document.createElement("div")
     domElement.id = "comp"+index
@@ -125,15 +125,17 @@ var renderPlaceholder = function ({
     domElement.dataset.area = area
 
     domElement.innerHTML =`
-    <div class="switch-area">Switch Area</div>
+    
     <div id="${index}" style="height:100%;" a-slot="view_mount_point_${rowId}_${colId}_${index}" data-row-id="${rowId}" data-col-id="${colId}" data-comp-id="${index}"  class="adler_grid_comp_area inside" >
+        <div class="switch-area" ><img class="darkModeCompatibleIcons" src="./img/icons/switch-camera.svg" alt="Placeholder image"> Switch Area</div>
         <div class="scale_h">
-            <div class="minus_h">-</div>
-            <div class="plus_h">+</div>
+            <div class="minus_h"><img class="darkModeCompatibleIcons" src="./img/icons/arrow-left-from-line.svg" alt="Placeholder image"></div>
+            <div class="plus_h"><img class="darkModeCompatibleIcons" src="./img/icons/arrow-right-from-line.svg" alt="Placeholder image"></div>
         </div>
         <div class="scale_v">
-            <div class="plus_v">+</div>
-            <div class="minus_v">-</div>
+            <div class="minus_v"><img class="darkModeCompatibleIcons" src="./img/icons/arrow-up-from-line.svg" alt="Placeholder image"></div>
+            <div class="plus_v"><img class="darkModeCompatibleIcons" src="./img/icons/arrow-down-from-line.svg" alt="Placeholder image"></div>
+            
         </div>
         <div class="box" style="height:100%;">
                 <div class="media">
