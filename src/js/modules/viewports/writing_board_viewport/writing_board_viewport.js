@@ -18,7 +18,7 @@ var setCurrentTags = function () {
     var instancesRepo = createInstancesManagement()
     var instances = instancesRepo.getAll()
   
-    return instances.map(i=>({id:i.uuid, tag:i.name}))
+    return instances.map(i=>({id:i.uuid, tag:i.name, icon:"./img/icons/"+i.iconPath}))
   }
 
 var getEvaluatorData = function (event, data, instance){
@@ -168,7 +168,7 @@ var updateTable = function (event, data, instance) {
     console.log(editor.otherEntries);
 
     editor.mentionsDefs= [
-        {name:"hashtag", key:"#", attributes:["id", "tag"], attributeToDisplay:'tag'},
+        {name:"hashtag", key:"#", attributes:["id", "tag"], attributeToDisplay:'tag', imageAttributes:"icon"},
         {name:"mention", key:"@", attributes:["name", "id","email"], attributeToDisplay:'name'},
         {name:"arrow", key:"->", attributes:["id","tag"], attributeToDisplay:'tag'},
     ]
@@ -191,7 +191,11 @@ var updateTable = function (event, data, instance) {
 }
 
 var setUpTable = function (event, data, instance) {
-    updateTable(event, data, instance) 
+    updateTable(event, data, instance)
+    setTimeout(function(){
+        updateTableInstance(event, data, instance)// if use current is activated
+    }, 500)
+    
     // subscribeToChanges(event, data, instance, updateTable)
     subscribeToSearchParam(event, data, instance, updateTableInstance)
 }

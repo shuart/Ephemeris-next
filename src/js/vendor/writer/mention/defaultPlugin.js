@@ -7,9 +7,21 @@ export var getDefaultMentionPlugin = function (defs, lists, callbacks) {
         
     }
 
-    var getTagSuggestionsHTML = (items,type) => '<div class="suggestion-item-list">'+
-    items.map(i => '<div class="suggestion-item">'+i[defsMap[type].attributeToDisplay]+'</div>').join('')+
-    '</div>';
+    // var getTagSuggestionsHTML = (items,type) => '<div class="suggestion-item-list">'+
+    // items.map(i => '<div class="suggestion-item">'+i[defsMap[type].attributeToDisplay]+'</div>').join('')+
+    // '</div>';
+    var getTagSuggestionsHTML = function (items,type) {
+        if (defsMap[type].imageAttributes) {
+            return '<div class="suggestion-item-list">'+
+            items.map(i => '<div class="suggestion-item"><img style="height: 18px; margin-right: 6px;" src="'+i[defsMap[type].imageAttributes]+'">'+i[defsMap[type].attributeToDisplay]+'</div>').join('')+
+            '</div>';
+        }else{
+            return '<div class="suggestion-item-list">'+
+            items.map(i => '<div class="suggestion-item">'+i[defsMap[type].attributeToDisplay]+'</div>').join('')+
+            '</div>';
+        }
+        
+    }
 
     /**
      * IMPORTANT: outer div's "suggestion-item-list" class is mandatory. The plugin uses this class for querying.
