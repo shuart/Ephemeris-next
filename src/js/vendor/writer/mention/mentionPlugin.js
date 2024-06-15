@@ -354,12 +354,21 @@ export function getMentionsPlugin(defs,opts) {
         }
       },
       handleClick(view, _, event) {
+        // don't handle if no suggestions or not in active mode
+        var state = this.getState(view.state);
+        if (!state.active && !state.suggestions.length) {
+  
+          return false;
+        }
 
         if (event.target.className) {
           var splited = event.target.className.split("-")
           if (splited[1]) {
             console.log(opts.functionOnClick);
-            opts.functionOnClick[ splited[1] ](event, view)
+            if (typeof opts.functionOnClick[ splited[1] ] == "function") {
+              opts.functionOnClick[ splited[1] ](event, view)
+            }
+            
           }
           return true
         }

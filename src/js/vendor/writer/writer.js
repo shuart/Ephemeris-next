@@ -5,6 +5,8 @@ import { createTitle } from './docTitle/docTitle.js';
 import { createTopBar } from './topbar.js';
 import { createHighlighter } from './highlighter/highlighter.js';
 import { createTagger } from './highlighter/tagger.js';
+import { createNodeFinder } from './highlighter/nodeFinder.js';
+
 var pm = pmModule.pmCore
 console.log(pm);
 
@@ -24,6 +26,8 @@ var createEditor = function ({
     mentionsDefinitions = undefined,
     mentionsOptions = {},
     mentionsCallback = {},
+    nodesToHighlight =[],
+    nodesToHighlightOnClick=undefined,
     currentDocument = undefined,
     documentsList = [],
     isEditable = true,
@@ -82,7 +86,9 @@ var createEditor = function ({
         //add custom plugins
         if (true) {
             var highlighter = createHighlighter()
+            var node_finder= createNodeFinder(nodesToHighlight,nodesToHighlightOnClick)
             plugins = plugins.concat(highlighter)
+            plugins = plugins.concat(node_finder)
         }
         if (false) {
             var tagger = createTagger({schema: mySchema, commonState:writerState})

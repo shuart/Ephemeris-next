@@ -168,7 +168,7 @@ var updateTable = function (event, data, instance) {
     console.log(editor.otherEntries);
 
     editor.mentionsDefs= [
-        {name:"hashtag", key:"#", attributes:["id", "tag"], attributeToDisplay:'tag', imageAttributes:"icon"},
+        {name:"hashtag", key:"#", attributes:["id", "tag"], attributeToDisplay:'tag', imageAttributes:"icon", hideKey:true},
         {name:"mention", key:"@", attributes:["name", "id","email"], attributeToDisplay:'name'},
         {name:"arrow", key:"->", attributes:["id","tag"], attributeToDisplay:'tag'},
     ]
@@ -184,6 +184,10 @@ var updateTable = function (event, data, instance) {
     "arrow": [{id:1,tag: '-> abc'}, {id:2,tag: '-> 123'},],
     "hashtag": setCurrentTags(),
     "mention": [{name: 'John Doe', id: '101', email: 'joe@abc.com'}, {name: 'Joe Lewis', id: '102', email: 'lewis@abc.com'}],
+    }
+    editor.nodesToHighlight = setCurrentTags()
+    editor.nodesToHighlightOnClick=function (prob) {
+        showPopupInstancePreview(prob.rule.id);
     }
     data.editor = editor
     instance.query(".textEditorDesc").append(editor)

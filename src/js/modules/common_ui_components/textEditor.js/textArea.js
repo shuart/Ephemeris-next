@@ -41,6 +41,10 @@ var textArea = createAdler({
           // "hashtag": setCurrentTags(),
           // "mention": [{name: 'John Doe', id: '101', email: 'joe@abc.com'}, {name: 'Joe Lewis', id: '102', email: 'lewis@abc.com'}],
         },
+        nodesToHighlight:{
+
+        },
+        nodesToHighlightOnClick:undefined,
         to_print:"foo",
         to_print_reac:"bar",
     },
@@ -69,6 +73,8 @@ var textArea = createAdler({
           mentionsDefinitions : self.mentionsDefs,
           mentionsOptions : self.mentionsOptions,
           mentionsCallback : self.mentionsCallback,
+          nodesToHighlight:self.nodesToHighlight,
+          nodesToHighlightOnClick:self.nodesToHighlightOnClick,
           otherEntries : self.otherInstances,
           defaultValue : self.defaultValue,
         })
@@ -530,6 +536,15 @@ var textArea = createAdler({
         text-align: center; padding-left: .5px; line-height: 1.1em
       }
       .lint-icon:before { content: "!" }
+      .ProseMirror { padding-right: 20px }
+
+      .lint-icon-local {
+        display: inline-block; position: none; right: 2px; cursor: pointer;
+        border-radius: 100px; background: #000000; color: white; font-family: times, georgia, serif;
+        font-size: 15px; font-weight: bold; width: 1.1em; height: 1.1em;
+        text-align: center; padding-left: .5px; line-height: 1.1em
+      }
+      .lint-icon-local:before { content: "!" }
       .ProseMirror { padding-right: 20px }
 
 

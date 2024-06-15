@@ -60,10 +60,15 @@ var defToDOM = function (def) {
         return domAttr
     }
     var returnFunction = function (node, def) {
+        var shownKey = def.key
+        if (def.hideKey) {
+            shownKey=""
+        }
         return [
             "span",
             domAttrFunction(node, def),
-            `${def.key}` + node.attrs[def.attributeToDisplay]
+            shownKey + node.attrs[def.attributeToDisplay]
+            // `${def.key}` + node.attrs[def.attributeToDisplay]
           ];
     }
     var DOMFunc = function (node) {
