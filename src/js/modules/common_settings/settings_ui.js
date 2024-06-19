@@ -7,6 +7,7 @@ import settings_component from "./model_settings.js";
 import settings_component_details from "./model_settings_details.js";
 import side_menu_component from "../common_ui_components/menu/side_menu.js";
 import { createTemplateManager } from "../common_import_export/common_import_export.js";
+import { showImportXlsxDialogue } from "../common_file_importers/xlsx/import_xlsx.js";
 
 // import {Tabulator} from "../../vendor/tabulator_esm.min.js";
 
@@ -103,6 +104,7 @@ var common_settings =createAdler({
                     value:"Project",
                     items:[
                         {id:"export_as_template", iconPath:"download.svg", value:"Export as template",onClick:()=> createTemplateManager().exportTemplate()},
+                        {id:"import_from_xlsx", iconPath:"download.svg", value:"Import from .xlsx",onClick:()=> showImportXlsxDialogue()},
                         // {id:"import_template", iconPath:"upload-cloud.svg", value:"Import template",onClick:()=> createTemplateManager().importTemplateFromFile()},
                         {id:"delete_project", iconPath:"trash-2.svg", value:"Delete Project",onClick:()=> projectManagement.removeCurrentProject()},
                     ]

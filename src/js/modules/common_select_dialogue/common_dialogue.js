@@ -2,6 +2,7 @@
 import mainPopup from "../../modules/common_ui_components/mainPopup/mainPopup.js"
 import select from "../../modules/common_ui_components/select/select.js"
 import input_boolean from "../common_ui_elements/input_boolean.js"
+import input_file from "../common_ui_elements/input_file.js"
 import input_graph from "../common_ui_elements/input_graph.js"
 import input_selection from "../common_ui_elements/input_selection.js"
 import input_text from "../common_ui_elements/input_text.js"
@@ -99,6 +100,19 @@ var createDialoguePage = function (params) {
             })
             // params.choiceStore[field.name] = field.config.selected
             fieldsToAdd.push(item) 
+        }else if (field.type=="file") {
+            if (!field.config.onChange) { //if an action is not setup the dialogue component will do it. 
+                field.config.onChange=(event, data, instance)=>{ //the text element use the focus out event to store the value in the local store
+                    params.choiceStore[field.name] = data.value
+                }
+            }
+            field.config.uuid = "id"+nanoid()
+            var item = input_file.instance({
+                data:field.config,
+                // uuid:nanoid()
+            })
+            params.choiceStore[field.name] = field.config.value || false
+            fieldsToAdd.push(item)
         }
     }
     //add footer
