@@ -99,6 +99,7 @@ export var showImportXlsxDialogue = function () {
             var entityNameMapping = {}
             var relationNameMapping = {}
             var propertiesNameMapping = {}
+            var doneExtIds = {}
             for (let i = 0; i < instances.length; i++) {
                 var extId = instances[i].attributes.extId;
                 console.log(instances[i]);
@@ -118,24 +119,31 @@ export var showImportXlsxDialogue = function () {
 
             for (let i = 1; i < rows.length; i++) {
                 const element = rows[i];
-                var currentEntity =entities[0].uuid
-                if (element[indexOfEntity] && entityNameMapping[element[indexOfEntity]]) {// check the correct entity
-                    currentEntity =entityNameMapping[element[indexOfEntity]].uuid
+                if (!doneExtIds[element[indexOfId]]) {
+                    doneExtIds[element[indexOfId]]= true
+                    var currentEntity =entities[0].uuid
+                    if (element[indexOfEntity] && entityNameMapping[element[indexOfEntity]]) {// check the correct entity
+                        currentEntity =entityNameMapping[element[indexOfEntity]].uuid
+                    }
+                    if (entityToCast) {// check the correct entity
+                        currentEntity =entityToCast.uuid
+                    }
+                    if (element[indexOfId] && externalMapping[ element[indexOfId] ]) {// update existing ID if already present
+                        var newInfo={name:element[indexOfName], type:currentEntity}
+                        var idToUpdate = externalMapping[ element[indexOfId] ].uuid
+                        console.log(idToUpdate+' updated');
+                        newInfo = Object.assign({}, newInfo, getPropertyObject(rows[0],rows[i], propertiesNameMapping) )// assign props
+                        instancesRepo.update(idToUpdate, newInfo)
+                    } else {
+                        var newItem ={extId:element[indexOfId],name:element[indexOfName], type:currentEntity}
+                        newItem = Object.assign({}, newItem, getPropertyObject(rows[0],rows[i], propertiesNameMapping) )// assign props
+                        instancesRepo.add(newItem)
+                    } 
+                }else{
+                    console.log(element[indexOfId]+' was already added/modified this time');
                 }
-                if (entityToCast) {// check the correct entity
-                    currentEntity =entityToCast.uuid
-                }
-                if (element[indexOfId] && externalMapping[ element[indexOfId] ]) {// update existing ID if already present
-                    var newInfo={name:element[indexOfName], type:currentEntity}
-                    var idToUpdate = externalMapping[ element[indexOfId] ].uuid
-                    console.log(idToUpdate+' updated');
-                    newInfo = Object.assign({}, newInfo, getPropertyObject(rows[0],rows[i], propertiesNameMapping) )// assign props
-                    instancesRepo.update(idToUpdate, newInfo)
-                } else {
-                    var newItem ={extId:element[indexOfId],name:element[indexOfName], type:currentEntity}
-                    newItem = Object.assign({}, newItem, getPropertyObject(rows[0],rows[i], propertiesNameMapping) )// assign props
-                    instancesRepo.add(newItem)
-                }
+
+                
             }
             addRelationsFromHeaders(rows[0],rows, indexOfId)
         }
