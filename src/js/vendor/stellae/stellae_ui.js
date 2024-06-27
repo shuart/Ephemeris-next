@@ -232,9 +232,9 @@ export default function createStellaeUi({
             if (node.parent === state.scene) {
                 newNodeList.push(node)
                 state.triggers.headers.push(node.layout.header)
-                state.triggers.sockets= Object.assign({},state.triggers.sockets, node.layout.sockets)
-                state.triggers.props= Object.assign({},state.triggers.props, node.layout.props)
-                state.triggers.handles= Object.assign({},state.triggers.handles, node.layout.handles)
+                state.triggers.sockets= Object.assign(state.triggers.sockets, node.layout.sockets)
+                state.triggers.props= Object.assign(state.triggers.props, node.layout.props)
+                state.triggers.handles= Object.assign(state.triggers.handles, node.layout.handles)
             }else{
                 console.log("removed")
             }
@@ -264,9 +264,9 @@ export default function createStellaeUi({
         state.mapping = {}
         for (let i = 0; i < state.nodes.length; i++) {
             const node = state.nodes[i];
-            console.log(node.edata);
+            // console.log(node.edata);
             state.mapping[node.edata.uuid] = {position:node.position, sockets:{}, uiRootObject:node}
-            console.log(node.layout);
+            // console.log(node.layout);
 
             for (const key in node.layout.sockets) {
                 if (Object.hasOwnProperty.call(node.layout.sockets, key)) {

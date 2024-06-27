@@ -13,7 +13,7 @@ import { createCardSettings } from "./settings/view_grid_settings_card.js";
 import { createGraphSettings } from "./settings/view_grid_settings_graph.js";
 import { createWritingBoardSettings } from "./settings/view_grid_settings_writing_board.js";
 import { createFolderSettings } from "./settings/view_grid_settings_folder.js";
-
+import {createDiagramSettings} from "./settings/view_grid_settings_diagram.js";
 var goToEvaluator = function(event){
     var evaluator = event.target.dataset.id
     state.goTo("/:/evaluators/"+evaluator)
@@ -69,7 +69,11 @@ var setUpOptionsEvent = function (self, event, domElement, currentUuid, uuid, co
         createFolderSettings(comp, function(data) {
             self.editRenderSettingsCallback(uuid, data)
         })
-    }
+    } else if(comp.componentType =="diagram") {
+        createDiagramSettings(comp, function(data) {
+            self.editRenderSettingsCallback(uuid, data)
+        })
+    } 
     
 
     

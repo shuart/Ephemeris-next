@@ -8,6 +8,8 @@ import table_viewport from "../viewports/table_viewport/table_ui.js"
 import graph_viewport from "../viewports/graph_viewport/graph_ui.js"
 import cardViewport from "../viewports/card_viewport/card_viewport.js";
 import textEditorViewport from "../viewports/text_editor_viewport/text_editor_viewport.js";
+import diagramViewport from "../viewports/diagram_viewport/diagram_viewport.js";
+
 // import state from "../common_state/state_manager.js";
 import propertiesViewport from "../viewports/properties_viewport/properties_viewport.js";
 import { renderPlaceholder } from "./view_grid_helpers.js";
@@ -96,7 +98,8 @@ var availableViewports = {
     propertiesList:propertiesViewport,
     textEditor:textEditorViewport,
     folder:folder_viewport,
-    writingBoard:writingBoardViewport
+    writingBoard:writingBoardViewport,
+    diagram:diagramViewport,
 }
 
 var getComponents = function (self) {
@@ -282,6 +285,7 @@ var showAddMenu = function(event, self, area){
                 {uuid:"propertiesList", name:"Properties List", iconPath:"credit-card.svg",},
                 {uuid:"textEditor", name:"Text Editor", iconPath:"credit-card.svg",},
                 {uuid:"writingBoard", name:"Writing Board", iconPath:"text.svg",},
+                {uuid:"diagram", name:"Diagram", iconPath:"credit-card.svg",},
             ],
             callback:function(result){
                 var newSchema = getSchemaFromGrid(self)

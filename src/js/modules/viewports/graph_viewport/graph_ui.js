@@ -210,7 +210,7 @@ var addNodeCallback = function (data) {
 var updateSearchParam = function(event, data, instance){
     var selectedUuid =state.getSearchParam("selected")
     if (selectedUuid) {
-        data.graph.getNodeManager().setFocus(selectedUuid, {mode:undefined,extendToRelations:true})
+        data.graph.getNodeManager().setFocus(selectedUuid, {mode:true,extendToRelations:true})
     }   
 }
 

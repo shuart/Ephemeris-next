@@ -109,10 +109,11 @@ function expandTable(roots, mode) {
     return {roots, newCols}
 }
 
-function traverseForward(mode,root, deferedRoot, newColsToUpdate, newColsDoneToUpdate, newRoots) {
+function traverseForward(mode,root, deferedRoot, newColsToUpdate, newColsDoneToUpdate, newRoots, cyclicList) {
     var newCols =newColsToUpdate || []
     var newColsDone = newColsDoneToUpdate || {}
     var newRoots = newRoots || []
+    var cyclicList = cyclicList || {}
 
     var currentDeferedRoot = deferedRoot || root
     
@@ -121,8 +122,9 @@ function traverseForward(mode,root, deferedRoot, newColsToUpdate, newColsDoneToU
         currentDeferedRoot._pushedToGraph = true
     }
 
-    if (root.forward) {//Does the current element has relations
+    if (root.forward && !cyclicList[currentDeferedRoot.uuid]) {//Does the current element has relations and has not been traversed yet
 
+        cyclicList[currentDeferedRoot.uuid] = true
         //create a current safe copy at this level before registering any extra prop (to avoid having them marked as "copied")
         var newRoot = copyObject(currentDeferedRoot)
 
@@ -145,23 +147,25 @@ function traverseForward(mode,root, deferedRoot, newColsToUpdate, newColsDoneToU
             if (mode == "compact") {
 
                 currentDeferedRoot[root.forward.name].push({displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:forwardElement})
-                traverseForward(mode, forwardElement, currentDeferedRoot, newColsToUpdate, newColsDoneToUpdate, newRoots)
+                traverseForward(mode, forwardElement, currentDeferedRoot, newColsToUpdate, newColsDoneToUpdate, newRoots, cyclicList)
 
             }else{
 
                 if (!currentDeferedRoot[root.forward.name][0]) { //check if origin field is empty , then push and proceed forward with the same root
                     currentDeferedRoot[root.forward.name]=[{displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:forwardElement}]
-                    traverseForward(mode, forwardElement, currentDeferedRoot, newColsToUpdate, newColsDoneToUpdate, newRoots)
+                    traverseForward(mode, forwardElement, currentDeferedRoot, newColsToUpdate, newColsDoneToUpdate, newRoots, cyclicList)
                 }else{
                     // newRoots.push(currentDeferedRoot)
                     // var newRoot = Object.assign({}, currentDeferedRoot)
                     newRoot[root.forward.name]=[{displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:forwardElement}]
                     newRoots.push(newRoot)
-                    traverseForward(mode, forwardElement, newRoot, newColsToUpdate, newColsDoneToUpdate, newRoots)
+                    traverseForward(mode, forwardElement, newRoot, newColsToUpdate, newColsDoneToUpdate, newRoots, cyclicList)
                 }
 
             }
         }
+    }else{
+        console.log(cyclicList);
     }
 }
 
@@ -181,48 +185,57 @@ function copyObject(object){
 }
 
 
-function traverseLevel(roots,mainRoot, relations, nodesToNodesOutMapping, nodesToNodesInMapping) {
+function traverseLevel(roots,mainRoot, relations, nodesToNodesOutMapping, nodesToNodesInMapping, cyclicList) {
     for (let i = 0; i < roots.length; i++) {
         const root = roots[i];
         var rootToUpdate = root
+        var cyclicList =cyclicList || {}
         if (mainRoot) { //check which root to update depending of the level
             rootToUpdate = mainRoot
         }
+        if (!cyclicList[rootToUpdate.uuid]) {//prevent analysis of already traversed nodes
+            cyclicList[rootToUpdate.uuid] = true
+
+            for (let i = 0; i < relations.length; i++) {
+                if (nodesToNodesOutMapping[root.uuid] && nodesToNodesOutMapping[root.uuid][relations[i]]) {
+                    // rootToUpdate["forward"] = nodesToNodesOutMapping[root.uuid][relations[i]].map(function (r) {
+                    //     return {displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:r}
+                    // })
+                    console.log(nodesToNodesOutMapping[root.uuid][relations[i]]);
+                    for (let j = 0; j < nodesToNodesOutMapping[root.uuid][relations[i]].length; j++) {
+                        const currentTarget = nodesToNodesOutMapping[root.uuid][relations[i]][j];
+                        if (!rootToUpdate["forward"]) {rootToUpdate["forward"] ={name:relations[i], list:[]} }
+                        // rootToUpdate["forward"].list.push({displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:currentTarget})
+                        rootToUpdate["forward"].list.push(currentTarget)
+                        
+                    }
+                    traverseLevel(nodesToNodesOutMapping[root.uuid][relations[i]],undefined, relations, nodesToNodesOutMapping, nodesToNodesInMapping,cyclicList)
+                    // root.attributes["forward"] = nodesToNodesOutMapping[root.uuid][relations[i]]
+                    // root.attributes["forward"] = {displayAs:"relation", relation:nodesToNodesOutMapping[root.uuid][relations[i]], direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:undefined}
+                }
+                if (nodesToNodesInMapping[root.uuid] && nodesToNodesInMapping[root.uuid][relations[i]]) {
+                    for (let j = 0; j < nodesToNodesInMapping[root.uuid][relations[i]].length; j++) {
+                        const currentTarget = nodesToNodesInMapping[root.uuid][relations[i]][j];
+                        if (!rootToUpdate["backward"]) {rootToUpdate["backward"] ={name:relations[i], list:[]} }
+                        // rootToUpdate["forward"].list.push({displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:currentTarget})
+                        rootToUpdate["backward"].list.push(currentTarget)
+                        
+                    }
+                    // traverseLevel(nodesToNodesInMapping[root.uuid][relations[i]],undefined, relations, nodesToNodesOutMapping, nodesToNodesInMapping)
+                    // root.attributes["backward"] = nodesToNodesInMapping[root.uuid][relations[i]]
+                    // rootToUpdate["backward"] = nodesToNodesInMapping[root.uuid][relations[i]].map(function (r) {
+                    //     return {displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:r}
+                    // })
+                    // root.attributes["backward"] = {displayAs:"relation", relation:nodesToNodesInMapping[root.uuid][relations[i]], direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:undefined}
+                }
+            }
+
+        }else{
+            console.log('cyclic')
+        }
         // root.forward = "test"
         // root.backward= "test"
-        for (let i = 0; i < relations.length; i++) {
-            if (nodesToNodesOutMapping[root.uuid] && nodesToNodesOutMapping[root.uuid][relations[i]]) {
-                // rootToUpdate["forward"] = nodesToNodesOutMapping[root.uuid][relations[i]].map(function (r) {
-                //     return {displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:r}
-                // })
-                console.log(nodesToNodesOutMapping[root.uuid][relations[i]]);
-                for (let j = 0; j < nodesToNodesOutMapping[root.uuid][relations[i]].length; j++) {
-                    const currentTarget = nodesToNodesOutMapping[root.uuid][relations[i]][j];
-                    if (!rootToUpdate["forward"]) {rootToUpdate["forward"] ={name:relations[i], list:[]} }
-                    // rootToUpdate["forward"].list.push({displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:currentTarget})
-                    rootToUpdate["forward"].list.push(currentTarget)
-                    
-                }
-                traverseLevel(nodesToNodesOutMapping[root.uuid][relations[i]],undefined, relations, nodesToNodesOutMapping, nodesToNodesInMapping)
-                // root.attributes["forward"] = nodesToNodesOutMapping[root.uuid][relations[i]]
-                // root.attributes["forward"] = {displayAs:"relation", relation:nodesToNodesOutMapping[root.uuid][relations[i]], direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:undefined}
-            }
-            if (nodesToNodesInMapping[root.uuid] && nodesToNodesInMapping[root.uuid][relations[i]]) {
-                for (let j = 0; j < nodesToNodesInMapping[root.uuid][relations[i]].length; j++) {
-                    const currentTarget = nodesToNodesInMapping[root.uuid][relations[i]][j];
-                    if (!rootToUpdate["backward"]) {rootToUpdate["backward"] ={name:relations[i], list:[]} }
-                    // rootToUpdate["forward"].list.push({displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:currentTarget})
-                    rootToUpdate["backward"].list.push(currentTarget)
-                    
-                }
-                // traverseLevel(nodesToNodesInMapping[root.uuid][relations[i]],undefined, relations, nodesToNodesOutMapping, nodesToNodesInMapping)
-                // root.attributes["backward"] = nodesToNodesInMapping[root.uuid][relations[i]]
-                // rootToUpdate["backward"] = nodesToNodesInMapping[root.uuid][relations[i]].map(function (r) {
-                //     return {displayAs:"relation", relation:undefined, direction:"incoming", callback:(id)=>showPopupInstancePreview(id), target:r}
-                // })
-                // root.attributes["backward"] = {displayAs:"relation", relation:nodesToNodesInMapping[root.uuid][relations[i]], direction:"outgoing", callback:(id)=>showPopupInstancePreview(id), target:undefined}
-            }
-        }
+        
         
     }
     // return {roots, cols}

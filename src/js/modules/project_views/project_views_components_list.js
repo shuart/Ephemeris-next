@@ -6,6 +6,7 @@ var componentList = {
     propertiesList:{name:"Properties", icon:"credit-card",},
     textEditor:{name:"Text Editor", icon:"credit-card",},
     writingBoard:{name:"Writing Board", icon:"text",},
+    diagram:{name:"Title Card", icon:"credit-card",},
 }
 
 export {componentList}

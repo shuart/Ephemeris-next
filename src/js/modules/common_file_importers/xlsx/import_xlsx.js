@@ -83,6 +83,7 @@ export var showImportXlsxDialogue = function () {
     var readXlsxFile = createXlsxParser()
       readXlsxFile(file).then((rows) => {
         console.log(rows);
+        alert('preview')
         var indexOfId = rows[0].indexOf('id');
         var indexOfName= rows[0].indexOf('name');
         var indexOfEntity =rows[0].indexOf('_type');
@@ -206,12 +207,20 @@ export var showImportXlsxDialogue = function () {
         propertiesNameMapping[properties[i].name]=properties[i]
     }
     // until here, refresh all buffers
+    var peviousExtId =undefined;
     for (let i = 1; i < rows.length; i++) {
         const element = rows[i];
-        
-        if (element[indexOfId] && externalMapping[ element[indexOfId] ]) {// update existing ID if already present
 
-            var idOfImportedInstance = externalMapping[ element[indexOfId] ]
+        var currentExtId = element[indexOfId]
+        if (currentExtId == undefined || currentExtId == '' || currentExtId == null) {
+            currentExtId = peviousExtId;
+        }else{
+            peviousExtId = currentExtId;
+        }
+        
+        if (currentExtId && externalMapping[ currentExtId ]) {// update existing ID if already present
+
+            var idOfImportedInstance = externalMapping[ currentExtId ]
             for (let i = 0; i < topRow.length; i++) {
                 const headerElement = topRow[i];
                 if (headerElement != 'name' && 'uuid' && 'id') {
@@ -219,12 +228,12 @@ export var showImportXlsxDialogue = function () {
                         if (externalMapping[ element[i] ]) { // check if the id in the col is an instance
                             var fromElement = idOfImportedInstance
                             var toElement = externalMapping[ element[i] ]
-                            var extId = element[indexOfId]+element[i]+relationNameMapping[headerElement].uuid
-                            if (!externalRelationInstancesMapping[extId]) { // check if relation is not already existing
+                            var extId = currentExtId+element[i]+relationNameMapping[headerElement].uuid
+                            if (!externalRelationInstancesMapping[extId] && fromElement.uuid !=toElement.uuid) { // check if relation is not already existing and not with self
                                 relationInstancesRepo.add({name:`from ${fromElement.name} to ${toElement.name}`, extId:extId, from:fromElement.uuid, to:toElement.uuid, type:relationNameMapping[headerElement].uuid})
 
                             }else{
-                                alert('RelationAlreadyAdded')
+                                console.log('RelationAlreadyAdded')
                             }
                         }
         

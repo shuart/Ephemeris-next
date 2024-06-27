@@ -111,6 +111,10 @@ var renderPlaceholder = function ({
         areaName = "Text Editor";
         areaIcon = "text";
     }
+    if (componentType == "diagram") {
+        areaName = "Diagram";
+        areaIcon = "credit-card";
+    }
     var domElement = document.createElement("div")
     domElement.id = "comp"+index
     domElement.style.gridArea = "span 2/span 2"
