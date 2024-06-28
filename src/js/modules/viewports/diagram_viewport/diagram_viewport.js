@@ -10,6 +10,7 @@ import { subscribeToChanges } from "../../common_state/state_change_subscription
 import state from "../../common_state/state_manager.js";
 import { getViewGridPlaceholder } from "../../project_views/view_grid_placeholders.js";
 import createRelationInstancesAggregate from "../../common_project_management/relationInstances_management.js";
+import { subscribeToSearchParam } from "../../common_state/state_change_subscription.js";
 
 
 var addItem = function (event, data, instance) {
@@ -30,6 +31,7 @@ var getEvaluatorData = function (event, data, instance){
         data.instance ={}
         if (renderSettings?.useCurrentlySelected ) {
             data.instance =state.getSearchParam("selected") || {}
+            
         }
         // data.cols =evaluator.evaluate().cols
         // data.actions =evaluator.evaluate().actions
@@ -62,7 +64,7 @@ var getEvaluatorData = function (event, data, instance){
 
 var updateTable = function (event, data, instance) {
     // var placeholder = getViewGridPlaceholder("instanceCard")
-    // var itemData = getEvaluatorData(event,data, instance)
+    var itemData = getEvaluatorData(event,data, instance)
     //  instance.getNodes().instance_card.setData({instance:itemData.instance, placeholder:placeholder })
     var instanceRepo = createInstancesManagement()
     var relationInstancesRepo = createRelationInstancesAggregate()
@@ -79,22 +81,56 @@ var updateTable = function (event, data, instance) {
     var diag = diagramArea.instance()
     diag.nodes =instanceRepo.getAll()
     diag.links =arrowsInstances
+    diag.focusNode =itemData.instance?.uuid || undefined
+    diag.onLabelMouseDown=function (element, self) {
+        self.query('.goTo').innerHTML=''
+        var goToElement = document.createElement('div')
+        goToElement.classList='mermaidGoTo'
+        goToElement.style.cursor='pointer'
+        goToElement.innerHTML = 'Preview Element '
+        goToElement.addEventListener('click',function () {
+            showPopupInstancePreview(element.dataset.id)
+        })
+        self.query('.goTo').append(goToElement)
+        var selectElement = document.createElement('div')
+        selectElement.classList='mermaidSelect'
+        selectElement.style.cursor='pointer'
+        selectElement.innerHTML = 'Select Element '
+        selectElement.addEventListener('click',function () {
+            state.setSearchParams("selected", element.dataset.id)
+        })
+        self.query('.goTo').append(selectElement)
+      }
     console.log(data.links);
     instance.query(".container").append(diag)
+    data.diag= diag
     //  subscribeToDB(event, data, instance)
+
+    if (itemData.instance?.uuid) {
+        // updateSearchParam(event, data, instance)
+        // subscribeToSearchParam(event, data, instance, updateSearchParam)
+    }
+}
+
+var updateSearchParam = function(event, data, instance){
+    var selectedUuid =state.getSearchParam("selected")
+    
+    if (selectedUuid) {
+        instance.query(".container").innerHTML =''
+        updateTable(event, data, instance) 
+    }   
 }
 
 var setUpTable = function (event, data, instance) {
     updateTable(event, data, instance) 
     subscribeToChanges(event, data, instance, updateTable)
+    subscribeToSearchParam(event, data, instance, updateSearchParam)
 }
 
 var diagramViewport =createAdler({
     content: p => /*html*/`
-    <div class="Component container">
+    <div class="Component container" style="height:80%">
         
-        <div  a-id="instance_card" adler="instance_card" ></div>
-        <div class="action_add_entity" ></div>
         
     </div>
         `,
@@ -134,8 +170,13 @@ var diagramViewport =createAdler({
     },
     components:{
         // instance_card: instanceCard,
-    }
-    // css:/*css*/` `,
+    },
+    css:/*css*/` 
+    
+    .mermaidGoTo, .mermaidSelect {
+        cursor: pointer;
+        background-color: #8a8a8a26;
+    `,
 })
 
 export default diagramViewport
