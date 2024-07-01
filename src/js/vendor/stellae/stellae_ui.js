@@ -92,7 +92,16 @@ export default function createStellaeUi({
     
 
     nodeMeshManager.getHeadersMesh =function () {
-        return state.triggers.headers
+        // return state.triggers.headers
+        var result = []
+        console.log(state.triggers.headers);
+        for (let i = 0; i < state.triggers.headers.length; i++) {
+            if (state.triggers.headers[i].layoutItemRoot.visible) {
+                result.push(state.triggers.headers[i])
+            }
+        }
+            
+        return result
     }
     nodeMeshManager.getLinksMesh=function () {
         return state.links
@@ -104,7 +113,9 @@ export default function createStellaeUi({
     nodeMeshManager.getSocketsMesh =function(){
         var result = []
         for (var key in state.triggers.sockets){
-            result.push(state.triggers.sockets[key].mesh)
+            if (state.triggers.sockets[key].mesh.layoutItemRoot.visible) {
+                result.push(state.triggers.sockets[key].mesh)
+            }
         }
         return result
     }
