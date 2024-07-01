@@ -54,7 +54,6 @@ export function createInstanceEngine(scene, nodes) {
     // }
 
     function getNode(uuid) {
-
         return nodeList[uuid]
     }
 
@@ -84,24 +83,28 @@ export function createInstanceEngine(scene, nodes) {
             lastPosition.x=x;lastPosition.y=y;lastPosition.z=z;
         }
 
-        function setRotation(x,y,z) {
+        var setRotation =function(x,y,z) {
             var x = x ||lastRotation.x
             var y = y ||lastRotation.y
             var z = z ||lastRotation.z
-
+            console.log(x,y,z);
+            console.log('eeeeeeeeeeeeeee');
             const matrix = new THREE.Matrix4();
             getInstancedMesh().getMatrixAt( reference[2], matrix );
             // dummy.position.set( lastPosition.x, lastPosition.y, lastPosition.y);
-            dummy.matrix = matrix 
+            matrix.copy(dummy.matrix)
             dummy.rotation.x = x
             dummy.rotation.y = y
             dummy.rotation.z = z
+            dummy.scale.x = lastScale.x
+            dummy.scale.y = lastScale.y
+            dummy.scale.z = lastScale.z
             dummy.updateMatrix();
             getInstancedMesh().setMatrixAt( reference[2], dummy.matrix );
             // matrix.setPosition( x,y,z );
             // getInstancedMesh().setMatrixAt( reference[2], matrix );
             // getInstancedMesh().instanceMatrix.needsUpdate = true;
-            lastRotation.x=x;lastRotation.y=y;lastRotation.z=z;
+            // lastRotation.x=x;lastRotation.y=y;lastRotation.z=z;
         }
         function setScale(x,y,z) {
             var x = x ||lastScale.x
@@ -111,7 +114,8 @@ export function createInstanceEngine(scene, nodes) {
             const matrix = new THREE.Matrix4();
             getInstancedMesh().getMatrixAt( reference[2], matrix );
             // dummy.position.set( lastPosition.x, lastPosition.y, lastPosition.y);
-            dummy.matrix = matrix 
+            matrix.copy(dummy.matrix)
+            //  = matrix 
             dummy.scale.x = x
             dummy.scale.y = y
             dummy.scale.z = z
@@ -122,7 +126,17 @@ export function createInstanceEngine(scene, nodes) {
             // getInstancedMesh().instanceMatrix.needsUpdate = true;
             lastScale.x=x;lastScale.y=y;lastScale.z=z;
         }
+        function hide() {
+            setRotation(3.1416/2,0,0)
+            // setPosition(10,10,0)
+        }
+        function show() {
+            node.setRotation(-3.1416/2,0,0)
+        }
+        
 
+        node.hide =hide
+        node.show =show
         node.setScale =setScale
         node.setPosition =setPosition
         node.setRotation =setRotation
@@ -159,8 +173,22 @@ export function createInstanceEngine(scene, nodes) {
                 // instance.instanceMatrix.needsUpdate = true;
             }
         }
+        function hide() {
+            for (let i = 0; i < children.length; i++) {
+                const element = children[i].node;
+                element.hide()
+            }
+        }
+        function show() {
+            for (let i = 0; i < children.length; i++) {
+                const element = children[i].node;
+                element.show()
+            }
+        }
 
 
+        layout.hide =hide
+        layout.show =show
         layout.add =add
         layout.setPosition =setPosition
         layoutList[uuid]=layout

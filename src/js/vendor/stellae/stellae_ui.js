@@ -13,7 +13,7 @@ import createSelectionBox from "./stellae_selection_box.js";
 import { markSelected, markUnSelected } from "./stellae_utils_select_unselect.js";
 import cleanLinksVisibility from "./stellae_utils_clean_links_connections.js";
 import { createLinksRCM, createNodeRCM } from "./stellae_right_click_menu.js";
-import { fadeNode, unFadeNode } from "./stellae_hide_fade_nodes.js";
+import { fadeNode, unFadeNode, nodeVisibilityManager } from "./stellae_hide_fade_nodes.js";
 import { createInstanceEngine } from "./stellae_instances.js";
 
 
@@ -161,6 +161,8 @@ export default function createStellaeUi({
         state.helperLine = new THREE.Line( lineGeometry, lineMaterial );
         state.scene.add(state.helperLine)
         instanceEngine = createInstanceEngine( state.scene)
+        nodeVisibilityManager.setState(state)
+        nodeVisibilityManager.setInstanceEngine(instanceEngine)
         
         const size = 1000;
         const divisions = 1000;
@@ -425,6 +427,10 @@ export default function createStellaeUi({
                     if (state.selectedToMove[0].layoutType=="group") {//when node is group
                         state.selectedToMove[0].layoutItemInteractions.onDragStart(intersects.x,intersects.z,state, simulation) //delegate the move action of the other nodes to the group
                     }
+                    if (useSimulation) {
+                        
+                        simulation.dragNodeStart(state.selectedToMove[0].edata.uuid)
+                    }
                 }
 
                 //find offset from previous position for smooth move
@@ -491,6 +497,9 @@ export default function createStellaeUi({
             state.dragStarted = false;
             state.dragOffset = {x:0,z:0};
             state.controls.enabled = true;
+            if (useSimulation) {
+                simulation.dragNodeEnd()
+            }
             
 
             //check for click up
@@ -498,6 +507,7 @@ export default function createStellaeUi({
                 if (uiCallbacks.onNodeClick) {
                     uiCallbacks.onNodeClick({dataManager, state, input:{targetItem:state.lastSelectedHeader.edata.uuid}})
                 }
+                
             }
             state.recordedClickForMouseUp = false
             //check for connections
@@ -512,9 +522,10 @@ export default function createStellaeUi({
                     }
                     dataManager.addLinks([state.linkToAdd])
                 }
-                dataManager.evaluateTree();
+                // dataManager.evaluateTree();//TODO was it needed?
                 state.linkToAdd = undefined;
             }
+           
             if(state.boxSelectingInProgress && selectionBox){
                 state.boxSelectingInProgress = false;
                 state.boxSelecting = false;
@@ -524,6 +535,7 @@ export default function createStellaeUi({
                 markUnSelected(state.nodes)
                 markSelected(selectedNodes)
             }
+            
         }
         function onDblClick (event){
             state.mouse.x = ( (event.clientX-state.containerDim.x) / state.containerDim.width ) * 2 - 1;

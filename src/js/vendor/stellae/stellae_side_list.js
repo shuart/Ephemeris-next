@@ -1,4 +1,5 @@
 import cleanLinksVisibility from "./stellae_utils_clean_links_connections.js";
+import { nodeVisibilityManager } from "./stellae_hide_fade_nodes.js";
 
 var createListView = function(container){
     var self = {}
@@ -48,6 +49,11 @@ var createListView = function(container){
 
         element.querySelector(".stella_visibility").addEventListener("click", function (e) {
             data.visible = !data.visible
+            if (data.visible) {
+                nodeVisibilityManager.show(data.edata.uuid)
+            }else{
+                nodeVisibilityManager.hide(data.edata.uuid)
+            }
             data.edata.nodeData.setAttribute("visible", data.visible) //register the status for save
             data.visible? element.querySelector(".stella_visibility").innerHTML=eyeSvg : element.querySelector(".stella_visibility").innerHTML= eyeClosedSvg
             cleanLinksVisibility(state)

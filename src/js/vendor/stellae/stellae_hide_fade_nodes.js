@@ -23,4 +23,35 @@ var unFadeNode = function(node){
         })
 }
 
-export {fadeNode, unFadeNode}
+
+function createNodeVisibilityManager() {
+    var self = {};
+    var state = undefined;
+    var instanceEngine = undefined;
+
+    var hide = function (id) {
+        if (instanceEngine) {
+            instanceEngine.getNode(id).hide()
+        }
+    }
+    var show = function (id) {
+        if (instanceEngine) {
+            instanceEngine.getNode(id).show()
+        }
+    }
+    var setState = function (id) {
+        
+    }
+    var setInstanceEngine = function (engine) {
+        instanceEngine =engine
+    }
+
+    self.hide=hide;
+    self.show=show;
+    self.setState=setState;
+    self.setInstanceEngine=setInstanceEngine;
+    return self
+}
+var nodeVisibilityManager = createNodeVisibilityManager()
+
+export {fadeNode, unFadeNode, nodeVisibilityManager}

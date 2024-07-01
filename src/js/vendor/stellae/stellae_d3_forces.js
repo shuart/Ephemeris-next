@@ -28,7 +28,7 @@ var createSimulation = function (params) {
             // .force("link", d3.forceLink(simulationLinks).id(d => d.id).distance(0).strength(-1))
             // .force("link", d3.forceLink(links).id(d => d.id).distance(0).strength(-1))
             // .force("charge", d3.forceManyBody().strength(-50))
-            .force("charge_force", d3.forceManyBody().strength(-0.07).distanceMax(10))
+            .force("charge_force", d3.forceManyBody().strength(-0.07).distanceMax(18))
             .force("x", d3.forceX())
             .force("y", d3.forceY())
             .alphaDecay(0.03)
@@ -195,20 +195,41 @@ var createSimulation = function (params) {
         if (uuid != currentDraggedNode) {
             currentDraggedNode =uuid
             // d3ForceSimulation.alphaTarget(0.1).restart()
-            d3ForceSimulation.restart();
-            d3ForceSimulation.alpha(1.0);
+            // d3ForceSimulation.restart();
+            // d3ForceSimulation.alpha(1.0);
             
         }
-        d3ForceSimulation.restart();
-        d3ForceSimulation.alpha(1.0);
+        // d3ForceSimulation.restart();
+        // d3ForceSimulation.alpha(1.0);
         setNodeForcedPosition(uuid, x,y)
         // console.log(simulationLinks);
         // alert("simulation forces")
+    }
+
+    var dragNodeStart = function (uuid) {
+        if (uuid != currentDraggedNode) {
+            currentDraggedNode =uuid
+            // d3ForceSimulation.alphaTarget(0.1).restart()
+            // d3ForceSimulation.restart();
+            // d3ForceSimulation.alpha(1.0);
+            
+        }
+        // d3ForceSimulation.restart();
+        // d3ForceSimulation.alpha(0.3);
+        d3ForceSimulation.alphaTarget(0.3).restart()
+        // setNodeForcedPosition(uuid, x,y)
+        // console.log(simulationLinks);
+        // alert("simulation forces")
+    }
+    var dragNodeEnd= function () {
+        d3ForceSimulation.alphaTarget(0);
     }
     
     self.fixNodes = fixNodes
     self.unfixNodes = unfixNodes
     self.dragNode = dragNode
+    self.dragNodeStart = dragNodeStart
+    self.dragNodeEnd = dragNodeEnd
     self.addNodes = addNodes
     self.startSimulation= startSimulation
     self.addlinks= addLinks

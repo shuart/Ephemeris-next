@@ -1,6 +1,7 @@
 import nuuid from "./stellae_utils_uuid.js"
 import cleanLinksVisibility from "./stellae_utils_clean_links_connections.js";
 import { getConnectedNodes } from "./stellae_utils_find_connections.js";
+import { nodeVisibilityManager } from "./stellae_hide_fade_nodes.js";
 
 var createToolbar = function(container){
     var self = {}
@@ -110,6 +111,7 @@ var createToolbar = function(container){
                 var selected = e.graphState.selectedToMove
                 console.log(selected);
                 for (let i = 0; i < selected.length; i++) {
+                    nodeVisibilityManager.hide(selected[i].edata.uuid)
                     selected[i].visible = false;
                     selected[i].edata.nodeData.setAttribute("visible", selected[i].visible) //register the status for save TODO move in utils
                 }
@@ -123,9 +125,11 @@ var createToolbar = function(container){
                 console.log(selected);
                 for (let i = 0; i < nodes.length; i++) {
                     nodes[i].visible = false;
+                    nodeVisibilityManager.hide(nodes[i].edata.uuid)
                 }
                 for (let i = 0; i < selected.length; i++) { //TODO, could be done in one pass to optimize
                     selected[i].visible = true;
+                    nodeVisibilityManager.show(selected[i].edata.uuid)
                 }
                 e.graphState.sideList.addNodes(e.graphState.nodes)
                 cleanLinksVisibility(e.graphState)
@@ -137,6 +141,7 @@ var createToolbar = function(container){
                     var connected = getConnectedNodes(selected[i], e.graphState)
                     for (let i = 0; i < connected.length; i++) { //TODO, could be done in one pass to optimize
                         connected[i].visible = true;
+                        nodeVisibilityManager.show(connected[i].edata.uuid)
                     }
                 }
                 e.graphState.sideList.addNodes(e.graphState.nodes)
