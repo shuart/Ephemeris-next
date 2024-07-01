@@ -769,18 +769,22 @@ export default function createStellaeUi({
                 if (visibleNodes[state.nodes[i].edata.uuid]) {
                     // nodeList[i].visible = true
                     unFadeNode(state.nodes[i])
+                    nodeVisibilityManager.show(state.nodes[i].edata.uuid)
                 }else{
                     // nodeList[i].visible = false
                     fadeNode(state.nodes[i])
+                    nodeVisibilityManager.hide(state.nodes[i].edata.uuid)
                 }
             }
         } else{
             for (let i = 0; i < state.nodes.length; i++) {
                 if ( visibleNodes[state.nodes[i].edata.uuid]) {
                     state.nodes[i].visible = true
+                    nodeVisibilityManager.show(state.nodes[i].edata.uuid)
                     // unFadeNode(state.nodes[i])
                 }else{
                     state.nodes[i].visible = false
+                    nodeVisibilityManager.hide(state.nodes[i].edata.uuid)
                     // fadeNode(state.nodes[i])
                 }
             }

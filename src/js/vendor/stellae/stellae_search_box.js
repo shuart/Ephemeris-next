@@ -1,4 +1,4 @@
-import { fadeNode, unFadeNode } from "./stellae_hide_fade_nodes.js";
+import { fadeNode, unFadeNode , nodeVisibilityManager} from "./stellae_hide_fade_nodes.js";
 
 var createStellaeSearchBox = function(container){
     var self = {}
@@ -24,9 +24,11 @@ var createStellaeSearchBox = function(container){
                         if (nodeList[i].edata.name.toLowerCase().search(currentValue.toLowerCase()) >= 0) {
                             // nodeList[i].visible = true
                             unFadeNode(nodeList[i])
+                            nodeVisibilityManager.show(nodeList[i].edata.uuid)
                         }else{
                             // nodeList[i].visible = false
                             fadeNode(nodeList[i])
+                            nodeVisibilityManager.hide(nodeList[i].edata.uuid)
                         }
                     }
                     
@@ -35,6 +37,7 @@ var createStellaeSearchBox = function(container){
                 for (let i = 0; i < nodeList.length; i++) {
                     // nodeList[i].visible = true
                     unFadeNode(nodeList[i])
+                    nodeVisibilityManager.show(nodeList[i].edata.uuid)
                 }
             }
         })
