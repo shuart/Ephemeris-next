@@ -12,6 +12,7 @@ const shadowCanvas = document.createElement( 'canvas' );
 
 const hwidth = 3;
 const hheight = 0.5;
+var useOnlyInstance = true;
 
 const squareShape = new THREE.Shape()
     .moveTo( 0, 0 )
@@ -229,6 +230,10 @@ var createNodeRound  = function({
 
     function createCharacterLabel( text, maxLength ) {
 
+        if (text==undefined || text == null) {
+            text=''
+        }
+
         if (text.length > maxLength) {
             text = text.substring(0, maxLength-2)+"..";
         }
@@ -276,7 +281,7 @@ var createNodeRound  = function({
 
         node.add(header)
         layoutItems.header = header
-        if (imgPath && ( imgPath.slice(-3)=="svg"||imgPath.slice(-3)=="png" ) ) {
+        if (!useOnlyInstance && imgPath && ( imgPath.slice(-3)=="svg"||imgPath.slice(-3)=="png" ) ) {
             var headerImage = createImage()
             headerImage.layoutItemType ="headerImage"
             headerImage.layoutItemRoot =node
@@ -284,6 +289,9 @@ var createNodeRound  = function({
             layoutItems.headerImage = headerImage
             headerImage.position.set(0,0,-0.02)
             headerImage.scale.set(0.5,0.5,0.5)
+        }
+        if (useOnlyInstance) {
+            header.visible = false;
         }
         return header
     }
@@ -301,29 +309,16 @@ var createNodeRound  = function({
     }
 
     function createBack(node, props){
-        // const materialBack = new THREE.MeshBasicMaterial( { color: 0x303030,side: THREE.DoubleSide  } );
-        // var geometryBack = new THREE.ShapeGeometry( circleShape );
-        // var background = new THREE.Mesh( geometryBack, materialBack );
-        // background.layoutItemType ="header"
-        // background.layoutItemRoot =node
-        // // background.scale.y = (props.length+1)/2
-        // background.scale.set(0.1,0.1,0.1)
-        // background.position.set(0,0,0.002)
-        // node.add(background)
-
         //createShadow
-        var spriteShadow = createShadow()
-        spriteShadow.layoutItemType ="shadow"
-        node.add(spriteShadow)
-        // spriteShadow.position.set(0,1.7,0.008)
-        // spriteShadow.scale.set(3.5,4.5/3,1)
-        // background.scale.y = (props.length+1)/2
-        var scaler = 1
-        spriteShadow.position.set(0.4,0.3 ,0.008)
-        spriteShadow.scale.set(2,1.5,1)
-        // spriteShadow.scale.y = (props.length+1)
+        if (!useOnlyInstance) {
+            var spriteShadow = createShadow()
+            spriteShadow.layoutItemType ="shadow"
+            node.add(spriteShadow)
+            var scaler = 1
+            spriteShadow.position.set(0.4,0.3 ,0.008)
+            spriteShadow.scale.set(2,1.5,1)
+        }
     }
-
     function createSocket(group, prop){
         var socketColor = 0x00d6a3
         // if (Array.isArray(prop.value)) {
@@ -351,6 +346,9 @@ var createNodeRound  = function({
         // }
         socket.scale.set(0.1,0.1,0.1)
         socket.position.set(0,0,0.007)
+        if (useOnlyInstance) {
+            socket.visible = false;
+        }
         return socket
     }
 

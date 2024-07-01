@@ -14,6 +14,7 @@ import { markSelected, markUnSelected } from "./stellae_utils_select_unselect.js
 import cleanLinksVisibility from "./stellae_utils_clean_links_connections.js";
 import { createLinksRCM, createNodeRCM } from "./stellae_right_click_menu.js";
 import { fadeNode, unFadeNode } from "./stellae_hide_fade_nodes.js";
+import { createInstanceEngine } from "./stellae_instances.js";
 
 
 export default function createStellaeUi({
@@ -45,6 +46,7 @@ export default function createStellaeUi({
     var searchBox = undefined;
     var selectionBox = undefined;
     var connectionHighlighter = undefined;
+    var instanceEngine = undefined;
 
     if (useSimulation) {
         simulation = createSimulation()
@@ -158,6 +160,8 @@ export default function createStellaeUi({
         const lineGeometry = new THREE.BufferGeometry().setFromPoints( linePoints );
         state.helperLine = new THREE.Line( lineGeometry, lineMaterial );
         state.scene.add(state.helperLine)
+        instanceEngine = createInstanceEngine( state.scene)
+        
         const size = 1000;
         const divisions = 1000;
         const gridHelper = new THREE.GridHelper( size, divisions );
@@ -168,6 +172,10 @@ export default function createStellaeUi({
         node.edata = params
         state.scene.add(node)
         state.nodes.push(node)
+        if (instanceEngine) {
+            instanceEngine.addNode(params)
+        }
+        
         updateTriggers()
         updateMapping()
 
@@ -569,10 +577,20 @@ export default function createStellaeUi({
         state.canvas.addEventListener('dblclick', onDblClick, false);
     }
 
+    var updateInstancePosition = function () {
+        if (instanceEngine) {
+            for (let i = 0; i < state.nodes.length; i++) {
+                instanceEngine.getNode(state.nodes[i].edata.uuid).setPosition(state.nodes[i].position.x,state.nodes[i].position.y,state.nodes[i].position.z)
+            }
+            
+        }
+    }
+
     var startRenderer = function () {
         function animate() {
             if (state.play) {
                 updateLinks()
+                updateInstancePosition()
                 requestAnimationFrame( animate );
                 state.renderer.render( state.scene, state.camera );
             }

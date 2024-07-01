@@ -12,12 +12,14 @@ var createListView = function(container){
     var spanEyeElement = document.createElement("span")
     spanEyeElement.style.cursor = 'pointer'
     spanEyeElement.classList="stella_visibility"
-    spanEyeElement.innerHTML= `<span style="cursor:pointer" class="stella_visibility" >${eyeSvg}</span>`
+    // spanEyeElement.innerHTML= `<span style="cursor:pointer" class="stella_visibility" >${eyeSvg}</span>`
+    spanEyeElement.innerHTML= `<span style="cursor:pointer" class="stella_visibility" >o</span>`
 
     var spanEyeClosedElement = document.createElement("span")
     spanEyeClosedElement.style.cursor = 'pointer'
     spanEyeClosedElement.classList="stella_visibility"
-    spanEyeClosedElement.innerHTML= `<span style="cursor:pointer" class="stella_visibility" >${eyeClosedSvg}</span>`
+    // spanEyeClosedElement.innerHTML= `<span style="cursor:pointer" class="stella_visibility" >${eyeClosedSvg}</span>`
+    spanEyeClosedElement.innerHTML= `<span style="cursor:pointer" class="stella_visibility" >-</span>`
 
     var init = function(){
         domElement = document.createElement("div")

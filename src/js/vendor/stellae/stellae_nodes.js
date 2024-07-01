@@ -307,7 +307,7 @@ var createNode= function({
         interactiveProps = setUpProps()
         if(ui){
             currentScene = ui
-            addToScene(currentScene)
+            // addToScene(currentScene)
         }
         inInit = true;
         doEvent("onInit")
@@ -335,8 +335,12 @@ var createNode= function({
     }
     var updateInScene = function (){
         if (ui) {
-            currentScene.removeNode(refInScene)
-            refInScene =  currentScene.addNode({headerColor,nodeLayout, template, uuid, position, name, props:internalProps, links, nodeData:self, imgPath, nodeAttributes}) 
+            if (refInScene) {
+                currentScene.removeNode(refInScene)
+                refInScene =  currentScene.addNode({headerColor,nodeLayout, template, uuid, position, name, props:internalProps, links, nodeData:self, imgPath, nodeAttributes}) 
+            }else{
+                addToScene(currentScene)
+            }
         }
         
     }
